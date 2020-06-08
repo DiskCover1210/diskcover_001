@@ -122,6 +122,10 @@ if(isset($_SESSION['INGRESO']['IP_VPN_RUTA']))
 						{
 							require_once("contabilidad/libro_banco.php");
 						}
+						if ($_SESSION['INGRESO']['accion']=='cta_operaciones') 
+						{
+							require_once("contabilidad/ctaOperaciones.php");
+						}
 					}else
 					{
 						echo "<div class='box-body'><img src='../../img/modulo_contable.gif' width='100%'></div>";
