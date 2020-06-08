@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<factura id="comprobante" version="1.1.0">
+<infoTributaria>
+<ambiente>2</ambiente>
+<tipoEmision>1</tipoEmision>
+<razonSocial>UNIDAD EDUCATIVA FISCOMISIONAL SANTA MAGDALENA</razonSocial>
+<nombreComercial>UNIDAD EDUCATIVA FISCOMISIONAL SANTA MAGDALENA</nombreComercial>
+<ruc>1391722052001</ruc>
+<claveAcceso>0801201901139172205200120010030000000691234567817</claveAcceso>
+<codDoc>01</codDoc>
+<estab>001</estab>
+<ptoEmi>003</ptoEmi>
+<secuencial>000000069</secuencial>
+<dirMatriz>Calle Oliva Miranda S/n</dirMatriz>
+</infoTributaria>
+<infoFactura>
+<fechaEmision>08/01/2019</fechaEmision>
+<dirEstablecimiento>Calle Oliva Miranda S/n</dirEstablecimiento>
+<obligadoContabilidad>SI</obligadoContabilidad>
+<tipoIdentificacionComprador>05</tipoIdentificacionComprador>
+<razonSocialComprador>SANDRA SANCHEZ PONCE</razonSocialComprador>
+<identificacionComprador>1307281921</identificacionComprador>
+<totalSinImpuestos>45.50</totalSinImpuestos>
+<totalDescuento>50.82</totalDescuento>
+<totalConImpuestos>
+<totalImpuesto>
+<codigo>2</codigo>
+<codigoPorcentaje>0</codigoPorcentaje>
+<descuentoAdicional>0</descuentoAdicional>
+<baseImponible>45.50</baseImponible>
+<valor>0.00</valor>
+</totalImpuesto>
+</totalConImpuestos>
+<propina>0</propina>
+<importeTotal>45.50</importeTotal>
+<moneda>DOLAR</moneda>
+</infoFactura>
+<detalles>
+<detalle>
+<codigoPrincipal>01.01</codigoPrincipal>
+<codigoAuxiliar>0101</codigoAuxiliar>
+<descripcion>Pension Prim, 2018: Noviembre</descripcion>
+<unidadMedida>DOLAR</unidadMedida>
+<cantidad>1.000000</cantidad>
+<precioUnitario>96.320000</precioUnitario>
+<descuento>50.82</descuento>
+<precioTotalSinImpuesto>45.50</precioTotalSinImpuesto>
+<impuestos>
+<impuesto>
+<codigo>2</codigo>
+<codigoPorcentaje>0</codigoPorcentaje>
+<tarifa>0</tarifa>
+<baseImponible>45.50</baseImponible>
+<valor>0.00</valor>
+</impuesto>
+</impuestos>
+</detalle>
+</detalles>
+<infoAdicional>
+<campoAdicional nombre="Email">babis-17-18@hotmail.com</campoAdicional>
+</infoAdicional>
+</factura>
