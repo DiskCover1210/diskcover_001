@@ -122,7 +122,7 @@ if(isset($_SESSION['INGRESO']['IP_VPN_RUTA']))
 						{
 							require_once("contabilidad/libro_banco.php");
 						}
-						if ($_SESSION['INGRESO']['accion']=='cta_operaciones') 
+						if ($_SESSION['INGRESO']['accion']=='ctaOperaciones') 
 						{
 							require_once("contabilidad/ctaOperaciones.php");
 						}
