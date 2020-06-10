@@ -23,8 +23,12 @@ class PDF extends PDF_MC_Table
 	
 }//Fin de la clase
 //para imprimir factura y prefactura en formato pequeño
-function imprimirDocElPF($stmt,$id=null,$formato=null,$nombre_archivo=null,$va=null,$imp1=null,$param=null,$tipof=null)
+function imprimirDocElPF($stmt,$id=null,$formato=null,$nombre_archivo=null,$va=null,$imp1=null,$param=null,$tipof=null,$conec=null,$ruta=null)
 {
+	if($ruta==null)
+	{
+		$ruta='../ajax/TEMP/';
+	}
 	if($tipof!=null)
 	{
 		$tipo = $tipof;
@@ -37,7 +41,14 @@ function imprimirDocElPF($stmt,$id=null,$formato=null,$nombre_archivo=null,$va=n
 	$fecha=date("Y-m-d");
 	$hoy = date('H:m:s');
 	//obtenemos informacion
-	$cid=cone_ajaxSQL();
+	if($conec!=null)
+	{
+		$cid=$conec;
+	}
+	else
+	{
+		$cid=cone_ajaxSQL();
+	}
 	$sql="SELECT * FROM  Empresas WHERE
 		Item = '".$_SESSION['INGRESO']['item']."' 
 	";
@@ -62,10 +73,21 @@ function imprimirDocElPF($stmt,$id=null,$formato=null,$nombre_archivo=null,$va=n
 		}			
 	}
 	//datos cliente
-	$cid=cone_ajaxSQL();
-	$sql=" SELECT * FROM  Clientes
-	WHERE  (CI_RUC = '".$param[0]['ruc']."')
-	";
+	//$cid=cone_ajaxSQL();
+	if($tipo == 'PF')
+	{
+		$sql=" SELECT TOP(1) * FROM  Clientes
+		WHERE  (CI_RUC LIKE '%9999999%')
+		";
+	}
+	else
+	{
+		$sql=" SELECT * FROM  Clientes
+		WHERE  (CI_RUC = '".$param[0]['ruc']."')
+		";
+	}
+	//echo $sql;
+	//die();
 	$stmt = sqlsrv_query( $cid, $sql);
 	if( $stmt === false)  
 	{  
@@ -123,15 +145,54 @@ function imprimirDocElPF($stmt,$id=null,$formato=null,$nombre_archivo=null,$va=n
 	}
 	else
 	{
-		
-		$datos = array('numfactura' => '0','numautorizacio' =>'0','fechafac'=>$fecha,
+		$sql="SELECT  *
+		FROM     Detalle_Factura
+		WHERE    (Item = '".$_SESSION['INGRESO']['item']."') AND (Serie = '".$param[0]['serie']."') 
+		AND (Periodo = '".$_SESSION['INGRESO']['periodo']."') AND (Factura = '".$param[0]['factura']."')";
+		$stmt = sqlsrv_query( $cid, $sql);
+		if( $stmt === false)  
+		{  
+			 echo "Error en consulta PA.\n";  
+			 die( print_r( sqlsrv_errors(), true));  
+		}
+		$preciot=0;
+		$iva=0;
+		$tota=0;
+		$i=0;
+		while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_NUMERIC) ) 
+		{
+			$precio=$row[10];
+			$tot=$row[11]+$row[12];
+			$pre=$row[10];
+			$tota=$tot+$tota;
+			$iva=$iva+$row[12];
+			$cantidad=$row[9];
+			$detalle=$row[8];
+			$preciot=$preciot+($precio*$cantidad);
+			$lineas[$i]['cant'] = $cantidad;
+			if($row[12]==0)
+			{
+				$lineas[$i]['detalle']= $detalle.' (E)';
+			}
+			else
+			{
+				$lineas[$i]['detalle']= $detalle;
+			}
+			$lineas[$i]['pvp']=$pre;
+			$lineas[$i]['total']=$precio*$cantidad;
+			$i++;
+		}
+		$datos = array('numfactura' => $param[0]['factura'],'numautorizacio' =>'0','fechafac'=>$fecha,
+		'horafac' => $hoy,'razon'=>$cli,'ci'=>$param[0]['ruc'],
+		'telefono' =>$telef,'email' =>$email,'subtotal'=>$preciot,'dto'=>'0.00','iva'=>$iva,'totalfac'=>$tota );
+		/*$datos = array('numfactura' => '0','numautorizacio' =>'0','fechafac'=>$fecha,
 		'horafac' => $hoy,'razon'=>$cli,'ci'=>'1234567890',
 		'telefono' =>'09999999999','email' =>'example@example.com','subtotal'=>'450.00','dto'=>'0.00','iva'=>'54.00','totalfac'=>'504.00' );
 		
 		$lineas = array(
 		'0'=>array('cant' => '2','detalle'=>' servicio de mantenimineto','pvp'=>'450.00','total'=>'450.00' ),
 		'1'=>array('cant' => '3','detalle'=>' servicio de mantenimineto de servidores','pvp'=>'450.00','total'=>'450.00' ),
-        '2'=>array('cant' => '3','detalle'=>' servicio de mantenimineto de servidores','pvp'=>'450.00','total'=>'450.00' ),  );
+        '2'=>array('cant' => '3','detalle'=>' servicio de mantenimineto de servidores','pvp'=>'450.00','total'=>'450.00' ),  );*/
 	}
 	
 // fin de datos de la base de datos
@@ -330,7 +391,11 @@ function imprimirDocElPF($stmt,$id=null,$formato=null,$nombre_archivo=null,$va=n
 	}
 	if($imp1==0)
 	{
-		$pdf->Output('TEMP/'.$id.'.pdf','F'); 
+		//echo dirname(__DIR__,1).'/php/vista/appr/ajax/TEMP/'.$id.'.pdf'."";
+		//die();
+		//$pdf->Output('TEMP/'.$id.'.pdf','F'); 
+		//$pdf->Output('../ajax/TEMP/'.$id.'.pdf','F'); 
+		$pdf->Output($ruta.$id.'.pdf','F'); 
 	}
 }
 //imprimir doc electronico

@@ -139,11 +139,28 @@ class MesaCon
 	}
      }
 
-     function modal_pedido($id,$nom,$buscar)
-     {
-
+    function modal_pedido($id,$nom,$buscar)
+    {
       $articulos = $this->lista_productos($buscar);
-      $this->pedido_mesa($id,$nom);
+	  //determinar si hay pedidos
+	  $linea = $this->modelo->pedido_realizado($id);
+
+	$i =0;
+	foreach ($linea as $key => $value) {
+		$i++;
+	}
+	if($i>0)
+	{
+		$bot=' <div class="col-sm-6 text-right">
+      		        <button type="button" class="btn btn-default btn-sm" onclick="prefact(\''.$id.'\',\''.$nom.'\')"><span class="glyphicon glyphicon-floppy-disk"></span> Factura</button>
+      		         <button type="button" class="btn btn-default btn-sm" onclick="prefact22(\''.$id.'\',\''.$nom.'\')"><i class="fa fa-file"></i> Pre-factura</button>
+      		        </div>';
+	}
+	else
+	{
+		$bot='';
+	}
+      //$this->pedido_mesa($id,$nom);
 	  echo $html = '
 	<form action="#" class="credit-card-div" id="formu1">
 	<div class="row">
@@ -156,10 +173,7 @@ class MesaCon
       		        <div class="col-sm-6">
       		         <button type="button" class="btn btn-default btn-sm" onclick="liberar(\''.$id.'\')"><i class="fa fa-paint-brush"></i> Liberar</button>
       		        </div>
-      		        <div class="col-sm-6 text-right">
-      		        <button type="button" class="btn btn-default btn-sm" onclick="prefact(\''.$id.'\',\''.$nom.'\')"><span class="glyphicon glyphicon-floppy-disk"></span> Factura</button>
-      		         <button type="button" class="btn btn-default btn-sm" onclick="prefact22(\''.$id.'\',\''.$nom.'\')"><i class="fa fa-file"></i> Pre-factura</button>
-      		        </div>  
+      		        '.$bot.'
       		      </div>    		    
       		     
       		     
@@ -267,8 +281,10 @@ function pedido_mesa($me,$nom)
 	$linea = $this->modelo->pedido_realizado($me);
 	$html = '';
 	$total =0;
+	$iva=0;
 	foreach ($linea as $key => $value) {
 		$total = $total+ ($value['PRECIO']*$value['CANT']);
+		$iva=$iva+$value['Total_IVA'];
 		$html.='
 		<tr>
 		 <td>'.intval($value['CANT']).'</td>
@@ -303,12 +319,14 @@ function pedido_mesa($me,$nom)
 		 $html.='</td>
 		</tr>';
 	}
-	$html.='<tr><td colspan="6" class="text-right" style="color:red">TOTAL: $'.$total.'</td></tr>'.
+	$html.='<tr><td colspan="6" class="text-right" style="color:red">SUB TOTAL: $'.$total.'</td></tr>'.
+		'<tr><td colspan="6" class="text-right" style="color:red">IVA: $'.$iva.'</td></tr>'.
+		'<tr><td colspan="6" class="text-right" style="color:red">TOTAL: $'.($total+$iva).'</td></tr>'.
 		'<script>
 			var total_abono=document.getElementById(\'total_abono\').value;
-			var devo=total_abono-'.$total.';
+			var devo=total_abono-'.($total+$iva).';
 			$( "#total_abono1" ).html(\'<b>TOTAL ABONO: \'+total_abono+\'</b>\');
-			$( "#operacion" ).html(\'<input type="hidden" id="total_total_" name="total_total_" value="'.$total.'"><b>TOTAL: $'.$total.'</b>\');
+			$( "#operacion" ).html(\'<input type="hidden" id="total_total_" name="total_total_" value="'.($total+$iva).'"><b>TOTAL: $'.($total+$iva).'</b>\');
 			$( "#devolucion" ).html(\'<b>DEVALUCION: $\'+devo+\'</b>\');
 		</script>';
 	return $html;

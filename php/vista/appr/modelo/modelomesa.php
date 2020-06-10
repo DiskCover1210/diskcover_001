@@ -547,7 +547,7 @@ function agregar_factura($datos1)
 		$param[0]['PFA']='F';
 		$param[0]['serie']=$ser1[2];
 		$param[0]['factura']=($n_fac-1);
-		imprimirDocElPF(null,$me,null,null,null,0,$param,'F');
+		imprimirDocElPF(null,$me,null,null,null,0,$param,'F',$cid);
 		  //imprimir factura despues de autorizar 
 		cerrarSQLSERVERFUN($cid);
 		  //campo que informar imprimir pdf automatico
@@ -824,7 +824,9 @@ function eliminar_abono($datos)
 }
 function pdf_imprimir($me,$param)
 {
-	imprimirDocElPF(null,$me,null,null,null,0,$param,'PF');
+	$cid=$this->conn->conexion();
+	imprimirDocElPF(null,$me,null,null,null,0,$param,'PF',$cid);
+	cerrarSQLSERVERFUN($cid);
 }
 //serie factura
 function factura_serie()
