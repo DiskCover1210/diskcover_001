@@ -213,7 +213,9 @@ function buscarUsuario(){
 		/*echo $_POST['value1'].' '.$_POST['value3'].' '.$_POST['value5'].' '.$_POST['value6']
 		.' '.$_POST['value7'].' '.$_POST['ch1'].' '.$_POST['ch2'].' '.$_POST['ch3'];*/
 		
-		paginador('acceso_pcs',$filtro,'empresa.php?mod=empresa&acc=cambiou&acc1=Administrar%20Usuario&cod='.$ci_nic.'&item='.$item.'');		
+		paginador('acceso_pcs',$filtro,'empresa.php?mod=empresa&acc=cambiou&acc1=Administrar%20Usuario&cod='.$ci_nic.'&item='.$item.'');
+		//echo $sql;	
+		//die();
 		$consulta=$cid->query($sql) or die($cid->error);
 		//$row_cnt = $consulta->num_rows;
 		//echo $row_cnt.' cccc ';
@@ -6019,12 +6021,28 @@ function grilla_generica($stmt,$ti=null,$camne=null,$b=null,$ch=null,$tabla=null
 									$ban=1;
 								}
 								//numero
-								if($valor->type==3 OR $valor->type==2 OR $valor->type==4 OR $valor->type==5
-								 OR $valor->type['Type']==8 OR $valor->type==9 OR $valor->type==246)
+								//echo $valor->type.' cccc '.$valor->type['Type'].'<br>';
+								if(isset($valor->type) )
 								{
-									//number_format($item_i['nombre'],2, ',', '.')
-									$tipo_campo[($cant)]="style='text-align: right;'";
-									$ban=1;
+									if($valor->type==3 OR $valor->type==2 OR $valor->type==4 OR $valor->type==5
+									 OR $valor->type==9 OR $valor->type==246)
+									{
+										//number_format($item_i['nombre'],2, ',', '.')
+										$tipo_campo[($cant)]="style='text-align: right;'";
+										$ban=1;
+									}
+								}
+								else
+								{
+									if( isset($valor->type['Type']))
+									{
+										if( $valor->type['Type']==8 )
+										{
+											//number_format($item_i['nombre'],2, ',', '.')
+											$tipo_campo[($cant)]="style='text-align: right;'";
+											$ban=1;
+										}
+									}
 								}
 								if($ban==0)
 								{
