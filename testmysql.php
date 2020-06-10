@@ -7,6 +7,7 @@
 * Changer la valeur du 3e paramètre si vous avez mis un mot de passe à root
 * Ajouter le port 3307 en paramètre 5 si vous voulez utiliser MariaDB
 */
+//prueba
 $mysqli = new mysqli('127.0.0.1', 'root', '', '');
 
 if ($mysqli->connect_error) {
