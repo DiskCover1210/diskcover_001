@@ -4357,7 +4357,7 @@ function ListarTotalesTemSQL_AJAX($ti,$Opcb,$b,$ch)
 						
 						</div>
 						
-						<input type="text" class="xs" id="diferencia" name='diferencia' 
+						<input type="text" class="xs" id="diferencia" name='diferencia' disabled
 						placeholder="0.00" value='<?php echo number_format($row[0],2, ',', '.'); ?>' style='width:100%;text-align:right; '>
 						
 					</div>
@@ -4368,14 +4368,14 @@ function ListarTotalesTemSQL_AJAX($ti,$Opcb,$b,$ch)
 							<button type="button" class="btn btn-default btn-xs btn_f" tabindex="-1"><b>Totales</b></button>
 						
 						</div>
-						<input type="text" class="xs" id="totald" name='totald' 
+						<input type="text" class="xs" id="totald" name='totald' disabled
 						placeholder="0.00" value='<?php echo number_format($row[1],2, ',', '.'); ?>' maxlength='20' size='21' style='text-align:right;'>
 						
 					</div>
 				</div>
 				<div class="col-md-2 col-sm-2 col-xs-2">
 					<div class="input-group">
-						<input type="text" class="xs" id="totalh" name='totalh' placeholder="0.00" 
+						<input type="text" class="xs" id="totalh" name='totalh' placeholder="0.00" disabled
 						value='<?php echo number_format($row[2],2, ',', '.'); ?>' maxlength='20' size='21' style='text-align:right;'>
 					</div>
 				</div>
