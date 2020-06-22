@@ -94,7 +94,6 @@ require_once("../../lib/phpmailer/PHPMailerAutoload.php");
 						$usuario=getUsuario();
 						$_SESSION['INGRESO']['CodigoU']=$usuario[0]['CodigoU'];
 						$_SESSION['INGRESO']['Nombre_Completo']=$usuario[0]['Nombre_Completo'];
-						
 						//verificamos en acceso si puede ingresar a esa empresa
 						$_SESSION['INGRESO']['accesoe']='0';
 						$_SESSION['INGRESO']['modulo'][0]='0';
@@ -387,7 +386,7 @@ require_once("../../lib/phpmailer/PHPMailerAutoload.php");
 			window.location="panel.php?mos="+value+"&mos1="+text+"&mos3="+arregloDeSubCadenas[1]+"";
 		}
 		
-			function buscar(idMensaje)
+		function buscar(idMensaje)
 		{
 			//caso comprobantes procesados
 			if(idMensaje=='comproba')
@@ -416,14 +415,32 @@ require_once("../../lib/phpmailer/PHPMailerAutoload.php");
 						//alert('entrooo '+idMensaje+" ajax/TEMP/'+value1+'.pdf");
 					});
 			}
-			//caso entidad-empresa
-			if(idMensaje=='entidad')
+			//caso entidad-ciudad
+			if(idMensaje=='ciudad')
 			{
-				var select = document.getElementById(idMensaje); //El <select>
+				//alert(idMensaje+' entro ');
+				//solo para el caso de gestion empresa
+				var select = document.getElementById('entidad'); //El <select>
 				value1 = select.value;
 				//alert(value1);
 				$.post('ajax/vista_ajax.php'
 					, {ajax_page: idMensaje, com: value1 }, function(data){
+						//alert('#'+idMensaje+'1');
+						//$('div.pdfcom').load(data);
+						//$('#pdfcom').html('<iframe style="width:100%; height:50vw;" src="ajax/TEMP/'+value1+'.pdf" frameborder="0" allowfullscreen></iframe>'); 
+						$('#'+idMensaje+'1').html(data); 
+					});
+			}
+			//caso entidad-empresa-ciudad
+			if(idMensaje=='entidad')
+			{
+				var select = document.getElementById('ciudad'); //El <select>
+				value2 = select.value;
+				var select = document.getElementById(idMensaje); //El <select>
+				value1 = select.value;
+				//alert(value1);
+				$.post('ajax/vista_ajax.php'
+					, {ajax_page: idMensaje, com: value1, ciu: value2 }, function(data){
 						//alert('#'+idMensaje+'1');
 						//$('div.pdfcom').load(data);
 						//$('#pdfcom').html('<iframe style="width:100%; height:50vw;" src="ajax/TEMP/'+value1+'.pdf" frameborder="0" allowfullscreen></iframe>'); 
@@ -603,7 +620,28 @@ require_once("../../lib/phpmailer/PHPMailerAutoload.php");
 		}
 		function  cerrar(id)
 		{
-			$("#"+id).hide();
+			if(id=='codigo1')
+			{
+				$( "#moneda" ).focus(function() {
+					var bene = document.getElementById('cuenta').value;
+					var cod = document.getElementById('codigo').value;
+					if('Seleccionar'==bene || bene=='' || bene=='no existe registro' || bene=='undefined' || cod=='0' || cod=='')
+					{
+						Swal.fire({
+						  type: 'error',
+						  title: 'Oops...',
+						  text: 'debe agregar cuenta!'
+						});
+						$("#cuenta").focus();
+					}
+					//
+				});
+				$("#"+id).hide();
+			}
+			else
+			{
+				$("#"+id).hide();
+			}
 		}
 </script>	
 	<script>
@@ -962,6 +1000,7 @@ require_once("../../lib/phpmailer/PHPMailerAutoload.php");
 				?>	
    	  <div class="loader1">Procesando</div>	
    	  <?php
+			
 			if (!isset($_SESSION['INGRESO']['empresa'])) 
 			{
 				include('select_empresa.php');
@@ -969,7 +1008,6 @@ require_once("../../lib/phpmailer/PHPMailerAutoload.php");
 			}
 			else
 			{
-					
 					//si esta en panel
 					if(isset($_SESSION['INGRESO']['CodigoU']))
 					{

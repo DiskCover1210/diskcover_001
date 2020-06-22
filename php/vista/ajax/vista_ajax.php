@@ -22,6 +22,11 @@ if(isset($_POST['ajax_page']) )
 	{
 		reporte_com();
 	}
+	//verificar ciudad
+	if($_REQUEST['ajax_page']=='ciudad')
+	{
+		validarCiu();
+	}
 	//verificar entidad
 	if($_REQUEST['ajax_page']=='Entidad')
 	{
@@ -3225,6 +3230,7 @@ function eliminar()
 		   "AND CodigoU = '".$_SESSION['INGRESO']['Id']."' ".
 		   "AND A_No='".$clave1[0]."' ".
 		   "AND CODIGO='".$clave1[1]."' ";
+		   
 	}
 	//caso eliminar tabla Asiento sc
 	if($cl=='asi_sc')
@@ -3255,7 +3261,31 @@ function eliminar()
 	else
 	{
 		//$_SESSION['INGRESO']['Cambio']=1;
-		$jsondata = array('success' => true, 'name'=>$clave1[0]);
+		//recalcular totales
+		$sql="SELECT (SUM(DEBE)-SUM(HABER)) AS DIFERENCIA, SUM(DEBE) AS DEBE ,SUM(HABER) AS HABER 
+			FROM Asiento
+			WHERE 
+				T_No=".$_SESSION['INGRESO']['modulo_']." AND
+				Item = '".$_SESSION['INGRESO']['item']."' 
+				AND CodigoU = '".$_SESSION['INGRESO']['Id']."' ";
+		//echo $sql;
+		$stmt = sqlsrv_query( $cid, $sql);
+		//$stmt = false;
+		$dif=0.00;
+		$totd=0.00;
+		$toth=0.00;
+		if( $stmt == true)  
+		{  
+			
+			while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_NUMERIC) ) 
+			{
+				$dif=number_format($row[0],2, '.', ',');
+				$totd=number_format($row[1],2, '.', ',');
+				$toth=number_format($row[2],2, '.', ',');
+			}
+			// die( print_r( sqlsrv_errors(), true));  
+		}
+		$jsondata = array('success' => true, 'name'=>$clave1[0],'dif'=>$dif,'totd'=>$totd,'toth'=>$toth);
 	}
 	cerrarSQLSERVERFUN($cid);
 	 //Aunque el content-type no sea un problema en la mayoría de casos, es recomendable especificarlo
@@ -3407,7 +3437,7 @@ function buscarEntidad(){
 		//$_POST['MesNo']=0;
 		$sql = "SELECT *
 				  FROM lista_empresas
-				  WHERE ID_Empresa = '".$_POST['com']."' ORDER BY Empresa;";
+				  WHERE ID_Empresa = '".$_POST['com']."' AND Ciudad='".$_POST['ciu']."' ORDER BY Empresa;";
 		//echo $sql;
 		//die();
 		$consulta=$cid->query($sql) or die($cid->error);
@@ -4128,6 +4158,46 @@ function validarUser(){
 			</script>";
 	}
 	
+}
+//verificar ciudad
+function validarCiu()
+{
+	$cid = Conectar::conexion('MYSQL');
+	//$_POST['TP']='CD';
+	//$_POST['MesNo']=0;
+	$sql="SELECT Ciudad
+			  FROM lista_empresas
+			  WHERE ID_Empresa = '".$_POST['com']."' group by Ciudad";
+	//echo $sql;
+	//die();
+	$consulta=$cid->query($sql) or die($cid->error);
+	//Realizamos un bucle para ir obteniendo los resultados
+	$i=0;
+	?>
+		<div class="col-md-6">
+			<div class="form-group">
+				<label for="Ciudad">Ciudad</label>
+				<select class="form-control" name="ciudad" id='ciudad' onChange="return buscar('entidad');">
+					<option value='0'>Seleccione Ciudad</option>
+		<?php
+		while($filas=$consulta->fetch_assoc()){
+			?>
+				<option value='<?php echo $filas['Ciudad']; ?>'><?php echo $filas['Ciudad']; ?></option>
+			<?php
+			//echo '<div id="alerta" class="alert alert-success visible">'.$filas['Empresa'].'</div>';
+			$i++;
+		}
+		?>
+				</select>
+			</div>
+		</div>
+	<?php
+	if($i==0)
+	{
+		echo '<div id="alerta" class="alert alert-warning visible">Ciudad no encontrada</div>';
+	}
+		
+	 $cid->close();
 }
 //verificar entidad
 function validarEnt(){

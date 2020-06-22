@@ -288,12 +288,15 @@
 															<button type="button" class="btn btn-default btn-xs btn_f" tabindex="-1"><b>BENEFICIARIO:</b></button>
 														
 														</div>
-														
-														<input type="text" class="xs" id="beneficiario" name='beneficiario' 
-														placeholder="beneficiario" value='.' maxlength='120' size='103'>
-														
-																<select id="beneficiario1" name='beneficiario1' class='courier' style='display:none;'></select>
+														<div>
+															<input type="text" class="xs" id="beneficiario" name='beneficiario' 
+															placeholder="beneficiario" value='.' maxlength='120' size='103'>
 															
+															<select id="beneficiario1" name='beneficiario1' class='courier' style='display:none;'></select>
+															<div id="bener">
+															</div>
+															<input type="hidden" name="beneficiario2" id="beneficiario2" value='' />
+														</div>
 														<!--<div class="ui-widget">
 															Codigo:  <input id="codigo11">
 															Producto: <input id="descripcion" readonly>
@@ -312,9 +315,7 @@
 													   </div>-->
 													  
 														
-														<div id="bener">
-														</div>
-														<input type="hidden" name="beneficiario2" id="beneficiario2" value='' />
+														
 													</div>
 												</div>
 												
@@ -1188,131 +1189,174 @@
 									$("#myModal").modal();
 									//$("#dialog").dialog(); 
 								});*/
-								$("#grabar").click(function(e) {
-									var dife = document.getElementById('diferencia').value;
-									//alert(dife);
-									if(parseFloat(dife)!=0 )
+								$("#VT").focus(function(){
+								
+									document.getElementById('concepto').select();	
+								});
+								$( "#concepto" ).focus(function() {
+									var bene = document.getElementById('beneficiario').value;
+									if('Seleccionar'==bene || bene=='' || bene=='no existe registro')
 									{
 										 Swal.fire({
 										  type: 'error',
 										  title: 'Oops...',
-										  text: 'Las transacciones no cuadran correntamente corrija los resultados de las cuentas!'
+										  text: 'debe agregar beneficiario!'
+										});
+										$("#beneficiario").focus();
+									}
+									//
+								});
+								$( "#email" ).focus(function() {
+									var bene = document.getElementById('beneficiario').value;
+									if('Seleccionar'==bene || bene=='' || bene=='no existe registro')
+									{
+										 Swal.fire({
+										  type: 'error',
+										  title: 'Oops...',
+										  text: 'debe agregar beneficiario!'
+										});
+										$("#beneficiario").focus();
+									}
+									//
+								});
+								$("#grabar").click(function(e) {
+									//beneficiario
+									var bene = document.getElementById('beneficiario').value;
+									if(bene=='no existe registro' || 'Seleccionar'==bene || bene=='')
+									{
+										 Swal.fire({
+										  type: 'error',
+										  title: 'Oops...',
+										  text: 'debe agregar beneficiario!'
 										});
 									}
 									else
 									{
-										var T_N=<?php echo $T_No; ?>;
-										var tt=document.getElementById('TC').value;
-										var ben=document.getElementById('beneficiario').value;
-										var ru=document.getElementById('ruc').value;
-										var co=document.getElementById('codigo').value;
-										var tip=document.getElementById('tipoc').value;
-										//var tic=document.getElementById('tipo_cue').value;
-										//var sub=document.getElementById('subcuenta').value;
-										//var sub1 = document.getElementById("subcuenta");
-										//var sub2 = sub1.options[sub1.selectedIndex].text;
-										var fecha_sc=document.getElementById('fecha_sc').value;
-										var fac2=document.getElementById('fac2').value;
-										var mes=document.getElementById('mes').value;
-										var valorn=document.getElementById('valorn').value;
-										//var moneda=document.getElementById('moneda').value;
-										var Trans=document.getElementById('Trans_Sub').value;
-										var fecha1 =document.getElementById('fecha1').value;
-										var concepto= document.getElementById('concepto').value;
-										var cotizacion= document.getElementById('cotizacion').value;
-										var totalh= document.getElementById('totalh').value;
-										var num_com=document.getElementById('num_com').innerHTML;
-										//alert(num_com);
-										var parametros = 
+										var dife = document.getElementById('diferencia').value;
+										//alert(dife);
+										if(parseFloat(dife)!=0 )
 										{
-											"ajax_page": 'ing1',
-											cl: 'ing_com',
-											be: ben,
-											ru: ru,
-											co: co,
-											tip: tip,
-											//tic: tic,
-											//sub: sub,
-											//sub2: sub2,
-											fecha_sc: fecha_sc,
-											fac2: fac2,
-											mes: mes,
-											valorn: valorn,
-											//moneda: moneda,
-											Trans: Trans,
-											T_N: T_N,
-											t: tt,
-											fecha1: fecha1,
-											concepto: concepto,
-											totalh: totalh,
-											num_com: num_com
-										};
-										$.ajax({
-											data:  parametros,
-											url:   'ajax/vista_ajax.php',
-											type:  'post',
-											beforeSend: function () {
+											 Swal.fire({
+											  type: 'error',
+											  title: 'Oops...',
+											  text: 'Las transacciones no cuadran correntamente corrija los resultados de las cuentas!'
+											});
+										}
+										else
+										{
+											var T_N=<?php echo $T_No; ?>;
+											var tt=document.getElementById('TC').value;
+											var ben=document.getElementById('beneficiario').value;
+											var ru=document.getElementById('ruc').value;
+											var co=document.getElementById('codigo').value;
+											var tip=document.getElementById('tipoc').value;
+											//var tic=document.getElementById('tipo_cue').value;
+											//var sub=document.getElementById('subcuenta').value;
+											//var sub1 = document.getElementById("subcuenta");
+											//var sub2 = sub1.options[sub1.selectedIndex].text;
+											var fecha_sc=document.getElementById('fecha_sc').value;
+											var fac2=document.getElementById('fac2').value;
+											var mes=document.getElementById('mes').value;
+											var valorn=document.getElementById('valorn').value;
+											//var moneda=document.getElementById('moneda').value;
+											var Trans=document.getElementById('Trans_Sub').value;
+											var fecha1 =document.getElementById('fecha1').value;
+											var concepto= document.getElementById('concepto').value;
+											var cotizacion= document.getElementById('cotizacion').value;
+											var totalh= document.getElementById('totalh').value;
+											var num_com=document.getElementById('num_com').innerHTML;
+											//alert(num_com);
+											var parametros = 
+											{
+												"ajax_page": 'ing1',
+												cl: 'ing_com',
+												be: ben,
+												ru: ru,
+												co: co,
+												tip: tip,
+												//tic: tic,
+												//sub: sub,
+												//sub2: sub2,
+												fecha_sc: fecha_sc,
+												fac2: fac2,
+												mes: mes,
+												valorn: valorn,
+												//moneda: moneda,
+												Trans: Trans,
+												T_N: T_N,
+												t: tt,
+												fecha1: fecha1,
+												concepto: concepto,
+												totalh: totalh,
+												num_com: num_com
+											};
+											$.ajax({
+												data:  parametros,
+												url:   'ajax/vista_ajax.php',
+												type:  'post',
+												beforeSend: function () {
+														$("#compro").html("");
+												},
+												success:  function (response) {
 													$("#compro").html("");
-											},
-											success:  function (response) {
-												$("#compro").html("");
-												$("#compro").html(response);
-												 Swal.fire({
-													  //position: 'top-end',
-													  type: 'success',
-													  title: 'Comprobante ingresado con exito!',
-													  showConfirmButton: true
-													  //timer: 2500
-													});
-												
-												// var valor = $("#subcuenta1").html();	
-												var tip=document.getElementById('tipoc').value;
-												if(tip==null)
-												{
-													tip='CD';
-												}
-												//
-												var parametros = 
-												{
-													"ajax_page": 'bus',
-													cl: 'num_com',
-													tip: tip										
-												};
-												$.ajax({
-													data:  parametros,
-													url:   'ajax/vista_ajax.php',
-													type:  'post',
-													beforeSend: function () {
-															$("#num_com").html("");
-													},
-													success:  function (response) {
-															$("#num_com").html("");
-															$("#num_com").html(response);
-															// var valor = $("#subcuenta1").html();	
+													$("#compro").html(response);
+													 Swal.fire({
+														  //position: 'top-end',
+														  type: 'success',
+														  title: 'Comprobante ingresado con exito!',
+														  showConfirmButton: true
+														  //timer: 2500
+														});
+													
+													// var valor = $("#subcuenta1").html();	
+													var tip=document.getElementById('tipoc').value;
+													if(tip==null)
+													{
+														tip='CD';
 													}
-												});
-												var ca = document.getElementById('num_com1').value;
-												$.post('ajax/vista_ajax.php'
-												, {ajax_page: 'comp', com: ca }, function(data){
-													//$('div.pdfcom').load(data);
-													ventana = window.open("ajax/TEMP/"+ca+".pdf", "nuevo", "width=400,height=400");
-													ventana.close();
-													$('#pdfcom').html('<iframe style="width:100%; height:50vw;" src="ajax/TEMP/'+ca+'.pdf" frameborder="0" allowfullscreen></iframe>'); 
-													$("#myModal").modal();
-													//alert('entrooo '+idMensaje+" ajax/TEMP/'+value1+'.pdf");
-												});
-												//$('#pdfcom').html('<iframe style="width:100%; height:50vw;" src="ajax/TEMP/'+ca+'.pdf" frameborder="0" allowfullscreen></iframe>'); 
-												//$("#myModal").modal();
-												
-												//seteamos valores
-												document.getElementById('beneficiario').value='';
-												document.getElementById('va').value='';
-												document.getElementById('concepto').value='';
-												document.getElementById('ruc').value='';
-												document.getElementById('email').value='';
-												
-											}
-										});
+													//
+													var parametros = 
+													{
+														"ajax_page": 'bus',
+														cl: 'num_com',
+														tip: tip										
+													};
+													$.ajax({
+														data:  parametros,
+														url:   'ajax/vista_ajax.php',
+														type:  'post',
+														beforeSend: function () {
+																$("#num_com").html("");
+														},
+														success:  function (response) {
+																$("#num_com").html("");
+																$("#num_com").html(response);
+																// var valor = $("#subcuenta1").html();	
+														}
+													});
+													var ca = document.getElementById('num_com1').value;
+													$.post('ajax/vista_ajax.php'
+													, {ajax_page: 'comp', com: ca }, function(data){
+														//$('div.pdfcom').load(data);
+														ventana = window.open("ajax/TEMP/"+ca+".pdf", "nuevo", "width=400,height=400");
+														ventana.close();
+														$('#pdfcom').html('<iframe style="width:100%; height:50vw;" src="ajax/TEMP/'+ca+'.pdf" frameborder="0" allowfullscreen></iframe>'); 
+														$("#myModal").modal();
+														//alert('entrooo '+idMensaje+" ajax/TEMP/'+value1+'.pdf");
+													});
+													//$('#pdfcom').html('<iframe style="width:100%; height:50vw;" src="ajax/TEMP/'+ca+'.pdf" frameborder="0" allowfullscreen></iframe>'); 
+													//$("#myModal").modal();
+													
+													//seteamos valores
+													document.getElementById('beneficiario').value='';
+													document.getElementById('va').value='';
+													document.getElementById('concepto').value='';
+													document.getElementById('ruc').value='';
+													document.getElementById('email').value='';
+													
+												}
+											});
+										}
 									}
 								});
 								
@@ -2877,9 +2921,11 @@
 											
 											var select = document.getElementById('tipoc'); //El <select>
 											select.value = tipoc;
+											$("#fecha1").focus();
 										}
 										//si ya esta la cookies verificamos para que este presionado
 										//alert(' 2 '+readCookie('tipoco'));
+										
 										if(readCookie('tipoco')!=null)
 										{
 											if(readCookie('tipoco')=='CI' || readCookie('tipoco')=='CE')
@@ -2952,6 +2998,7 @@
 													// var valor = $("#subcuenta1").html();	
 											}
 										});
+										
 										/*$('div.'+idMensaje).html('<select class="form-control" name="tipo" onclick="buscar(\'comproba\');">'+
 																	'<option value="seleccione">seleccione</option>'+
 																	'</select>'); */
@@ -2999,7 +3046,10 @@
 														  if (result.value) {
 															 var ca = id.split('_');
 															//  alert(ca[0]+' '+ca[1]);
-															  document.getElementById("ta_" + ca[1]).style.display = "none";
+															document.getElementById("ta_" + ca[1]).style.display = "none";
+															document.getElementById('diferencia').value=returnedData.dif;
+															document.getElementById('totald').value=returnedData.totd;
+															document.getElementById('totalh').value=returnedData.toth;
 															//location.href="rde.php?mod=contabilidad&acc=rde&acc1=Reporte Doc. Electronico&ti="+
 														//"<?php echo $_SESSION['INGRESO']['ti']; ?>&Opcb=6&Opcen=0&b=0";
 														  } 

@@ -191,6 +191,27 @@ function agregar_factura($datos1)
 		$cxc=$row[1];
 		$cod_linea=$row[0];
 	}
+	//verificamos que no exista la factura
+	$sql="SELECT        TOP (200) Periodo, T, TC, CodigoC, Factura, Fecha, Codigo, CodigoL, Producto, Cantidad, Precio, Total, Total_IVA, Ruta, Ticket, Item, Corte, Reposicion, Total_Desc, No_Hab, Cod_Ejec, Porc_C, Com_Pag, Cta_Venta, CodigoU, 
+                         CodBodega, Tonelaje, Costo, Comision, Mes, X, Producto_Aux, Puntos, Autorizacion, Serie, CodMarca, Gramaje, Orden_No, Mes_No, C, CodigoB, Precio2, Total_Desc2, SubTotal_NC, Total_IVA_NC, Fecha_IN, Fecha_OUT, 
+                         Cant_Hab, Tipo_Hab, Codigo_Barra, Serie_NC, Autorizacion_NC, Fecha_NC, Secuencial_NC, Fecha_V, Cant_Bonif, Lote_No, Fecha_Fab, Fecha_Exp, Modelo, Procedencia, Serie_No, Porc_IVA, Cantidad_NC, Total_Desc_NC, 
+                         ID
+			FROM            Detalle_Factura
+			WHERE        (Factura = '".$n_fac."') AND (Item = '".$_SESSION['INGRESO']['item']."') AND (Periodo = '".$_SESSION['INGRESO']['periodo']."')
+		 ";
+					
+	//echo $sql;
+	//die();
+	$stmt =sqlsrv_query( $cid, $sql);
+	if( $stmt === false)  
+	{  
+		 echo "Error en consulta PA.\n";  
+		 die( print_r( sqlsrv_errors(), true));  
+	}
+	while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_NUMERIC) ) 
+	{
+		
+	}
 	//agregamos detalle factura
 	$sql="select * ". 
 		  "FROM Asiento_F
@@ -206,7 +227,21 @@ function agregar_factura($datos1)
 		 echo "Error en consulta PA.\n";  
 		 die( print_r( sqlsrv_errors(), true));  
 	}
-	
+	/*
+	SELECT        TOP (200) Periodo, Item, C, T, ME, Cod_CxC, TC, Serie, Autorizacion, Factura, CodigoC, Fecha, Fecha_C, Fecha_V, SubTotal, Con_IVA, Sin_IVA, IVA, Descuento, Porc_C, Comision, Servicio, Total_MN, Total_ME, Saldo_MN, 
+                         Saldo_ME, Saldo_Actual, Forma_Pago, Cotizacion, Cta_CxP, Cta_Venta, Cod_Ejec, Com_Pag, Nota, Observacion, CodigoU, SubCta, Hora, Vencimiento, P, Fecha_Aut, Dias_Vencidos, Desc_0, Desc_X, RUC_CI, TB, Razon_Social, 
+                         Direccion_RS, Telefono_RS, CodigoB, Descuento2, Total_Efectivo, Total_Banco, Total_Ret_Fuente, Total_Ret_IVA_B, Total_Ret_IVA_S, Otros_Abonos, Total_Abonos, Abonos_MN, Clave_Acceso, Hora_Aut, Estado_SRI, Efectivo, 
+                         CodigoDr, Serie_R, Secuencial_R, Autorizacion_R, Fecha_R, Autorizacion_NC, Clave_Acceso_NC, Hora_Aut_NC, Estado_SRI_NC, Tipo_Pago, Error_FA_SRI, Porc_IVA, Imp_Mes, SP, Orden_Compra, X, Chq_Posf, Venc_0_60, 
+                         Venc_61_90, Venc_91_120, Venc_121_360, Venc_mas_360, ID
+	FROM            Facturas
+	WHERE        (Factura = '1569') AND (Item = '001') AND (Periodo = '.')
+	SELECT        TOP (200) Periodo, T, TC, CodigoC, Factura, Fecha, Codigo, CodigoL, Producto, Cantidad, Precio, Total, Total_IVA, Ruta, Ticket, Item, Corte, Reposicion, Total_Desc, No_Hab, Cod_Ejec, Porc_C, Com_Pag, Cta_Venta, CodigoU, 
+                         CodBodega, Tonelaje, Costo, Comision, Mes, X, Producto_Aux, Puntos, Autorizacion, Serie, CodMarca, Gramaje, Orden_No, Mes_No, C, CodigoB, Precio2, Total_Desc2, SubTotal_NC, Total_IVA_NC, Fecha_IN, Fecha_OUT, 
+                         Cant_Hab, Tipo_Hab, Codigo_Barra, Serie_NC, Autorizacion_NC, Fecha_NC, Secuencial_NC, Fecha_V, Cant_Bonif, Lote_No, Fecha_Fab, Fecha_Exp, Modelo, Procedencia, Serie_No, Porc_IVA, Cantidad_NC, Total_Desc_NC, 
+                         ID
+	FROM            Detalle_Factura
+	WHERE        (Factura = '1569') AND (Item = '001') AND (Periodo = '.')
+	*/
 	while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_NUMERIC) ) 
 	{
 		$dato[0]['campo']='T';

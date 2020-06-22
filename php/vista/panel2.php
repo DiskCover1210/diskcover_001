@@ -526,7 +526,28 @@
 		}
 		function  cerrar(id)
 		{
-			$("#"+id).hide();
+			if(id=='codigo1')
+			{
+				$( "#moneda" ).focus(function() {
+					var bene = document.getElementById('cuenta').value;
+					var cod = document.getElementById('codigo').value;
+					if('Seleccionar'==bene || bene=='' || bene=='no existe registro' || bene=='undefined' || cod=='0' || cod=='')
+					{
+						Swal.fire({
+						  type: 'error',
+						  title: 'Oops...',
+						  text: 'debe agregar cuenta!'
+						});
+						$("#cuenta").focus();
+					}
+					//
+				});
+				$("#"+id).hide();
+			}
+			else
+			{
+				$("#"+id).hide();
+			}
 		}
 </script>	
 <?php

@@ -360,8 +360,22 @@ class usuario_model{
 		//							WHERE `ID`=".$id_empresa.";";
 		//$filas=$consulta->fetch_assoc();
 		//echo $filas['IP_VPN_RUTA'];
+		 if ($consulta) {
+
+			/* Obtener la información del campo para todas las columnas */
+			$info_campo = $consulta->fetch_fields();
+			$i=0;
+			foreach ($info_campo as $valor) {
+				if($i==15)
+				{
+					$contra=$valor->name;
+				}
+				$i++;
+			}
+		}
         while($filas=$consulta->fetch_assoc()){
             $empresa[]=$filas;
+			$_SESSION['INGRESO']['Contraseña_DB']=$filas[$contra];
 			//echo ' vvv '.$filas['IP_VPN_RUTA'];
         }
         return $empresa;
@@ -540,7 +554,24 @@ class usuario_model{
 				$empresa[$i]['Email_Contabilidad']=$obj->Email_Contabilidad;
 				$empresa[$i]['Nombre_Comercial']=$obj->Nombre_Comercial;
 				$empresa[$i]['Razon_Social']=$obj->Razon_Social;
-				$empresa[$i]['Sucursal']=$obj->Sucursal;
+				//$empresa[$i]['Sucursal']=$obj->Sucursal;
+				//consultar sucursal
+				$empresa[$i]['Sucursal']=false;
+				$sql="select * from Acceso_Sucursales where Sucursal<>'.'  ";
+				$stmt1 = false;
+				$ii=0;
+				if($this->dbs!='')
+				{
+					$stmt1 = sqlsrv_query( $this->dbs, $sql);
+				}
+				while( $obj1 = sqlsrv_fetch_object( $stmt1)) 
+				{
+					$ii++;
+				}
+				if($ii>0)
+				{
+					$stmt1 = true;
+				}
 				$empresa[$i]['Opc']=$obj->Opc;
 				$empresa[$i]['Empresa']=$obj->Empresa;		
 				$empresa[$i]['S_M']=$obj->S_M;	
