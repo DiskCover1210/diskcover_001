@@ -554,6 +554,7 @@ class usuario_model{
 				$empresa[$i]['Email_Contabilidad']=$obj->Email_Contabilidad;
 				$empresa[$i]['Nombre_Comercial']=$obj->Nombre_Comercial;
 				$empresa[$i]['Razon_Social']=$obj->Razon_Social;
+				$empresa[$i]['Det_Comp']=$obj->Det_Comp;
 				//$empresa[$i]['Sucursal']=$obj->Sucursal;
 				//consultar sucursal
 				$empresa[$i]['Sucursal']=false;
@@ -570,7 +571,7 @@ class usuario_model{
 				}
 				if($ii>0)
 				{
-					$stmt1 = true;
+					$empresa[$i]['Sucursal'] = true;
 				}
 				$empresa[$i]['Opc']=$obj->Opc;
 				$empresa[$i]['Empresa']=$obj->Empresa;		

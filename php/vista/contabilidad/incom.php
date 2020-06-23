@@ -2037,40 +2037,44 @@
 									select1();
 									//alert(valor);
 								});
-								$("#beneficiario").keyup(function(){
-									$("#beneficiario1").show();
-									var search = $(this).val();
-									if(search != ""){
-										var parametros = 
-										{
-											"query" : search,
-											"ajax_page": 'aut1',
-											cl: 'cl_a'
-											
-										};
-										$.ajax({
-											url: 'ajax/vista_ajax.php',
-											type: 'post',
-											data: parametros,
-											dataType: 'json',
-											success:function(response){
-												var len = response.length;
-												if(len>10)
-												{
-													$("#beneficiario1").attr("size",10);
+								$("#beneficiario").keyup(function(e){
+									 var code = e.keyCode || e.which;
+									if(code==13 || code==113)
+									{
+										$("#beneficiario1").show();
+										var search = $(this).val();
+										if(search != ""){
+											var parametros = 
+											{
+												"query" : search,
+												"ajax_page": 'aut1',
+												cl: 'cl_a'
+												
+											};
+											$.ajax({
+												url: 'ajax/vista_ajax.php',
+												type: 'post',
+												data: parametros,
+												dataType: 'json',
+												success:function(response){
+													var len = response.length;
+													if(len>10)
+													{
+														$("#beneficiario1").attr("size",10);
+													}
+													else
+													{
+														$("#beneficiario1").attr("size",len);
+													}
+													//courier new
+													$("#beneficiario1").empty();
+													$("#beneficiario1").append("<option value='0'>Seleccionar</option>");
+													for( var i = 0; i<len; i++){
+														$("#beneficiario1").append("<option value='"+response[i]['id']+"-"+response[i]['email']+"'>"+response[i]['nombre']+"</option>");
+													}
 												}
-												else
-												{
-													$("#beneficiario1").attr("size",len);
-												}
-												//courier new
-												$("#beneficiario1").empty();
-												$("#beneficiario1").append("<option value='0'>Seleccionar</option>");
-												for( var i = 0; i<len; i++){
-													$("#beneficiario1").append("<option value='"+response[i]['id']+"-"+response[i]['email']+"'>"+response[i]['nombre']+"</option>");
-												}
-											}
-										});
+											});
+										}
 									}
 								});
 								$('select#beneficiario1').on('change',function(){
@@ -2557,19 +2561,45 @@
 										}
 										else
 										{
-											document.getElementById("va").focus();
-											Swal.fire({
-											  title: 'Detalle Auxiliar',
-											  html:
-												'<input type="text" class="form-control" id="dconcepto" name="dconcepto" maxlength="60" placeholder="" autofocus ><br><script> $("#dconcepto").focus(); <\/script>',
-											}).then((result) => {
-											  if (result.value) {
-												//alert(document.getElementById("dconcepto").value);
-												document.getElementById("dconcepto1").value=document.getElementById("dconcepto").value;
-												$("#va").focus();
-												//location.href="panel.php?mos2=e";
-											  } 
-											});
+											//document.getElementById("va").focus();
+											<?php 
+											if ($_SESSION['INGRESO']['Det_Comp']==true)
+											{
+											?>
+												Swal.fire({
+												  title: 'Detalle Auxiliar',
+												  html:
+													'<input type="text" class="form-control" id="dconcepto" name="dconcepto" maxlength="60" placeholder="" autofocus ><br><script> $("#dconcepto").focus(); <\/script>',
+												}).then((result) => {
+												  if (result.value) {
+													//alert(document.getElementById("dconcepto").value);
+													document.getElementById("dconcepto1").value=document.getElementById("dconcepto").value;
+													$("#va").focus();
+													//location.href="panel.php?mos2=e";
+												  } 
+												});
+											<?php
+											}
+											else
+											{
+												?>
+												//document.getElementById("dconcepto1").value=document.getElementById("dconcepto").value;
+												Swal.fire({
+														  //position: 'top-end',
+														  type: 'success',
+														  title: 'Cuenta seleccionada!',
+														  showConfirmButton: true
+														  //timer: 2500
+														}).then((result) => {
+													  if (result.value) {
+														$("#va").focus();
+													  } 
+													});
+												
+												//$('#va').selectRange(4);
+												<?php
+											}
+											?>
 										}
 									}
 								}

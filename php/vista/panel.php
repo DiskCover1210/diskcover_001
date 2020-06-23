@@ -81,6 +81,8 @@ require_once("../../lib/phpmailer/PHPMailerAutoload.php");
 				$_SESSION['INGRESO']['Email']=$empresa_d[0]['Email'];
 				$_SESSION['INGRESO']['RUC']=$empresa_d[0]['RUC'];
 				$_SESSION['INGRESO']['Gerente']=$empresa_d[0]['Gerente'];
+				$_SESSION['INGRESO']['Det_Comp']=$empresa_d[0]['Det_Comp'];
+				
 				//verificamos si es sql server o mysql para consultar periodos
 				if(isset($_SESSION['INGRESO']['IP_VPN_RUTA']) ) 
 				{
