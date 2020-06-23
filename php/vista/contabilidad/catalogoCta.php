@@ -138,7 +138,7 @@
 	  <div class="row">          
           <div class="panel-body">
 	  	      <div class="col-sm-3">
-            	<a  href="panel.php?sa=s" title="Salir de modulo" class="btn btn-default">
+            	<a href="./contabilidad.php?mod=contabilidad#" title="Salir de modulo" class="btn btn-default">
             		<img src="../../img/png/salire.png">
             	</a>
             	 <a href="#" class="btn btn-default" id='imprimir_pdf'>

@@ -1,6 +1,6 @@
 <footer class="main-footer">
     <div class="container-fluid">
-      <div id="copyright" style='font-size: 12px;'>
+      <div id="copyright" style='font-size: 11px;'>
 			<?php
 				//verificamos el periodo
 			if(isset($_SESSION['INGRESO']['periodo']))
@@ -14,12 +14,12 @@
 				if($_SESSION['INGRESO']['periodo']=='.')
 				{
 					//$sty="color:#D8F781;font-size:90%;";
-					$sty="color:#1E03FF;font-size:90%;font-weight: bold;";
+					$sty="color:#1E03FF;font-size:70%;font-weight: bold;";
 				}
 				else
 				{
 					//$sty="color:#F9A790;font-size:90%;font-weight: bold;";
-					$sty="color:#FA2929;font-size:90%;font-weight: bold;";
+					$sty="color:#FA2929;font-size:70%;font-weight: bold;";
 				}
 			?>
 			<div style=' float: left;margin: 0 5px 0;'>
@@ -72,7 +72,7 @@
 					contactos: <b>diskcover@msn.com</b> / <b>diskcoversystem@msn.com</b> / <b>diskcover_contabilidad@outlook.com</b>
 					
 					telefonos: <b>0989105300</b> / <b>0999654196</b>
-					Todos los derechos reservados por DiskCover System &copy;   <img src="../../img/png/poland.png" alt="Poland" style="margin-top:-4px">
+					Todos los derechos reservados por DiskCover System &copy; 
 				</div>
 				<br>
 			</div>

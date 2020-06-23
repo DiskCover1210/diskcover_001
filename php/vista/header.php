@@ -303,7 +303,7 @@ $("#datos").fadeIn();
                     <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" id="de_operacion" role="button" aria-haspopup="true" aria-expanded="false">De operación  &nbsp;&nbsp;&nbsp;&nbsp;<span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></a>
                     <!-- </a> -->
                     <ul class="dropdown-menu" aria-labelledby="de_operacion">
-                      <li class="dropdown-item"><a href="contabilidad.php?mod=contabilidad&acc=ctaOperaciones&acc1=Ingresar Comprobantes&b=1&po=subcu">Ingreso catalogo de Cuentas <i  style=' float: right;' align="right">(CRTL+F6)</i></a></li>
+                      <li class="dropdown-item"><a href="contabilidad.php?mod=contabilidad&acc=ctaOperaciones&acc1=Ingresar Comprobantes&b=1">Ingreso catalogo de Cuentas <i  style=' float: right;' align="right">(CRTL+F6)</i></a></li>
                       <!-- <li class="dropdown-item dropdown">
                         <a class="dropdown-toggle" id="catalogosub" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Ingreso catalogo de Subcuentas
                         <i class="fa fa-fw fa-chevron-circle-right" style=' float: right;' align="right"></i></a>

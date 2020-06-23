@@ -230,7 +230,7 @@ require_once("panel.php");
    <div class="col-ms-12">
 	  <div class="row">          
 	  	     <div class="col-sm-4">
-            	<a href="panel.php?sa=s" title="Salir de modulo" class="btn btn-default">
+            	<a  href="./contabilidad.php?mod=contabilidad#" title="Salir de modulo" class="btn btn-default">
             		<img src="../../img/png/salire.png">
             	</a>
             	 <a href="#" class="btn btn-default" id='descargar_pdf'>
