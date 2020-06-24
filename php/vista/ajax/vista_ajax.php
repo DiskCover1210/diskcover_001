@@ -2112,7 +2112,7 @@ function ingresar()
 								<button type="button" class="btn btn-default btn-xs btn_f" tabindex="-1"><b>TOTAL M/N</b></button>
 							
 							</div>
-							<input type="text" class="xs" id="totald" name="totald" placeholder="0.00" value="0,00" maxlength="20" size="21" style="text-align:right;">
+							<input type="text" class="xs" id="totald" name="totald" placeholder="0.00" value="0.00" maxlength="20" size="21" style="text-align:right;">
 							
 						</div>
 					</div>
@@ -2124,7 +2124,7 @@ function ingresar()
 								<button type="button" class="btn btn-default btn-xs btn_f" tabindex="-1"><b>TOTAL M/E</b></button>
 							
 							</div>
-							<input type="text" class="xs" id="totald" name="totald" placeholder="0.00" value="0,00" maxlength="20" size="21" style="text-align:right;">
+							<input type="text" class="xs" id="totald" name="totald" placeholder="0.00" value="0.00" maxlength="20" size="21" style="text-align:right;">
 							
 						</div>
 					</div>
@@ -2215,6 +2215,14 @@ function ingresar()
 			$_POST['concepto']='.';
 		}
 		$num_com = explode("-", $_POST['num_com']);
+		//verificamos que no se coloque fecha erronea
+		$ot = explode("-",$_POST['fecha1']);
+		$num_com1 = explode(".", $num_com[0]);
+		$_POST['fecha1']=trim($num_com1[1]).'-'.$ot[1].'-'.$ot[2];
+		
+		//echo $_POST['fecha1'];
+		//die();
+		
 		$sql="INSERT INTO Comprobantes
            (Periodo ,Item,T ,TP,Numero ,Fecha ,Codigo_B,Presupuesto,Concepto,Cotizacion,Efectivo,Monto_Total
            ,CodigoU ,Autorizado,Si_Existe ,Hora,CEj,X)
@@ -2731,8 +2739,14 @@ function buscar($cl=null)
 		//$_SESSION['INGRESO']['Num_CI'].' '.$_SESSION['INGRESO']['Num_ND'].' '.$_SESSION['INGRESO']['Num_NC'].' ';
 		if(isset($_POST['fecha']))
 		{
-			//echo $_POST['fecha'];
-			$fecha_actual = $_POST['fecha']; 
+			if($_POST['fecha']=='')
+			{
+				$fecha_actual = date("Y-m-d"); 
+			}
+			else
+			{
+				$fecha_actual = $_POST['fecha']; 
+			}
 		}
 		else
 		{
@@ -2748,8 +2762,6 @@ function buscar($cl=null)
 				WHERE        (Item = '".$_SESSION['INGRESO']['item']."') 
 				AND (Periodo = '".$_SESSION['INGRESO']['periodo']."') 
 				AND (Concepto = '".$ot[1]."Diario')";
-				
-				//echo $sql;
 				$stmt = sqlsrv_query( $cid, $sql);
 				if( $stmt === false)  
 				{  
@@ -2926,6 +2938,28 @@ function buscar($cl=null)
 		FROM            Codigos
 		WHERE        (Item = '002') AND (Periodo = '.') AND (Concepto = '12Diario')
 		*/
+	}
+	if($_POST['cl']=='lis_com' or $cl=='lis_com')
+	{
+		$sql="SELECT A_No,CODIGO,CUENTA,PARCIAL_ME,DEBE,HABER,CHEQ_DEP,DETALLE
+		FROM Asiento
+		WHERE 
+			T_No=".$_SESSION['INGRESO']['modulo_']." AND
+			Item = '".$_SESSION['INGRESO']['item']."' 
+			AND CodigoU = '".$_SESSION['INGRESO']['Id']."' 
+			ORDER BY A_No ASC ";
+		$stmt = sqlsrv_query( $cid, $sql);
+		if( $stmt === false)  
+		{  
+			 echo "Error en consulta PA.\n";  
+			 die( print_r( sqlsrv_errors(), true));  
+		}
+		else
+		{
+			$camne=array();
+			grilla_generica($stmt,null,NULL,'1','0,1,clave','asi');
+			ListarTotalesTemSQL_AJAX(null,null,'1','0,1,clave');
+		}
 	}
 	cerrarSQLSERVERFUN($cid);
 }
@@ -3435,16 +3469,25 @@ function buscarEntidad(){
 		$cid = Conectar::conexion('MYSQL');
 		//$_POST['TP']='CD';
 		//$_POST['MesNo']=0;
-		$sql = "SELECT *
+		if($_POST['ciu']=='')
+		{
+			$sql = "SELECT *
+				  FROM lista_empresas
+				  WHERE ID_Empresa = '".$_POST['com']."' ORDER BY Empresa;";
+		}
+		else
+		{
+			$sql = "SELECT *
 				  FROM lista_empresas
 				  WHERE ID_Empresa = '".$_POST['com']."' AND Ciudad='".$_POST['ciu']."' ORDER BY Empresa;";
+		}
 		//echo $sql;
 		//die();
 		$consulta=$cid->query($sql) or die($cid->error);
 		//Realizamos un bucle para ir obteniendo los resultados
 		$i=0;
 		?>
-			<div class="col-md-6">
+			<div class="col-md-3">
 				<div class="form-group">
 					<label for="Empresa">Empresa</label>
 					<select class="form-control" name="empresa" id='empresa' onChange="return buscar('empresa');">
@@ -3511,11 +3554,12 @@ function buscarEmpresa(){
 					printf("Banderas:         %d\n",   $valor->flags);
 					printf("Tipo:             %d\n\n", $valor->type);
 				}
+				
 		$consulta=$cid->query($sql) or die($cid->error);*/
 		while($filas=$consulta->fetch_assoc()){
 			//while($filas=$consulta->fetch_array()){
 			?>
-				<div class="col-md-4">
+				<div class="col-md-2">
 					<div class="form-group">
 					    <label for="Estado">Estado</label>
 					    <select class="form-control" name="Estado" id='Estado' >
@@ -3525,7 +3569,7 @@ function buscarEmpresa(){
 					    </select>
 					</div>
 				</div>
-				<div class="col-md-4">
+				<div class="col-md-3">
 					<div class="form-group">
 					  <label for="FechaR">Fecha Renovación(dia-mes-año)</label>
 					   
@@ -3534,7 +3578,7 @@ function buscarEmpresa(){
 					  onKeyPress="return soloNumeros(event)"  maxlength="10" >
 					</div>
 				</div>
-				<div class="col-md-4">
+				<div class="col-md-3">
 					<div class="form-group">
 					  <label for="Fecha">Fecha Comp. Electronico(dia-mes-año)</label>
 					   
@@ -3543,7 +3587,7 @@ function buscarEmpresa(){
 					  maxlength="10" >
 					</div>
 				</div>
-				<div class="col-md-4">
+				<div class="col-md-3">
 					<div class="form-group">
 					  <label for="Fecha">Fecha VPN(dia-mes-año)</label>
 					   
@@ -3551,38 +3595,39 @@ function buscarEmpresa(){
 					  value='<?php echo date('Y-m-d',strtotime($filas['Fecha_VPN'])) ?>'   onKeyPress="return soloNumeros(event)" maxlength="10">
 					</div>
 				</div>
-				<div class="col-md-4">
+				<div class="col-md-3">
 					<div class="form-group">
 					  <label for="Servidor">Servidor</label>
 					  <input type="text" class="form-control" id="Servidor" placeholder="Servidor" value='<?php echo $filas['IP_VPN_RUTA']; ?>'>
 					</div>
 				</div>
-				<div class="col-md-4">
+				<div class="col-md-3">
 					<div class="form-group">
 					  <label for="Base">Base</label>
 					  <input type="text" class="form-control" id="Base" placeholder="Base" value='<?php echo $filas['Base_Datos']; ?>'>
 					</div>
 				</div>
-				<div class="col-md-4">
+				<div class="col-md-2">
 					<div class="form-group">
 					  <label for="Usuario">Usuario</label>
 					   
 					  <input type="text" class="form-control" id="Usuario" placeholder="Usuario" value='<?php echo $filas['Usuario_DB']; ?>'>
 					</div>
 				</div>
-				<div class="col-md-4">
+				<div class="col-md-2">
 					<div class="form-group">
 					  <label for="Clave">Clave</label>
 					  <input type="text" class="form-control" id="Clave" placeholder="Clave" value='<?php echo $filas[$contra]; ?>'>
 					</div>
 				</div>
-				<div class="col-md-4">
+				
+				<div class="col-md-3">
 					<div class="form-group">
 					  <label for="Motor">Motor BD</label>
 					  <input type="text" class="form-control" id="Motor" placeholder="Motor" value='<?php echo $filas['Tipo_Base']; ?>'>
 					</div>
 				</div>
-				<div class="col-md-4">
+				<div class="col-md-2">
 					<div class="form-group">
 					  <label for="Puerto">Puerto</label>
 					   
@@ -4174,11 +4219,12 @@ function validarCiu()
 	//Realizamos un bucle para ir obteniendo los resultados
 	$i=0;
 	?>
-		<div class="col-md-6">
+		<div class="col-md-3">
 			<div class="form-group">
 				<label for="Ciudad">Ciudad</label>
 				<select class="form-control" name="ciudad" id='ciudad' onChange="return buscar('entidad');">
 					<option value='0'>Seleccione Ciudad</option>
+					<option value=''>Todas</option>
 		<?php
 		while($filas=$consulta->fetch_assoc()){
 			?>

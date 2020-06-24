@@ -102,7 +102,7 @@
 							{
 					?>	
 								<!-- Modal -->
-								<div class="col-md-6">
+								<div class="col-md-3">
 									<div class="form-group">
 										<label for="Entidad">Entidad</label>
 										<!--<select class="form-control" name="entidad" id='entidad' onChange="return buscar('entidad');">
