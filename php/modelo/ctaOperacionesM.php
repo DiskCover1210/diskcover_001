@@ -19,8 +19,7 @@ class ctaOperacionesM
 		$cid = $this->conn;
   	$sql= "SELECT ID,Codigo,Cuenta FROM Catalogo_Cuentas WHERE 
   	       Item='".$_SESSION['INGRESO']['item']."' AND 
-  	       Periodo='".$_SESSION['INGRESO']['periodo']."' AND 
-  	       DG='G' AND Len(Codigo)=".$leng."";
+  	       Periodo='".$_SESSION['INGRESO']['periodo']."' AND Len(Codigo)=".$leng."";
   	     $sql.="  ORDER BY Codigo ASC";
   	    // print_r($sql);
         $stmt = sqlsrv_query($cid, $sql);
@@ -42,7 +41,7 @@ class ctaOperacionesM
 		$cid = $this->conn;
   	$sql= "SELECT ID,Codigo,Cuenta,TC FROM Catalogo_Cuentas WHERE 
   	       Item='".$_SESSION['INGRESO']['item']."' AND 
-  	       Periodo='".$_SESSION['INGRESO']['periodo']."' AND CC ='".$padre."' ORDER BY Codigo ASC";
+  	       Periodo='".$_SESSION['INGRESO']['periodo']."' AND SUBSTRING(Codigo,1,1) != 'x' AND SUBSTRING(Codigo,1,1) ='".$padre."' ORDER BY Codigo ASC";
   	     // print_r($sql);
         $stmt = sqlsrv_query($cid, $sql);
 	    $result = array();	
@@ -76,6 +75,50 @@ class ctaOperacionesM
 	 //  print_r($result);
 	   return $result;
 
+	}
+	function DGGastos()
+	{
+		// print_r($_SESSION);die();
+		$cid = $this->conn;
+	   $sql = "SELECT * FROM Ctas_Proceso
+          WHERE Item = '".$_SESSION['INGRESO']['item']. "'
+          AND Periodo = '".$_SESSION['INGRESO']['periodo']. "' 
+          ORDER BY T_No ";
+  	     // print_r($sql);
+        $stmt = sqlsrv_query($cid, $sql);
+	    $result = array();	
+	   while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_ASSOC) ) 
+	   {
+		 $result[] = $row;
+	   }
+
+  //cerrarSQLSERVERFUN($cid);
+	 //  print_r($result);
+	   return $result;
+	}
+
+	function cta_existente($codigo = false)
+	{
+		// print_r($_SESSION);die();
+		$cid = $this->conn;
+	   $sql = "SELECT *
+       FROM Catalogo_Cuentas 
+       WHERE Item = '".$_SESSION['INGRESO']['item']."' 
+       AND Periodo = '".$_SESSION['INGRESO']['periodo']."' 
+       AND SUBSTRING(Codigo,1,1) <> 'x' ";
+       if($codigo)
+       {
+         $sql.=" and Codigo LIKE '".$codigo."'";
+       }
+       $sql.= " ORDER BY Codigo ";
+  	     // print_r($sql);
+        $stmt = sqlsrv_query($cid, $sql);
+	    $result = array();	
+	   while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_ASSOC) ) 
+	   {
+		 $result[] = $row;
+	   }
+	   return $result;
 	}
 }
 ?>

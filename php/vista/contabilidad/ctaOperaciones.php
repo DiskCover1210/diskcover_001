@@ -81,41 +81,51 @@ require_once("panel.php");
       cancelButtonColor: '#d33',
       confirmButtonText: 'Si'
     }).then((result) => {
-      if (result.value) {
-        Swal.fire(
-         grabar()
-          )
+      if (result.value) {        
+         grabar();
       }
     })
   }
+
   function grabar()
   {
-   $.ajax({
-    data:  {
+    var acre = $('#MBoxCtaAcreditar').val();
+    if(acre == ''){acre = 0;}
+
+     var parametros=  {
       'OpcG':$('#OpcG').is(':checked'),
       'OpcD':$('#OpcD').is(':checked'),
       'CheqTipoPago':$('#CheqTipoPago').is(':checked'),
       'DCTipoPago':$('#DCTipoPago').val(),
-      'TextPresupuesto':$('#').val(),
+      'TextPresupuesto':$('#TextPresupuesto').val(),
       'Numero': 0,
       'LstSubMod':$('#LstSubMod').val(),
       'TextConcepto':$('#TextConcepto').val(),
       'MBoxCta':$('#MBoxCta').val(),
       'LabelCtaSup':$('#LabelCtaSup').val(),
+      'MBoxCtaAcreditar':acre,
+      'OpcNoAplica':$('#OpcNoAplica').is(':checked'),
+      'OpcIEmp':$('#OpcIEmp').is(':checked'),
+      'OpcEEmp':$('#OpcEEmp').is(':checked'),
+      'CheqConIESS':$('#CheqConIESS').is(':checked'),
+      'CheqUS':$('#CheqUS').is(':checked'),
+      'CheqFE':$('#CheqFE').is(':checked'),
+      'CheqModGastos':$('#CheqModGastos').is(':checked'),
+      'TxtCodExt':$('#TxtCodExt').val(),
 
-
-    },
-       url:   '../controlador/ctaOperacionesC.php?cuentas=true',
+    }
+   $.ajax({   
+       url:   '../controlador/ctaOperacionesC.php?grabar=true',
        type:  'post',
        dataType: 'json',
-       beforeSend: function () {   
-         $('#myModal_espera').modal('show');   
-       },
+       data:{parametros:parametros} ,     
        success:  function (response) { 
-        if(response)
+        if(response == 1)
         {
-          $('#tabla').html(response);
-          $('#myModal_espera').modal('hide');   
+         cargar_cuentas();
+        }else
+        {
+          alert('oops!');
         }
 
       }
@@ -164,8 +174,8 @@ require_once("panel.php");
            <b>Cuenta superior</b><br>
            <input type="" name="LabelCtaSup" class="form-control input-sm" id="LabelCtaSup" readonly=""><br>
            <b>Tipo de cuenta</b><br>
-           <label class="checkbox-inline"><input type="radio" name="OpcD" id="OpcD" checked=""> <b>Detalle</b> </label><br>
-           <label class="checkbox-inline"><input type="radio" name="OpcG" id="OpcG"> <b>Grupo</b> </label>
+           <label class="checkbox-inline"><input type="radio" name="rbl_t" id="OpcD" checked=""> <b>Detalle</b> </label><br>
+           <label class="checkbox-inline"><input type="radio" name="rbl_t" id="OpcG"> <b>Grupo</b> </label>
          </div>
          <div class="col-sm-4">
            <b>Nombre de cuenta</b> <br>
@@ -177,11 +187,11 @@ require_once("panel.php");
              </tr>
              <tr>
                <td><b>Numero</b></td>
-               <td><input type="" name="LabelNumero" class="form-control input-sm" id="LabelNumero"></td>
+               <td><input type="" name="LabelNumero" class="form-control input-sm" id="LabelNumero" value="0"></td>
              </tr>
              <tr>
                <td><b>Codigo Externo</b></td>
-               <td><input type="" name="TxtCodExt" class="form-control input-sm" id="TxtCodExt" readonly=""></td>
+               <td><input type="" name="TxtCodExt" class="form-control input-sm" id="TxtCodExt" readonly="" value="0"></td>
              </tr>
            </table>         
          </div>
@@ -213,16 +223,16 @@ require_once("panel.php");
            <b>Codigo acreditar</b><br>
            <input type="" name="MBoxCtaAcreditar" class="form-control input-sm" id="MBoxCtaAcreditar" placeholder="<?php 
            echo $_SESSION['INGRESO']['Formato_Cuentas']; ?>">
-           <label class="checkbox-inline"><input type="checkbox" name=""> <b>Para gastos de caja chica</b></label> <br> 
-           <label class="checkbox-inline"><input type="checkbox" name=""> <b>Cuenta M/E</b></label>  <br>
-           <label class="checkbox-inline"><input type="checkbox" name=""> <b>Flujo efectivo</b></label>  <br>                
+           <label class="checkbox-inline"><input type="checkbox" name="CheqModGastos" id="CheqModGastos"> <b>Para gastos de caja chica</b></label> <br> 
+           <label class="checkbox-inline"><input type="checkbox" name="CheqUS" id="CheqUS"> <b>Cuenta M/E</b></label>  <br>
+           <label class="checkbox-inline"><input type="checkbox" name="CheqFE" id="CheqFE"> <b>Flujo efectivo</b></label>  <br>                
          </div>
          <div class="col-sm-3">
           <div class="panel panel-default">
            <div class="panel-heading"><b>Rol de Pagos para Emoleados</b></div>
-           <label class="checkbox-inline"><input type="radio" name="rbl_rol"> <b>No Aplica</b> </label><br>
-           <label class="checkbox-inline"><input type="radio" name="rbl_rol"> <b>Ingreso</b> </label><br>
-           <label class="checkbox-inline"><input type="radio" name="rbl_rol"> <b>Descuentos</b> </label><br>
+           <label class="checkbox-inline"><input type="radio" name="rbl_rol" id="OpcNoAplica" checked=""> <b>No Aplica</b> </label><br>
+           <label class="checkbox-inline"><input type="radio" name="rbl_rol" id="OpcIEmp"> <b>Ingreso</b> </label><br>
+           <label class="checkbox-inline"><input type="radio" name="rbl_rol" id="OpcEEmp"> <b>Descuentos</b> </label><br>
            <label class="checkbox-inline"><input type="checkbox" name="rbl_rol" id="CheqConIESS"> <b>Ingreso extra con Aplicacion al IESS</b></label>
          </div>          
        </div>
@@ -239,7 +249,7 @@ require_once("panel.php");
      </div>      
    </div>
    <div class="row">
-    <input type="" name="TextPresupuesto" id="TextPresupuesto">
+    <input type="" name="TextPresupuesto" id="TextPresupuesto" value="0.0">
      
    </div>   
  </div>

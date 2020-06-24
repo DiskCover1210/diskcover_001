@@ -28,8 +28,319 @@ if(isset($_POST['RUC']) AND !isset($_POST['submitweb']))
 	digito_verificadorf($ruc,$pag,$idMen,$item);
 }
 
-//enviar emails
+function Rubro_Rol_Pago($Detalle_Rol)
+{
 
+
+	$Rubro_Rol_Pago = '';
+	$cod = array();
+	$Det_Rol = str_replace( ".", "",$Detalle_Rol);
+    $Det_Rol = str_replace( "/", "",$Det_Rol);
+    $Det_Rol = str_replace( "Á", "A",$Det_Rol);
+    $Det_Rol = str_replace( "É", "E",$Det_Rol);
+    $Det_Rol = str_replace( "Í", "I",$Det_Rol);
+    $Det_Rol = str_replace( "Ó", "O",$Det_Rol);
+    $Det_Rol = str_replace( "Ú", "U",$Det_Rol);
+    $Det_Rol = str_replace( "Ñ", "N",$Det_Rol);
+    $Det_Rol = str_replace( "á", "a",$Det_Rol);
+    $Det_Rol = str_replace( "é", "e",$Det_Rol);
+    $Det_Rol = str_replace( "í", "i",$Det_Rol);
+    $Det_Rol = str_replace( "ó", "o",$Det_Rol);
+    $Det_Rol = str_replace( "ú", "u",$Det_Rol);
+    $Det_Rol = str_replace( "ñ", "n",$Det_Rol);
+
+    $cod = explode(' ', $Det_Rol);
+
+    // $cod[0] = trim($Det_Rol);
+    // $Det_Rol =substr($Det_Rol,strlen($cod[0])+1,strlen($Det_Rol));
+    // $cod[1] = trim($Det_Rol);
+    // $Det_Rol =substr($Det_Rol,strlen($cod[1])+1,strlen($Det_Rol));
+    // $cod[2] = trim($Det_Rol);
+    // $Det_Rol =substr($Det_Rol,strlen($cod[2])+1,strlen($Det_Rol));
+    // $cod[3] = trim($Det_Rol);
+
+
+    $Det_Rol = '';
+    // if(strlen(trim($cod[0]))>=2)
+    // {
+    // 	$Det_Rol = $Det_Rol.''.trim(substr($cod[0],0,3)).'_';
+    // }
+      
+    foreach ($cod as $key => $value) {
+    	if(strlen(trim($value))>=2)
+    	{
+    		if($key == 0)
+    		{
+    			$Det_Rol .=trim(substr($value, 0, 3))."_";
+    		}else
+    		{
+    			$Det_Rol .=trim(substr($value, 0, 2))."_";
+    		}   		
+    		 
+    	}
+
+    }     $Det_Rol = trim(substr($Det_Rol, 0,-1));
+    // $Rubro_Rol_Pago = $Det_Rol;
+   $Rubro_Rol_Pago = $Det_Rol;
+    return $Rubro_Rol_Pago;
+
+}
+
+
+
+function ReadSetDataNum($sqls,$ParaEmpresa =false,$Incrementar = false)
+{
+  $result = '';
+  $NumCodigo = 0;
+  $NuevoNumero = False;
+  $FechaComp = '';
+  if(strlen($FechaComp)<10)
+  {
+  	$FechaComp =date('d/m/Y');
+  	// print_r($FechaComp);
+  }
+  if($FechaComp == '00/00/0000')
+  {
+  	$FechaComp =date('d/m/Y');
+  }
+
+  if($ParaEmpresa)
+  {
+  	$NumEmpA = $_SESSION['INGRESO']['item'];
+  }else
+  {
+  	$NumEmpresa = '000';
+  }
+ 
+    
+    // $HoraDelSistema = Second(Time)
+    // $HoraDelSistema = Int((HoraDelSistema * Rnd) + 1)
+    // if($HoraDelSistema < 6)
+    // {
+    // 	$HoraDelSistema = 6;
+    // }
+
+  $Num_Meses_CI=false;
+  $Num_Meses_CD=false;
+  $Num_Meses_CE=false;
+  $Num_Meses_ND=false;
+  $Num_Meses_NC=false;
+    
+
+    if($sqls != '')
+    {
+    	$MesComp = '';
+    	if(strlen($FechaComp) >= 10)
+    	{
+    		$MesComp = date('m');;
+    	}
+    	if($MesComp =='')
+    	{
+    		$MesComp = '01';
+    	}
+    	if($Num_Meses_CD and $sqls == 'Diario')
+    	{
+    	   $SQLs = $MesComp.''.$sqls;
+           $Si_MesComp = True;
+    	}
+    	if($Num_Meses_CI and $sqls == 'Ingresos')
+    	{
+    	   $SQLs = $MesComp.''.$sqls;
+           $Si_MesComp = True;
+    	}
+    	if($Num_Meses_CE and $sqls == 'Egresos')
+    	{
+    	   $SQLs = $MesComp.''.$sqls;
+           $Si_MesComp = True;
+    	}
+    	if($Num_Meses_ND and $sqls == 'NotaDebito')
+    	{
+    	   $SQLs = $MesComp.''.$sqls;
+           $Si_MesComp = True;
+    	}
+    	if($Num_Meses_NC and $sqls == 'NotaCredito')
+    	{
+    	   $SQLs = $MesComp.''.$sqls;
+           $Si_MesComp = True;
+    	}
+    }
+
+    if($sqls !='')
+    {
+    	$MesComp = "";
+    	if(strlen($FechaComp) >= 10)
+    	{
+    		$MesComp = date('m');
+    	}
+    	if($MesComp == '')
+    	{
+    		$MesComp = '01';
+    	}
+    	$conn = new Conectar();
+	    $cid=$conn->conexion();
+        $sql = "SELECT Numero, ID FROM Codigos
+             WHERE Concepto = '".$sqls. "' 
+             AND Periodo = '".$_SESSION['INGRESO']['periodo']. "'
+             AND Item = '".$_SESSION['INGRESO']['item']."'" ;
+		$stmt = sqlsrv_query($cid, $sql);
+	    if( $stmt === false)  
+	      {  
+		     echo "Error en consulta PA.\n";  
+		     return '';
+		     die( print_r( sqlsrv_errors(), true));  
+	      }   
+         //echo $sql;
+	    $result = array();	
+	    while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_ASSOC) ) 
+	      {
+	    	$result[] =$row;
+		    //echo $row[0];
+	      }
+
+	      if(count($result)>0)
+	      {
+	      	$NumCodigo = $result[0]["Numero"];
+
+	      }else
+	      {
+	      	$NuevoNumero = True;
+            $NumCodigo = 1;
+            if($Num_Meses_CD && $Si_MesComp){$NumCodigo = intval($MesComp.''.'000001');}
+            if($Num_Meses_CI && $Si_MesComp){$NumCodigo = intval($MesComp.''.'000001');}
+            if($Num_Meses_CE && $Si_MesComp){$NumCodigo = intval($MesComp.''.'000001');}
+            if($Num_Meses_ND && $Si_MesComp){$NumCodigo = intval($MesComp.''.'000001');}
+            if($Num_Meses_NC && $Si_MesComp){$NumCodigo = intval($MesComp.''.'000001');}
+
+	      }
+	    if($NumCodigo > 0)
+	    {
+	    	if($NuevoNumero)
+	    	{
+	    		$Strgs = "INSERT INTO Codigos (Periodo,Item,Concepto,Numero)
+                VALUES ('".$_SESSION['INGRESO']['periodo']."','".$_SESSION['INGRESO']['item']."','".$sqls."',".$NumCodigo.") ";
+                //faltra ejecutar
+	    	}
+	    	if($Incrementar)
+	    	{
+	    		$Strgs = "UPDATE Codigos 
+                SET Numero = Numero + 1 
+                WHERE Concepto = '".$sqls."'
+                AND Periodo = '" .$_SESSION['INGRESO']['periodo']."' 
+                AND Item = '".$_SESSION['INGRESO']['item']. "' ";
+
+                //falta ejecutar
+
+	    	}
+	    }
+
+
+    }
+
+ return $NumCodigo;
+}
+
+// texto valido
+function TextoValido($texto,$numero=false,$Mayusculas=false,$NumeroDecimales=false)
+{
+	$result = '';
+	if($Mayusculas)
+	{
+		$result = strtoupper($texto);
+	}
+	if($numero)
+	{
+		if($texto == '')
+		{
+			$texto = 0;
+		}
+		if(IsNumeric($texto))
+		{
+			$result = round($texto, 2, PHP_ROUND_HALF_DOWN);
+			switch ($NumeroDecimales) {
+				case 0:
+				$result = round($texto, 2, PHP_ROUND_HALF_DOWN);
+				break;
+				
+				case $NumeroDecimales > 2:
+				$result = round($texto, $NumeroDecimales, PHP_ROUND_HALF_DOWN);
+				break;
+			}
+		}
+	}else
+	{
+		if($texto == '')
+		{
+			$result = 'Ninguno';
+		}else
+		{
+			$result = $texto;
+		}
+
+	}
+
+	return $result;
+}
+
+// Public Sub TextoValido(TextB As TextBox,Optional Numero As Boolean,Optional Mayusculas As Boolean,Optional NumeroDecimales As Byte)
+// Dim TextosB As String
+//     TextosB = TextB
+//     If IsNull(TextosB) Then TextosB = ""
+//     If IsEmpty(TextosB) Then TextosB = ""
+//     TextosB = Replace(TextosB, vbCr, "")
+//     TextosB = Replace(TextosB, vbLf, "")
+//     TextosB = TrimStrg(TextosB)
+//     If Numero Then
+//        If TextosB = "" Then TextosB = "0"
+//       'MsgBox IsNumeric(TextosB)'
+//        If IsNumeric(TextosB) Then
+//           Select Case NumeroDecimales
+//             Case 0: TextosB = Format$(TextosB, "##0.00")
+//             Case Is > 2: TextosB = Format$(TextosB, "#,##0." & String$(NumeroDecimales, "0"))
+//             Case Else: TextosB = Format$(TextosB, "##0.00")
+//           End Select
+//           TextB = TrimStrg(TextosB)
+//        Else
+//           TextosB = "0"
+//           TextB = TextosB
+//           TextB.SetFocus
+//        End If
+//     Else
+//        If TextosB = "" Then TextosB = Ninguno
+//        TextB = TextosB
+//     End If
+// End Sub
+
+
+
+
+
+//string de tipo de cuenta
+function TiposCtaStrg($cuenta) {
+	$Resultado='NINGUNA';
+   switch ($cuenta){
+   	case 'value':
+   		# code...
+   		break;
+   	case "1":  
+   	$Resultado = "ACTIVO";
+   	break;
+    case "2":  
+    $Resultado = "PASIVO";
+    break;
+    case "3":  
+    $Resultado = "CAPITAL";
+    break;
+    case "4":  
+    $Resultado = "INGRESO";
+    break;
+    case "5":  
+    $Resultado = "EGRESO";
+    break;
+   }
+   return $Resultado;
+}
+
+//enviar emails
   function enviar_email($archivos=false,$to_correo,$cuerpo_correo,$titulo_correo,$correo_apooyo,$nombre,$EMAIL_CONEXION,$EMAIL_CONTRASEÑA)
   {
 
@@ -4606,6 +4917,58 @@ function mail_attachment($filename, $path, $mailto, $from_mail, $from_name, $rep
     }
 }
 
+//FUNCION PARA ADCTUALIZAR GENERICA
+function update_generico($datos,$tabla,$campoWhere)
+{
+	$campos_db = dimenciones_tabla($tabla);
+	$conn = new Conectar();
+	$cid=$conn->conexion();	
+	$wherelist ='';
+   	$sql = 'UPDATE '.$tabla.' SET '; 
+   	 $set='';
+   	foreach ($datos as $key => $value) {
+   		foreach ($campos_db as $key => $value1) 
+   		{
+   			if($value1->COLUMN_NAME==$value['campo'])
+   				{
+   					if($value1->CHARACTER_MAXIMUM_LENGTH != '' && $value1->CHARACTER_MAXIMUM_LENGTH != null)
+   						{
+   							$set .=$value['campo']."='".substr($value['dato'],0,$value1->CHARACTER_MAXIMUM_LENGTH)."',";
+   				        }else
+   				        {
+   				        	$set .=$value['campo']."='".$value['dato']."',";
+   				        }
+   	            }
+
+   		}
+   		//print_r($value['campo']);
+   	}
+   	$set = substr($set,0,-1);
+   	foreach ($campoWhere as $key => $value) {
+   		//print_r($value['valor']);
+   		if(is_numeric($value['valor']))
+   		{
+   		   $wherelist.= $value['campo'].'='.$value['valor'].' AND ';
+   		}else{
+   		  $wherelist.= $value['campo'].'="'.$value['valor'].'" AND ';
+   	    }
+   	}
+   	$wherelist = substr($wherelist,0,-5);
+   	$where = "WHERE ".$wherelist;   
+   	$sql = $sql.$set.$where;
+   //	print_r($sql);	
+   	$stmt = sqlsrv_query($cid, $sql);
+	    if( $stmt === false)  
+	      {  
+		     echo "Error en consulta PA.\n";  
+		     return -1;
+		     die( print_r( sqlsrv_errors(), true));  
+	      }
+	      else{
+	      	return 1;
+	      }  
+}
+
 
 //FUNCION DE IONSERTAR GENERICO
 function insert_generico($tabla=null,$datos=null)
@@ -4797,6 +5160,8 @@ function insert_generico($tabla=null,$datos=null)
 		$longitud_cad = strlen($sql_v); 
 		$v2 = substr_replace($sql_v,")",$longitud_cad-1,1);
 		//echo $ll =  $cam2.$v2;
+		// print_r($cam2.$v2);
+		// die();
 		$stmt = sqlsrv_query( $cid, $cam2.$v2);
 		//echo  $cam2.$v2
 		if( $stmt === false)  
