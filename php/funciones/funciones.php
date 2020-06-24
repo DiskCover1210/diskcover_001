@@ -64,8 +64,7 @@ function Rubro_Rol_Pago($Detalle_Rol)
     // if(strlen(trim($cod[0]))>=2)
     // {
     // 	$Det_Rol = $Det_Rol.''.trim(substr($cod[0],0,3)).'_';
-    // }
-      
+    // }      
     foreach ($cod as $key => $value) {
     	if(strlen(trim($value))>=2)
     	{
