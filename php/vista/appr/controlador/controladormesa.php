@@ -96,11 +96,24 @@ class MesaCon
 	}
 
 	function cargar_todas_mesas()
-     {
-	$todos_mesa = $this->modelo->cargar_mesas();
-	foreach ($todos_mesa as $key => $value) 
-	{
-		if($value['Estado']==0 OR $value['Estado']==null)
+    {
+		 $ser = $this->modelo->factura_serie();
+		if($ser=='.')
+		{
+			?>
+			<script>
+				Swal.fire({
+					type: 'error',
+					title: 'debe configurar serie a cual facturar',
+					text: ''
+				});
+			</script>
+			<?php
+		}
+		$todos_mesa = $this->modelo->cargar_mesas();
+		foreach ($todos_mesa as $key => $value) 
+		{
+			if($value['Estado']==0 OR $value['Estado']==null)
 			{
 				echo $html ="
 				<div class='col-lg-3 col-xs-6'>
@@ -136,8 +149,8 @@ class MesaCon
 					</div>
 				</div>";
 			}
-	}
-     }
+		}
+    }
 
     function modal_pedido($id,$nom,$buscar)
     {
