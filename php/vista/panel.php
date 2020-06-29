@@ -608,6 +608,7 @@ require_once("../../lib/phpmailer/PHPMailerAutoload.php");
 		{
 			$("#codigo1").hide();
 			var key = window.Event ? e.which : e.keyCode
+			//alert(key);
 			if(key >= 49 && key <= 50)
 			{
 				 $(this).next().focus();

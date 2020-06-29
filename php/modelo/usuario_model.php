@@ -564,15 +564,16 @@ class usuario_model{
 				if($this->dbs!='')
 				{
 					$stmt1 = sqlsrv_query( $this->dbs, $sql);
+					while( $obj1 = sqlsrv_fetch_object( $stmt1)) 
+					{
+						$ii++;
+					}
+					if($ii>0)
+					{
+						$empresa[$i]['Sucursal'] = true;
+					}
 				}
-				while( $obj1 = sqlsrv_fetch_object( $stmt1)) 
-				{
-					$ii++;
-				}
-				if($ii>0)
-				{
-					$empresa[$i]['Sucursal'] = true;
-				}
+				
 				$empresa[$i]['Opc']=$obj->Opc;
 				$empresa[$i]['Empresa']=$obj->Empresa;		
 				$empresa[$i]['S_M']=$obj->S_M;	

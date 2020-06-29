@@ -3559,7 +3559,7 @@ function buscarEmpresa(){
 		while($filas=$consulta->fetch_assoc()){
 			//while($filas=$consulta->fetch_array()){
 			?>
-				<div class="col-md-2">
+				<div class="col-md-3">
 					<div class="form-group">
 					    <label for="Estado">Estado</label>
 					    <select class="form-control" name="Estado" id='Estado' >
@@ -4391,6 +4391,19 @@ function ListarTotalesTemSQL_AJAX($ti,$Opcb,$b,$ch)
 		while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_NUMERIC) ) 
 		{
 			?>
+			<script>
+				$("#diferencia").focus(function(){
+				
+					document.getElementById('b_dif').focus();	
+				});
+				$("#totald").focus(function(){
+					document.getElementById('b_dif').focus();	
+				});
+				$("#totalh").focus(function(){
+				
+					document.getElementById('b_dif').focus();	
+				});
+			</script>
 			<div class="row ">			
 				<div class="col-md-4 col-sm-4 col-xs-4">
 					
@@ -4399,12 +4412,12 @@ function ListarTotalesTemSQL_AJAX($ti,$Opcb,$b,$ch)
 					<div class="input-group">
 					
 						<div class="input-group-btn">
-							<button type="button" class="btn btn-default btn-xs btn_f" tabindex="-1"><b>Diferencia:</b></button>
+							<button type="button" class="btn btn-default btn-xs btn_f" tabindex="-1" id='b_dif' ><b>Diferencia:</b></button>
 						
 						</div>
 						
-						<input type="text" class="xs" id="diferencia" name='diferencia' disabled
-						placeholder="0.00" value='<?php echo number_format($row[0],2, ',', '.'); ?>' style='width:100%;text-align:right; '>
+						<input type="text" class="xs" id="diferencia" name='diferencia' 
+						placeholder="0.00" value='<?php echo number_format($row[0],2, '.', ','); ?>' style='width:100%;text-align:right; '>
 						
 					</div>
 				</div>
@@ -4414,15 +4427,15 @@ function ListarTotalesTemSQL_AJAX($ti,$Opcb,$b,$ch)
 							<button type="button" class="btn btn-default btn-xs btn_f" tabindex="-1"><b>Totales</b></button>
 						
 						</div>
-						<input type="text" class="xs" id="totald" name='totald' disabled
-						placeholder="0.00" value='<?php echo number_format($row[1],2, ',', '.'); ?>' maxlength='20' size='21' style='text-align:right;'>
+						<input type="text" class="xs" id="totald" name='totald' 
+						placeholder="0.00" value='<?php echo number_format($row[1],2, '.', ','); ?>' maxlength='20' size='21' style='text-align:right;'>
 						
 					</div>
 				</div>
 				<div class="col-md-2 col-sm-2 col-xs-2">
 					<div class="input-group">
-						<input type="text" class="xs" id="totalh" name='totalh' placeholder="0.00" disabled
-						value='<?php echo number_format($row[2],2, ',', '.'); ?>' maxlength='20' size='21' style='text-align:right;'>
+						<input type="text" class="xs" id="totalh" name='totalh' placeholder="0.00" 
+						value='<?php echo number_format($row[2],2, '.', ','); ?>' maxlength='20' size='21' style='text-align:right;'>
 					</div>
 				</div>
 				
@@ -5978,11 +5991,11 @@ function grilla_generica($stmt,$ti=null,$camne=null,$b=null,$ch=null,$tabla=null
 							if($tipo_campo[$i]=="style='text-align: right;'")
 							{
 								//si es cero colocar -
-								if(number_format($row[$i],2, ',', '.')==0.00 OR number_format($row[$i],2, ',', '.')=='0,00')
+								if(number_format($row[$i],2, '.', ',')==0.00 OR number_format($row[$i],2, '.', ',')=='0.00')
 								{
 									if($row[$i]>0)
 									{
-										echo "<td ".$tipo_campo[$i].">".$cfila1.$ita3.$sub3.$inden.number_format($row[$i],2, ',', '.').$sub4.$ita4.$cfila2."</td>";
+										echo "<td ".$tipo_campo[$i].">".$cfila1.$ita3.$sub3.$inden.number_format($row[$i],2, '.', ',').$sub4.$ita4.$cfila2."</td>";
 									}
 									else
 									{
@@ -5997,11 +6010,11 @@ function grilla_generica($stmt,$ti=null,$camne=null,$b=null,$ch=null,$tabla=null
 										//reemplazo una parte de la cadena por otra
 										$longitud_cad = strlen($tipo_campo[$i]); 
 										$cam2 = substr_replace($tipo_campo[$i],"color: red;'",$longitud_cad-1,1); 
-										echo "<td ".$cam2." > ".$cfila1.$ita3.$inden.$sub3."".number_format($row[$i],2, ',', '.')."".$sub4.$ita4.$cfila2."</td>";
+										echo "<td ".$cam2." > ".$cfila1.$ita3.$inden.$sub3."".number_format($row[$i],2, '.', ',')."".$sub4.$ita4.$cfila2."</td>";
 									}
 									else
 									{
-										echo "<td ".$tipo_campo[$i].">".$cfila1.$ita3.$inden.$sub3."".number_format($row[$i],2, ',', '.')."".$sub4.$ita4.$cfila2."</td>";
+										echo "<td ".$tipo_campo[$i].">".$cfila1.$ita3.$inden.$sub3."".number_format($row[$i],2, '.', ',')."".$sub4.$ita4.$cfila2."</td>";
 									}
 								}
 								

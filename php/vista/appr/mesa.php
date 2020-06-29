@@ -802,70 +802,77 @@ $_SESSION['INGRESO']['modulo_']='02';
 		}
 		
 	}
-	 function buscarCli()
+	
+	 function buscarCli(event,cla)
 	 {
-		var query = $('#nombrec').val();		
-		if(query=='')
-		{
-			$("#beneficiario1").hide();
-			$("#lbeneficiario1").hide();
-			$("#cbeneficiario1").hide();		
-		}
+		var codigo = event.which || event.keyCode;
+		//alert(codigo);
+		document.getElementById('nombrec').focus();
+		if(codigo === 13 || cla== 13 || codigo=='undefined'){
+		    var query = $('#nombrec').val();		
+			if(query=='')
+			{
+				$("#beneficiario1").hide();
+				$("#lbeneficiario1").hide();
+				$("#cbeneficiario1").hide();		
+			}
 
-        $.ajax({
-            url: 'controlador/controladormesa.php?buscarcli='+query,
-            dataType: 'json',
-            type: 'POST',
-            data: {query:query},
-            success:function(e){
-            	$("#beneficiario1").show();
-		        $("#lbeneficiario1").show();
-		        $("#cbeneficiario1").show();
-            	var ob = e.length;
-            	 
-				 if(ob != 0)
-				 {
-					 $("#beneficiario1").empty();
-				 	for( var i = 0; i<ob; i++)
-					{
-						$("#beneficiario1").append("<option value='"+e[i].id+"-"+e[i].email+"-"+e[i].nombre+"'>"+e[i].nombre+"</option>");
-					}
-
-				 }
-				 else
-				 {
-				 	$("#beneficiario1").hide();
-				 	$("#lbeneficiario1").hide();
-				 	$("#cbeneficiario1").hide();
-				 	alert('Cliente no encontrado');
-					var me=document.getElementById('me').value;
-					var nom=document.getElementById('nom').value;
-					var parametros = 
-					{
-						"me" : me,
-						"nom" : nom,
-						"ajax_page": 'cli1',
-						cl: 'cli1'
-					};
-					$.ajax({
-						data:  parametros,
-						url:   'ajax/vista_ajax.php',
-						type:  'post',
-						beforeSend: function () {
-							//$("#contenido").html("");
-						},
-						success:  function (response) {
-							$("#contenido").html(response);
-							$("#myModal").modal();								
+			$.ajax({
+				url: 'controlador/controladormesa.php?buscarcli='+query,
+				dataType: 'json',
+				type: 'POST',
+				data: {query:query},
+				success:function(e){
+					$("#beneficiario1").show();
+					$("#lbeneficiario1").show();
+					$("#cbeneficiario1").show();
+					var ob = e.length;
+					 
+					 if(ob != 0)
+					 {
+						 $("#beneficiario1").empty();
+						for( var i = 0; i<ob; i++)
+						{
+							$("#beneficiario1").append("<option value='"+e[i].id+"-"+e[i].email+"-"+e[i].nombre+"'>"+e[i].nombre+"</option>");
 						}
-					});
-				 }
-            	
-            },
-            error:function(e){
-               console.log('error'.e);
-            }
-        });
+
+					 }
+					 else
+					 {
+						$("#beneficiario1").hide();
+						$("#lbeneficiario1").hide();
+						$("#cbeneficiario1").hide();
+						alert('Cliente no encontrado');
+						var me=document.getElementById('me').value;
+						var nom=document.getElementById('nom').value;
+						var parametros = 
+						{
+							"me" : me,
+							"nom" : nom,
+							"ajax_page": 'cli1',
+							cl: 'cli1'
+						};
+						$.ajax({
+							data:  parametros,
+							url:   'ajax/vista_ajax.php',
+							type:  'post',
+							beforeSend: function () {
+								//$("#contenido").html("");
+							},
+							success:  function (response) {
+								$("#contenido").html(response);
+								$("#myModal").modal();								
+							}
+						});
+					 }
+					
+				},
+				error:function(e){
+				   console.log('error'.e);
+				}
+			});
+		}
+		
     }
 
 
@@ -939,11 +946,75 @@ $_SESSION['INGRESO']['modulo_']='02';
 		 $("#beneficiario1").css('display','none');
 		
 	}
+	
 	function seleFo(id,me)
 	{
-		var valor = document.getElementById("beneficiario1");
+		alert('vvv');
+		/*var valor = document.getElementById("beneficiario1");
+		
 		if (document.getElementById("beneficiario1").value =='') {
-			document.getElementById('beneficiario1').focus();	
+			document.getElementById('beneficiario1').focus();
+			var query = $('#nombrec').val();		
+			if(query=='')
+			{
+				$("#beneficiario1").hide();
+				$("#lbeneficiario1").hide();
+				$("#cbeneficiario1").hide();		
+			}
+			$.ajax({
+				url: 'controlador/controladormesa.php?buscarcli='+query,
+				dataType: 'json',
+				type: 'POST',
+				data: {query:query},
+				success:function(e){
+					$("#beneficiario1").show();
+					$("#lbeneficiario1").show();
+					$("#cbeneficiario1").show();
+					var ob = e.length;
+					 
+					 if(ob != 0)
+					 {
+						 $("#beneficiario1").empty();
+						for( var i = 0; i<ob; i++)
+						{
+							$("#beneficiario1").append("<option value='"+e[i].id+"-"+e[i].email+"-"+e[i].nombre+"'>"+e[i].nombre+"</option>");
+						}
+
+					 }
+					 else
+					 {
+						$("#beneficiario1").hide();
+						$("#lbeneficiario1").hide();
+						$("#cbeneficiario1").hide();
+						alert('Cliente no encontrado');
+						var me=document.getElementById('me').value;
+						var nom=document.getElementById('nom').value;
+						var parametros = 
+						{
+							"me" : me,
+							"nom" : nom,
+							"ajax_page": 'cli1',
+							cl: 'cli1'
+						};
+						$.ajax({
+							data:  parametros,
+							url:   'ajax/vista_ajax.php',
+							type:  'post',
+							beforeSend: function () {
+								//$("#contenido").html("");
+							},
+							success:  function (response) {
+								$("#contenido").html(response);
+								$("#myModal").modal();								
+							}
+						});
+					 }
+					
+				},
+				error:function(e){
+				   console.log('error'.e);
+				}
+			});
 		}
 		else
 		{
@@ -958,7 +1029,7 @@ $_SESSION['INGRESO']['modulo_']='02';
 				console.log(selectedOption.value + ': ' + selectedOption.text);
 			});*/
 		
-			document.getElementById("nombrec").value=arregloDeSubCadenas[0];
+			/*document.getElementById("nombrec").value=arregloDeSubCadenas[0];
 			$("#beneficiario1").hide();
 			if(document.getElementById("nombrec").value=='no existe registro')
 			{
@@ -986,7 +1057,7 @@ $_SESSION['INGRESO']['modulo_']='02';
 			{
 				document.getElementById('email').select();	
 			}
-		}
+		}*/
 	}
 	
 	function fact(me,nom)

@@ -44,7 +44,7 @@
 					  </a> -->
 					</h4>
 					<h4 class="box-title">
-						<a class="btn btn-default"  title="Mensaje solo a entidad" href="#" data-placement="right"
+						<a class="btn btn-default"  title="Mensaje solo a empresa" href="#" data-placement="right"
 						onclick='mindividual();'>
 							<i ><img src="../../img/png/mensajei.png" class="user-image" alt="User Image"
 							style='font-size:20px; display:block; height:100%; width:100%;'></i> 
@@ -64,7 +64,7 @@
 					  </a> -->
 					</h4>
 					<h4 class="box-title">
-						<a class="btn btn-default"  title="Guardar Masivo" href="#" data-placement="right"
+						<a class="btn btn-default"  title="Guardar Masivo: Fechas de renovaciones" href="#" data-placement="right"
 						onclick='cambiarEmpresaMa();'>
 							<i ><img src="../../img/png/guardarmasivo.png" class="user-image" alt="User Image"
 							style='font-size:20px; display:block; height:100%; width:100%;'></i> 

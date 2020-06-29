@@ -180,15 +180,15 @@
 		<div width='100%'>
 			<div style=" float: left;width:30%" align='left' width='30%'>
 				<button type="button" class="btn btn-default btn-xs active" onclick="reset_('comproba','CD');" 
-				id='CD' style="width: 15%;">Diario</button>
+				id='CD' style="width: 15%;" title='Comprobante diario'>Diario</button>
 				<button type="button" class="btn btn-default btn-xs" onclick="reset_('comproba','CI');" 
-				id='CI' style="width: 15%;">Ingreso</button>
+				id='CI' style="width: 15%;" title='Comprobante de ingreso'>Ingreso</button>
 				<button type="button" class="btn btn-default btn-xs" onclick="reset_('comproba','CE');" 
-				id='CE' style="width: 15%;">Egreso</button>
+				id='CE' style="width: 15%;" title='Comprobante de egreso'>Egreso</button>
 				<button type="button" class="btn btn-default btn-xs" onclick="reset_('comproba','ND');" 
-				id='ND' style="width: 15%;">N/D</button>
+				id='ND' style="width: 15%;" title='Comprobante nota de debito'>N/D</button>
 				<button type="button" class="btn btn-default btn-xs" onclick="reset_('comproba','NC');" 
-				id='NC' style="width: 15%;">N/C</button>
+				id='NC' style="width: 15%;" title='Comprobante nota de credito'>N/C</button>
 				<input id="tipoc" name="tipoc" type="hidden" value="CD">
 			</div>											
 			<div align='' width='40%'  style="float: left;width:40%; ">
@@ -1193,7 +1193,31 @@
 								
 									document.getElementById('concepto').select();	
 								});
+								$("#diferencia").focus(function(){
+								
+									document.getElementById('b_dif').focus();	
+								});
+								$("#totald").focus(function(){
+									document.getElementById('b_dif').focus();	
+								});
+								$("#totalh").focus(function(){
+								
+									document.getElementById('b_dif').focus();	
+								});
 								$( "#concepto" ).focus(function() {
+									if (document.getElementById("beneficiario1").value =='' ) {
+										if($('#beneficiario1').css('display') == 'none'){
+										   // Acción si el elemento no es visible
+										   if(document.getElementById("beneficiario").value!='.')
+										   {
+											   document.getElementById('beneficiario').focus();	
+										   }
+										}else{
+										   // Acción si el elemento es visible
+										   document.getElementById('beneficiario1').focus();	
+										}
+										
+									}
 									var bene = document.getElementById('beneficiario').value;
 									if('Seleccionar'==bene || bene=='' || bene=='no existe registro')
 									{
@@ -1207,6 +1231,16 @@
 									//
 								});
 								$( "#email" ).focus(function() {
+									if (document.getElementById("beneficiario1").value =='' ) {
+										if($('#beneficiario1').css('display') == 'none'){
+										   // Acción si el elemento no es visible
+										   document.getElementById('beneficiario').focus();	
+										}else{
+										   // Acción si el elemento es visible
+										   document.getElementById('beneficiario1').focus();	
+										}
+										
+									}
 									var bene = document.getElementById('beneficiario').value;
 									if('Seleccionar'==bene || bene=='' || bene=='no existe registro')
 									{
@@ -1252,13 +1286,27 @@
 								});
 								$("#grabar").click(function(e) {
 									//beneficiario
+									if (document.getElementById("beneficiario1").value =='' ) {
+										if($('#beneficiario1').css('display') == 'none'){
+										   // Acción si el elemento no es visible
+										   if(document.getElementById("beneficiario").value!='.')
+										   {
+											   document.getElementById('beneficiario').focus();	
+										   }
+										   
+										}else{
+										   // Acción si el elemento es visible
+										   document.getElementById('beneficiario1').focus();	
+										}
+										
+									}
 									var bene = document.getElementById('beneficiario').value;
 									if(bene=='no existe registro' || 'Seleccionar'==bene || bene=='')
 									{
 										 Swal.fire({
 										  type: 'error',
-										  title: 'Oops...',
-										  text: 'debe agregar beneficiario!'
+										  title: 'debe agregar beneficiario!',
+										  text: ''
 										});
 									}
 									else
@@ -1271,8 +1319,8 @@
 										{
 											 Swal.fire({
 											  type: 'error',
-											  title: 'Oops...',
-											  text: 'Las transacciones no cuadran correntamente corrija los resultados de las cuentas!'
+											  title: 'Las transacciones no cuadran correntamente corrija los resultados de las cuentas!',
+											  text: ''
 											});
 										}
 										else
@@ -1281,8 +1329,8 @@
 											{
 												 Swal.fire({
 												  type: 'error',
-												  title: 'Oops...',
-												  text: 'Las transacciones no cuadran correntamente corrija los resultados de las cuentas!'
+												  title: 'Las transacciones no cuadran correntamente corrija los resultados de las cuentas!',
+												  text: ''
 												});
 											}
 											else
@@ -2155,9 +2203,17 @@
 									//alert(valor);
 								});
 								$("#ruc").focus(function(){
+									//
 									var valor = document.getElementById("beneficiario1");
-									if (document.getElementById("beneficiario1").value =='') {
-										document.getElementById('beneficiario1').focus();	
+									if (document.getElementById("beneficiario1").value =='' ) {
+										if($('#beneficiario1').css('display') == 'none'){
+										   // Acción si el elemento no es visible
+										   document.getElementById('beneficiario').focus();	
+										}else{
+										   // Acción si el elemento es visible
+										   document.getElementById('beneficiario1').focus();	
+										}
+										
 									}
 									else
 									{
@@ -2180,8 +2236,6 @@
 										}
 										document.getElementById('email').select();	
 									}
-									
-									
 								});
 								$("#VT").focus(function(){
 								

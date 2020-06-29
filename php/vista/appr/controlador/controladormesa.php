@@ -428,6 +428,19 @@ function  modal_facturas($me,$nom)
 	if(isset($_POST['nombrec']) and isset( $_POST['ruc']))
 	{
 		$ser = $this->modelo->factura_serie();
+		if($ser=='.')
+		{
+			?>
+			<script>
+				Swal.fire({
+					type: 'error',
+					title: 'debe configurar serie a cual facturar',
+					text: ''
+				});
+			</script>
+			<?php
+		}
+		//echo ' vvv '.$ser;
 		$numero = $this->modelo->factura_numero($ser);
 		$abono=0;
 	?>
@@ -462,7 +475,7 @@ function  modal_facturas($me,$nom)
 				</tr>
 				<tr>
 					<td>
-						<b>Serie: </b><?php echo "FA_SERIE_001005"; ?> <b> Numero: </b><?php echo $numero; ?>
+						<b>Serie: </b><?php echo "FA_SERIE_".$ser.""; ?> <b> Numero: </b><?php echo $numero; ?>
 					</td>
 				</tr>
 				<tr>
@@ -505,10 +518,15 @@ function  modal_facturas($me,$nom)
 						<b>Tipo Pago (*): </b>
 						<select class="xs" name="abo" id='abo' onChange="mos_ocu('texto_a','abo')">
 							<option value='0'>Seleccionar</option>
-							<?php select_option_aj('Catalogo_Cuentas','Codigo,TC',"Cuenta",
-							" TC IN ('BA','CJ','CP','C','P','TJ','CF','CI','CB') 
-							AND DG = 'D' AND Item = '".$_SESSION['INGRESO']['item']."' 
-							AND Periodo = '".$_SESSION['INGRESO']['periodo']."'  "); ?>
+							<?php
+								/*select_option_aj('Catalogo_Cuentas','Codigo,TC',"Cuenta",
+								" TC IN ('BA','CJ','CP','C','P','TJ','CF','CI','CB') 
+								AND DG = 'D' AND Item = '".$_SESSION['INGRESO']['item']."' 
+								AND Periodo = '".$_SESSION['INGRESO']['periodo']."'  ");*/
+								select_option_aj('Catalogo_Cuentas','Codigo,TC',"Cuenta",
+								" TC IN ('BA','CJ','TJ') 
+								AND DG = 'D' AND Item = '".$_SESSION['INGRESO']['item']."' 
+								AND Periodo = '".$_SESSION['INGRESO']['periodo']."' order by TC DESC,Codigo ",'1.1.01.01.09-CJ'); ?>
 						</select>
 						<div id='e_abo' class="form-group has-error" style='display:none'>
 							<span class="help-block">debe Seleccionar un tipo de pago</span>
@@ -575,7 +593,7 @@ function  modal_facturas($me,$nom)
                     <label for="nombrec" class="col-sm-2 control-label">Clientes</label>
 					<input type="hidden" name="me" id="me" value="'.$me.'" />
 					<input type="hidden" name="nom" id="nom" value="'.$nom.'" />
-                	<input type="text" class="form-control" id="nombrec" name="nombrec" placeholder="Razon social" onkeyup="buscarCli(this,\''.$me.'\',\''.$nom.'\')" tabindex="0" required autocomplete="off">                				
+                	<input type="text" class="form-control" id="nombrec" name="nombrec" placeholder="Razon social" onkeyup="buscarCli(event,this,\''.$me.'\',\''.$nom.'\')" tabindex="0" required autocomplete="off">                				
                 </div>
                 <div class="form-group" id="cbeneficiario1" style="display:none;">
                 	<label for="nombrec" id="lbeneficiario1" style="display:none;" class="col-sm-2 control-label"></label>
@@ -586,7 +604,7 @@ function  modal_facturas($me,$nom)
               	</div>
                 <div class="form-group">
                    	<label for="ruc" class="col-sm-2 control-label">RUC</label>
-                   	<input type="text" class="form-control" id="ruc" name="ruc" placeholder="ruc"  value="." onfocus="seleFo("ruc",\''.$me.'\')" tabindex="0" required>
+                   	<input type="text" class="form-control" id="ruc" name="ruc" placeholder="ruc"  value="." tabindex="0" required>
                 </div>
                 <div class="form-group">
                     <label for="email" class="col-sm-2 control-label">Email</label>
@@ -630,9 +648,21 @@ function  modal_facturas($me,$nom)
 	</form>
         <script>
 				$( "#pie_p" ).html(\'<button type="button" class="btn btn-default" data-dismiss="modal" tabindex="-1">Salir</button>\');
+				var ruc = $(\'#ruc\').val();
+				var query = $(\'#nombrec\').val();	
+				$("#ruc").focus(function()
+				{
+					if(ruc==\'.\' )
+					{
+						//alert(\'vvv\');
+						buscarCli(\'\',\'13\');
+					}
+					
+				});
 			</script>  
 		
               ';
+			  //<!-- se quita esta funcion del ruc = onfocus="seleFo("ruc",\''.$me.'\')"--> 
 			  return 1;
 			/*<script>
 				$( "#pie_p" ).html("<button type="button" class="btn btn-default" data-dismiss="modal" tabindex="-1">Salir</button>'+
