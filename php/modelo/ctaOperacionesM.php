@@ -1,5 +1,6 @@
 <?php 
-include(dirname(__DIR__).'/funciones/funciones.php');//
+include(dirname(__DIR__).'/funciones/funciones.php');
+// include(dirname(__DIR__).'/db/variables_globales.php');
 @session_start(); 
 /**
  * 
@@ -119,6 +120,59 @@ class ctaOperacionesM
 		 $result[] = $row;
 	   }
 	   return $result;
+	}
+
+	function presupuesto($cod)
+	{
+		// print_r($_SESSION);die();
+		$cid = $this->conn;
+	   $sql = "SELECT Codigo,Mes,Presupuesto
+        FROM Trans_Presupuestos
+        WHERE Item = '".$_SESSION['INGRESO']['item']."' 
+        AND Periodo = '".$_SESSION['INGRESO']['periodo']."'
+        AND Cta = '".$cod."'
+        AND Codigo = '".G_NINGUNO."'
+        ORDER BY Codigo,Mes_No ";
+  	      // print_r($sql);
+        $stmt = sqlsrv_query($cid, $sql);
+	    $result = array();	
+	   while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_ASSOC) ) 
+	   {
+		 $result[] = $row;
+	   }
+	   if(count($result)!=0)
+	   {
+	   	 return $result;
+	   }else
+	   {
+	   	 return 0;
+	   }
+
+	}
+
+	function datos_cuenta($cod)
+	{
+		// print_r($_SESSION);die();
+		$cid = $this->conn;
+	   $sql = "SELECT * FROM Catalogo_Cuentas
+        WHERE Item = '".$_SESSION['INGRESO']['item']."' 
+        AND Periodo = '".$_SESSION['INGRESO']['periodo']."'
+        AND Codigo = '".$cod."'";
+  	      // print_r($sql);
+        $stmt = sqlsrv_query($cid, $sql);
+	    $result = array();	
+	   while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_ASSOC) ) 
+	   {
+		 $result[] = $row;
+	   }
+	   if(count($result)!=0)
+	   {
+	   	 return $result;
+	   }else
+	   {
+	   	 return 0;
+	   }
+
 	}
 }
 ?>

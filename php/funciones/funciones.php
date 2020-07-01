@@ -445,6 +445,58 @@ return $monthNameSpanish;
 
   }
 
+ // funcion para enviar todos los meses del año
+
+  function meses_del_anio()
+  {
+  	$mese = array(
+  		array('mes'=>'Enero','num'=>'01','acro'=>'ENE'),
+  		array('mes'=>'Febrero','num'=>'02','acro'=>'FEB'),
+  		array('mes'=>'Marzo','num'=>'03','acro'=>'MAR'),
+  		array('mes'=>'Abril','num'=>'04','acro'=>'ABR'),
+  		array('mes'=>'Mayo','num'=>'05','acro'=>'MAY'),
+  		array('mes'=>'Junio','num'=>'06','acro'=>'JUN'),
+  		array('mes'=>'Julio','num'=>'07','acro'=>'JUL'),
+  		array('mes'=>'Agosto','num'=>'08','acro'=>'AGO'),
+  		array('mes'=>'Septiembre','num'=>'09','acro'=>'SEP'),
+  		array('mes'=>'Octubre','num'=>'10','acro'=>'OCT'),
+  		array('mes'=>'Noviembre','num'=>'11','acro'=>'NOV'),
+  		array('mes'=>'Diciembre','num'=>'12','acro'=>'DIC'),
+  	);
+
+  	return $mese;
+  }
+
+//verificar si tiene sucursales
+
+  function existe_sucursales()
+  {
+  	$conn = new Conectar();
+	$cid=$conn->conexion();
+    $sql = "SELECT * FROM Acceso_Sucursales where Item='".$_SESSION['INGRESO']['item']."'";
+		$stmt = sqlsrv_query($cid, $sql);
+	    if($stmt === false)  
+	      {  
+		     echo "Error en consulta PA.\n";  
+		     return '';
+		     die( print_r( sqlsrv_errors(), true));  
+	      }   
+         //echo $sql;
+	    $result = array();	
+	    while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_ASSOC) ) 
+	      {
+	    	$result[] =$row;
+		    //echo $row[0];
+	      }
+	      if(count($result) == 0)
+	      {
+	      	return -1;
+	      }else
+	      {
+	      	return 1;
+	      }
+  }
+
 //año bisiesto
 function provincia_todas()
 {
@@ -3266,7 +3318,7 @@ function paginador($tabla,$filtro=null,$link=null)
 }
 //grilla generica para mostrar en caso de usar ajax
 //$tabla caso donde sean necesaria varias grillas
-function grilla_generica($stmt,$ti=null,$camne=null,$b=null,$ch=null,$tabla=null,$base=null)
+function grilla_generica($stmt,$ti=null,$camne=null,$b=null,$ch=null,$tabla=null,$base=null,$estilo=false)
 {
 	if($base==null or $base=='SQL SERVER')
 	{
@@ -3293,9 +3345,13 @@ function grilla_generica($stmt,$ti=null,$camne=null,$b=null,$ch=null,$tabla=null
 		}
 		//si lleva o no border
 		$bor='';
+    $bor1='';
+    $bor2='';
 		if($b!=null and $b!='0')
 		{
-			$bor='table-bordered1';
+			$bor='style="border: #b2b2b2 1px solid;"';
+      $bor1='border: #b2b2b2 1px solid;';
+      $bor2 = 'border';
 			//style="border-top: 1px solid #bce8f1;"
 		}
 		//colocar cero a tabla en caso de no existir definida ninguna
@@ -3304,14 +3360,49 @@ function grilla_generica($stmt,$ti=null,$camne=null,$b=null,$ch=null,$tabla=null
 			$tabla=0;
 		}
 		?>
-		<div class="box-body no-padding">
-            <table class="table table-striped w-auto <?php echo $bor; ?>" >
+ <?php if($estilo)
+ { echo  ' <style type="text/css">
+      #datos_t table {
+  border-collapse: collapse;
+}
+
+#datos_t table, th, td {
+  /*border: solid 1px black;*/
+  padding: 10px;
+}
+
+#datos_t tbody tr:nth-child(even) {
+  background:#fffff;
+}
+
+#datos_t tbody tr:nth-child(odd) {
+  background: #e2fbff;;
+}
+
+#datos_t tbody tr:nth-child(even):hover {
+  background: #DDB;
+}
+
+#datos_t tbody tr:nth-child(odd):hover {
+  background: #DDA;
+}
+
+.sombra {
+  width: 99%;
+  box-shadow: 10px 10px 6px rgba(0, 0, 0, 0.6);
+}
+ </style>';
+ }
+ ?>
+
+		<div class="sombra" style="">
+            <table <?php echo $bor2; ?> class="table table-striped table-hover" id='datos_t'>
 				<?php
 				if($ti!='' or $ti!=null)
 				{
 			?>
 					<tr>
-						<th colspan='<?php echo $cant; ?>' style='text-align: center;background-color: #0086c7;color: #FFFFFF;' ><?php echo $ti; ?></th>
+						<th  <?php echo $bor; ?> colspan='<?php echo $cant; ?>' style='text-align: center;background-color: #0086c7;color: #FFFFFF;' ><?php echo $ti; ?></th>
 					</tr>
 			<?php
 				}
@@ -3434,7 +3525,7 @@ function grilla_generica($stmt,$ti=null,$camne=null,$b=null,$ch=null,$tabla=null
 							{
 								if($value!='')
 								{
-									echo "<th id='id_$cant' onclick='orde($cant)' ".$tipo_campo[$cant].">".$value."</th>";
+									echo "<th  ".$bor." id='id_$cant' onclick='orde($cant)' ".$tipo_campo[$cant].">".$value."</th>";
 									$camp=$value;
 									$campo[$cant]=$camp;
 									//echo ' dd '.$campo[$cant];
@@ -3777,7 +3868,7 @@ function grilla_generica($stmt,$ti=null,$camne=null,$b=null,$ch=null,$tabla=null
 								if(count($ch1)==2)
 								{
 									$cch=$ch1[0];
-									echo "<td style='text-align: left;'><input type='checkbox' id='id_".$row[$cch]."' name='".$ch1[1]."' value='".$row[$cch]."'
+									echo "<td style='text-align: left; ".$bor1."'><input type='checkbox' id='id_".$row[$cch]."' name='".$ch1[1]."' value='".$row[$cch]."'
 									onclick='validarc(\"id_".$row[$cch]."\",\"".$tabla."\")'></td>";
 								}
 								else
@@ -3795,7 +3886,7 @@ function grilla_generica($stmt,$ti=null,$camne=null,$b=null,$ch=null,$tabla=null
 										}
 									}
 									$ca=$ca-1;
-									echo "<td style='text-align: left;'><input type='checkbox' id='id_".$camch."' name='".$ch1[$ca]."' value='".$camch."'
+									echo "<td style='text-align: left; ".$bor."'><input type='checkbox' id='id_".$camch."' name='".$ch1[$ca]."' value='".$camch."'
 									onclick='validarc(\"id_".$camch."\",\"".$tabla."\")'></td>";
 									//die();
 								}
@@ -4087,11 +4178,11 @@ function grilla_generica($stmt,$ti=null,$camne=null,$b=null,$ch=null,$tabla=null
 								{
 									if($row[$i]>0)
 									{
-										echo "<td ".$tipo_campo[$i].">".$cfila1.$ita3.$sub3.$inden.number_format($row[$i],2, ',', '.').$sub4.$ita4.$cfila2."</td>";
+										echo "<td ".$tipo_campo[$i]." ".$bor.">".$cfila1.$ita3.$sub3.$inden.number_format($row[$i],2, ',', '.').$sub4.$ita4.$cfila2."</td>";
 									}
 									else
 									{
-										echo "<td ".$tipo_campo[$i].">".$cfila1.$ita3.$sub3.$inden."-".$sub4.$ita4.$cfila2."</td>";
+										echo "<td ".$tipo_campo[$i]." ".$bor.">".$cfila1.$ita3.$sub3.$inden."-".$sub4.$ita4.$cfila2."</td>";
 									}
 									//echo "<td ".$tipo_campo[$i].">".$cfila1.$ita3.$sub3.$inden."-".$sub4.$ita4.$cfila2."</td>";
 								}
@@ -4103,11 +4194,11 @@ function grilla_generica($stmt,$ti=null,$camne=null,$b=null,$ch=null,$tabla=null
 										//reemplazo una parte de la cadena por otra
 										$longitud_cad = strlen($tipo_campo[$i]); 
 										$cam2 = substr_replace($tipo_campo[$i],"color: red;'",$longitud_cad-1,1); 
-										echo "<td ".$cam2." > ".$cfila1.$ita3.$inden.$sub3."".number_format($row[$i],2, '.', ',')."".$sub4.$ita4.$cfila2."</td>";
+										echo "<td ".$cam2." ".$bor."> ".$cfila1.$ita3.$inden.$sub3."".number_format($row[$i],2, '.', ',')."".$sub4.$ita4.$cfila2."</td>";
 									}
 									else
 									{
-										echo "<td ".$tipo_campo[$i].">".$cfila1.$ita3.$inden.$sub3."".number_format($row[$i],2, '.', ',')."".$sub4.$ita4.$cfila2."</td>";
+										echo "<td ".$tipo_campo[$i]." ".$bor.">".$cfila1.$ita3.$inden.$sub3."".number_format($row[$i],2, '.', ',')."".$sub4.$ita4.$cfila2."</td>";
 									}
 								}
 								
@@ -4116,13 +4207,13 @@ function grilla_generica($stmt,$ti=null,$camne=null,$b=null,$ch=null,$tabla=null
 							{
 								if(strlen($row[$i])<=50)
 								{
-									echo "<td ".$tipo_campo[$i].">".$cfila1.$ita3.$inden.$sub3."".$row[$i]."".$sub4.$ita4.$cfila2."</td>";
+									echo "<td ".$tipo_campo[$i]." ".$bor.">".$cfila1.$ita3.$inden.$sub3."".$row[$i]."".$sub4.$ita4.$cfila2."</td>";
 								}
 								else
 								{
 									$resultado = substr($row[$i], 0, 50);
 									//echo $resultado; // imprime "ue"
-									echo "<td ".$tipo_campo[$i]." data-toggle='tooltip' data-placement='left' title='".$row[$i]."'>".$cfila1.$ita3.$inden.$sub3."".$resultado."...".$sub4.$ita4.$cfila2."</td>";
+									echo "<td ".$bor." ".$tipo_campo[$i]." data-toggle='tooltip' data-placement='left' title='".$row[$i]."'>".$cfila1.$ita3.$inden.$sub3."".$resultado."...".$sub4.$ita4.$cfila2."</td>";
 								}
 							}
 						}
@@ -4192,7 +4283,7 @@ function grilla_generica($stmt,$ti=null,$camne=null,$b=null,$ch=null,$tabla=null
 						{
 					?>
 							<tr>
-								<th colspan='<?php echo $cant; ?>' style='text-align: center;background-color: #0086c7;color: #FFFFFF;' ><?php echo $ti; ?></th>
+								<th  colspan='<?php echo $cant; ?>' style='text-align: center;background-color: #0086c7;color: #FFFFFF;' ><?php echo $ti; ?></th>
 							</tr>
 					<?php
 						}

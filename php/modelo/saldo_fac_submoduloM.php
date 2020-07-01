@@ -299,7 +299,7 @@ class Saldo_fac_sub_C
         
         //echo $sql;
         $stmt = sqlsrv_query($this->conn, $sql);
-        $tabla = grilla_generica($stmt,null,NULL,'1');
+        $tabla = grilla_generica($stmt,null,NULL,'1',null,null,null,true);
         if( $stmt === false)
         {  
 		 echo "Error en consulta PA.\n";  

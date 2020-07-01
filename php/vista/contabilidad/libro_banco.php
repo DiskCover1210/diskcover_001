@@ -2,6 +2,7 @@
 	var Individual = false;
 	$(document).ready(function()
 	{
+		sucursal_exis();
 		llenar_combobox();
 		llenar_combobox_cuentas();    
 		   $('#imprimir_pdf').click(function(){
@@ -38,6 +39,35 @@
  
 
     }
+    function sucursal_exis()
+  { 
+
+     $.ajax({
+      //data:  {parametros:parametros},
+      url:   '../controlador/diario_generalC.php?sucu_exi=true',
+      type:  'post',
+      dataType: 'json',
+      /*beforeSend: function () {   
+           var spiner = '<div class="text-center"><img src="../../img/gif/proce.gif" width="100" height="100"></div>'     
+         $('#tabla_').html(spiner);
+      },*/
+        success:  function (response) { 
+        if(response == 1)
+        {
+          $("#CheckAgencia").show();
+          $('#DCAgencia').show();
+          $('#lblAgencia').show();
+        } else
+        {
+          $("#CheckAgencia").hide();
+          $('#DCAgencia').hide();
+          $('#lblAgencia').hide();
+        }     
+        
+      }
+    });
+
+  }
 		
 	function consultar_datos()
 	{
@@ -222,11 +252,11 @@
 	  	</div>
 
 	  	<div class="col-sm-3">
-                <input type="checkbox" name="CheckUsu" id="CheckUsu">  <b>Por usuario</b>
+                <label><input type="checkbox" name="CheckUsu" id="CheckUsu">  <b>Por usuario</b></label>
                 <select class="form-control input-sm" id="DCUsuario"  onchange="consultar_datos(true,Individual);">
                 	<option value="">Seleccione usuario</option>
                 </select>
-          	    <input type="checkbox" name="CheckAgencia" id="CheckAgencia">  <b>Agencia</b>
+          	    <label id="lblAgencia"><input type="checkbox" name="CheckAgencia" id="CheckAgencia">  <b>Agencia</b></label>
           	     <select class="form-control input-sm" id="DCAgencia" onchange="consultar_datos(true,Individual);">
                 	<option value="">Seleccione agencia</option>
                 </select>             

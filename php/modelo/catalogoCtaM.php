@@ -107,7 +107,7 @@ class catalogoCtaM
 	   }
 
 	  
-        $tabla = grilla_generica($stmt,null,NULL,'1');
+        $tabla = grilla_generica($stmt,null,NULL,'1',null,null,null,true);
 
        return $tabla;
 

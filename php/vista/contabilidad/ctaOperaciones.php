@@ -6,6 +6,7 @@ require_once("panel.php");
 
   $(document).ready(function()
   {
+    meses();
    cargar_cuentas();
    tipo_pago();
 
@@ -45,6 +46,25 @@ require_once("panel.php");
   }
 });
   }
+
+  function meses()
+  {
+    var meses='<option value="">Seleccione mes</option>'
+    $.ajax({
+      // data:  {parametros:parametros},
+      url:   '../controlador/ctaOperacionesC.php?meses=true',
+      type:  'post',
+      dataType: 'json',
+      success:  function (response) { 
+         $.each(response, function(i, item){
+          // console.log(item);
+          meses+='<option value="'+item.Acro+'">'+item.mes+'</option>';
+        }); 
+    $('#DCMes').html(meses);   
+        }
+    });
+  }
+
   function tipo_pago()
   {
     var pago = '<option value="">Selecciopne tipo de pago</option>';
@@ -82,9 +102,9 @@ require_once("panel.php");
       confirmButtonText: 'Si'
     }).then((result) => {
       if (result.value) {        
-         grabar();
-      }
-    })
+       grabar();
+     }
+   })
   }
 
   function grabar()
@@ -92,7 +112,7 @@ require_once("panel.php");
     var acre = $('#MBoxCtaAcreditar').val();
     if(acre == ''){acre = 0;}
 
-     var parametros=  {
+    var parametros=  {
       'OpcG':$('#OpcG').is(':checked'),
       'OpcD':$('#OpcD').is(':checked'),
       'CheqTipoPago':$('#CheqTipoPago').is(':checked'),
@@ -114,23 +134,158 @@ require_once("panel.php");
       'TxtCodExt':$('#TxtCodExt').val(),
 
     }
-   $.ajax({   
-       url:   '../controlador/ctaOperacionesC.php?grabar=true',
-       type:  'post',
-       dataType: 'json',
-       data:{parametros:parametros} ,     
-       success:  function (response) { 
-        if(response == 1)
-        {
-         cargar_cuentas();
-        }else
-        {
-          alert('oops!');
-        }
+    $.ajax({   
+     url:   '../controlador/ctaOperacionesC.php?grabar=true',
+     type:  'post',
+     dataType: 'json',
+     data:{parametros:parametros} ,     
+     success:  function (response) { 
+      if(response == 1)
+      {
+       cargar_cuentas();
+     }else
+     {
+      alert('oops!');
+    }
 
-      }
-    });
   }
+});
+  }
+  function forma_pago()
+  {
+    if($('#CheqTipoPago').is(':checked'))
+    {
+     $('#DCTipoPago').show();
+    // alert('sss');
+  }else
+  {
+    // alert('ffff');
+    $('#DCTipoPago').hide();
+  }
+}
+
+function presupuesto_act(tip)
+{
+  if(tip == 'CC' || tip == 'G' || tip == 'I')
+  {
+     $('#btn_ingresar_pre').prop('disabled', false);
+     $('#btn_ingresar_pre').prop('disabled', false);
+  }else
+  {
+    $('#btn_ingresar_pre').prop('disabled', true);
+    $('#btn_ingresar_pre').prop('disabled', true);
+  }
+}
+
+function cargar_presupuesto(cod)
+{
+  var pago = '<tr><td>No se a encontrado ningun presupuesto</td><tr>';
+  var suma = 0.00;
+    $.ajax({
+    data:  {cod:cod},
+   url:   '../controlador/ctaOperacionesC.php?presupuesto=true',
+   type:  'post',
+   dataType: 'json',
+   success:  function (response) { 
+    if(response != 0)
+    {
+      console.log(response);
+      pago='';
+    $.each(response, function(i, item){
+          suma +=item.Presupuesto;
+          pago+='<tr><td>'+item.Mes+'</td><td>'+item.Presupuesto+'</td>';
+        }); 
+   }
+   $('#TextPresupuesto').val(suma)
+    $('#table_pre').html(pago);              
+  }
+});
+
+}
+
+function cargar_datos_cuenta(cod)
+{
+    $.ajax({
+    data:  {cod:cod},
+   url:   '../controlador/ctaOperacionesC.php?datos_cuenta=true',
+   type:  'post',
+   dataType: 'json',
+   success:  function (response) { 
+    if(response != 0)
+    {
+      console.log(response);  
+      // $('#LstSubMod').val('"'+response.TC+'"');    //
+      $('#LabelNumero').val(response[0].Clave);
+      if(response[0].DG=='G')
+      {
+        $('#OpcG').prop('checked',true);
+      }else
+      {
+        $('#OpcD').prop('checked',true);
+      }
+      if(response[0].Con_IESS != 0)
+      {        
+        $('#CheqConIESS').prop('checked',true);
+      }
+      if(response[0].Con_IESS != 0)
+      {        
+        $('#CheqConIESS').prop('checked',true);
+      }else
+      {
+        $('#CheqConIESS').prop('checked',false);
+      }
+      if(response[0].I_E_Emp == 'I')
+      {        
+        $('#OpcIEmp').prop('checked',true);
+      }
+      if(response[0].I_E_Emp == 'E')
+      {        
+        $('#OpcEEmp').prop('checked',true);
+      }
+      if(response[0].I_E_Emp == '.')
+      {        
+        $('#OpcNoAplica').prop('checked',true);
+      }
+      if(response[0].Mod_Gastos != 0)
+      {        
+        $('#CheqModGastos').prop('checked',true);
+      }else
+      {
+         $('#CheqModGastos').prop('checked',false);
+      }
+      if(response[0].ME != 0)
+      {        
+        $('#CheqUS').prop('checked',true);
+      }else
+      {
+        $('#CheqUS').prop('checked',false);
+      }
+       if(response[0].Listar != 0)
+      {        
+        $('#CheqFE').prop('checked',true);
+      }else
+      {
+        $('#CheqFE').prop('checked',false);
+      }
+      if(response[0].Tipo_Pago != 0)
+      {        
+        $('#CheqTipoPago').prop('checked',true);
+        forma_pago();
+        $("#DCTipoPago option[value='"+response[0].Tipo_Pago+"']").attr("selected", true); 
+      }else
+      {
+        $('#CheqTipoPago').prop('checked',false);
+        forma_pago();
+        $("#DCTipoPago option[value='']").attr("selected", true); 
+      }
+
+      $("#LstSubMod option[value='"+response[0].TC+"']").attr("selected", true);   
+      presupuesto_act($('#LstSubMod').val());  
+  }
+ }
+});
+
+}
 </script>
 <div class="container-lg">
   <div class="row">
@@ -158,24 +313,24 @@ require_once("panel.php");
  </div>
 </div>
 <div class="row"><br>
-  <div class="col-sm-3" id="tabla"></div>
-  <div class="col-sm-9">      
+  <div class="col-sm-5" id="tabla"></div>
+  <div class="col-sm-7">      
     <ul class="nav nav-tabs">
       <li class="active"><a data-toggle="tab" href="#home">DATOS PRINCIPALES</a></li>
       <li><a data-toggle="tab" href="#menu1">PRESUPUESTOS DE SUBMODULOS</a></li>
     </ul>
-    <div class="tab-content-wrapper"><br>
+    <div class="tab-content"><br>
       <div id="home" class="tab-pane fade in active">
         <div class="row">
-          <div class="col-sm-2">
+          <div class="col-sm-4">
            <b>Codigo de cuenta</b><br>
            <input type="" name="MBoxCta" class="form-control input-sm" id="MBoxCta" placeholder="<?php 
            echo $_SESSION['INGRESO']['Formato_Cuentas']; ?>" onblur="tip_cuenta(this.value)" ><br>
            <b>Cuenta superior</b><br>
            <input type="" name="LabelCtaSup" class="form-control input-sm" id="LabelCtaSup" readonly=""><br>
            <b>Tipo de cuenta</b><br>
-           <label class="checkbox-inline"><input type="radio" name="rbl_t" id="OpcD" checked=""> <b>Detalle</b> </label><br>
-           <label class="checkbox-inline"><input type="radio" name="rbl_t" id="OpcG"> <b>Grupo</b> </label>
+           <label class="checkbox-inline"><input type="radio" name="rbl_t" id="OpcD" > <b>Detalle</b> </label><br>
+           <label class="checkbox-inline"><input type="radio" name="rbl_t" id="OpcG" checked=""> <b>Grupo</b> </label>
          </div>
          <div class="col-sm-4">
            <b>Nombre de cuenta</b> <br>
@@ -195,9 +350,9 @@ require_once("panel.php");
              </tr>
            </table>         
          </div>
-         <div class="col-sm-3">
+         <div class="col-sm-4">
            <b>Tipo de cuenta</b><br>
-           <select class="form-control input-sm" id="LstSubMod">
+           <select class="form-control input-sm" id="LstSubMod" onchange="presupuesto_act($('#LstSubMod').val())">
              <option value="N">Seleccione tipo de cuenta</option>
              <option value='N'>General/Normal</option>
              <option value='CtaCaja'>Cuenta de Caja</option>
@@ -226,41 +381,85 @@ require_once("panel.php");
            <label class="checkbox-inline"><input type="checkbox" name="CheqModGastos" id="CheqModGastos"> <b>Para gastos de caja chica</b></label> <br> 
            <label class="checkbox-inline"><input type="checkbox" name="CheqUS" id="CheqUS"> <b>Cuenta M/E</b></label>  <br>
            <label class="checkbox-inline"><input type="checkbox" name="CheqFE" id="CheqFE"> <b>Flujo efectivo</b></label>  <br>                
-         </div>
-         <div class="col-sm-3">
+         </div>         
+       </div>
+       <div class="row">
+        <div class="col-sm-5">
           <div class="panel panel-default">
-           <div class="panel-heading"><b>Rol de Pagos para Emoleados</b></div>
+           <div class="panel-heading"><b>Rol de Pagos para Empleados</b></div>
            <label class="checkbox-inline"><input type="radio" name="rbl_rol" id="OpcNoAplica" checked=""> <b>No Aplica</b> </label><br>
            <label class="checkbox-inline"><input type="radio" name="rbl_rol" id="OpcIEmp"> <b>Ingreso</b> </label><br>
            <label class="checkbox-inline"><input type="radio" name="rbl_rol" id="OpcEEmp"> <b>Descuentos</b> </label><br>
            <label class="checkbox-inline"><input type="checkbox" name="rbl_rol" id="CheqConIESS"> <b>Ingreso extra con Aplicacion al IESS</b></label>
-         </div>          
+         </div>  
        </div>
-     </div>
-     <div class="row">
-      <br>
-      <div class="col-sm-2">
-       <label class="checkbox-inline"><input type="checkbox" name="CheqTipoPago" id="CheqTipoPago"> TIPO DE PAGO</label>
-     </div>
-     <div class="col-sm-10">
-       <select class="form-control input-sm" id="DCTipoPago">
-         <option>seleccione tipo de pago</option>
-       </select>          
-     </div>      
-   </div>
-   <div class="row">
-    <input type="" name="TextPresupuesto" id="TextPresupuesto" value="0.0">
-     
-   </div>   
- </div>
- <div id="menu1" class="tab-pane fade">
-  <h3>Menu 1</h3>
-  <p>Some content in menu 1.</p>
-</div>
+       <div class="col-sm-7">
+        <div class="col-sm-12">
+          <label class="checkbox-inline"><input type="checkbox" name="CheqTipoPago" id="CheqTipoPago" onclick="forma_pago()"> TIPO DE PAGO</label>
+            <br>
+            <select class="form-control input-sm" id="DCTipoPago" style="display: none;">
+              <option>seleccione tipo de pago</option>
+            </select>           
+        </div>
+        <div class="col-sm-10">
+          <b>PRESUPUESTOS</b>
+          <table class="table table-responsive col-md-4">
+            <th>Mes</th>
+            <th>Presupuesto</th>
+            <tbody id="table_pre">
+              <td>-</td>
+              <td>-</td>
+            </tbody>
+          </table>          
+        </div>
+        <div class="col-sm-2"><br>
+          <input type="button" name="" id="btn_ingresar_pre" disabled="" class="btn btn-primary btn-xs" value="Ingresar" data-toggle="modal" data-target="#exampleModalCenter">
+        </div>
+        <div class="col-sm-12"><br>
+          <input type="" name="TextPresupuesto" id="TextPresupuesto" value="0.0">  
+        </div>
+      </div>     
+    </div>
+    <div class="row">
+      seccion de presupuesto
+      
+  
+    </div>   
+  </div>
+  <div id="menu1" class="tab-pane fade">
+    <div class="row">
+      <div class="col-sm-12">
+         <h3>Menu 1</h3>
+    <p>Some content in menu 1.</p>
+    <input type="" name="">
+      </div>
+    </div>
+  </div>
 </div>  
 </div>
 
 </div>
+</div>
+
+
+<div class="modal fade bd-example-modal-sm" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true" data-keyboard="false" data-backdrop="static">
+  <div class="modal-dialog modal-sm" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLongTitle">Ingrese Presupuesto</h5>
+      </div>
+      <div class="modal-body">
+        <select class="form-control input-sm" id="DCMes">
+          <option>Seleccione mes</option>
+        </select>
+        <input type="" name="" id="txt_val_pre" class="form-control input-sm" placeholder="0.00">
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+        <button type="button" class="btn btn-primary">Ingresar</button>
+      </div>
+    </div>
+  </div>
 </div>
 
 <!-- partial:index.partial.html -->

@@ -5,6 +5,10 @@ include(dirname(__DIR__).'/db/variables_globales.php');//
  * 
  */
 $controlador =  new ctaOperacionesC();
+if(isset($_GET['meses']))
+{
+	echo json_encode($controlador->meses_presu());
+}
 if(isset($_GET['cuentas']))
 {
 	echo json_encode($controlador->cuentas());
@@ -21,6 +25,16 @@ if(isset($_GET['grabar']))
 {
 	echo json_encode($controlador->grabar_cuenta($_POST['parametros']));
 }
+if(isset($_GET['presupuesto']))
+{
+	echo json_encode($controlador->presupuesto($_POST['cod']));
+	
+}
+if(isset($_GET['datos_cuenta']))
+{
+	echo json_encode($controlador->datos_cuenta($_POST['cod']));
+	
+}
 class ctaOperacionesC
 {
 	private $modelo;
@@ -30,6 +44,21 @@ class ctaOperacionesC
 	}
 
 
+function datos_cuenta($cod)
+{
+	$dato = $this->modelo->datos_cuenta($cod);
+	return $dato;
+}
+
+function presupuesto($cod)
+{
+	$dato = $this->modelo->presupuesto($cod);
+	return $dato;
+}
+function meses_presu()
+{
+	return meses_del_anio();
+}
    
 	function cuentas()
 	{
@@ -295,9 +324,9 @@ function grabar_cuenta($parametros)
   	{
   		$dato[17]['campo']='Codigo';
         $dato[17]['dato']=strval($Codigo1);
-        if($parametros['OpcD'])
+        if($parametros['OpcD'] == 'true')
            {
-              $Numero = ReadSetDataNum("Numero Cuenta",True,True);
+                $Numero = ReadSetDataNum("Numero Cuenta",True,True);
            }
         $NuevaCta = True;
     }
@@ -306,18 +335,18 @@ function grabar_cuenta($parametros)
   	$dato[17]['campo']='Codigo';
     $dato[17]['dato']=$Codigo1;
 
-    if($parametros['OpcD'] == true)
+    if($parametros['OpcD'] == 'true')
     {
     	 $Numero = ReadSetDataNum("Numero Cuenta", True, True);
     }
-    if($parametros['OpcG'] == true)
-    {
-    	//AddNewCta "DG";
-    }else
-    {
-    	//AddNewCta $TipoCta;
+    // if($parametros['OpcG'] == true)
+    // {
+    // 	//AddNewCta "DG";
+    // }else
+    // {
+    // 	//AddNewCta $TipoCta;
 
-    }  
+    // }  
   	 
   }
  
@@ -329,11 +358,11 @@ function grabar_cuenta($parametros)
       $dato[2]['campo']='TC';
       $dato[2]['dato']=$TipoCta;
       $dato[3]['campo']='ME';
-      $dato[3]['dato']= intval($parametros['CheqUS']);
+      $dato[3]['dato']= (int)($parametros['CheqUS'] === 'true');
       $dato[4]['campo']='Listar';
-      $dato[4]['dato']=intval($parametros['CheqFE']);
+      $dato[4]['dato']=(int)($parametros['CheqFE'] === 'true');
       $dato[5]['campo']='Mod_Gastos';
-      $dato[5]['dato']=intval($parametros['CheqModGastos']);
+      $dato[5]['dato']=(int)($parametros['CheqModGastos']=== 'true');
       $dato[6]['campo']='Cuenta';
       $dato[6]['dato']=$TextConcepto;
       $dato[7]['campo']='Presupuesto';
@@ -356,7 +385,7 @@ function grabar_cuenta($parametros)
         $dato[14]['campo']='I_E_Emp';
         $dato[14]['dato']= G_NINGUNO;
         $dato[15]['campo']='Con_IESS';
-        $dato[15]['dato']= intval('false');
+        $dato[15]['dato']= (int)('false' === 'true');;
         $dato[16]['campo']='Cod_Rol_Pago';
         $dato[16]['dato']= G_NINGUNO;
 
@@ -370,14 +399,14 @@ function grabar_cuenta($parametros)
      	   {
      		$dato[14]['campo']='I_E_Emp';
      		$dato[14]['dato']= 'I';
-     		if($parametros['CheqConIESS'] != 0)
+     		if($parametros['CheqConIESS'] != 'false')
      		{
      			$dato[15]['campo']='Con_IESS';
-     			$dato[15]['dato']= True;
+     			$dato[15]['dato']=(int)('true'=== 'true');;
      		}else
      		{
      			$dato[15]['campo']='Con_IESS';
-     			$dato[15]['dato']= intval('false');
+     			$dato[15]['dato']= (int)('false'=== 'true');
      		}
      	   }else
      	   {
@@ -387,7 +416,14 @@ function grabar_cuenta($parametros)
      } 
 
       $dato[18]['campo']='CC';
-      $dato[18]['dato']=$parametros['TxtCodExt'];      
+      $dato[18]['dato']=$parametros['TxtCodExt'];
+
+
+      // print_r($dato);
+      // print_r((int)('true' === 'true'));
+      // print_r('-');
+      // print_r((int)('false' === 'true'));
+      // die();     
       
       if($editar == true)
       {

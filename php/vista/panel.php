@@ -55,6 +55,7 @@ require_once("../../lib/phpmailer/PHPMailerAutoload.php");
 				$_SESSION['INGRESO']['Logo_Tipo']=$valor['Logo_Tipo'];
 				$_SESSION['INGRESO']['periodo']='.';
 				$_SESSION['INGRESO']['Razon_Social']=$valor['Razon_Social'];
+				$_SESSION['INGRESO']['Fecha_ce']=$valor['Fecha_CE'];
 				//echo $_SESSION['INGRESO']['IP_VPN_RUTA'];
 				//obtenemos el resto de inf. de la empresa tales como correo direccion
 				$empresa_d=getEmpresasDE($_SESSION['INGRESO']['item'],$_SESSION['INGRESO']['noempr']);

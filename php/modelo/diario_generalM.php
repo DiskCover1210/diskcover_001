@@ -18,10 +18,11 @@ class diario_generalM
   function llenar_agencia()
   {
   	$cid = $this->conn;
-  	$sql= "SELECT (Item +'  ' + Empresa) As NomEmpresa,Item
-       FROM Empresas 
-       WHERE Item <> '000' 
-       ORDER BY Item,Empresa ";
+  	$sql= "SELECT (Sucursal +'  ' + Empresa) As NomEmpresa,Sucursal as 'Item'
+FROM Acceso_Sucursales
+INNER JOIN Empresas ON Acceso_Sucursales.Sucursal = Empresas.Item
+WHERE Acceso_Sucursales.Item ='".$_SESSION['INGRESO']['item']."'
+ORDER BY Acceso_Sucursales.Item,Empresa";
 
         $stmt = sqlsrv_query($cid, $sql);
 	    $result = array();	
@@ -164,7 +165,8 @@ class diario_generalM
        AND Co.CodigoU = Ac.Codigo 
        ORDER BY T.Fecha,T.TP,T.Numero,T.ID ";
 
-       //print_r($sql);
+       // print_r($sql);
+       // die();
 
       $stmt = sqlsrv_query($cid, $sql);
 	   if( $stmt === false)  
@@ -175,7 +177,7 @@ class diario_generalM
 	   }
 
 	  
-        $tabla = grilla_generica($stmt,null,NULL,'1');
+        $tabla = grilla_generica($stmt,null,NULL,'1',null,null,null,true);
      //   $tabla1 = utf8_encode($tabla);
    /*   if($tabla1 == "")
         {

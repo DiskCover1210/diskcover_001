@@ -192,7 +192,9 @@ if (isset($_SESSION['autentificado']) != "VERDADERO")
 					//$('div.pdfcom').load(data);
 					$('#resul').html(''); 
 					$('#resul').html(data); 
-					//alert('entrooo '+idMensaje);
+					// //alert('entrooo '+idMensaje);
+					 // alert($('#Contenedor').height()+$('#alerta').height());
+					 $('#Contenedor').height($('#Contenedor').height()+$('#alerta').height()+50);
 				});
 		}
 	}

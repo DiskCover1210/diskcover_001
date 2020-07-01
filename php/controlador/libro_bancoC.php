@@ -3,7 +3,6 @@ include(dirname(__DIR__).'/modelo/libro_bancoM.php');
 require(dirname(__DIR__,2).'/lib/fpdf/cabecera_pdf.php');
 require(dirname(__DIR__).'/modelo/catalogoCtaM.php');
 
-
 if(isset($_GET['cuentas']))
 {
      $controlador = new libro_bancoC();

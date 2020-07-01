@@ -398,7 +398,7 @@ class contabilidad_model{
 		//para saber si es excel o grilla
 		if($opcr==null or $opcr==1)
 		{
-			grilla_generica($stmt,$ti,$camne,$b);
+			grilla_generica($stmt,$ti,$camne,$b,null,null,null,true);
 		}
 		if($opcr==2)
 		{

@@ -498,12 +498,105 @@ $("#datos").fadeIn();
             </li>    
       <?php
        }}
+       $f =date('Y-m-d');
+       if(isset($_SESSION['INGRESO']['Fecha']))
+       {
+          $f =$_SESSION['INGRESO']['Fecha'];
+       }
+       $date1 = new DateTime(date('Y-m-d'));
+      $date2 = new DateTime($f);
+      $diff = $date1->diff($date2);
+      $color='white';
+      $estado = 'Infefinido';
+      if($diff->days > 241)
+      {
+        $color = '#1bff00';
+        $estado = 'Licencia activa';
+
+      }else if($diff->days >= 121 and  $diff->days <= 240)
+      {
+
+        $estado = 'Licencia activa';
+        $color = '#ffd025';
+      }else if($diff->days >= 1 and $diff->days<=120)
+      {
+
+        $estado = 'Casi por renovar';
+        $color = '#eaa2bd';
+      }else if($diff->days ==0 and isset($_SESSION['INGRESO']['item']))
+      {
+        $estado = 'licencia vencida';
+        $color='#c70f0f';
+      }
+
+       $f1 =date('Y-m-d');
+       if(isset($_SESSION['INGRESO']['Fecha_ce']))
+       {
+          $f1 =$_SESSION['INGRESO']['Fecha_ce'];
+       }
+      $date11 = new DateTime(date('Y-m-d'));
+      $date21 = new DateTime($f1);
+      $diff1 = $date11->diff($date21);
+      $color1='white';
+      $estado1 = 'Infefinido';
+      if($diff1->days > 241)
+      {
+        $color1 = '#1bff00';
+        $estado1 = 'Comp-Elec. activo';
+
+      }else if($diff1->days >= 121 and  $diff1->days <= 240)
+      {
+
+        $estado1 = 'Comp-Elec. activo';
+        $color1 = '#ffd025';
+      }else if($diff1->days >= 1 and $diff1->days<=120)
+      {
+
+        $estado1 = 'Comp-Elec. por renovar';
+        $color1 = '#eaa2bd';
+      }else if($diff1->days == 0 and isset($_SESSION['INGRESO']['item']))
+      {
+        $estado1 = 'Comp-Elec. vencida';
+        $color1='#c70f0f';
+      }
+
       ?>
 <!--------inicio de pestañas de educativo---->
      
 
 
           </ul>
+          <ul class="nav navbar-nav navbar-right" style="color: <?php echo $color ?>">
+            <li class="dropdown user user-menu">
+            <!-- Menu Toggle Button -->
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown"   style='padding-top: 5px;padding-bottom: 5px; color:<?php echo $color ?>'><b><?php echo $estado ?></b></a>
+            <ul class="dropdown-menu">
+              <li class="user-header" style="height: 5%">
+                <p style="color:<?php echo $color ?>">
+                  <b>Fecha de licencia: </b>
+                  <small><?php if(isset($_SESSION['INGRESO']['Fecha'])){ $originalDate = $_SESSION['INGRESO']['Fecha']; $newDate = date("Y-m-d", strtotime($originalDate)); echo $newDate;}else{ echo date('Y-m-d');}?></small>
+                </p>
+                <p style="color:<?php echo $color ?>">DIAS RESTANTES: <b> <?php echo $diff->days ?></b></p>
+              </li>
+            </ul>
+          </li>
+          </ul>
+          <ul class="nav navbar-nav navbar-right" style="color: <?php echo $color1 ?>">
+            <li class="dropdown user user-menu">
+            <!-- Menu Toggle Button -->
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown"   style='padding-top: 5px;padding-bottom: 5px; color:<?php echo $color1 ?>'><b><?php echo $estado1; ?></b></a>
+            <ul class="dropdown-menu">
+              <li class="user-header"  style="height: 5%">                
+                <p style="color:<?php echo $color1 ?>">
+                  <b>Fecha de comprobante: </b>
+                   <small><?php if(isset($_SESSION['INGRESO']['Fecha_ce'])){ $originalDate = $_SESSION['INGRESO']['Fecha_ce']; $newDate = date("Y-m-d", strtotime($originalDate)); echo $newDate;}else{ echo date('Y-m-d');}?></small>
+                </p>
+                <p style="color:<?php echo $color1 ?>">DIAS RESTANTES: <b> <?php echo $diff1->days ?></b></p>
+              </li>
+            </ul>
+          </li>
+          </ul>
+
           <ul class="nav navbar-nav navbar-right">
             <li class="dropdown user user-menu">
             <!-- Menu Toggle Button -->
@@ -533,7 +626,6 @@ $("#datos").fadeIn();
    			  <a href="panel.php?mos2=e" class="btn btn-sm btn-primary" title="Salir de Empresa"><img src="../../img/png/salire.png"  style="height: 55%; width:55%"></a>          	
           </div>
           </ul>
-
         </div>
         <!-- /.navbar-collapse -->
       </div>

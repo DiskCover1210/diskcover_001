@@ -4,6 +4,12 @@ require(dirname(__DIR__,2).'/lib/fpdf/cabecera_pdf.php');
 /**
  * 
  */
+if(isset($_GET['sucu_exi']))
+{
+	$controlador = new diario_generalC();
+	echo json_encode($controlador->existente());
+
+}
 if(isset($_GET['drop']))
 {
 	$controlador = new diario_generalC();
@@ -131,6 +137,12 @@ class diario_generalC
 		$this->pdf = new cabecera_pdf();	
 		$this->pdftable = new PDF_MC_Table();	
 		
+	}
+
+	function existente()
+	{
+		$exi = existe_sucursales();
+		return $exi;
 	}
 
 	function cargar_drop()
