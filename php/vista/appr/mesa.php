@@ -739,30 +739,41 @@ $_SESSION['INGRESO']['modulo_']='02';
 		}
 	}
 	function agregar_cli(me,nom)
-	{
+	{ 
 		var cli=document.getElementById('ruc').value;
 		var nombrec=document.getElementById('nombrec').value;
 		var email=document.getElementById('email').value;
-		var parametros = 
+		if( (cli=='.' && nombrec=='') || (cli!='.' && nombrec!=''))
 		{
-			"me" : me,
-			"nom" : nom,
-			"nombrec": nombrec,
-			"ruc": cli,
-			"email": email,
-		};
-		$.ajax({
-			data:  parametros,
-			url:   'controlador/controladormesa.php?factura=true',
-			type:  'post',
-			beforeSend: function () {
-					$("#contenido").html("");
-			},
-			success:  function (response) {
-					$("#contenido").html(response);
-					$("#myModal").modal();					
-			}
-		});	
+			var parametros = 
+			{
+				"me" : me,
+				"nom" : nom,
+				"nombrec": nombrec,
+				"ruc": cli,
+				"email": email,
+			};
+			$.ajax({
+				data:  parametros,
+				url:   'controlador/controladormesa.php?factura=true',
+				type:  'post',
+				beforeSend: function () {
+						$("#contenido").html("");
+				},
+				success:  function (response) {
+						$("#contenido").html(response);
+						$("#myModal").modal();					
+				}
+			});	
+		}
+		else
+		{
+			Swal.fire({
+				type: 'error',
+				title: 'debe seleccionar cliente!',
+				text: ''
+			});
+		}
 	}
 	function prefact1(event,me,cli,nom)
 	{
@@ -831,6 +842,7 @@ $_SESSION['INGRESO']['modulo_']='02';
 					 if(ob != 0)
 					 {
 						 $("#beneficiario1").empty();
+						 $("#beneficiario1").append("<option value=''>Seleccionar</option>");
 						for( var i = 0; i<ob; i++)
 						{
 							$("#beneficiario1").append("<option value='"+e[i].id+"-"+e[i].email+"-"+e[i].nombre+"'>"+e[i].nombre+"</option>");
@@ -927,24 +939,33 @@ $_SESSION['INGRESO']['modulo_']='02';
 	}
 	function seleccionado(id,me)
 	{		
-		
 		var valor = $("#beneficiario1").val();
-		arregloDeSubCadenas = valor.split("-"); 
-		 $("#nombrec").val(arregloDeSubCadenas[2]);
-	     $("#ruc").val(arregloDeSubCadenas[0]);
-	   if(arregloDeSubCadenas[1].length>2)
+		if(valor!='')
 		{
-			//alert('1 '+arregloDeSubCadenas[1].length);
-			$('#email').val(arregloDeSubCadenas[1]);
-			//document.getElementById("email").value='<?php echo $_SESSION['INGRESO']['Email_Conexion_CE']; ?>';
+			arregloDeSubCadenas = valor.split("-"); 
+			 $("#nombrec").val(arregloDeSubCadenas[2]);
+			 $("#ruc").val(arregloDeSubCadenas[0]);
+		   if(arregloDeSubCadenas[1].length>2)
+			{
+				//alert('1 '+arregloDeSubCadenas[1].length);
+				$('#email').val(arregloDeSubCadenas[1]);
+				//document.getElementById("email").value='<?php echo $_SESSION['INGRESO']['Email_Conexion_CE']; ?>';
+			}
+			else
+			{
+				//alert('2');
+				document.getElementById("email").value='<?php echo $_SESSION['INGRESO']['Email_Conexion_CE']; ?>';
+			}
+			 $("#beneficiario1").css('display','none');
 		}
 		else
 		{
-			//alert('2');
-			document.getElementById("email").value='<?php echo $_SESSION['INGRESO']['Email_Conexion_CE']; ?>';
+			 Swal.fire({
+				type: 'error',
+				title: 'debe seleccionar un registro!',
+				text: ''
+			});
 		}
-		 $("#beneficiario1").css('display','none');
-		
 	}
 	
 	function seleFo(id,me)

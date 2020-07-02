@@ -595,7 +595,7 @@ function  modal_facturas($me,$nom)
 		</ul>
 	<?php
 	}
-	echo $html = '
+	$html = '
 	<form>
        <div class="row">
          <div class="col-sm-6">
@@ -633,10 +633,18 @@ function  modal_facturas($me,$nom)
      <div class="col-sm-6">
      	<div class="panel panel panel-info">
 			<div class="panel-heading">
-			  <div class="text-right">
-			      <button type="button" class="btn btn-default btn-sm" onclick="prefact(\''.$me.'\',\''.$nom.'\')"><span class="glyphicon glyphicon-floppy-disk"></span> Factura</button>
-				 <button type="button" class="btn btn-default btn-sm" onclick="prefact22(\''.$me.'\',\''.$nom.'\')"><i class="fa fa-file"></i> Pre-factura</button>
-			  </div>
+			  <div class="text-center">';
+				if(isset($_POST['nombrec']) and isset( $_POST['ruc']))
+				{
+					$html=$html.'<h3> Datos Pedido </h3>'; 
+				}
+				else
+				{
+					$html=$html.'<h3> Datos Pedido </h3>'; 
+					/*$html=$html.'<button type="button" class="btn btn-default btn-sm" onclick="prefact(\''.$me.'\',\''.$nom.'\')"><span class="glyphicon glyphicon-floppy-disk"></span> Factura</button>
+					<button type="button" class="btn btn-default btn-sm" onclick="prefact22(\''.$me.'\',\''.$nom.'\')"><i class="fa fa-file"></i> Pre-factura</button>';*/
+				}
+			  $html=$html.'</div>
 			</div>
      	   <div class="panel-body">
      	    <div class="row">
@@ -675,6 +683,7 @@ function  modal_facturas($me,$nom)
 			</script>  
 		
               ';
+			  echo $html;
 			  //<!-- se quita esta funcion del ruc = onfocus="seleFo("ruc",\''.$me.'\')"--> 
 			  return 1;
 			/*<script>
