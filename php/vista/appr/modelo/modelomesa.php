@@ -155,7 +155,8 @@ function agregar_factura($datos1)
 	$n_fac= $datos1['n_fac'];
 	$me= $datos1['me'];
 	$total_total_= $datos1['total_total_'];
-	$total_abono= $datos1['total_abono'];			
+	$total_abono= $datos1['total_abono'];	
+	$propina_a= $datos1['propina_a'];
 	$fecha_actual = date("Y-m-d"); 
 	$hora = date("H:i:s");
 	$fechaEntera = strtotime($fecha_actual);
@@ -208,220 +209,223 @@ function agregar_factura($datos1)
 		 echo "Error en consulta PA.\n";  
 		 die( print_r( sqlsrv_errors(), true));  
 	}
+	$ii=0;
 	while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_NUMERIC) ) 
 	{
-		
+		$ii++;
 	}
-	//agregamos detalle factura
-	$sql="select * ". 
-		  "FROM Asiento_F
-		   WHERE  (Item = '".$_SESSION['INGRESO']['item']."')
-		   AND  HABIT='".$me."' 
-		   ORDER BY CODIGO";
-					
-	//echo $sql;
-	//die();
-	$stmt =sqlsrv_query( $cid, $sql);
-	if( $stmt === false)  
-	{  
-		 echo "Error en consulta PA.\n";  
-		 die( print_r( sqlsrv_errors(), true));  
-	}
-	/*
-	SELECT        TOP (200) Periodo, Item, C, T, ME, Cod_CxC, TC, Serie, Autorizacion, Factura, CodigoC, Fecha, Fecha_C, Fecha_V, SubTotal, Con_IVA, Sin_IVA, IVA, Descuento, Porc_C, Comision, Servicio, Total_MN, Total_ME, Saldo_MN, 
-                         Saldo_ME, Saldo_Actual, Forma_Pago, Cotizacion, Cta_CxP, Cta_Venta, Cod_Ejec, Com_Pag, Nota, Observacion, CodigoU, SubCta, Hora, Vencimiento, P, Fecha_Aut, Dias_Vencidos, Desc_0, Desc_X, RUC_CI, TB, Razon_Social, 
-                         Direccion_RS, Telefono_RS, CodigoB, Descuento2, Total_Efectivo, Total_Banco, Total_Ret_Fuente, Total_Ret_IVA_B, Total_Ret_IVA_S, Otros_Abonos, Total_Abonos, Abonos_MN, Clave_Acceso, Hora_Aut, Estado_SRI, Efectivo, 
-                         CodigoDr, Serie_R, Secuencial_R, Autorizacion_R, Fecha_R, Autorizacion_NC, Clave_Acceso_NC, Hora_Aut_NC, Estado_SRI_NC, Tipo_Pago, Error_FA_SRI, Porc_IVA, Imp_Mes, SP, Orden_Compra, X, Chq_Posf, Venc_0_60, 
-                         Venc_61_90, Venc_91_120, Venc_121_360, Venc_mas_360, ID
-	FROM            Facturas
-	WHERE        (Factura = '1569') AND (Item = '001') AND (Periodo = '.')
-	SELECT        TOP (200) Periodo, T, TC, CodigoC, Factura, Fecha, Codigo, CodigoL, Producto, Cantidad, Precio, Total, Total_IVA, Ruta, Ticket, Item, Corte, Reposicion, Total_Desc, No_Hab, Cod_Ejec, Porc_C, Com_Pag, Cta_Venta, CodigoU, 
-                         CodBodega, Tonelaje, Costo, Comision, Mes, X, Producto_Aux, Puntos, Autorizacion, Serie, CodMarca, Gramaje, Orden_No, Mes_No, C, CodigoB, Precio2, Total_Desc2, SubTotal_NC, Total_IVA_NC, Fecha_IN, Fecha_OUT, 
-                         Cant_Hab, Tipo_Hab, Codigo_Barra, Serie_NC, Autorizacion_NC, Fecha_NC, Secuencial_NC, Fecha_V, Cant_Bonif, Lote_No, Fecha_Fab, Fecha_Exp, Modelo, Procedencia, Serie_No, Porc_IVA, Cantidad_NC, Total_Desc_NC, 
-                         ID
-	FROM            Detalle_Factura
-	WHERE        (Factura = '1569') AND (Item = '001') AND (Periodo = '.')
-	*/
-	while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_NUMERIC) ) 
+	if($ii==0)
 	{
-		$dato[0]['campo']='T';
-		$dato[0]['dato']='C';
-		$dato[1]['campo']='TC';
-		$dato[1]['dato']='FA';
-		$dato[2]['campo']='CodigoC';
-		$dato[2]['dato']=$codigo;
-		$dato[3]['campo']='Factura';
-		$dato[3]['dato']=$n_fac;
-		$dato[4]['campo']='Fecha';
-		$dato[4]['dato']=$fecha_actual;	
-		$dato[5]['campo']='Codigo';
-		$dato[5]['dato']=$row[0];
-		$dato[6]['campo']='CodigoL';
-		$dato[6]['dato']=$cod_linea;	
-		$dato[7]['campo']='Producto';
-		$dato[7]['dato']=$row[3];	
-		$dato[8]['campo']='Cantidad';
-		$dato[8]['dato']=$row[1];
-		$dato[9]['campo']='Precio';
-		$dato[9]['dato']=$row[4];	
-		$dato[10]['campo']='Total';
-		$dato[10]['dato']=$row[9];//descontar descuentos	
-		$dato[11]['campo']='Total_IVA';
-		$dato[11]['dato']=$row[7];
-		//$dato[12]['campo']='Cta_Venta';
-		//$dato[12]['dato']='.';	
-		$dato[12]['campo']='Item';
-		$dato[12]['dato']=$_SESSION['INGRESO']['item'];	
-		$dato[13]['campo']='CodigoU';
-		$dato[13]['dato']=$_SESSION['INGRESO']['CodigoU'];	
-		$dato[14]['campo']='Periodo';
-		$dato[14]['dato']=$_SESSION['INGRESO']['periodo'];	
-		$dato[15]['campo']='Serie';
-		$dato[15]['dato']=$ser1[2];	
-		$dato[16]['campo']='Mes_No';
-		$dato[16]['dato']=$mes;	
-		//$dato[17]['campo']='C';
-		//$dato[17]['dato']=0;	
-		/*$dato[18]['campo']='Fecha_IN';
-		$dato[18]['dato']=$fecha_actual;	
-		$dato[19]['campo']='Fecha_OUT';
-		$dato[19]['dato']=$fecha_actual;	
-		$dato[20]['campo']='Fecha_NC';
-		$dato[20]['dato']=$fecha_actual;
-		$dato[21]['campo']='Fecha_V';
-		$dato[21]['dato']=$fecha_actual;	
-		$dato[22]['campo']='Fecha_Fab';
-		$dato[22]['dato']=$fecha_actual;	
-		$dato[23]['campo']='Fecha_Exp';
-		$dato[23]['dato']=$fecha_actual;*/	
-		$dato[17]['campo']='Porc_IVA';
-		$dato[17]['dato']=$_SESSION['INGRESO']['porc'];	
-		$total_iva=$total_iva+$row[7];
-		$this->insert_generico("Detalle_Factura",$dato);
-	}
-	//agregamos abono
-	$sql="SELECT * FROM Asiento_Abonos WHERE  (HABIT= '".$me."') AND 
-	(Periodo = '".$_SESSION['INGRESO']['periodo']."') AND (Item = '".$_SESSION['INGRESO']['item']."')";
-	$stmt = sqlsrv_query($cid, $sql);
-	if( $stmt === false)  
-	{  
-		 echo "Error en consulta PA.\n";  
-		 die( print_r( sqlsrv_errors(), true));  
-	}				
-	
-	/*
-	INSERT INTO Trans_Abonos
-	   (Periodo,C,ME,T,TP,Cta(preguntar),Cta_CxP(preguntar),Fecha,Recibo_No,Comprobante(preguntar),Factura,Total,Abono(preguntar),
-	   CodigoC,Banco,Cheque,CodigoU
-	   ,Item,Serie,Tipo_Cta ,Fecha_Aut_NC,Fecha_Aut,Ejecutivo)
-	*/
-	while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_NUMERIC) ) 
-	{
-		//datos de la cuenta
-		$sql="SELECT TC,Codigo,Cuenta,Tipo_Pago FROM Catalogo_Cuentas 
-			WHERE TC IN ('BA','CJ','CP','C','P','TJ','CF','CI','CB') 
-			AND DG = 'D' AND Item = '".$_SESSION['INGRESO']['item']."' 
-			AND Periodo = '".$_SESSION['INGRESO']['periodo']."' AND Codigo='".$row[11]."' ";
-			//echo $sql.'<br>';
-		$stmt1 =sqlsrv_query( $cid, $sql);
-		if( $stmt1 === false)  
+		//agregamos detalle factura
+		$sql="select * ". 
+			  "FROM Asiento_F
+			   WHERE  (Item = '".$_SESSION['INGRESO']['item']."')
+			   AND  HABIT='".$me."' 
+			   ORDER BY CODIGO";
+						
+		//echo $sql;
+		//die();
+		$stmt =sqlsrv_query( $cid, $sql);
+		if( $stmt === false)  
 		{  
 			 echo "Error en consulta PA.\n";  
 			 die( print_r( sqlsrv_errors(), true));  
 		}
-		$cod_cue='.';
-		$TC='.';
-		$cuenta='.';
-		$tipo_pago='.';
-		while( $row1 = sqlsrv_fetch_array( $stmt1, SQLSRV_FETCH_NUMERIC) ) 
+		/*
+		SELECT        TOP (200) Periodo, Item, C, T, ME, Cod_CxC, TC, Serie, Autorizacion, Factura, CodigoC, Fecha, Fecha_C, Fecha_V, SubTotal, Con_IVA, Sin_IVA, IVA, Descuento, Porc_C, Comision, Servicio, Total_MN, Total_ME, Saldo_MN, 
+							 Saldo_ME, Saldo_Actual, Forma_Pago, Cotizacion, Cta_CxP, Cta_Venta, Cod_Ejec, Com_Pag, Nota, Observacion, CodigoU, SubCta, Hora, Vencimiento, P, Fecha_Aut, Dias_Vencidos, Desc_0, Desc_X, RUC_CI, TB, Razon_Social, 
+							 Direccion_RS, Telefono_RS, CodigoB, Descuento2, Total_Efectivo, Total_Banco, Total_Ret_Fuente, Total_Ret_IVA_B, Total_Ret_IVA_S, Otros_Abonos, Total_Abonos, Abonos_MN, Clave_Acceso, Hora_Aut, Estado_SRI, Efectivo, 
+							 CodigoDr, Serie_R, Secuencial_R, Autorizacion_R, Fecha_R, Autorizacion_NC, Clave_Acceso_NC, Hora_Aut_NC, Estado_SRI_NC, Tipo_Pago, Error_FA_SRI, Porc_IVA, Imp_Mes, SP, Orden_Compra, X, Chq_Posf, Venc_0_60, 
+							 Venc_61_90, Venc_91_120, Venc_121_360, Venc_mas_360, ID
+		FROM            Facturas
+		WHERE        (Factura = '1569') AND (Item = '001') AND (Periodo = '.')
+		SELECT        TOP (200) Periodo, T, TC, CodigoC, Factura, Fecha, Codigo, CodigoL, Producto, Cantidad, Precio, Total, Total_IVA, Ruta, Ticket, Item, Corte, Reposicion, Total_Desc, No_Hab, Cod_Ejec, Porc_C, Com_Pag, Cta_Venta, CodigoU, 
+							 CodBodega, Tonelaje, Costo, Comision, Mes, X, Producto_Aux, Puntos, Autorizacion, Serie, CodMarca, Gramaje, Orden_No, Mes_No, C, CodigoB, Precio2, Total_Desc2, SubTotal_NC, Total_IVA_NC, Fecha_IN, Fecha_OUT, 
+							 Cant_Hab, Tipo_Hab, Codigo_Barra, Serie_NC, Autorizacion_NC, Fecha_NC, Secuencial_NC, Fecha_V, Cant_Bonif, Lote_No, Fecha_Fab, Fecha_Exp, Modelo, Procedencia, Serie_No, Porc_IVA, Cantidad_NC, Total_Desc_NC, 
+							 ID
+		FROM            Detalle_Factura
+		WHERE        (Factura = '1569') AND (Item = '001') AND (Periodo = '.')
+		*/
+		while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_NUMERIC) ) 
 		{
-			$cod_cue=$row1[1];
-			$TC=$row1[0];
-			$cuenta=$row1[2];
-			if($row1[3]!='.')
+			$dato[0]['campo']='T';
+			$dato[0]['dato']='C';
+			$dato[1]['campo']='TC';
+			$dato[1]['dato']='FA';
+			$dato[2]['campo']='CodigoC';
+			$dato[2]['dato']=$codigo;
+			$dato[3]['campo']='Factura';
+			$dato[3]['dato']=$n_fac;
+			$dato[4]['campo']='Fecha';
+			$dato[4]['dato']=$fecha_actual;	
+			$dato[5]['campo']='Codigo';
+			$dato[5]['dato']=$row[0];
+			$dato[6]['campo']='CodigoL';
+			$dato[6]['dato']=$cod_linea;	
+			$dato[7]['campo']='Producto';
+			$dato[7]['dato']=$row[3];	
+			$dato[8]['campo']='Cantidad';
+			$dato[8]['dato']=$row[1];
+			$dato[9]['campo']='Precio';
+			$dato[9]['dato']=$row[4];	
+			$dato[10]['campo']='Total';
+			$dato[10]['dato']=$row[9];//descontar descuentos	
+			$dato[11]['campo']='Total_IVA';
+			$dato[11]['dato']=$row[7];
+			//$dato[12]['campo']='Cta_Venta';
+			//$dato[12]['dato']='.';	
+			$dato[12]['campo']='Item';
+			$dato[12]['dato']=$_SESSION['INGRESO']['item'];	
+			$dato[13]['campo']='CodigoU';
+			$dato[13]['dato']=$_SESSION['INGRESO']['CodigoU'];	
+			$dato[14]['campo']='Periodo';
+			$dato[14]['dato']=$_SESSION['INGRESO']['periodo'];	
+			$dato[15]['campo']='Serie';
+			$dato[15]['dato']=$ser1[2];	
+			$dato[16]['campo']='Mes_No';
+			$dato[16]['dato']=$mes;	
+			//$dato[17]['campo']='C';
+			//$dato[17]['dato']=0;	
+			/*$dato[18]['campo']='Fecha_IN';
+			$dato[18]['dato']=$fecha_actual;	
+			$dato[19]['campo']='Fecha_OUT';
+			$dato[19]['dato']=$fecha_actual;	
+			$dato[20]['campo']='Fecha_NC';
+			$dato[20]['dato']=$fecha_actual;
+			$dato[21]['campo']='Fecha_V';
+			$dato[21]['dato']=$fecha_actual;	
+			$dato[22]['campo']='Fecha_Fab';
+			$dato[22]['dato']=$fecha_actual;	
+			$dato[23]['campo']='Fecha_Exp';
+			$dato[23]['dato']=$fecha_actual;*/	
+			$dato[17]['campo']='Porc_IVA';
+			$dato[17]['dato']=$_SESSION['INGRESO']['porc'];	
+			$total_iva=$total_iva+$row[7];
+			$this->insert_generico("Detalle_Factura",$dato);
+		}
+		//agregamos abono
+		$sql="SELECT * FROM Asiento_Abonos WHERE  (HABIT= '".$me."') AND 
+		(Periodo = '".$_SESSION['INGRESO']['periodo']."') AND (Item = '".$_SESSION['INGRESO']['item']."')";
+		$stmt = sqlsrv_query($cid, $sql);
+		if( $stmt === false)  
+		{  
+			 echo "Error en consulta PA.\n";  
+			 die( print_r( sqlsrv_errors(), true));  
+		}				
+		
+		/*
+		INSERT INTO Trans_Abonos
+		   (Periodo,C,ME,T,TP,Cta(preguntar),Cta_CxP(preguntar),Fecha,Recibo_No,Comprobante(preguntar),Factura,Total,Abono(preguntar),
+		   CodigoC,Banco,Cheque,CodigoU
+		   ,Item,Serie,Tipo_Cta ,Fecha_Aut_NC,Fecha_Aut,Ejecutivo)
+		*/
+		while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_NUMERIC) ) 
+		{
+			//datos de la cuenta
+			$sql="SELECT TC,Codigo,Cuenta,Tipo_Pago FROM Catalogo_Cuentas 
+				WHERE TC IN ('BA','CJ','CP','C','P','TJ','CF','CI','CB') 
+				AND DG = 'D' AND Item = '".$_SESSION['INGRESO']['item']."' 
+				AND Periodo = '".$_SESSION['INGRESO']['periodo']."' AND Codigo='".$row[11]."' ";
+				//echo $sql.'<br>';
+			$stmt1 =sqlsrv_query( $cid, $sql);
+			if( $stmt1 === false)  
+			{  
+				 echo "Error en consulta PA.\n";  
+				 die( print_r( sqlsrv_errors(), true));  
+			}
+			$cod_cue='.';
+			$TC='.';
+			$cuenta='.';
+			$tipo_pago='.';
+			while( $row1 = sqlsrv_fetch_array( $stmt1, SQLSRV_FETCH_NUMERIC) ) 
 			{
-				if($tipo_pago=='.')
+				$cod_cue=$row1[1];
+				$TC=$row1[0];
+				$cuenta=$row1[2];
+				if($row1[3]!='.')
 				{
-					$tipo_pago=$row1[3];
-				}
-				else
-				{
-					if($tipo_pago<$row1[3])
+					if($tipo_pago=='.')
 					{
 						$tipo_pago=$row1[3];
 					}
+					else
+					{
+						if($tipo_pago<$row1[3])
+						{
+							$tipo_pago=$row1[3];
+						}
+					}
 				}
 			}
+			$dato[0]['campo']='T';
+			$dato[0]['dato']='C';
+			$dato[1]['campo']='TP';
+			$dato[1]['dato']='FA';
+			$dato[2]['campo']='CodigoC';
+			$dato[2]['dato']=$codigo;
+			$dato[3]['campo']='Factura';
+			$dato[3]['dato']=$n_fac;
+			$dato[4]['campo']='Fecha';
+			$dato[4]['dato']=$fecha_actual;	
+			$dato[5]['campo']='Cta';
+			$dato[5]['dato']=$cod_cue;
+			$dato[6]['campo']='Cta_CxP';
+			$dato[6]['dato']=$cod_linea;	
+			$dato[7]['campo']='Recibo_No';
+			$dato[7]['dato']='0000000000';	
+			$dato[8]['campo']='Comprobante';
+			$dato[8]['dato']='.';
+			$dato[9]['campo']='Abono';
+			//$dato[9]['dato']=$row[9];	
+			$dato[9]['dato']=$total_total_;
+			$dato[10]['campo']='Total';
+			//$dato[10]['dato']=$row[9];	
+			$dato[10]['dato']=$total_total_;
+			$dato[11]['campo']='Cheque';
+			$dato[11]['dato']=$row[12];
+			$dato[12]['campo']='Fecha_Aut_NC';
+			$dato[12]['dato']=$fecha_actual;	
+			$dato[13]['campo']='Item';
+			$dato[13]['dato']=$_SESSION['INGRESO']['item'];	
+			$dato[14]['campo']='CodigoU';
+			$dato[14]['dato']=$_SESSION['INGRESO']['CodigoU'];	
+			$dato[14]['campo']='Periodo';
+			$dato[14]['dato']=$_SESSION['INGRESO']['periodo'];	
+			$dato[15]['campo']='Serie';
+			$dato[15]['dato']=$ser1[2];	
+			$dato[16]['campo']='Fecha_Aut';
+			$dato[16]['dato']=$fecha_actual;
+			$dato[17]['campo']='C';
+			$dato[17]['dato']=0;
+			$dato[18]['campo']='Tipo_Cta';
+			$dato[18]['dato']=$TC;
+			$dato[19]['campo']='Banco';
+			$dato[19]['dato']=$cuenta;
+			$this->insert_generico("Trans_Abonos",$dato);
 		}
-		$dato[0]['campo']='T';
-		$dato[0]['dato']='C';
-		$dato[1]['campo']='TP';
-		$dato[1]['dato']='FA';
-		$dato[2]['campo']='CodigoC';
-		$dato[2]['dato']=$codigo;
-		$dato[3]['campo']='Factura';
-		$dato[3]['dato']=$n_fac;
-		$dato[4]['campo']='Fecha';
-		$dato[4]['dato']=$fecha_actual;	
-		$dato[5]['campo']='Cta';
-		$dato[5]['dato']=$cod_cue;
-		$dato[6]['campo']='Cta_CxP';
-		$dato[6]['dato']=$cod_linea;	
-		$dato[7]['campo']='Recibo_No';
-		$dato[7]['dato']='0000000000';	
-		$dato[8]['campo']='Comprobante';
-		$dato[8]['dato']='.';
-		$dato[9]['campo']='Abono';
-		//$dato[9]['dato']=$row[9];	
-		$dato[9]['dato']=$total_total_;
-		$dato[10]['campo']='Total';
-		//$dato[10]['dato']=$row[9];	
-		$dato[10]['dato']=$total_total_;
-		$dato[11]['campo']='Cheque';
-		$dato[11]['dato']=$row[12];
-		$dato[12]['campo']='Fecha_Aut_NC';
-		$dato[12]['dato']=$fecha_actual;	
-		$dato[13]['campo']='Item';
-		$dato[13]['dato']=$_SESSION['INGRESO']['item'];	
-		$dato[14]['campo']='CodigoU';
-		$dato[14]['dato']=$_SESSION['INGRESO']['CodigoU'];	
-		$dato[14]['campo']='Periodo';
-		$dato[14]['dato']=$_SESSION['INGRESO']['periodo'];	
-		$dato[15]['campo']='Serie';
-		$dato[15]['dato']=$ser1[2];	
-		$dato[16]['campo']='Fecha_Aut';
-		$dato[16]['dato']=$fecha_actual;
-		$dato[17]['campo']='C';
-		$dato[17]['dato']=0;
-		$dato[18]['campo']='Tipo_Cta';
-		$dato[18]['dato']=$TC;
-		$dato[19]['campo']='Banco';
-		$dato[19]['dato']=$cuenta;
-		$this->insert_generico("Trans_Abonos",$dato);
-	}
-	/*
-	INSERT INTO Detalle_Factura
-           (T,TC,CodigoC ,Factura,Fecha,Codigo,CodigoL ,Producto,Cantidad,Reposicion ,Precio,Total ,Total_Desc,Total_IVA,Ruta,Ticket,No_Hab
-           ,Cod_Ejec,Porc_C,Cta_Venta,Item,CodigoU,Periodo,Com_Pag,CodBodega,Tonelaje,Corte,X,Costo,Comision,Mes,Producto_Aux,Puntos
-           ,Autorizacion,Serie,CodMarca,Gramaje,Orden_No,Mes_No,C,CodigoB,Precio2,Total_Desc2,SubTotal_NC,Total_IVA_NC,Fecha_IN
-           ,Fecha_OUT,Cant_Hab,Tipo_Hab,Codigo_Barra,Serie_NC,Autorizacion_NC,Fecha_NC,Secuencial_NC,Fecha_V ,Cant_Bonif,Lote_No
-           ,Fecha_Fab,Fecha_Exp,Modelo,Procedencia,Serie_No,Porc_IVA ,Cantidad_NC,Total_Desc_NC)
-    
-	*/
-	/*
-	INSERT INTO Facturas
-           (C,T ,TC,ME,Factura,CodigoC ,Fecha,Fecha_C ,Fecha_V,SubTotal,Con_IVA ,Sin_IVA,IVA,Total_MN
-           ,Cta_CxP,Cta_Venta,Item ,CodigoU,Periodo,Cod_CxC,Com_Pag
-           ,Hora ,X,Serie,Vencimiento,P,Fecha_Aut,RUC_CI,TB,Razon_Social,Total_Efectivo,Total_Banco,Otros_Abonos,Total_Abonos,
-		   Abonos_MN,Tipo_Pago,Porc_IVA)
-     VALUES
-	*/
-	$query="INSERT INTO Facturas
-           (C,T ,TC,ME,Factura,CodigoC ,Fecha,Fecha_C ,Fecha_V,SubTotal,Con_IVA ,Sin_IVA,IVA,Total_MN
-           ,Cta_CxP,Cta_Venta,Item ,CodigoU,Periodo,Cod_CxC,Com_Pag
-           ,Hora ,X,Serie,Vencimiento,P,Fecha_Aut,RUC_CI,TB,Razon_Social,Total_Efectivo,Total_Banco,Otros_Abonos,Total_Abonos,
-		   Abonos_MN,Tipo_Pago,Porc_IVA)
-     VALUES
+		/*
+		INSERT INTO Detalle_Factura
+			   (T,TC,CodigoC ,Factura,Fecha,Codigo,CodigoL ,Producto,Cantidad,Reposicion ,Precio,Total ,Total_Desc,Total_IVA,Ruta,Ticket,No_Hab
+			   ,Cod_Ejec,Porc_C,Cta_Venta,Item,CodigoU,Periodo,Com_Pag,CodBodega,Tonelaje,Corte,X,Costo,Comision,Mes,Producto_Aux,Puntos
+			   ,Autorizacion,Serie,CodMarca,Gramaje,Orden_No,Mes_No,C,CodigoB,Precio2,Total_Desc2,SubTotal_NC,Total_IVA_NC,Fecha_IN
+			   ,Fecha_OUT,Cant_Hab,Tipo_Hab,Codigo_Barra,Serie_NC,Autorizacion_NC,Fecha_NC,Secuencial_NC,Fecha_V ,Cant_Bonif,Lote_No
+			   ,Fecha_Fab,Fecha_Exp,Modelo,Procedencia,Serie_No,Porc_IVA ,Cantidad_NC,Total_Desc_NC)
+		
+		*/
+		/*
+		INSERT INTO Facturas
+			   (C,T ,TC,ME,Factura,CodigoC ,Fecha,Fecha_C ,Fecha_V,SubTotal,Con_IVA ,Sin_IVA,IVA,Total_MN
+			   ,Cta_CxP,Cta_Venta,Item ,CodigoU,Periodo,Cod_CxC,Com_Pag
+			   ,Hora ,X,Serie,Vencimiento,P,Fecha_Aut,RUC_CI,TB,Razon_Social,Total_Efectivo,Total_Banco,Otros_Abonos,Total_Abonos,
+			   Abonos_MN,Tipo_Pago,Porc_IVA)
+		 VALUES
+		*/
+		$query="INSERT INTO Facturas
+			   (C,T ,TC,ME,Factura,CodigoC ,Fecha,Fecha_C ,Fecha_V,SubTotal,Con_IVA ,Sin_IVA,IVA,Total_MN
+			   ,Cta_CxP,Cta_Venta,Item ,CodigoU,Periodo,Cod_CxC,Com_Pag
+			   ,Hora ,X,Serie,Vencimiento,P,Fecha_Aut,RUC_CI,TB,Razon_Social,Total_Efectivo,Total_Banco,Otros_Abonos,Total_Abonos,
+			   Abonos_MN,Tipo_Pago,Porc_IVA)
+		 VALUES
            (1
            ,'C'
            ,'FA'
@@ -536,6 +540,8 @@ function agregar_factura($datos1)
 		$dato[35]['dato']=$tipo_pago;
 		$dato[36]['campo']='Porc_IVA';
 		$dato[36]['dato']=$_SESSION['INGRESO']['porc'];
+		$dato[37]['campo']='Propina';
+		$dato[37]['dato']=$propina_a;	
 		$this->insert_generico("Facturas",$dato);
 		$n_fac++;
 		//incrementar contador de facturas
@@ -586,6 +592,12 @@ function agregar_factura($datos1)
 		  //imprimir factura despues de autorizar 
 		cerrarSQLSERVERFUN($cid);
 		  //campo que informar imprimir pdf automatico
+		  return 2;
+	}
+	else
+	{
+		return 0;
+	}
 }
 function agregar_abono($datos1)
 {

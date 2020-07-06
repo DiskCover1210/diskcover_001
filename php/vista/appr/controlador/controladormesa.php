@@ -277,7 +277,7 @@ function lista_productos($buscar)
 				  </div>
 				</td>
 				<td width="50px">
-				 $ '.$value['PVP'].'
+				 $ '.number_format($value['PVP'],2, ',', '.').'
 				 </td>
 				<td width="30px">
 				 <small class="label label-success"><i class="fa fa-clock-o"></i> Disponible</small>
@@ -302,7 +302,7 @@ function pedido_mesa($me,$nom)
 		<tr>
 		 <td>'.intval($value['CANT']).'</td>
 		 <td>'.$value['PRODUCTO'].'</td>
-		 <td>'.$value['PRECIO'].'</td>
+		 <td>'.number_format($value['PRECIO'],2, ',', '.').'</td>
 		 <td width="30px">';
 		 if($value['Estado']=='R')
 		 	{
@@ -321,7 +321,7 @@ function pedido_mesa($me,$nom)
 			}
 		 $html.='
 		 </td>
-		 <td>'.$value['PRECIO']* $value['CANT'].'</td>
+		 <td>'.number_format(($value['PRECIO']* $value['CANT']),2, ',', '.').'</td>
 		 <td>';
 		 if($value['Estado']!='V')
 		 	{
@@ -332,15 +332,15 @@ function pedido_mesa($me,$nom)
 		 $html.='</td>
 		</tr>';
 	}
-	$html.='<tr><td colspan="6" class="text-right" style="color:red">SUB TOTAL: $'.$total.'</td></tr>'.
-		'<tr><td colspan="6" class="text-right" style="color:red">IVA: $'.$iva.'</td></tr>'.
-		'<tr><td colspan="6" class="text-right" style="color:red">TOTAL: $'.($total+$iva).'</td></tr>'.
+	$html.='<tr><td colspan="5" class="text-right" style="color:red">SUB TOTAL:</td><td class="text-right" style="color:red">$'.number_format($total,2, ',', '.').'</td></tr>'.
+		'<tr><td colspan="5" class="text-right" style="color:red">IVA:</td><td class="text-right" style="color:red">$'.number_format($iva,2, ',', '.').'</td></tr>'.
+		'<tr><td colspan="5" class="text-right" style="color:red">TOTAL:</td><td class="text-right" style="color:red">$'.number_format(($total+$iva),2, ',', '.').'</td></tr>'.
 		'<script>
 			var total_abono=document.getElementById(\'total_abono\').value;
-			var devo=total_abono-'.($total+$iva).';
+			var devo=(total_abono-'.($total+$iva).').toFixed(2);
 			$( "#total_abono1" ).html(\'<b>TOTAL ABONO: \'+total_abono+\'</b>\');
-			$( "#operacion" ).html(\'<input type="hidden" id="total_total_" name="total_total_" value="'.($total+$iva).'"><b>TOTAL: $'.($total+$iva).'</b>\');
-			$( "#devolucion" ).html(\'<b>DEVALUCION: $\'+devo+\'</b>\');
+			$( "#operacion" ).html(\'<input type="hidden" id="total_total_" name="total_total_" value="'.($total+$iva).'"><b>TOTAL: $'.number_format(($total+$iva),2, ',', '.').'</b>\');
+			$( "#devolucion" ).html(\'<b>DIFERENCIA: $\'+devo+\'</b>\');
 		</script>';
 	return $html;
 
@@ -407,6 +407,28 @@ function agregar_factura()
 					title: 'abono agregado con exito!',
 					showConfirmButton: true
 					//timer: 2500
+				});
+			</script>";
+	}
+	if($resp==2)
+	{
+		echo "<script type='text/javascript'>
+				Swal.fire({
+					//position: 'top-end',
+					type: 'success',
+					title: 'Factura Generada con exito!',
+					showConfirmButton: true
+					//timer: 2500
+				});
+			</script>";
+	}
+	if($resp==0)
+	{
+		echo "<script type='text/javascript'>
+				Swal.fire({
+					type: 'error',
+					title: 'error al ingresar factura recargue y intente nuevamente',
+					text: ''
 				});
 			</script>";
 	}
@@ -510,7 +532,7 @@ function  modal_facturas($me,$nom)
 									<input type="hidden" id='abono' name='abono' value='<?php echo $resul[$i]['Abono'];?>'>
 									<input type="hidden" id='comp' name='comp' value='<?php echo $resul[$i]['Comprobante'];?>'>
 									<input type="hidden" id='cta' name='cta' value='<?php echo $resul[$i]['Cta'];?>'>
-									<b>Monto: </b><?php echo number_format($resul[$i]['Abono'],2, '.', ','); ?> 
+									<b>Monto: </b><?php echo number_format($resul[$i]['Abono'],2, ',', '.'); ?> 
 								</td>
 								<td>
 									<b> Adicional: </b><?php echo $resul[$i]['Comprobante']; ?>
@@ -528,48 +550,61 @@ function  modal_facturas($me,$nom)
 				</tr>
 				<tr>
 					<td>
-						<b>Tipo Pago (*): </b>
-						<select class="xs" name="abo" id='abo' onChange="mos_ocu('texto_a','abo')">
-							<option value='0'>Seleccionar</option>
-							<?php
-								/*select_option_aj('Catalogo_Cuentas','Codigo,TC',"Cuenta",
-								" TC IN ('BA','CJ','CP','C','P','TJ','CF','CI','CB') 
-								AND DG = 'D' AND Item = '".$_SESSION['INGRESO']['item']."' 
-								AND Periodo = '".$_SESSION['INGRESO']['periodo']."'  ");*/
-								select_option_aj('Catalogo_Cuentas','Codigo,TC',"Cuenta",
-								" TC IN ('BA','CJ','TJ') 
-								AND DG = 'D' AND Item = '".$_SESSION['INGRESO']['item']."' 
-								AND Periodo = '".$_SESSION['INGRESO']['periodo']."' order by TC DESC,Codigo ",'1.1.01.01.09-CJ'); ?>
-						</select>
-						<div id='e_abo' class="form-group has-error" style='display:none'>
-							<span class="help-block">debe Seleccionar un tipo de pago</span>
+						<div class=""><b>Tipo Pago (*): &nbsp;</b>
+							<select class="xs" name="abo" id='abo' onChange="mos_ocu('texto_a','abo')">
+								<option value='0'>Seleccionar</option>
+								<?php
+									/*select_option_aj('Catalogo_Cuentas','Codigo,TC',"Cuenta",
+									" TC IN ('BA','CJ','CP','C','P','TJ','CF','CI','CB') 
+									AND DG = 'D' AND Item = '".$_SESSION['INGRESO']['item']."' 
+									AND Periodo = '".$_SESSION['INGRESO']['periodo']."'  ");*/
+									select_option_aj('Catalogo_Cuentas','Codigo,TC',"Cuenta",
+									" TC IN ('TJ','EF') 
+									AND DG = 'D' AND Item = '".$_SESSION['INGRESO']['item']."' 
+									AND Periodo = '".$_SESSION['INGRESO']['periodo']."' order by TC ,Codigo ",'1.1.01.01.09-CJ'); ?>
+							</select>
+							<div id='e_abo' class="form-group has-error" style='display:none'>
+								<span class="help-block">debe Seleccionar un tipo de pago</span>
+							</div>
 						</div>
+					</td>
+					<td>
+						
 					</td>
 				</tr>
 				<tr id='texto_a' style='display:none;'>
 					<td>
-						<b>Comprobante:</b>
-						<input type="text" class="xs" id="compro_a" name='compro_a' 
-						placeholder="Numero compro o cheque" value='.' maxlength='45' size='5' >
-						
+						<div class=""><b>Comprobante:</b>
+							<input type="text" class="xs" id="compro_a" name='compro_a' 
+							placeholder="Numero compro o cheque" value='.' maxlength='45' size='5' >
+						</div>
 					</td>
-					
 				</tr>
 				<tr>
 					<td>
-						<b>Monto (*):</b>
-						<input type="text" class="xs" id="monto_a" name='monto_a' 
-						placeholder="Monto" value='1' maxlength='30' size='5' >
-						<div id='e_monto_a' class="form-group has-error" style='display:none'>
-							<span class="help-block">debe agregar monto</span>
+						<div class=""><b>Monto (*):&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</b>
+							<input type="text" class="xs" id="monto_a" name='monto_a' 
+							placeholder="Monto" value='1' maxlength='30' size='5' >
+							<div id='e_monto_a' class="form-group has-error" style='display:none'>
+								<span class="help-block">debe agregar monto</span>
+							</div>
 						</div>
 					</td>
+				</tr>
+				<tr>
+					<td>
 					
+						<div class=""><b>Propina:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</b>
+							<input type="text" class="xs" id="propina_a" name='propina_a' 
+							placeholder="Propina" value='0' maxlength='30' size='5' >
+						</div>	
+					</td>
 				</tr>
 				<tr>
 					<td colspan='2' >
 						<input type="hidden" id='total_abono' name='total_abono' value='<?php echo $abono;?>'>
 						<p id='total_abono1'>Abono Total: $<?php echo $abono; ?></p> <p id="operacion"></p> <p id="devolucion"></p>
+						<!--<p id="propina"></p>-->
 					</td>
 				</tr>
 				<tr>

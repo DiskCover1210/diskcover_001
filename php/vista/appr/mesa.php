@@ -523,8 +523,8 @@ $_SESSION['INGRESO']['modulo_']='02';
 			var cli=document.getElementById('ruc').value;
 			var telefono=document.getElementById('telefono').value;
 			var codigoc=document.getElementById('codigoc').value;
-			var nombrec=document.getElementById('nombrec').value;
-			var email=document.getElementById('email').value;
+			var nombrec=document.getElementById('nombrec').value.toUpperCase();
+			var email=document.getElementById('email').value.toLowerCase();
 			var direccion=document.getElementById('direccion').value;
 			var nv=document.getElementById('nv').value;
 			var naciona=document.getElementById('naciona').value;
@@ -602,6 +602,7 @@ $_SESSION['INGRESO']['modulo_']='02';
 								"nom" : nom,
 								"nombrec": nombrec,
 								"ruc": cli,
+								"email": email
 							};
 							$.ajax({
 								data:  parametros,
@@ -645,6 +646,8 @@ $_SESSION['INGRESO']['modulo_']='02';
 		var n_fac=document.getElementById('n_fac').value;
 		var total_total_=document.getElementById('total_total_').value;
 		var total_abono=document.getElementById('total_abono').value;
+		var propina_a=document.getElementById('propina_a').value;
+		//alert(propina_a);
 		if(total_total_>total_abono)
 		{
 			Swal.fire({
@@ -665,7 +668,8 @@ $_SESSION['INGRESO']['modulo_']='02';
 				"ser" : ser,
 				"n_fac" : n_fac,
 				"total_total_" : total_total_,
-				"total_abono" : total_abono
+				"total_abono" : total_abono,
+				"propina_a" : propina_a
 			};
 			$.ajax({
 				data:  parametros,
@@ -696,45 +700,75 @@ $_SESSION['INGRESO']['modulo_']='02';
 		var abo=document.getElementById('abo').value;
 		var compro_a=document.getElementById('compro_a').value;
 		var monto_a=document.getElementById('monto_a').value;
+		var propina_a=document.getElementById('propina_a').value;
 		document.getElementById("e_abo").style.display = "none";
 		document.getElementById("e_monto_a").style.display = "none";
-		if(abo=='0')
+		
+		var total_total_=document.getElementById('total_total_').value;
+		var total_abono=document.getElementById('total_abono').value;
+		
+		var devo = (parseFloat(total_abono)+parseFloat(monto_a))-parseFloat(total_total_);
+		
+		//alert(total_abono+' nn '+(parseFloat(total_abono)+parseFloat(monto_a))+' cc '+total_total_+' -- '+devo);
+		if(devo>0)
 		{
-			document.getElementById("e_abo").style.display = "block";	
+			Swal.fire({
+				type: 'error',
+				title: 'no puede ingresar mas abono del total de la factura: $'+total_total_,
+				text: ''
+			});
 		}
 		else
 		{
-			if(monto_a=='')
+			if(abo=='0')
 			{
-				document.getElementById("e_monto_a").style.display = "block";	
+				document.getElementById("e_abo").style.display = "block";	
 			}
 			else
 			{
-				var parametros =
+				if(isNaN(monto_a) || isNaN(propina_a))
 				{
-					"me" : me,
-					"nom" : nom,
-					"nombrec": nombrec,
-					"ruc": cli,
-					"email": email,
-					"ser" : ser,
-					"n_fac" : n_fac,
-					"abo": abo,
-					"compro_a": compro_a,
-					"monto_a": monto_a
-				};
-				$.ajax({
-					data:  parametros,
-					url:   'controlador/controladormesa.php?abono=true',
-					type:  'post',
-					beforeSend: function () {
-							$("#contenido").html("");
-					},
-					success:  function (response) {
-							$("#contenido").html(response);
-							$("#myModal").modal();					
+					Swal.fire({
+						type: 'error',
+						title: 'debe Ingresar solo numero',
+						text: ''
+					});
+				}
+				else
+				{	
+					if(monto_a=='')
+					{
+						document.getElementById("e_monto_a").style.display = "block";	
 					}
-				});	
+					else
+					{
+						var parametros =
+						{
+							"me" : me,
+							"nom" : nom,
+							"nombrec": nombrec,
+							"ruc": cli,
+							"email": email,
+							"ser" : ser,
+							"n_fac" : n_fac,
+							"abo": abo,
+							"compro_a": compro_a,
+							"monto_a": monto_a
+						};
+						$.ajax({
+							data:  parametros,
+							url:   'controlador/controladormesa.php?abono=true',
+							type:  'post',
+							beforeSend: function () {
+									$("#contenido").html("");
+							},
+							success:  function (response) {
+									$("#contenido").html(response);
+									$("#myModal").modal();					
+							}
+						});	
+					}
+				}
 			}
 		}
 	}
@@ -743,7 +777,8 @@ $_SESSION['INGRESO']['modulo_']='02';
 		var cli=document.getElementById('ruc').value;
 		var nombrec=document.getElementById('nombrec').value;
 		var email=document.getElementById('email').value;
-		if( (cli=='.' && nombrec=='') || (cli!='.' && nombrec!=''))
+		
+		if( (cli!='.' && nombrec=='') || (cli!='.' && nombrec!='') || (cli=='9999999999999' && nombrec==''))
 		{
 			var parametros = 
 			{
@@ -1250,10 +1285,21 @@ $_SESSION['INGRESO']['modulo_']='02';
 
 	function c_total(id,pre,id_) 
 	{
-		var cant=document.getElementById('canti_'+id).value;
-		var tot=cant*pre;
-		//alert(tot+"#total_"+id);
-		$("#total_"+id_).html('TOTAL $ '+tot);
+		if(isNaN(document.getElementById('canti_'+id).value))
+		{
+			Swal.fire({
+				type: 'error',
+				title: 'debe Ingresar solo numero',
+				text: ''
+			});
+		}
+		else
+		{
+			var cant=document.getElementById('canti_'+id).value;
+			var tot=cant*pre;
+			//alert(tot+"#total_"+id);
+			$("#total_"+id_).html('TOTAL $ '+tot);
+		}
 	}
 
 	function agregar_(id,nom)
@@ -1309,6 +1355,31 @@ $_SESSION['INGRESO']['modulo_']='02';
 			});
 		}
 		
+	}
+	function formato(e)
+	{
+		e = e || window.event;
+		e = e.target || e.srcElement;
+		var input = this.shadowRoot.getElementById(e.id) ;
+
+		//aquí elimino todo lo que no sea números o comas (,)
+		var num = input.value.replace(/\,/g,'');
+		if(!isNaN(num)){
+		//convierto a string
+		num = num.toString();
+		//separo los caracteres del string
+		num = num.split('');
+		//invierto el orden del string
+		num = num.reverse();
+		//junto todos los caracteres de la cadena
+		num = num.join('');
+		//busco los dos primeros caracteres y le coloco una coma en la siguiente posición
+		num = num.replace(/(?=\d*\.?)(\d{2})/,'$1,');
+		//invierto del contenido de la cadena y reemplazo todo lo que no sea números o comas
+		num = num.split('').reverse().join('').replace(/^[\,]/,'');
+		//asigno la cadena formateada al input
+		input.value = num;
+		}
 	}
 </script>
 

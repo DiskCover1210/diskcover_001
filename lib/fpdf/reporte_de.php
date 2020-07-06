@@ -279,8 +279,9 @@ function imprimirDocElPF($stmt,$id=null,$formato=null,$nombre_archivo=null,$va=n
     $pdf->Ln($salto);
     $pdf->Cell(40,5,'AMBIENTE:Produccion',0,0);
     $pdf->Cell(30,5,'EMISION:Normal',0,0);
-    $pdf->Ln($salto);   
-    $pdf->MultiCell(70,3,'CALVE DE ACCESO '.$datos['numautorizacio'],0,'L');
+    $pdf->Ln($salto);  
+	
+    $pdf->MultiCell(70,3,'CLAVE DE ACCESO '.$datos['numautorizacio'],0,'L');
     $pdf->Ln(3);   
     $pdf->Cell(0,0,'',1,0);
     
@@ -311,8 +312,8 @@ function imprimirDocElPF($stmt,$id=null,$formato=null,$nombre_archivo=null,$va=n
     $pdf->MultiCell(28,2,$value['detalle'],0,'L');
     $y = $pdf->GetY();
     $pdf->SetXY(48,$y2);
-    $pdf->Cell(15,2,$value['pvp'],0,0,'R');
-    $pdf->Cell(17,2,$value['total'],0,0,'R');
+    $pdf->Cell(15,2,number_format($value['pvp'],2, ',', '.'),0,0,'R');
+    $pdf->Cell(17,2,number_format($value['total'],2, ',', '.'),0,0,'R');
     $pdf->SetY($y);
     $pdf->Ln(2);
     $pdf->Cell(0,0,'',1,0); 
@@ -324,18 +325,18 @@ function imprimirDocElPF($stmt,$id=null,$formato=null,$nombre_archivo=null,$va=n
     $pdf->SetFont('Arial','',8);
     $pdf->Cell(35,2,'Cajero',0,0,'L');
     $pdf->Cell(17,2,'SUBTOTAL :',0,0,'L');
-    $pdf->Cell(17,2,$datos['subtotal'],0,0,'R');
+    $pdf->Cell(17,2,number_format($datos['subtotal'],2, ',', '.'),0,0,'R');
     $pdf->Ln(3);
 
     $pdf->Cell(35,2,'',0,0,'L');
     $pdf->Cell(17,2,'DESCUENTOS :',0,0,'L');
-    $pdf->Cell(17,2,$datos['dto'],0,0,'R');
+    $pdf->Cell(17,2,number_format($datos['dto'],2, ',', '.'),0,0,'R');
     $pdf->Ln(3);
 
 
     $pdf->Cell(35,2,'',0,0,'L');
     $pdf->Cell(17,2,'I.V.A 12% :',0,0,'L');
-    $pdf->Cell(17,2,$datos['iva'],0,0,'R');
+    $pdf->Cell(17,2,number_format($datos['iva'],2, ',', '.'),0,0,'R');
     $pdf->Ln(3);
 
 
@@ -344,8 +345,16 @@ function imprimirDocElPF($stmt,$id=null,$formato=null,$nombre_archivo=null,$va=n
     $y = $pdf->GetY();
     $pdf->SetXY(45,$y2);
     $pdf->Cell(17,2,'TOTAL :',0,0,'L');
-    $pdf->Cell(17,2,$datos['totalfac'],0,0,'R');
-    $pdf->SetY($y);
+    $pdf->Cell(17,2,number_format($datos['totalfac'],2, ',', '.'),0,0,'R');
+	 $pdf->Ln(3);
+	 $pdf->SetXY(45,$y);
+	 //$pdf->SetY($y);
+	 if($tipo == 'PF')
+    {  
+		$pdf->Cell(17,2,'Propina :',0,0,'L');
+		$pdf->Cell(17,2,'',0,0,'R');
+		$pdf->SetY($y+2);
+	}
     $pdf->Ln(3);
     $pdf->Cell(0,0,'',1,0); 
     $pdf->Ln($salto);
@@ -354,10 +363,11 @@ function imprimirDocElPF($stmt,$id=null,$formato=null,$nombre_archivo=null,$va=n
 	if($tipo == 'PF')
     {   
 		$pdf->SetFont('Arial','B',8);
-		$pdf->Cell(0,5,'Datos del pago',0,0,'C');
+		$pdf->Cell(0,5,'Datos de factura',0,0,'C');
 		$pdf->Ln($salto);
 		$pdf->SetFont('Arial','B',10);
-		$pdf->Cell(0,5,'TIPO PAGO                MONTO    ',0,0,'C');
+		/*$pdf->Cell(0,5,'Nombre  CI/RUC  Correo   Telf  DIR',0,0,'C');
+		//$pdf->Cell(0,5,'TIPO PAGO                MONTO    ',0,0,'C');
 		$pdf->Ln($salto);
 		$pdf->Ln($salto);
 		$pdf->Cell(0,0,'',1,0); 
@@ -373,15 +383,43 @@ function imprimirDocElPF($stmt,$id=null,$formato=null,$nombre_archivo=null,$va=n
 		$pdf->Ln($salto);
 		$pdf->Ln($salto);
 		$pdf->Cell(0,0,'',1,0); 
+		$pdf->Ln($salto);*/
+		$pdf->Cell(0,5,'Nombre',0,0,'L');
+		//$pdf->Cell(0,5,'TIPO PAGO                MONTO    ',0,0,'C');
+		
 		$pdf->Ln($salto);
+		$pdf->Ln($salto);
+		$pdf->Cell(0,0,'',1,0); 
+		$pdf->Ln($salto);
+		$pdf->Cell(0,5,'CI/RUC',0,0,'L');
+		$pdf->Ln($salto);
+		$pdf->Ln($salto);
+		$pdf->Cell(0,0,'',1,0); 
+		$pdf->Ln($salto);
+		$pdf->Cell(0,5,'Correo',0,0,'L');
+		$pdf->Ln($salto);
+		$pdf->Ln($salto);
+		$pdf->Cell(0,0,'',1,0); 
+		$pdf->Ln($salto);
+		$pdf->Cell(0,5,'Telefono',0,0,'L');
+		$pdf->Ln($salto);
+		$pdf->Ln($salto);
+		$pdf->Cell(0,0,'',1,0); 
+		$pdf->Ln($salto);
+		$pdf->Cell(0,5,'Direccion',0,0,'L');
+		$pdf->Ln($salto);
+		$pdf->Ln($salto);
+		$pdf->Cell(0,0,'',1,0); 
+		$pdf->Ln($salto);
+		
     }
     
 
     $pdf->SetFont('Arial','B',10);
-    $pdf->Cell(0,5,'GRACIAS POR SU COLABORACION',0,0,'C');
+    $pdf->Cell(0,5,'Fue un placer atenderle',0,0,'C');
     $pdf->Ln($salto);
     $pdf->SetFont('Arial','',7);
-    $pdf->Cell(0,5,'www.diskcoversystem.com',0,0,'C');
+    $pdf->Cell(0,5,'www.cofradiadelvino.com',0,0,'C');
     $pdf->Ln($salto);
 	
 	
