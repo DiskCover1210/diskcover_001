@@ -505,25 +505,27 @@ $("#datos").fadeIn();
        }
        $date1 = new DateTime(date('Y-m-d'));
       $date2 = new DateTime($f);
-      $diff = $date1->diff($date2);
+      $diff = date_diff($date1, $date2)->format('%R%a días');
+      // $interval = date_diff($date1, $date2);
+      // echo $interval->format('%R%a días');
       $color='white';
       $estado = 'Infefinido';
-      if($diff->days > 241)
+      if($diff> 241)
       {
         $color = '#1bff00';
         $estado = 'Licencia activa';
 
-      }else if($diff->days >= 121 and  $diff->days <= 240)
+      }else if($diff >= 121 and  $diff <= 240)
       {
 
         $estado = 'Licencia activa';
         $color = '#ffd025';
-      }else if($diff->days >= 1 and $diff->days<=120)
+      }else if($diff >= 1 and $diff<=120)
       {
 
         $estado = 'Casi por renovar';
         $color = '#eaa2bd';
-      }else if($diff->days ==0 and isset($_SESSION['INGRESO']['item']))
+      }else if($diff <= 0 and isset($_SESSION['INGRESO']['item']))
       {
         $estado = 'licencia vencida';
         $color='#c70f0f';
@@ -536,25 +538,25 @@ $("#datos").fadeIn();
        }
       $date11 = new DateTime(date('Y-m-d'));
       $date21 = new DateTime($f1);
-      $diff1 = $date11->diff($date21);
+      $diff1 = date_diff($date11, $date21)->format('%R%a días');;
       $color1='white';
       $estado1 = 'Infefinido';
-      if($diff1->days > 241)
+      if($diff1 > 241)
       {
         $color1 = '#1bff00';
         $estado1 = 'Comp-Elec. activo';
 
-      }else if($diff1->days >= 121 and  $diff1->days <= 240)
+      }else if($diff1 >= 121 and  $diff1 <= 240)
       {
 
         $estado1 = 'Comp-Elec. activo';
         $color1 = '#ffd025';
-      }else if($diff1->days >= 1 and $diff1->days<=120)
+      }else if($diff1 >= 1 and $diff1<=120)
       {
 
         $estado1 = 'Comp-Elec. por renovar';
         $color1 = '#eaa2bd';
-      }else if($diff1->days == 0 and isset($_SESSION['INGRESO']['item']))
+      }else if($diff1 <= 0 and isset($_SESSION['INGRESO']['item']))
       {
         $estado1 = 'Comp-Elec. vencida';
         $color1='#c70f0f';
@@ -576,7 +578,7 @@ $("#datos").fadeIn();
                   <b>Fecha de licencia: </b>
                   <small><?php if(isset($_SESSION['INGRESO']['Fecha'])){ $originalDate = $_SESSION['INGRESO']['Fecha']; $newDate = date("Y-m-d", strtotime($originalDate)); echo $newDate;}else{ echo date('Y-m-d');}?></small>
                 </p>
-                <p style="color:<?php echo $color ?>">DIAS RESTANTES: <b> <?php echo $diff->days ?></b></p>
+                <p style="color:<?php echo $color ?>">DIAS RESTANTES: <b> <?php echo $diff ?></b></p>
               </li>
             </ul>
           </li>
@@ -591,7 +593,7 @@ $("#datos").fadeIn();
                   <b>Fecha de comprobante: </b>
                    <small><?php if(isset($_SESSION['INGRESO']['Fecha_ce'])){ $originalDate = $_SESSION['INGRESO']['Fecha_ce']; $newDate = date("Y-m-d", strtotime($originalDate)); echo $newDate;}else{ echo date('Y-m-d');}?></small>
                 </p>
-                <p style="color:<?php echo $color1 ?>">DIAS RESTANTES: <b> <?php echo $diff1->days ?></b></p>
+                <p style="color:<?php echo $color1 ?>">DIAS RESTANTES: <b> <?php echo $diff1 ?></b></p>
               </li>
             </ul>
           </li>
