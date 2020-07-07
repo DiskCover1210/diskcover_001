@@ -76,26 +76,53 @@ function productos_entregar($Codigo_Inv)
 	cerrarSQLSERVERFUN($cid);
 }
 
-function list_product($buscar)
+function list_product($buscar,$fil)
 {
 	$cid=$this->conn->conexion();
 	if($buscar=='')
     {
-	$sql="SELECT * ". 
-	     "FROM Catalogo_Productos
-	      WHERE (LEN(Cta_Inventario) > 2) AND (LEN(Cta_Costo_Venta) > 2) AND (TC = 'P') AND 
-		  (Periodo = '".$_SESSION['INGRESO']['periodo']."') 
-		  AND (Item = '".$_SESSION['INGRESO']['item']."')
-		  ORDER BY Codigo_Inv";
-	}else
+		if($fil=='0')
+		{
+			$sql="SELECT * ". 
+			 "FROM Catalogo_Productos
+			  WHERE (LEN(Cta_Inventario) > 2) AND (LEN(Cta_Costo_Venta) > 2) AND (TC = 'P') AND 
+			  (Periodo = '".$_SESSION['INGRESO']['periodo']."') 
+			  AND (Item = '".$_SESSION['INGRESO']['item']."')
+			  ORDER BY Codigo_Inv";
+		}
+		else
+		{
+			$sql="SELECT * ". 
+			 "FROM Catalogo_Productos
+			  WHERE (LEN(Cta_Inventario) > 2) AND (LEN(Cta_Costo_Venta) > 2) AND (TC = 'P') AND 
+			  (Periodo = '".$_SESSION['INGRESO']['periodo']."') 
+			  AND (Item = '".$_SESSION['INGRESO']['item']."')
+			  AND (Codigo_Inv LIKE '%".$fil."%')
+			  ORDER BY Codigo_Inv";
+		}
+	}
+	else
 	{
-		$sql="SELECT * ". 
-		  "FROM Catalogo_Productos
-		   WHERE (LEN(Cta_Inventario) > 2) AND (LEN(Cta_Costo_Venta) > 2) AND (TC = 'P') AND 
-		   (Periodo = '".$_SESSION['INGRESO']['periodo']."') 
-			AND (Item = '".$_SESSION['INGRESO']['item']."')
-			AND  Producto LIKE '%".$buscar."%'
-			ORDER BY Codigo_Inv";
+		if($fil=='0')
+		{
+			$sql="SELECT * ". 
+			  "FROM Catalogo_Productos
+			   WHERE (LEN(Cta_Inventario) > 2) AND (LEN(Cta_Costo_Venta) > 2) AND (TC = 'P') AND 
+			   (Periodo = '".$_SESSION['INGRESO']['periodo']."') 
+				AND (Item = '".$_SESSION['INGRESO']['item']."')
+				AND  Producto LIKE '%".$buscar."%'
+				ORDER BY Codigo_Inv";
+		}
+		else
+		{
+			$sql="SELECT * ". 
+			  "FROM Catalogo_Productos
+			   WHERE (LEN(Cta_Inventario) > 2) AND (LEN(Cta_Costo_Venta) > 2) AND (TC = 'P') AND 
+			   (Periodo = '".$_SESSION['INGRESO']['periodo']."') 
+				AND (Item = '".$_SESSION['INGRESO']['item']."')
+				AND  (Producto LIKE '%".$buscar."%' or (Codigo_Inv LIKE '%".$fil."%'))
+				ORDER BY Codigo_Inv";
+		}
 	}			
 	//echo $sql;
     //die();

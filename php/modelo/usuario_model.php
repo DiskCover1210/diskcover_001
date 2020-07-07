@@ -555,6 +555,8 @@ class usuario_model{
 				$empresa[$i]['Nombre_Comercial']=$obj->Nombre_Comercial;
 				$empresa[$i]['Razon_Social']=$obj->Razon_Social;
 				$empresa[$i]['Det_Comp']=$obj->Det_Comp;
+				$empresa[$i]['Signo_Dec']=$obj->Signo_Dec;
+				$empresa[$i]['Signo_Mil']=$obj->Signo_Mil;
 				//$empresa[$i]['Sucursal']=$obj->Sucursal;
 				//consultar sucursal
 				$empresa[$i]['Sucursal']=false;

@@ -310,7 +310,7 @@ $_SESSION['INGRESO']['modulo_']='02';
 			},
 			success:  function (response) {
 				verpedido(me,nom);
-				agregar_n(me,nom);	
+				agregar_n(me,nom,'f_pro');	
 			}
 		});
 	}
@@ -336,7 +336,7 @@ $_SESSION['INGRESO']['modulo_']='02';
 				if(response==1)
 				{
 					//alert('Articulo eliminado');
-					agregar_n(id,nom);
+					agregar_n(id,nom,'f_pro');
 				}else
 				{
 					alert(response);
@@ -376,7 +376,7 @@ $_SESSION['INGRESO']['modulo_']='02';
 		nom: nom,
 		cl: 'pre1' }, function(data){
 			//$('div.pdfcom').load(data);
-			var botones = "<button class='btn btn-primary' onclick='agregar_n(\""+me+"\",\""+nom+"\");'> Ir a mesa</button>";
+			var botones = "<button class='btn btn-primary' onclick='agregar_n(\""+me+"\",\""+nom+"\",\"\");'> Ir a mesa</button>";
 			var html= "<div class='row'><div class='col-sm-12 text-right'></div><div class='col-sm-12'><iframe style='width:100%; height:50vw;'' src='../../controlador/imprimir_factura.php?tipo=PF' frameborder='0' allowfullscreen></iframe></div></div>"
 
 
@@ -424,9 +424,8 @@ $_SESSION['INGRESO']['modulo_']='02';
 		//$('#pdfcom').html(''+id+''); 	
 	}
 
-
 	function prefact221(me,nom)
-	{   var botones = "<button class='btn btn-primary' onclick='agregar_n(\""+me+"\",\""+nom+"\");'> Regresar</button>";
+	{   var botones = "<button class='btn btn-primary' onclick='agregar_n(\""+me+"\",\""+nom+"\",\"\");'> Regresar</button>";
 		var html= "<div class='row'><div class='col-sm-12'><iframe style='width:100%; height:50vw;'' src='../../controlador/imprimir_factura.php?tipo=PF' frameborder='0' allowfullscreen></iframe></div></div>"
 
 
@@ -621,6 +620,12 @@ $_SESSION['INGRESO']['modulo_']='02';
 			}
 		}
 		
+	}
+	function filtro_prod(id,nom,id_) 
+	{
+		agregar_n(id,nom,id_)
+		/*var vari=document.getElementById(id_).value;
+		alert(vari);*/
 	}
 	function mos_ocu(id,id_) 
 	{
@@ -1141,22 +1146,24 @@ $_SESSION['INGRESO']['modulo_']='02';
 		
 	}
 
-	function agregar_n(id,nom)
+	function agregar_n(id,nom,fil)
 	{	
-
 		var buscar= '';
-
+		if(fil!='')
+		{
+			var vari=document.getElementById(fil).value;
+		}
 		$('#botones').html(''); 
 		if ($("#buscar").length) 
 		{
 			 buscar= $("#buscar").val();
-
 		}
 		$.ajax({
 			data:  {
 				pedido:true,
 				item:'<?php echo $_SESSION['INGRESO']['item']; ?>',
 				pediodo:'<?php echo $_SESSION['INGRESO']['periodo']?>',
+				fil: vari,
 				buscar:buscar},
 			url:   'controlador/controladormesa.php?id='+id+'&nom='+nom,
 			type:  'post',
@@ -1341,7 +1348,7 @@ $_SESSION['INGRESO']['modulo_']='02';
 						if(response==1)
 						{
 							//alert('Agregado');
-							agregar_n(id,nom);
+							agregar_n(id,nom,'f_pro');
 						}
 				}
 			});

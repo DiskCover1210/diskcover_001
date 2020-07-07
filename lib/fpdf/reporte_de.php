@@ -204,9 +204,16 @@ function imprimirDocElPF($stmt,$id=null,$formato=null,$nombre_archivo=null,$va=n
     $pdf->AddPage();
     $salto = 5;
     // Logo
-    //$pdf->Image('../../img/logotipos/PRISMANE.GIF',3,3,35,20);
+    //$pdf->Image('../../img/jpg/logo_doc.jpg',3,3,35,20);
+	//../../img/jpg/logo_doc.jpg
+	
 	if(isset($_SESSION['INGRESO']['Logo_Tipo'])) 
 	{
+		$src = __DIR__ . '/../../img/jpg/logo_doc.jpg'; 
+		if (@getimagesize($src)) 
+		{
+			$pdf->Image(__DIR__ . '/../../img/jpg/logo_doc.jpg',3,3,28,20,'','https://www.discoversystem.com');
+		}
 		$logo=$_SESSION['INGRESO']['Logo_Tipo'];
 		//si es jpg
 		$src = __DIR__ . '/../../img/logotipos/'.$logo.'.jpg'; 
@@ -302,22 +309,21 @@ function imprimirDocElPF($stmt,$id=null,$formato=null,$nombre_archivo=null,$va=n
     $pdf->Cell(17,2,'TOTAL',0,0,'R');
     $pdf->Ln($salto);
    
-
 //    se cargan las lineas de la factura
     foreach ($lineas as $value) {
    
     $pdf->SetFont('Arial','',8);
-    $pdf->Cell(10,2,$value['cant'],0,0);
+    $pdf->Cell(10,3,$value['cant'],0,0);
      $y2 = $pdf->GetY();
-    $pdf->MultiCell(28,2,$value['detalle'],0,'L');
+    $pdf->MultiCell(28,3,$value['detalle'],0,'L');
     $y = $pdf->GetY();
     $pdf->SetXY(48,$y2);
-    $pdf->Cell(15,2,number_format($value['pvp'],2, ',', '.'),0,0,'R');
-    $pdf->Cell(17,2,number_format($value['total'],2, ',', '.'),0,0,'R');
+    $pdf->Cell(15,3,number_format($value['pvp'],2, $_SESSION['INGRESO']['Signo_Dec'], $_SESSION['INGRESO']['Signo_Mil']),0,0,'R');
+    $pdf->Cell(17,3,number_format($value['total'],2, $_SESSION['INGRESO']['Signo_Dec'], $_SESSION['INGRESO']['Signo_Mil']),0,0,'R');
     $pdf->SetY($y);
-    $pdf->Ln(2);
+    $pdf->Ln(3);
     $pdf->Cell(0,0,'',1,0); 
-    $pdf->Ln(2);
+    $pdf->Ln(3);
 
     }
 // fin de carga de lineas de factura
@@ -325,18 +331,18 @@ function imprimirDocElPF($stmt,$id=null,$formato=null,$nombre_archivo=null,$va=n
     $pdf->SetFont('Arial','',8);
     $pdf->Cell(35,2,'Cajero',0,0,'L');
     $pdf->Cell(17,2,'SUBTOTAL :',0,0,'L');
-    $pdf->Cell(17,2,number_format($datos['subtotal'],2, ',', '.'),0,0,'R');
+    $pdf->Cell(17,2,number_format($datos['subtotal'],2, $_SESSION['INGRESO']['Signo_Dec'], $_SESSION['INGRESO']['Signo_Mil']),0,0,'R');
     $pdf->Ln(3);
 
     $pdf->Cell(35,2,'',0,0,'L');
     $pdf->Cell(17,2,'DESCUENTOS :',0,0,'L');
-    $pdf->Cell(17,2,number_format($datos['dto'],2, ',', '.'),0,0,'R');
+    $pdf->Cell(17,2,number_format($datos['dto'],2, $_SESSION['INGRESO']['Signo_Dec'], $_SESSION['INGRESO']['Signo_Mil']),0,0,'R');
     $pdf->Ln(3);
 
 
     $pdf->Cell(35,2,'',0,0,'L');
     $pdf->Cell(17,2,'I.V.A 12% :',0,0,'L');
-    $pdf->Cell(17,2,number_format($datos['iva'],2, ',', '.'),0,0,'R');
+    $pdf->Cell(17,2,number_format($datos['iva'],2, $_SESSION['INGRESO']['Signo_Dec'], $_SESSION['INGRESO']['Signo_Mil']),0,0,'R');
     $pdf->Ln(3);
 
 
@@ -345,7 +351,7 @@ function imprimirDocElPF($stmt,$id=null,$formato=null,$nombre_archivo=null,$va=n
     $y = $pdf->GetY();
     $pdf->SetXY(45,$y2);
     $pdf->Cell(17,2,'TOTAL :',0,0,'L');
-    $pdf->Cell(17,2,number_format($datos['totalfac'],2, ',', '.'),0,0,'R');
+    $pdf->Cell(17,2,number_format($datos['totalfac'],2, $_SESSION['INGRESO']['Signo_Dec'], $_SESSION['INGRESO']['Signo_Mil']),0,0,'R');
 	 $pdf->Ln(3);
 	 $pdf->SetXY(45,$y);
 	 //$pdf->SetY($y);
@@ -414,9 +420,16 @@ function imprimirDocElPF($stmt,$id=null,$formato=null,$nombre_archivo=null,$va=n
 		
     }
     
-
     $pdf->SetFont('Arial','B',10);
     $pdf->Cell(0,5,'Fue un placer atenderle',0,0,'C');
+	$src = __DIR__ . '/../../img/png/cara_feliz.png'; 
+	if (@getimagesize($src)) 
+	{
+		$y = $pdf->GetY();
+		$x = $pdf->GetX();
+		$pdf->Image(__DIR__ . '/../../img/png/cara_feliz.png',($x-15),$y,5,5,'','https://www.discoversystem.com');
+		$pdf->Image(__DIR__ . '/../../img/png/copa.png',($x-10),$y,5,5,'','https://www.discoversystem.com');
+	}
     $pdf->Ln($salto);
     $pdf->SetFont('Arial','',7);
     $pdf->Cell(0,5,'www.cofradiadelvino.com',0,0,'C');

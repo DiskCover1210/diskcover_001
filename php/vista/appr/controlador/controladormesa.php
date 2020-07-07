@@ -11,9 +11,17 @@ if(isset($_REQUEST['pedido']))
 		$nom = $_GET['nom'];
 		$item = $_POST['item'];
 		$periodo = $_POST['pediodo'];
+		if(isset($_POST['fil']) )
+		{
+			$fil = $_POST['fil'];
+		}
+		else
+		{
+			$fil='0';
+		}
 		$query = $_POST['buscar'];
 		//echo json_encode($mesa->lista_productos());
-		echo json_encode($mesa->modal_pedido($id,$nom,$query));
+		echo json_encode($mesa->modal_pedido($id,$nom,$query,$fil));
 	}
 
 if(isset($_REQUEST['agregar']))
@@ -119,14 +127,14 @@ class MesaCon
 				<div class='col-lg-3 col-xs-6'>
 					<!-- small box -->
 					<div class='small-box bg-green'>
-						<div class='inner' onclick='agregar_n(\"".$value['Codigo_Inv']."\",\"".$value['Producto']."\");'>
+						<div class='inner' onclick='agregar_n(\"".$value['Codigo_Inv']."\",\"".$value['Producto']."\",\"\");'>
 							<h3 style='font-size: 20px'>Disponible<sup style='font-size: 17px'></sup></h3>
 							<p>". $value['Producto']."</p>
 						</div>
 						<div class='icon'>
 							<i class='ion ion-stats-bars'></i>
 						</div>
-						<a onclick='agregar_n(\"".$value['Codigo_Inv']."\",\"".$value['Producto']."\");' class='small-box-footer'>ver <i class='fa fa-arrow-circle-right'></i></a>
+						<a onclick='agregar_n(\"".$value['Codigo_Inv']."\",\"".$value['Producto']."\",\"\");' class='small-box-footer'>ver <i class='fa fa-arrow-circle-right'></i></a>
 					</div>
 				</div>
 				";
@@ -136,7 +144,7 @@ class MesaCon
 				echo $html = "<div class='col-lg-3 col-xs-6'>
 					<!-- small box -->
 					<div class='small-box bg-yellow'>
-						<div class='inner' onclick='agregar_n(\"".$value['Codigo_Inv']."\",\"".$value['Producto']."\");'>
+						<div class='inner' onclick='agregar_n(\"".$value['Codigo_Inv']."\",\"".$value['Producto']."\",\"\");'>
 							<!--<h3 style='font-size: 20px'>Disponible<sup style='font-size: 17px'></sup></h3>-->
 							<h3 style='font-size: 20px'>Ocupada <sup style='font-size: 17px'>".$this->modelo->productos_entregar($value['Codigo_Inv'])."</sup></h3>
 							<p>".$value['Producto']."</p>
@@ -145,16 +153,16 @@ class MesaCon
 						<div class='icon'>
 							<i class='ion ion-stats-bars'></i>
 						</div>
-						<a onclick='agregar_n(\"".$value['Codigo_Inv']."\",\"".$value['Producto']."\");' class='small-box-footer'>ver <i class='fa fa-arrow-circle-right'></i></a>
+						<a onclick='agregar_n(\"".$value['Codigo_Inv']."\",\"".$value['Producto']."\",\"\");' class='small-box-footer'>ver <i class='fa fa-arrow-circle-right'></i></a>
 					</div>
 				</div>";
 			}
 		}
     }
 
-    function modal_pedido($id,$nom,$buscar)
+    function modal_pedido($id,$nom,$buscar,$fil)
     {
-      $articulos = $this->lista_productos($buscar);
+      $articulos = $this->lista_productos($buscar,$fil);
 	  //determinar si hay pedidos
 	  $linea = $this->modelo->pedido_realizado($id);
 
@@ -209,14 +217,22 @@ class MesaCon
       		</div>
       		<div class="col-sm-6">
       		   <div class="panel panel-info">
-      		     <div class="panel-heading">Articulos</div>
+      		     <div class="panel-heading">Articulos <select class="xs" name="f_pro" id="f_pro" onChange="filtro_prod(\''.$id.'\',\''.$nom.'\',\'f_pro\')">
+								<option value="0">Seleccionar</option>
+								<option value="">Todos</option>';
+								select_option_aj('Catalogo_Productos','Codigo_Inv',"Producto",
+									"  (TC = 'I')
+									AND Item = '".$_SESSION['INGRESO']['item']."' 
+									AND Periodo = '".$_SESSION['INGRESO']['periodo']."'
+									AND len(Codigo_Inv)=5 order by Producto "); 
+					echo $html =	'</select></div>
       			    <div class="panel-body">
       			      <div class="row">
        		             <div class="col-sm-6">
        			             <div class="input-group">
 				                <input type="text" class="form-control" placeholder="Buscar Producto" id="buscar" name="buscar">
 				                <span class="input-group-btn">
-				                  <button type="button" class="btn btn-info btn-flat"onclick="agregar_n(\''.$id.'\',\''.$nom.'\')">
+				                  <button type="button" class="btn btn-info btn-flat"onclick="agregar_n(\''.$id.'\',\''.$nom.'\',\'f_pro\')">
 					                <i class="ion ion-search"></i>
 					              </button>
 					             </span>		
@@ -248,12 +264,13 @@ class MesaCon
       		   </div>
       		</div>
       	</div>
-      	</form>';		
+      	</form>';	
+	
 }
 
-function lista_productos($buscar)
+function lista_productos($buscar,$fil)
 {
-	$productos = $this->modelo->list_product($buscar);
+	$productos = $this->modelo->list_product($buscar,$fil);
 	$html = '';
 	foreach ($productos as $key => $value) {
 
@@ -277,7 +294,7 @@ function lista_productos($buscar)
 				  </div>
 				</td>
 				<td width="50px">
-				 $ '.number_format($value['PVP'],2, ',', '.').'
+				 $ '.number_format($value['PVP'],2, $_SESSION['INGRESO']['Signo_Dec'], $_SESSION['INGRESO']['Signo_Mil']).'
 				 </td>
 				<td width="30px">
 				 <small class="label label-success"><i class="fa fa-clock-o"></i> Disponible</small>
@@ -302,7 +319,7 @@ function pedido_mesa($me,$nom)
 		<tr>
 		 <td>'.intval($value['CANT']).'</td>
 		 <td>'.$value['PRODUCTO'].'</td>
-		 <td>'.number_format($value['PRECIO'],2, ',', '.').'</td>
+		 <td>'.number_format($value['PRECIO'],2, $_SESSION['INGRESO']['Signo_Dec'], $_SESSION['INGRESO']['Signo_Mil']).'</td>
 		 <td width="30px">';
 		 if($value['Estado']=='R')
 		 	{
@@ -321,7 +338,7 @@ function pedido_mesa($me,$nom)
 			}
 		 $html.='
 		 </td>
-		 <td>'.number_format(($value['PRECIO']* $value['CANT']),2, ',', '.').'</td>
+		 <td>'.number_format(($value['PRECIO']* $value['CANT']),2, $_SESSION['INGRESO']['Signo_Dec'], $_SESSION['INGRESO']['Signo_Mil']).'</td>
 		 <td>';
 		 if($value['Estado']!='V')
 		 	{
@@ -332,14 +349,14 @@ function pedido_mesa($me,$nom)
 		 $html.='</td>
 		</tr>';
 	}
-	$html.='<tr><td colspan="5" class="text-right" style="color:red">SUB TOTAL:</td><td class="text-right" style="color:red">$'.number_format($total,2, ',', '.').'</td></tr>'.
-		'<tr><td colspan="5" class="text-right" style="color:red">IVA:</td><td class="text-right" style="color:red">$'.number_format($iva,2, ',', '.').'</td></tr>'.
-		'<tr><td colspan="5" class="text-right" style="color:red">TOTAL:</td><td class="text-right" style="color:red">$'.number_format(($total+$iva),2, ',', '.').'</td></tr>'.
+	$html.='<tr><td colspan="5" class="text-right" style="color:red">SUB TOTAL:</td><td class="text-right" style="color:red">$'.number_format($total,2, $_SESSION['INGRESO']['Signo_Dec'], $_SESSION['INGRESO']['Signo_Mil']).'</td></tr>'.
+		'<tr><td colspan="5" class="text-right" style="color:red">IVA:</td><td class="text-right" style="color:red">$'.number_format($iva,2, $_SESSION['INGRESO']['Signo_Dec'], $_SESSION['INGRESO']['Signo_Mil']).'</td></tr>'.
+		'<tr><td colspan="5" class="text-right" style="color:red">TOTAL:</td><td class="text-right" style="color:red">$'.number_format(($total+$iva),2, $_SESSION['INGRESO']['Signo_Dec'], $_SESSION['INGRESO']['Signo_Mil']).'</td></tr>'.
 		'<script>
 			var total_abono=document.getElementById(\'total_abono\').value;
 			var devo=(total_abono-'.($total+$iva).').toFixed(2);
 			$( "#total_abono1" ).html(\'<b>TOTAL ABONO: \'+total_abono+\'</b>\');
-			$( "#operacion" ).html(\'<input type="hidden" id="total_total_" name="total_total_" value="'.($total+$iva).'"><b>TOTAL: $'.number_format(($total+$iva),2, ',', '.').'</b>\');
+			$( "#operacion" ).html(\'<input type="hidden" id="total_total_" name="total_total_" value="'.($total+$iva).'"><b>TOTAL: $'.number_format(($total+$iva),2, $_SESSION['INGRESO']['Signo_Dec'], $_SESSION['INGRESO']['Signo_Mil']).'</b>\');
 			$( "#devolucion" ).html(\'<b>DIFERENCIA: $\'+devo+\'</b>\');
 		</script>';
 	return $html;
@@ -532,7 +549,7 @@ function  modal_facturas($me,$nom)
 									<input type="hidden" id='abono' name='abono' value='<?php echo $resul[$i]['Abono'];?>'>
 									<input type="hidden" id='comp' name='comp' value='<?php echo $resul[$i]['Comprobante'];?>'>
 									<input type="hidden" id='cta' name='cta' value='<?php echo $resul[$i]['Cta'];?>'>
-									<b>Monto: </b><?php echo number_format($resul[$i]['Abono'],2, ',', '.'); ?> 
+									<b>Monto: </b><?php echo number_format($resul[$i]['Abono'],2, $_SESSION['INGRESO']['Signo_Dec'], $_SESSION['INGRESO']['Signo_Mil']); ?> 
 								</td>
 								<td>
 									<b> Adicional: </b><?php echo $resul[$i]['Comprobante']; ?>
