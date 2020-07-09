@@ -122,6 +122,80 @@ class ctaOperacionesM
 	   return $result;
 	}
 
+	function copiar_cuenta($codigo = false)
+	{
+		// print_r($_SESSION);die();
+		$cid = $this->conn;
+	   $sql = "SELECT *
+       FROM Catalogo_Cuentas 
+       WHERE Item = '".$_SESSION['INGRESO']['item']."' 
+       AND Periodo = '".$_SESSION['INGRESO']['periodo']."' 
+       AND SUBSTRING(Codigo,1,1) <> 'x' ";
+       if($codigo)
+       {
+         $sql.=" and Codigo LIKE '".$codigo."'";
+       }
+       $sql.= " ORDER BY Codigo ";
+  	     // print_r($sql);
+        $stmt = sqlsrv_query($cid, $sql);
+	    $result = array();	
+	   while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_ASSOC) ) 
+	   {
+		 $result[] = $row;
+	   }
+	   return $result;
+	}
+
+
+	function copiar_cuenta_lista($si_no =false)
+	{
+
+	   $cid = $this->conn;
+	   $sql = "SELECT Empresa,Item FROM Empresas ";
+	   if($si_no)
+	   {
+	   	$sql.=" WHERE Item = '".$_SESSION['INGRESO']['item']."' ";
+	   	 // Command1.Caption = "&Cual Periodo"
+
+	   }else
+	   {
+	   	$sql.="WHERE Item <> '".$_SESSION['INGRESO']['item']."' ";
+	   	// Command1.Caption = "&Aceptar"
+	   }
+	   $sql.=" ORDER BY Empresa,Item ";
+  	      // print_r($sql);
+  	      // die();
+        $stmt = sqlsrv_query($cid, $sql);
+	    $result = array();	
+	   while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_ASSOC) ) 
+	   {
+		 $result[] = $row;
+	   }
+	   return $result;
+
+	}
+
+	function buscar_trans_presu($Cta,$codigo2,$fecha)
+	{
+	   $cid = $this->conn;
+	   $sql = "DELETE  FROM Trans_Presupuestos 
+               WHERE Item = '".$_SESSION['INGRESO']['item']. "' 
+               AND Periodo = '".$_SESSION['INGRESO']['periodo']."' 
+               AND Cta = '".$Cta."' 
+               AND Codigo = '".$codigo2."' 
+               AND Mes_No = '".$fecha."'";
+  	      // print_r($sql);
+  	      // die();
+        $stmt = sqlsrv_query($cid, $sql);
+	    $result = array();	
+	   while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_ASSOC) ) 
+	   {
+		 $result[] = $row;
+	   }
+	   return $result;
+
+	}
+
 	function presupuesto($cod)
 	{
 		// print_r($_SESSION);die();

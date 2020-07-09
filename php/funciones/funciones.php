@@ -28,6 +28,91 @@ if(isset($_POST['RUC']) AND !isset($_POST['submitweb']))
 	digito_verificadorf($ruc,$pag,$idMen,$item);
 }
 
+function copiar_tabla_empresa($NombreTabla,$OldItemEmpresa,$PeriodoCopy,$si_periodo,$AdoStrCnnCopy=false,$NoBorrarTabla=false)
+{
+
+ $conn = new Conectar();
+ $cid=$conn->conexion();
+
+ $NombreTabla = trim($NombreTabla);
+ $campos_db = dimenciones_tabla($NombreTabla);
+
+ // 'Borramos datos si existen en la empresa nueva'
+ if($NoBorrarTabla)
+ {
+   $sqld = "DELETE  FROM ".$NombreTabla." WHERE Item = '".$_SESSION['INGRESO']['item']."' ";
+   if($si_periodo)
+   {
+    if($PeriodoCopy !='.')
+    {
+       $sqld .= " AND Periodo = '".$PeriodoCopy."' ";
+    }else
+    {
+      $sqld .=" AND Periodo = '".$_SESSION['INGRESO']['periodo']."' ";
+    }
+   }
+ }
+
+ $stmt = sqlsrv_query($cid, $sqld);
+  if( $stmt === false)  
+   {  
+      echo "Error en consulta PA.\n";  
+      return '';
+      die( print_r( sqlsrv_errors(), true));  
+    }
+
+  if($PeriodoCopy == '.')
+  {
+    $PeriodoCopy = date('Y');
+  }
+
+ 
+$tabla_sistema = '';
+foreach ($campos_db as $key => $value) {
+  if($value->COLUMN_NAME !='ID' && $value->COLUMN_NAME !='Periodo' &&$value->COLUMN_NAME !='Item')
+  {
+    $tabla_sistema.=$value->COLUMN_NAME.',';
+  }
+}
+$tabla_sistema = substr($tabla_sistema,0,-1);
+
+
+   $sql1 = "select  '".$_SESSION['INGRESO']['item']."','".$_SESSION['INGRESO']['periodo']."',".$tabla_sistema." FROM ".$NombreTabla."  WHERE Item = '".$OldItemEmpresa."'";
+   $sql = "INSERT INTO ".$NombreTabla." (Item,Periodo,".$tabla_sistema.") ";
+         if($si_periodo)
+          {
+            if(checkdate('12',$PeriodoCopy, '31'))
+              {
+                $sql1 .= " AND Periodo = '".$PeriodoCopy."' ";
+              }
+            else
+              {
+                $sql1 .=" AND Periodo = '".$_SESSION['INGRESO']['periodo']."' ";
+              }
+          }else
+          {
+             $sql1 = "select '".$_SESSION['INGRESO']['item']."',".$tabla_sistema." FROM ".$NombreTabla."  WHERE Item = '".$OldItemEmpresa."'";
+            $sql = "INSERT INTO ".$NombreTabla." (Item,".$tabla_sistema.") ";
+          }
+
+
+ $sql = $sql.$sql1;
+  $stmt = sqlsrv_query($cid, $sql);
+   if( $stmt === false)  
+        {  
+         // echo "Error en consulta PA.\n";  
+         return -1;
+         die( print_r( sqlsrv_errors(), true));  
+        } else
+        {
+          return 1;
+        } 
+
+
+
+
+}
+
 function Rubro_Rol_Pago($Detalle_Rol)
 {
 
@@ -438,6 +523,64 @@ function TiposCtaStrg($cuenta) {
 
        case 12:
        $monthNameSpanish = "Diciembre";
+       break;
+    }
+
+return $monthNameSpanish;
+
+  }
+   function nombre_X_mes($num)
+  {
+    //print_r($num);
+    $monthNameSpanish='';
+    switch($num)
+     {   
+       case 'Enero':
+       $monthNameSpanish = "01";
+       break;
+
+       case 'Febrero':
+       $monthNameSpanish = "02";
+       break;
+
+       case 'Marzo':
+       $monthNameSpanish = "03";
+       break;
+
+       case 'Abril':
+       $monthNameSpanish = "04";
+       break;
+
+       case 'Mayo':
+       $monthNameSpanish = "05";
+       break;
+
+       case 'Junio':
+       $monthNameSpanish = "06";
+       break;
+
+       case 'Julio':
+       $monthNameSpanish = "07";
+       break;
+
+       case 'Agosto':
+       $monthNameSpanish = "08";
+       break;
+
+       case 'Septiembre':
+       $monthNameSpanish = "09";
+       break;
+
+        case 'Octubre':
+       $monthNameSpanish = "10";
+       break;
+
+       case 'Noviembre':
+       $monthNameSpanish = "11";
+       break;
+
+       case 'Diciembre':
+       $monthNameSpanish = "12";
        break;
     }
 
@@ -5160,7 +5303,8 @@ function insert_generico($tabla=null,$datos=null)
 					}
 					if($obj->DATA_TYPE=='smalldatetime' OR $obj->DATA_TYPE=='datetime')
 					{
-						$sql_v=$sql_v."'".$datos[$i]['dato']."',";
+            // print_r($datos[$i]['dato']->format('Y-m-d'));
+						$sql_v=$sql_v."'".$datos[$i]['dato']->format('Y-m-d')."',";
 					}
 					if($obj->DATA_TYPE=='money')
 					{
@@ -5256,12 +5400,13 @@ function insert_generico($tabla=null,$datos=null)
 		//echo  $cam2.$v2
 		if( $stmt === false)  
 		{  
+      // return -1;
 			echo "Error en consulta PA.\n";  
 			die( print_r( sqlsrv_errors(), true));  
 		}
-		/*
 		
-		*/
+		  // cerrarSQLSERVERFUN($cid);
+		
 	}
 }
 

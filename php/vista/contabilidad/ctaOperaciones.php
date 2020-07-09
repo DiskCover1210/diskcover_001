@@ -9,6 +9,7 @@ require_once("panel.php");
     meses();
    cargar_cuentas();
    tipo_pago();
+   copy_empresa();
 
    $('#MBoxCta').keyup(function(e){ 
     if(e.keyCode != 46 && e.keyCode !=8)
@@ -47,6 +48,150 @@ require_once("panel.php");
 });
   }
 
+  function copiar_op($op)
+  {
+    
+    if($('#DLEmpresa').val() !='')
+    {
+      Swal.fire({
+          title: 'Seguro de Copiar el catalogo de:?',
+          text: "("+$('#DLEmpresa').val()+") "+$('#DLEmpresa option:selected').text(),
+          footer: "Este proceso remplazara el catalogo actual",
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonColor: '#3085d6',
+          cancelButtonColor: '#d33',
+          confirmButtonText: 'Yes, delete it!'
+        }).then((result) => {
+          if (result.value) {
+              if($op == 'true')
+              {
+                $('#modal_periodo').modal('show');
+              }else
+              {
+                copiar();
+              }                        
+          }
+        })
+    }else
+    {
+       Swal.fire('Seleccione una empresa');
+       $('#modal_copiar').modal('show');   
+    }
+   
+  }
+
+  function copiar()
+  {
+    var parametros = 
+    {
+      "CheqCatalogo":$('#CheqCatalogo').is(':checked'),
+      "CheqFact":$('#CheqFact').is(':checked'),
+      "CheqSubCta":$('#CheqSubCta').is(':checked'),
+      "CheqSubCP":$('#CheqSubCP').is(':checked'),
+      "CheqSetImp":$('#CheqSetImp').is(':checked'),
+      'empresa':$('#DLEmpresa').val(),
+      'periodo':$('#txt_perido_c').val(),
+      'si_no':'false',
+
+    }
+     $.ajax({
+              data:  {parametros:parametros},
+              url:   '../controlador/ctaOperacionesC.php?copiar=true',
+              type:  'post',
+              dataType: 'json',
+              beforeSend: function () {   
+                $('#myModal_espera').modal('show');   
+              },
+              success:  function (response) { 
+               if(response==1)
+               {
+                 // $('#tabla').html(response);
+                 cargar_cuentas();
+                $('#myModal_espera').modal('hide');
+                Swal.fire(
+                  'Proceso terminado?',
+                  'Se a copia con exito el catalo de cuentas',
+                  'success'
+)   
+               }else
+               {
+                  alert('el proceso se finalizo opero con errores');
+                   cargar_cuentas();
+                $('#myModal_espera').modal('hide');   
+               }
+              }
+            });
+  }
+
+
+   function copy_empresa()
+  {
+    var empresas = '<option value="">Elija empresa a copiar el catalogo</option>';
+    $.ajax({
+   // data:  {parametros:parametros},
+   url:   '../controlador/ctaOperacionesC.php?copy_empresa=true',
+   type:  'post',
+   dataType: 'json',
+   beforeSend: function () {   
+     $('#myModal_espera').modal('show');   
+   },
+   success:  function (response) { 
+    if(response)
+    {
+       $.each(response, function(i, item){
+          // console.log(item);
+          empresas+='<option value="'+item.Item+'">'+item.Empresa+'</option>';
+        }); 
+      $('#DLEmpresa').html(empresas);
+    }
+
+  }
+});
+  }
+
+  function ingresar_presu()
+  {
+    if($('#DCMes').val() != '' && $('#txt_val_pre').val() != ''){
+    var parametros=
+    {
+      'mes':$('#DCMes').val(),
+      'mes1':$('#DCMes option:selected').text(),
+      'valor':$('#txt_val_pre').val(),
+      'Cta':$('#MBoxCta').val(),
+    }
+   
+    $.ajax({
+      data:  {parametros:parametros},
+      url:   '../controlador/ctaOperacionesC.php?ingresar_presu=true',
+      type:  'post',
+      dataType: 'json',
+      // beforeSend: function () {   
+      //   $('#myModal_espera').modal('show');   
+      // },
+      success:  function (response) { 
+        if(response == 1)
+          {
+            // console.log($('#MBoxCta').val().slice(0,-1));
+             cargar_presupuesto($('#MBoxCta').val().slice(0,-1));
+           $('#exampleModalCenter').modal('hide');
+
+          }else
+          {
+            alert('no sss');
+          }
+      }
+    });
+  }else
+  {
+    Swal.fire({
+      type: 'error',
+      title: 'Algo salio mal',
+      text: 'Debe llenar todo los campos!'
+    });
+  }
+  }
+
   function meses()
   {
     var meses='<option value="">Seleccione mes</option>'
@@ -58,7 +203,7 @@ require_once("panel.php");
       success:  function (response) { 
          $.each(response, function(i, item){
           // console.log(item);
-          meses+='<option value="'+item.Acro+'">'+item.mes+'</option>';
+          meses+='<option value="'+item.acro+'">'+item.mes+'</option>';
         }); 
     $('#DCMes').html(meses);   
         }
@@ -296,7 +441,7 @@ function cargar_datos_cuenta(cod)
        </a>
      </div>
      <div class="col-xs-2 col-md-2 col-sm-2">
-       <button type="button" class="btn btn-default" title="Copiar Catalogo" data-toggle="dropdown">
+       <button type="button" class="btn btn-default" title="Copiar Catalogo" data-toggle="modal" data-target="#modal_copiar">
         <img src="../../img/png/copiar_1.png">
       </button>
     </div>
@@ -456,11 +601,74 @@ function cargar_datos_cuenta(cod)
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
-        <button type="button" class="btn btn-primary">Ingresar</button>
+        <button type="button" class="btn btn-primary" onclick="ingresar_presu()">Ingresar</button>
       </div>
     </div>
   </div>
 </div>
+
+<div class="modal fade bd-example-modal-sm" id="modal_copiar" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true" data-keyboard="false" data-backdrop="static">
+  <div class="modal-dialog modal-md" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLongTitle">Copiar catalogo de otra empresa</h5>
+      </div>
+      <div class="modal-body">
+        <div class="row">
+          <div class="col-md-9">
+              <select class="form-control input-sm" id="DLEmpresa">
+                <option>Elija empresa a copiar el catalogo</option>
+              </select><br>
+              <label class="checkbox-inline"><input type="checkbox" name="CheqCatalogo" id="CheqCatalogo"> Catalogo de cuentas</label><br>
+              <label class="checkbox-inline"><input type="checkbox" name="CheqSetImp" id="CheqSetImp"> Seteos de impresion</label><br>
+              <label class="checkbox-inline"><input type="checkbox" name="CheqFact" id="CheqFact"> Seteos de facturacion</label><br>
+              <label class="checkbox-inline"><input type="checkbox" name="CheqSubCta" id="CheqSubCta"> SubCuentas de Ingreso, Gastos y costos</label><br>
+              <label class="checkbox-inline"><input type="checkbox" name="CheqSubCP" id="CheqSubCP"> SubCuentas de CxC y CxP</label>            
+          </div>
+          <div class="col-md-3 text-center">
+            <div class="row">
+              <div class="col-md-12 col-sm-6 col-xs-2">                
+                 <button type="button" class="btn btn-default" title="Copiar Catalogo" data-toggle="modal" data-target="#modal_copiar" onclick="copiar_op('false')">
+                  <img src="../../img/png/agregar.png"><br>
+                  Aceptar
+                </button>
+              </div>
+              <div class="col-md-12 col-sm-6 col-xs-2">
+                <br>
+                 <button type="button" class="btn btn-default" title="Cerrar" data-dismiss="modal">
+                  <img src="../../img/png/salire.png"><br>&nbsp; &nbsp;Salir&nbsp;&nbsp;&nbsp;
+                </button>
+              </div>              
+            </div>
+            
+          </div>
+        </div>
+      </div>
+     <!--  <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+        <button type="button" class="btn btn-primary" onclick="ingresar_presu()">Ingresar</button>
+      </div> -->
+    </div>
+  </div>
+</div>
+
+<div class="modal fade bd-example-modal-sm" id="modal_periodo" tabindex="-1" role="dialog" aria-labelledby="modal_periodo" aria-hidden="true" data-keyboard="false" data-backdrop="static">
+  <div class="modal-dialog modal-sm" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLongTitle">Ingrese Periodo</h5>
+      </div>
+      <div class="modal-body">
+        <input type="" name="" id="txt_perido_c" class="form-control input-sm" value=".">
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+        <button type="button" class="btn btn-primary" onclick="copiar()">Aceptar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 
 <!-- partial:index.partial.html -->
 

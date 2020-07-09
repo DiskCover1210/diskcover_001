@@ -50,7 +50,7 @@ ORDER BY Acceso_Sucursales.Item,Empresa";
 		$result[] = $row;
 	   }
 
-  //cerrarSQLSERVERFUN($cid);
+  cerrarSQLSERVERFUN($cid);
 	   return $result;
   	
   }

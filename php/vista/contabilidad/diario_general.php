@@ -328,7 +328,7 @@ require_once("panel.php");
 
   </script>
 
-   <div class="container">
+   <div style="padding-left: 20px;padding-right: 20px">
     <div class="row">
       <div class="col-lg-4 col-sm-4 col-md-8 col-xs-12">
         <div class="col-xs-2 col-md-2 col-sm-2 col-lg-2">

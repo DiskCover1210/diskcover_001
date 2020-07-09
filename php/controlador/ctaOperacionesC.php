@@ -35,6 +35,18 @@ if(isset($_GET['datos_cuenta']))
 	echo json_encode($controlador->datos_cuenta($_POST['cod']));
 	
 }
+if(isset($_GET['ingresar_presu']))
+{
+	echo json_encode($controlador->presupuesto_ing($_POST['parametros']));
+}
+if(isset($_GET['copy_empresa']))
+{
+	echo json_encode($controlador->copiar_cuenta_lista());
+}
+if(isset($_GET['copiar']))
+{
+	echo json_encode($controlador->copiar_cuenta($_POST['parametros']));
+}
 class ctaOperacionesC
 {
 	private $modelo;
@@ -49,6 +61,122 @@ function datos_cuenta($cod)
 	$dato = $this->modelo->datos_cuenta($cod);
 	return $dato;
 }
+function presupuesto_ing($parametro)
+{
+	$m = nombre_X_mes($parametro['mes1']);
+	$datos[0]['campo']='Periodo';
+	$datos[0]['dato']=$_SESSION['INGRESO']['periodo'];
+	$datos[1]['campo']='Cta';
+	$datos[1]['dato']=substr($parametro['Cta'],0,-1);
+	$datos[2]['campo']='Presupuesto';
+	$datos[2]['dato']=$parametro['valor'];
+	$datos[3]['campo']='Item';
+	$datos[3]['dato']=$_SESSION['INGRESO']['item'];
+	$datos[4]['campo']='Mes_No';
+	$datos[4]['dato']=date('Y').'-'.$m.'-01';
+	$datos[5]['campo']='Mes';
+	$datos[5]['dato']=$parametro['mes'];
+	$datos[6]['campo']='Codigo';
+	$datos[6]['dato']=G_NINGUNO;
+	$this->modelo->buscar_trans_presu($datos[1]['dato'],$datos[6]['dato'],$datos[4]['dato']);
+	if(insert_generico('Trans_Presupuestos',$datos)=='')
+	{
+		return 1;
+	}else
+	{
+		return -1;
+	}
+}
+
+
+function copiar_cuenta_lista()
+{
+	$dato = $this->modelo->copiar_cuenta_lista();
+	return $dato;
+}
+
+function copiar_cuenta($parametros)
+{
+  $dato=1;
+  $PeriodoCopy = $_SESSION['INGRESO']['periodo'];
+  $Cadena = $parametros['empresa'];
+  $NumItem = G_NINGUNO;
+  if($Cadena == '')
+  {
+  	$Cadena = G_NINGUNO;
+  }else
+  {
+  	$NumItem = $parametros['empresa'];
+  }
+  // If Cadena = "" Then Cadena = Ninguno
+  // With AdoEmp.Recordset
+  //  If .RecordCount > 0 Then
+  //     .MoveFirst
+  //     .Find ("Empresa LIKE '" & Cadena & "' ")
+  //      If Not .EOF Then NumItem = .Fields("Item")
+  //  End If
+  // End With
+  if($NumItem <> G_NINGUNO)
+  {
+  	if($parametros['CheqCatalogo']=='true')
+  	{
+  	    if(copiar_tabla_empresa("Catalogo_Cuentas", $NumItem, $PeriodoCopy,true,false,true)==1)
+  	    {
+  	    	 if (Copiar_tabla_empresa("Codigos",$NumItem, $PeriodoCopy,true,false,true)==1) 
+  	    	 { 
+  	    	 	if (copiar_tabla_empresa("Ctas_Proceso",$NumItem,$PeriodoCopy,true,false,true)==1){
+  	    	 		  // 	$dato = -1;
+  	    	 	}else{	$dato = -1;	}
+  	    	 }else{ $dato=-1;}
+  	    
+  	    }else{ $dato = -1;}
+  	   
+  	}
+  	if($parametros['CheqSetImp']=='true')
+  	{
+       if(Copiar_tabla_empresa("Formato", $NumItem, $PeriodoCopy,false,false,true)==1)
+       {
+       
+       		if(Copiar_tabla_empresa("Seteos_Documentos", $NumItem, $PeriodoCopy,false,false,true)==-1)
+             {
+       	      $dato = -1;
+             }
+       }else
+       {
+       	$dato = -1;
+       }
+       
+  	}
+  	if($parametros['CheqFact']=='true')
+  	{
+  		if(Copiar_tabla_empresa("Catalogo_Lineas", $NumItem, $PeriodoCopy,true,false,true)==1)
+  		{
+  			if(Copiar_tabla_empresa("Catalogo_Productos", $NumItem, $PeriodoCopy,true,false,true)!=1)
+  				{
+  					$dato = -1;
+  				}
+  		}else{ $dato = -1;}
+        
+  	}
+  	if($parametros['CheqSubCta'] == 'true')
+  	{
+  		if(Copiar_tabla_empresa("Catalogo_SubCtas", $NumItem, $PeriodoCopy,true,false,true)!=1)
+  		{
+  			$dato=-1;
+  		}
+  	}
+  	if($parametros['CheqSubCP'] == 'true')
+  	{
+  		if(Copiar_tabla_empresa("Catalogo_CxCxP", $NumItem, $PeriodoCopy,true,false,true)!=1)
+  		{
+  			$dato = -1;
+  		}
+  	}
+
+  }
+	return $dato;
+}
+
 
 function presupuesto($cod)
 {
@@ -95,7 +223,7 @@ function meses_presu()
 
   // print_r($nivel);
   
-// $temporar = array();
+$temporar = array();
 // C.C.CC.CC.CC.CCC
 for ($i=$niveles; $i >0; $i--){
 	if(isset($nivel[$i]))
@@ -140,7 +268,13 @@ $titulo='';
 
 // print_r($nivel);
 // die();
+$tablatemp ='NO hay cuentas';
+// print_r($temporar);
+// die();
+if(empty(!$temporar))
+{
 
+$tablatemp ='';
 foreach ($temporar as $key => $value) {
 	$tablatemp.=$value[0]; 
 }
@@ -223,6 +357,7 @@ foreach ($datos as $key => $value) {
 	}
 }
 
+}
  $tabla1 ='<div class="menujq"><ul>';
  $tabla1.=$tablatemp;
  $tabla1.='</ul></div><script  src="../../lib/dist/js/script_acordeon.js"></script>';
