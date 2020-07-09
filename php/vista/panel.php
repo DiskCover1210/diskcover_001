@@ -7,6 +7,7 @@
  * IMPORTANTE la ruta de imagenes deben estar en la raiz del servidor preferiblemente todo el proyecto debe estar en la raiz 
  * no en sub-directorios
  */
+ 
 //require_once 'determ.php';
 error_reporting(E_ALL);
 ini_set('display_errors', '1');
