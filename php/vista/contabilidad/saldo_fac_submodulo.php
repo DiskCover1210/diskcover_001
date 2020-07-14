@@ -327,13 +327,11 @@ require_once("panel.php");
 	  		</ul>
 	  	    <div class="tab-content" style="background-color:#E7F5FF">
 	  	    	<div id="home" class="tab-pane fade in active">
-	  	    		<br>
 	  	    	   <div class="table-responsive content-wrapper" id="tabla_">
 	  	    	   		  	    	   	
 	  	    	   </div>
 	  	    	 </div>
 	  	    	 <div id="menu1" class="tab-pane fade">
-	  	    	 	<br>
 	  	    	   <div class="table-responsive content-wrapper" id="tabla_temp">
 	  	    	   	  	    	   	
 	  	    	   </div>

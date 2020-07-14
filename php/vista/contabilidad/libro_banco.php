@@ -97,7 +97,7 @@
 				
 				 $('#tabla_').html(response);
 				 var nFilas = $("#tabla_ tr").length;
-				 $('#num_r').html(nFilas-1);	
+				 // $('#num_r').html(nFilas-1);	
 				 $('#myModal_espera').modal('hide');	
 				 $('#tit').text($titulo);			    
 				
@@ -278,22 +278,17 @@
 	  		   	<a data-toggle="tab" href="#home" id="titulo_tab" onclick="activar(this)"><b id="tit">Mayores auxiliares</b></a></li>
 	  		</ul>
 	  	    <div class="tab-content" style="background-color:#E7F5FF">
-	  	    	<div id="home" class="tab-pane fade in active">
-	  	    			<div class="text-right">
-	  	    				Registros:<b id="num_r">0</b>
-	  	    			</div>
-	  	    			<br>
+	  	    	<div id="home" class="tab-pane fade in active">	  	    			
 	  	    	   <div class="table-responsive" id="tabla_" style="overflow-y: scroll; height:450px; width: auto;">
 	  	    	   		  	    	   	
 	  	    	   </div>
 	  	    	 </div>		  	    	  	    	
 	  	    </div>
-	  	    <br>
 	  	    <div class="table-responsive">
 	  	    	<table>
-	  	    	 <tr><td width="100px"><b>Saldo Ant MN:</b></td><td id="saldo_ant" width="70px">0.00</td><td width="70px"><b>Debe MN:</b></td><td id="debe" width="70px">0.00</td><td width="70px"><b>Haber MN:</b></td><td id="haber" width="70px">0.00</td><td width="70px"><b>Saldo MN:</b></td><td id="saldo" width="70px">0.00</td></tr>
+	  	    	 <tr><td width="125px"><b>Saldo Ant MN:</b></td><td id="saldo_ant" width="70px">0.00</td><td width="100px"><b>Debe MN:</b></td><td id="debe" width="70px">0.00</td><td width="100px"><b>Haber MN:</b></td><td id="haber" width="70px">0.00</td><td width="100px"><b>Saldo MN:</b></td><td id="saldo" width="70px">0.00</td></tr>
 
-	  	    	 <tr><td width="100px"><b>Saldo Ant ME:</b></td><td id="saldo_ant_" width="70px">0.00</td><td width="70px"><b>Debe ME:</b></td><td id="debe_" width="70px">0.00</td><td width="70px"><b>Haber ME:</b></td><td id="haber_" width="70px">0.00</td><td width="70px"><b>Saldo ME:</b></td><td id="saldo_" width="70px">0.00</td></tr>
+	  	    	 <tr><td width="125px"><b>Saldo Ant ME:</b></td><td id="saldo_ant_" width="70px">0.00</td><td width="100px"><b>Debe ME:</b></td><td id="debe_" width="70px">0.00</td><td width="100px"><b>Haber ME:</b></td><td id="haber_" width="70px">0.00</td><td width="100px"><b>Saldo ME:</b></td><td id="saldo_" width="70px">0.00</td></tr>
 	  	    	</table>	  	    	 	
 	  	    </div> 
 	  	</div>

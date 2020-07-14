@@ -175,6 +175,31 @@ class ctaOperacionesM
 
 	}
 
+
+	function cambiar_cuenta_lista($cta)
+	{
+		$sql ="SELECT CC.Codigo +' - '+ CC.Cuenta As Ctas, CC.*
+          FROM Catalogo_Cuentas As CC 
+          WHERE Item = '".$_SESSION['INGRESO']['item']."' 
+          AND Periodo = '".$_SESSION['INGRESO']['periodo']."' 
+          AND DG = 'D' 
+          AND CC.Codigo <> '".$cta."' 
+          ORDER BY Codigo ";
+
+	   $cid = $this->conn;
+        $stmt = sqlsrv_query($cid, $sql);
+	    $result = array();	
+	   while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_ASSOC) ) 
+	   {
+		 $result[] = $row;
+	   }
+	   return $result;
+
+	}
+
+	
+
+
 	function buscar_trans_presu($Cta,$codigo2,$fecha)
 	{
 	   $cid = $this->conn;
@@ -245,6 +270,20 @@ class ctaOperacionesM
 	   }else
 	   {
 	   	 return 0;
+	   }
+
+	}
+	function cambiar_datos_cuenta($sql)
+	{
+		// print_r($_SESSION);die();
+		$cid = $this->conn;
+        $stmt = sqlsrv_query($cid, $sql);
+	   if($stmt === false)
+	   {
+	   	return -1;
+	   }else
+	   {
+	   	return 1;
 	   }
 
 	}

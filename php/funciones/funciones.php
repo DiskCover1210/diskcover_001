@@ -3511,7 +3511,7 @@ function grilla_generica($stmt,$ti=null,$camne=null,$b=null,$ch=null,$tabla=null
 
 #datos_t table, th, td {
   /*border: solid 1px black;*/
-  padding: 10px;
+  padding: 2px;
 }
 
 #datos_t tbody tr:nth-child(even) {
@@ -3568,6 +3568,10 @@ function grilla_generica($stmt,$ti=null,$camne=null,$b=null,$ch=null,$tabla=null
 					{
 						echo "<th style='text-align: left;'>SEL</th>";
 					}
+          /*
+          datetime = 93;
+
+        */
 					foreach( sqlsrv_field_metadata( $stmt ) as $fieldMetadata ) {
 						//$camp='';
 						$i=0;
@@ -3586,12 +3590,12 @@ function grilla_generica($stmt,$ti=null,$camne=null,$b=null,$ch=null,$tabla=null
 							$tipo_campo[($cant)]="style='text-align: right;'";
 							$ban=1;
 						}
-						//echo $fieldMetadata['Type'].' ccc <br>';
-						//echo $fieldMetadata['Name'].' ccc <br>';
+						// echo $fieldMetadata['Type'].' ccc <br>';
+						// echo $fieldMetadata['Name'].' ccc <br>';
 						//caso fecha
 						if($fieldMetadata['Type']==93)
 						{
-							$tipo_campo[($cant)]="style='text-align: left;'";
+							$tipo_campo[($cant)]="style='text-align: left; width:80px;'";
 							$ban=1;
 							$cam_fech[$cont_fecha]=$cant;
 							//contador para fechas
@@ -3642,7 +3646,7 @@ function grilla_generica($stmt,$ti=null,$camne=null,$b=null,$ch=null,$tabla=null
 						//ntext
 						if($fieldMetadata['Type']==-10)
 						{
-							$tipo_campo[($cant)]="style='text-align: left;'";
+							$tipo_campo[($cant)]="style='text-align: left; width:40px;'";
 							$ban=1;
 						}
 						//rownum
@@ -3655,7 +3659,7 @@ function grilla_generica($stmt,$ti=null,$camne=null,$b=null,$ch=null,$tabla=null
 						//ntext
 						if($fieldMetadata['Type']==12)
 						{
-							$tipo_campo[($cant)]="style='text-align: left;'";
+							$tipo_campo[($cant)]="style='text-align: left;  width:40px;'";
 							$ban=1;
 						}
 						if($ban==0)
@@ -4473,7 +4477,7 @@ function grilla_generica($stmt,$ti=null,$camne=null,$b=null,$ch=null,$tabla=null
 								 OR $valor->type==11 OR $valor->type==12 OR $valor->type==13 OR $valor->type==16 
 								 OR $valor->type==252 OR $valor->type==253 OR $valor->type==254 )
 								{
-									$tipo_campo[($cant)]="style='text-align: left;'";
+									$tipo_campo[($cant)]="style='text-align: left; width:40px;'";
 									$ban=1;
 								}
 								//numero
@@ -5303,8 +5307,11 @@ function insert_generico($tabla=null,$datos=null)
 					}
 					if($obj->DATA_TYPE=='smalldatetime' OR $obj->DATA_TYPE=='datetime')
 					{
-            // print_r($datos[$i]['dato']->format('Y-m-d'));
-						$sql_v=$sql_v."'".$datos[$i]['dato']->format('Y-m-d')."',";
+            if(!is_array($datos[$i]['dato'])) {              
+            $sql_v=$sql_v."'".$datos[$i]['dato']."',";
+            }else{
+             $sql_v=$sql_v."'".$datos[$i]['dato']->format('Y-m-d')."',";
+            }
 					}
 					if($obj->DATA_TYPE=='money')
 					{

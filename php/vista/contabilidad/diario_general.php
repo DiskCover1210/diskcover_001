@@ -114,7 +114,7 @@ require_once("panel.php");
         libro_submodulo();    
          $('#tabla_').html(response);
            var nFilas = $("#tabla_ tr").length;
-         $('#num_r').html(nFilas-1);      
+         // $('#num_r').html(nFilas-1);      
         
       }
     });
@@ -261,7 +261,7 @@ require_once("panel.php");
 
   function mostrar_campos()
   {
-    console.log($("#CheckNum").is(':checked'));
+    // console.log($("#CheckNum").is(':checked'));
 
     if($("#CheckNum").is(':checked'))
     {
@@ -330,7 +330,7 @@ require_once("panel.php");
 
    <div style="padding-left: 20px;padding-right: 20px">
     <div class="row">
-      <div class="col-lg-4 col-sm-4 col-md-8 col-xs-12">
+      <div class="col-lg-3 col-sm-4 col-md-8 col-xs-12">
         <div class="col-xs-2 col-md-2 col-sm-2 col-lg-2">
             <a  href="panel.php?sa=s" title="Salir de modulo" class="btn btn-default">
               <img src="../../img/png/salire.png">
@@ -366,45 +366,46 @@ require_once("panel.php");
         </div>
       </div>
       <div class="col-sm-8 col-lg-8 col-md-4 col-xs-12">
-        <div class="col-xs-3 col-md-3 col-sm-3 col-lg-3">
+        <div class="col-xs-6 col-md-3 col-sm-3 col-lg-3">
           <b>Desde:</b><br>
             <input type="date" min="01-01-1900" max="01-01-2030"  name="txt_desde" id="txt_desde" value="<?php echo date("Y-m-d");?>" onblur="consultar_datos();">  
         </div>   
-        <div class="col-xs-3 col-md-3 col-sm-3 col-lg-3">
+        <div class="col-xs-6 col-md-3 col-sm-3 col-lg-3">
           <b>Hasta:</b><br>
             <input type="date"  min="01-01-1900" max="01-01-2030" name="txt_hasta" id="txt_hasta" value="<?php echo date("Y-m-d");?>" onblur="consultar_datos();"> 
         </div>   
       </div>
+    </div>
      <div class="row">  
-        <div class="col-sm-12"><br>
+        <div class="col-sm-12">
           <div class="panel panel-default">
-             <div class="panel-heading" style="padding: 2px">COMPROBANTES DE</div>
-            <div class="panel-body">
-            <div class="col-sm-1">
+             <div class="panel-heading" style="padding: 0px 0px"><b>COMPROBANTES DE<b></div>
+            <div class="panel-body" style="padding: 1px">
+            <div class="col-sm-1  col-xs-3">
               <label class="radio-inline"><input type="radio" name="OpcP" id="OpcT" onchange="consultar_datos();" checked=""><b>Todos</b></label> 
             </div>
-            <div class="col-sm-1">
+            <div class="col-sm-1  col-xs-3">
                 <label class="radio-inline"><input type="radio" name="OpcP" id="OpcCI" onchange="consultar_datos();"><b>Ingresos</b></label>
             </div>
-            <div class="col-md-1">
+            <div class="col-sm-1 col-xs-3">
                 <label class="radio-inline"><input type="radio" name="OpcP" id="OpcCE" onchange="consultar_datos();"><b>Egreso</b></label>          
             </div>
-            <div class="col-md-1">
+            <div class="col-sm-1  col-xs-3">
                 <label class="radio-inline"><input type="radio" name="OpcP" id="OpcCD" onchange="consultar_datos();"><b>Diario</b></label>
             </div>
-                    <div class="col-md-2">
+            <div class="col-sm-2  col-xs-6">
                 <label class="radio-inline"><input type="radio" name="OpcP" id="OpcND" onchange="consultar_datos();"><b>Notas de debito</b></label>
             </div>
-            <div class="col-md-2">
+            <div class="col-sm-2  col-xs-6">
               <label class="radio-inline"><input type="radio" name="OpcP" id="OpcNC" onchange="consultar_datos();"><b>Notas de credito</b></label>
             </div>
-            <div class="col-md-1">
+            <div class="col-sm-1  col-xs-3">
                 <label class="radio-inline"><input type="radio" name="OpcP" id="OpcA" onchange="consultar_datos();"><b>Anulado</b></label>
             </div>
-            <div class="col-md-2">
+            <div class="col-sm-2  col-xs-6">
               <label class="radio-inline"><input type="checkbox" name="CheckNum" id="CheckNum" onchange="mostrar_campos();"><b> Desde el No: </b></label>                      
             </div>
-            <div class="col-md-1" id="campos" style="display: none">
+            <div class="col-sm-1" id="campos" style="display: none">
               <input type="text" style="width:30px;" name="TextNumNo" id="TextNumNo" value="0">
               <input type="text" style="width:30px;" name="TextNumNo1" id="TextNumNo1" value="0"> 
             </div>  
@@ -414,7 +415,7 @@ require_once("panel.php");
     </div>
     <div class="row">
       <div class="col-sm-8">
-        <div class="col-sm-2">
+        <div class="col-sm-4">
           <label class="radio-inline input-sm"><input type="checkbox" name="CheckUsuario" id="CheckUsuario" onchange="consultar_datos();"> <b>Por Usuario</b></label>          
         </div>
         <div class="col-sm-4">
@@ -433,7 +434,6 @@ require_once("panel.php");
      </div>             
     </div>       
     <!--seccion de panel-->
-    <br>
     <div class="row">
       <input type="input" name="activo" id="activo" value="1" hidden="">
       <div class="col-sm-12">
@@ -444,17 +444,12 @@ require_once("panel.php");
             <a data-toggle="tab" href="#menu1" id="titulo2_tab" onclick="activar(this)">SUB MODULOS</a></li>
         </ul>       
           <div class="tab-content" >
-            <div class="text-right">
-              Registros: <b id="num_r"></b>
-            </div>
             <div id="home" class="tab-pane fade in active">
-              <br>
                <div class="table-responsive" id="tabla_">
                                 
                </div>
              </div>
              <div id="menu1" class="tab-pane fade">
-              <br>
                <div class="table-responsive" id="tabla_submodulo">
                               
                </div>
@@ -462,7 +457,7 @@ require_once("panel.php");
           </div>
       </div>
     </div>
-     <div class="row"><br>
+    <div class="row">
         <div class="col-sm-12">
           <div class="table-responsive">
             <table>
@@ -485,5 +480,4 @@ require_once("panel.php");
             </table>
           </div>          
         </div>        
-      </div>  
-   </div>
+    </div>  

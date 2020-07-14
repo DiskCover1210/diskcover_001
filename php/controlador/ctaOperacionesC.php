@@ -43,9 +43,17 @@ if(isset($_GET['copy_empresa']))
 {
 	echo json_encode($controlador->copiar_cuenta_lista());
 }
+if(isset($_GET['cambiar_empresa']))
+{
+	echo json_encode($controlador->cambiar_cuenta_lista($_POST['cta']));
+}
 if(isset($_GET['copiar']))
 {
 	echo json_encode($controlador->copiar_cuenta($_POST['parametros']));
+}
+if(isset($_GET['cambiar_op']))
+{
+	echo json_encode($controlador->cambiar_cuenta($_POST['parametros']));
 }
 class ctaOperacionesC
 {
@@ -92,6 +100,11 @@ function presupuesto_ing($parametro)
 function copiar_cuenta_lista()
 {
 	$dato = $this->modelo->copiar_cuenta_lista();
+	return $dato;
+}
+function cambiar_cuenta_lista($cta)
+{
+	$dato = $this->modelo->cambiar_cuenta_lista(substr($cta,0,-1));
 	return $dato;
 }
 
@@ -437,7 +450,7 @@ function grabar_cuenta($parametros)
    $Cta_Sup = "C".$parametros['LabelCtaSup'];
    $Cuenta = $Codigo1." - ".$TextConcepto;
   // Mensajes = "Esta seguro de Grabar la cuenta" & vbCrLf _
-  //          & "No. [" & Codigo1 & "] - " & TextConcepto.Text
+  //        No. [".$Codigo."] - " & TextConcepto.Text
   // Titulo = "Pregunta de grabación"
 
 
@@ -585,99 +598,160 @@ function grabar_cuenta($parametros)
       	}
 
       }
-//      .Update
-
-
-
-//       UpdateCta TipoCta
-//      End With
-//   End If
-// //fin de actualizacion
-
-//   if($parametros['OpcCxCP'])
-//   {
-//   	 Mensajes = "Ingrese la Cuenta de Interes:"
-//      Titulo = "Cuenta de Interés para el Prestamo"
-//      TextoCheque = InputBox(Mensajes, Titulo, "")
-//      if($parametros['TextoCheque'] == '')
-//      {
-//      	$TextoCheque = 1;
-//      }
-//      $DGGastos = $this->modelo->DGGastos();
-
-//   }
-//   If OpcCxCP Then
-     
-//      If TextoCheque = "" Then TextoCheque = "1"
-//      MsgBox TextoCheque
-//      SelectDataGrid DGGastos, AdoGastos, SQL1
-//      If AdoGastos.Recordset.RecordCount > 0 Then
-//         AdoGastos.Recordset.MoveLast
-//         Contador = AdoGastos.Recordset.Fields("T_No") + 1
-//         Si_No = True
-//         Do While Not AdoGastos.Recordset.EOF And Si_No
-//            If AdoGastos.Recordset.Fields("Detalle") = Codigo1 Then Si_No = False
-//            AdoGastos.Recordset.MoveNext
-//         Loop
-//         If Si_No Then
-//            AdoGastos.Recordset.AddNew
-//            AdoGastos.Recordset.Fields("DC") = "C"
-//            AdoGastos.Recordset.Fields("T_No") = Contador
-//            AdoGastos.Recordset.Fields("Detalle") = Codigo1
-//            AdoGastos.Recordset.Fields("Item") = NumEmpresa
-//         End If
-//         AdoGastos.Recordset.Fields("Codigo") = TextoCheque
-//         AdoGastos.Recordset.Fields("Lst") = False
-//         AdoGastos.Recordset.Update
-//      End If
-//   End If
-//   If OpcGas Or OpcI Then
-//      If AdoGastos.Recordset.RecordCount > 0 Then
-//         AdoGastos.Recordset.MoveFirst
-//         Codigo1 = CambioCodigoCta(MBoxCta)
-//         SQL1 = "DELETE * " _
-//              & "FROM Trans_Presupuestos " _
-//              & "WHERE Cta = '" & Codigo1 & "' " _
-//              & "AND Item = '" & NumEmpresa & "' " _
-//              & "AND Periodo = '" & Periodo_Contable & "' "
-//         Conectar_Ado_Execute SQL1
-//         Do While Not AdoGastos.Recordset.EOF
-//            Valor = AdoGastos.Recordset.Fields("Presupuesto")
-//            Codigo = AdoGastos.Recordset.Fields("Codigo")
-//            If Valor >= 0 Then
-//               AdoPresupuestos.Recordset.AddNew
-//               AdoPresupuestos.Recordset.Fields("Cta") = Codigo1
-//               AdoPresupuestos.Recordset.Fields("Codigo") = Codigo
-//               AdoPresupuestos.Recordset.Fields("Presupuesto") = Valor
-//               AdoPresupuestos.Recordset.Fields("Item") = NumEmpresa
-//               AdoPresupuestos.Recordset.Fields("Periodo") = Periodo_Contable
-//               AdoPresupuestos.Recordset.Update
-//            End If
-//            AdoGastos.Recordset.MoveNext
-//         Loop
-//      End If
-//   End If
-//   If NuevaCta Then
-//      Control_Procesos Normal, "Nuva Cuenta: " & Codigo1 & " - " & TextConcepto.Text
-//   Else
-//      Control_Procesos Normal, "Modificacion de Cuenta: " & Codigo1 & " - " & TextConcepto.Text
-//   End If
-//   sSQL = "SELECT * " _
-//        & "FROM Catalogo_Cuentas " _
-//        & "WHERE Item = '" & NumEmpresa & "' " _
-//        & "AND Periodo = '" & Periodo_Contable & "' " _
-//        & "AND MidStrg(Codigo,1,1) <> 'x' " _
-//        & "ORDER BY Codigo "
-//   SelectAdodc AdoCta, sSQL
-//   IE = TVCatalogo.SelectedItem.Index
-//   If NuevaCta = False Then TVCatalogo.Nodes(IE).Text = Codigo1 & " - " & TextConcepto.Text
-//   TVCatalogo.Refresh
-//   Label6.Visible = True
-//   Nuevo = False
-
 }
 
+function cambiar_cuenta($parametros)
+{
+	$Codigo2 = $parametros['n_codigo'];
+	$Codigo1 = $parametros['codigo'];
+	$producto = $parametros['producto'];
+	switch ($producto) {
+		case 'Catalogo':
+		if($Codigo2=='')
+		{
+			$Codigo2 = G_NINGUNO;
+		}
+		$datos = $this->modelo->datos_cuenta($Codigo2);
+		if(count($datos)> 0 && $Codigo2 != G_NINGUNO)
+		{
+			 $sql = "UPDATE Catalogo_CxCxP 
+                     SET Cta = '".$Codigo2. "' 
+                     WHERE Item = '".$_SESSION['INGRESO']['item']. "' 
+                     AND Periodo = '".$_SESSION['INGRESO']['periodo']."' 
+                     AND Cta = '".$Codigo1. "' ";
+                 
+                  
+                  $sql .= "UPDATE Catalogo_Lineas 
+                     SET CxC = '".$Codigo2. "' 
+                     WHERE Item = '".$_SESSION['INGRESO']['item']. "' 
+                     AND Periodo = '".$_SESSION['INGRESO']['periodo']."' 
+                     AND CxC = '".$Codigo1. "' ";
+                 
+                  
+                  $sql.= "UPDATE Catalogo_Lineas 
+                     SET CxC_Anterior = '".$Codigo2. "' 
+                     WHERE Item = '".$_SESSION['INGRESO']['item']. "' 
+                     AND Periodo = '".$_SESSION['INGRESO']['periodo']."' 
+                     AND CxC_Anterior = '".$Codigo1. "' ";
+                 
+                  
+                  $sql.= "UPDATE Transacciones 
+                     SET Cta = '".$Codigo2. "' 
+                     WHERE Item = '".$_SESSION['INGRESO']['item']. "' 
+                     AND Periodo = '".$_SESSION['INGRESO']['periodo']."' 
+                     AND Cta = '".$Codigo1. "' ";
+                 
+                  $sql .= "UPDATE Trans_SubCtas 
+                     SET Cta = '".$Codigo2. "' 
+                     WHERE Item = '".$_SESSION['INGRESO']['item']. "' 
+                     AND Periodo = '".$_SESSION['INGRESO']['periodo']."' 
+                     AND Cta = '".$Codigo1. "' ";
+                 
+        // ''          $sql = "UPDATE Trans_Retenciones 
+        // ''             SET Cta = '".$Codigo2. "' 
+        // ''             WHERE Item = '".$_SESSION['INGRESO']['item']. "' 
+        // ''             AND Periodo = '".$_SESSION['INGRESO']['periodo']."' 
+        // ''             AND Cta = '".$Codigo1. "' "
+        // ''         
+                  
+                  $sql .= "UPDATE Facturas 
+                     SET Cta_CxP = '".$Codigo2. "' 
+                     WHERE Item = '".$_SESSION['INGRESO']['item']. "' 
+                     AND Periodo = '".$_SESSION['INGRESO']['periodo']."' 
+                     AND Cta_CxP = '".$Codigo1. "' ";
+                 
+                  
+                  $sql .= "UPDATE Trans_Abonos 
+                     SET Cta = '".$Codigo2. "' 
+                     WHERE Item = '".$_SESSION['INGRESO']['item']. "' 
+                     AND Periodo = '".$_SESSION['INGRESO']['periodo']."' 
+                     AND Cta = '".$Codigo1. "' ";
+                 
+                  
+                  $sql .= "UPDATE Trans_Abonos 
+                     SET Cta_CxP = '".$Codigo2. "' 
+                     WHERE Item = '".$_SESSION['INGRESO']['item']. "' 
+                     AND Periodo = '".$_SESSION['INGRESO']['periodo']."' 
+                     AND Cta_CxP = '".$Codigo1. "' ";
 
+                     return  $this->modelo->cambiar_datoS_cuenta($sql);
+		}else
+		{
+			return -2;
+		}
+			break;
+		
+		default:
+		$Co_TP = '';
+		$Co_Numero = '';
+		$Asiento = '';
+			if($Codigo2=='')
+			{
+				$Codigo2 = G_NINGUNO;
+			}
+				$datos = $this->modelo->datos_cuenta($Codigo2);
+		if(count($datos)> 0 && $Codigo2 != G_NINGUNO)
+		{
+			 $sql = "UPDATE Transacciones
+                     SET Cta = '".$Codigo2."'
+                     WHERE TP = '".$Co_TP."'
+                     AND Numero = ".$Co_Numero. "
+                     AND Item = '".$_SESSION['INGRESO']['item']."'
+                     AND Periodo = '".$_SESSION['INGRESO']['periodo']."'
+                     AND ID = ".$Asiento."
+                     AND Cta = '".$Codigo1."' ";
+                  
+                  
+                  $sql .= "UPDATE Trans_SubCtas
+                     SET Cta = '".$Codigo2."'
+                     WHERE TP = '".$Co_TP."'
+                     AND Numero = ".$Co_Numero. "
+                     AND Item = '".$_SESSION['INGRESO']['item']."'
+                     AND Periodo = '".$_SESSION['INGRESO']['periodo']."'
+                     AND Cta = '".$Codigo1."' ";
+                  
+                  
+                  $sql .= "UPDATE Trans_Compras
+                     SET Cta_Servicio = '".$Codigo2."'
+                     WHERE TP = '".$Co_TP."'
+                     AND Numero = ".$Co_Numero. "
+                     AND Item = '".$_SESSION['INGRESO']['item']."'
+                     AND Periodo = '".$_SESSION['INGRESO']['periodo']."'
+                     AND Cta_Servicio = '".$Codigo1."' ";
+                  
+                  
+                  $sql .= "UPDATE Trans_Compras
+                     SET Cta_Bienes = '".$Codigo2."'
+                     WHERE TP = '".$Co_TP."'
+                     AND Numero = ".$Co_Numero. "
+                     AND Item = '".$_SESSION['INGRESO']['item']."'
+                     AND Periodo = '".$_SESSION['INGRESO']['periodo']."'
+                     AND Cta_Bienes = '".$Codigo1."' ";
+                  
+                  
+                  $sql .= "UPDATE Trans_Air
+                     SET Cta_Retencion = '".$Codigo2."'
+                     WHERE TP = '".$Co_TP."'
+                     AND Numero = ".$Co_Numero. "
+                     AND Item = '".$_SESSION['INGRESO']['item']."'
+                     AND Periodo = '".$_SESSION['INGRESO']['periodo']."'
+                     AND Cta_Retencion = '".$Codigo1."' ";
+                  
+                    return  $this->modelo->cambiar_datoS_cuenta($sql);
+
+
+		}else
+		{
+			return -2;
+		}
+
+			break;
+	}
+	// print_r('expression');die();
+}
 
 }
 ?>
+
+
+	

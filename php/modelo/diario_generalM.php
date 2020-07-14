@@ -165,8 +165,8 @@ ORDER BY Acceso_Sucursales.Item,Empresa";
        AND Co.CodigoU = Ac.Codigo 
        ORDER BY T.Fecha,T.TP,T.Numero,T.ID ";
 
-       // print_r($sql);
-       // die();
+        // print_r($sql);
+        // die();
 
       $stmt = sqlsrv_query($cid, $sql);
 	   if( $stmt === false)  

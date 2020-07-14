@@ -192,7 +192,6 @@
 	  		</ul>
 	  	    <div class="tab-content" style="background-color:#E7F5FF">
 	  	    	<div id="home" class="tab-pane fade in active">
-	  	    		<br>
 	  	    	   <div class="table-responsive" id="tabla_" style="overflow-y: scroll; height:450px; width: auto;">
 	  	    	   		  	    	   	
 	  	    	   </div>

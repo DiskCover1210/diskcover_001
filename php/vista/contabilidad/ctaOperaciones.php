@@ -61,7 +61,7 @@ require_once("panel.php");
           showCancelButton: true,
           confirmButtonColor: '#3085d6',
           cancelButtonColor: '#d33',
-          confirmButtonText: 'Yes, delete it!'
+          confirmButtonText: 'Estoy seguro!'
         }).then((result) => {
           if (result.value) {
               if($op == 'true')
@@ -79,6 +79,42 @@ require_once("panel.php");
        $('#modal_copiar').modal('show');   
     }
    
+  }
+
+   function cambiar_op()
+  {
+    var parametros = 
+    {
+      'n_codigo':$('#DLEmpresa_').val(),
+      'codigo':$('#MBoxCta').val().slice(0,-1),
+      'producto':'Catalogo',
+    }
+    $.ajax({
+     data:  {parametros:parametros},
+     url:   '../controlador/ctaOperacionesC.php?cambiar_op=true',
+     type:  'post',
+     dataType: 'json',
+     beforeSend: function () {
+       $('#myModal_espera').modal('show');
+       },
+     success:  function (response) {
+        if(response==1)
+          {
+              Swal.fire(
+                  'Proceso terminado?',
+                  'Se a cambiado cuenta',
+                  'success')
+            $('#myModal_espera').modal('hide');
+            $('#modal_cambiar').modal('hide');
+          }else if(response == -2)
+          {
+            Swal.fire(
+                  'Proceso terminado?',
+                  'No se puede cambiar cuenta',
+                  'info')
+          }
+        }
+      });
   }
 
   function copiar()
@@ -144,6 +180,32 @@ require_once("panel.php");
           empresas+='<option value="'+item.Item+'">'+item.Empresa+'</option>';
         }); 
       $('#DLEmpresa').html(empresas);
+    }
+
+  }
+});
+  }
+
+    function cambio_empresa(cta)
+  {
+    var empresas = '<option value="">Seleccione la cuenta a cambiar</option>';
+    $.ajax({
+    data:  {cta:cta},
+   url:   '../controlador/ctaOperacionesC.php?cambiar_empresa=true',
+   type:  'post',
+   dataType: 'json',
+   beforeSend: function () {   
+     $('#myModal_espera').modal('show');   
+   },
+   success:  function (response) { 
+    if(response)
+    {
+       $.each(response, function(i, item){
+          // console.log(item);
+          empresas+='<option value="'+item.Codigo+'">'+item.Ctas+'</option>';
+        }); 
+      $('#DLEmpresa_').html(empresas);
+      $('#myModal_espera').modal('hide');  
     }
 
   }
@@ -364,9 +426,11 @@ function cargar_datos_cuenta(cod)
       if(response[0].DG=='G')
       {
         $('#OpcG').prop('checked',true);
+        $('#txt_ti').val('G');
       }else
       {
         $('#OpcD').prop('checked',true);
+        $('#txt_ti').val('D');
       }
       if(response[0].Con_IESS != 0)
       {        
@@ -431,10 +495,27 @@ function cargar_datos_cuenta(cod)
 });
 
 }
+function validar_cambiar()
+{
+  if($('#txt_ti').val() != 'G')
+  {
+    $('#cambiar_select').text($('#MBoxCta').val()+'-'+$('#TextConcepto').val());
+    cambio_empresa($('#MBoxCta').val());
+    $('#modal_cambiar').modal('show');
+
+
+  }else
+  {
+    Swal.fire(
+  'Solo se puede cambiar cuentas de Detalle',
+  '',
+  'question')
+  }
+}
 </script>
 <div class="container-lg">
   <div class="row">
-    <div class="col-lg-3 col-sm-4 col-md-8 col-xs-12">
+    <div class="col-lg-3 col-sm-4 col-md-4 col-xs-9">
       <div class="col-xs-2 col-md-2 col-sm-2">
        <a  href="./contabilidad.php?mod=contabilidad#" title="Salir de modulo" class="btn btn-default">
          <img src="../../img/png/salire.png">
@@ -446,7 +527,7 @@ function cargar_datos_cuenta(cod)
       </button>
     </div>
     <div class="col-xs-2 col-md-2 col-sm-2">                 
-     <button type="button" class="btn btn-default" title="Cambiar Cuentas" data-toggle="dropdown">
+     <button type="button" class="btn btn-default" title="Cambiar Cuentas" onclick="validar_cambiar()">
        <img src="../../img/png/pbcs.png">
      </button>
    </div>
@@ -476,6 +557,7 @@ function cargar_datos_cuenta(cod)
            <b>Tipo de cuenta</b><br>
            <label class="checkbox-inline"><input type="radio" name="rbl_t" id="OpcD" > <b>Detalle</b> </label><br>
            <label class="checkbox-inline"><input type="radio" name="rbl_t" id="OpcG" checked=""> <b>Grupo</b> </label>
+           <input type="hidden" name="" id="txt_ti" value="G">
          </div>
          <div class="col-sm-4">
            <b>Nombre de cuenta</b> <br>
@@ -565,11 +647,6 @@ function cargar_datos_cuenta(cod)
         </div>
       </div>     
     </div>
-    <div class="row">
-      seccion de presupuesto
-      
-  
-    </div>   
   </div>
   <div id="menu1" class="tab-pane fade">
     <div class="row">
@@ -611,7 +688,7 @@ function cargar_datos_cuenta(cod)
   <div class="modal-dialog modal-md" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLongTitle">Copiar catalogo de otra empresa</h5>
+        <h5 class="modal-title" id="exampleModalLongTitle"><B>COPIAR CATALOGO DE OTRA EMPRESA</B></h5>
       </div>
       <div class="modal-body">
         <div class="row">
@@ -668,6 +745,53 @@ function cargar_datos_cuenta(cod)
     </div>
   </div>
 </div>
+
+<div class="modal fade bd-example-modal" id="modal_cambiar" tabindex="-1" role="dialog" aria-labelledby="modal_cambiar" aria-hidden="true" data-keyboard="false" data-backdrop="static">
+  <div class="modal-dialog modal-md" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLongTitle"><b>CAMBIO DE VALORES DE LA CUENTA</b></h5>
+      </div>
+      <div class="modal-body">
+       
+        <div class="row">
+          <div class="col-md-9">
+               <div class="row">
+                  <div class="col-sm-12 text-center">
+                    <b id="cambiar_select"></b>
+                  </div>
+                </div>
+              <select class="form-control input-sm" id="DLEmpresa_">
+                <option>Seleccione la cuenta a cambiar</option>
+              </select>            
+          </div>
+          <div class="col-md-3 text-center">
+            <div class="row">
+              <div class="col-md-12 col-sm-6 col-xs-2">                
+                 <button type="button" class="btn btn-default" onclick="cambiar_op()">
+                  <img src="../../img/png/agregar.png"><br>
+                  Aceptar
+                </button>
+              </div>
+              <div class="col-md-12 col-sm-6 col-xs-2">
+                <br>
+                 <button type="button" class="btn btn-default" title="Cerrar" data-dismiss="modal">
+                  <img src="../../img/png/salire.png"><br>&nbsp; &nbsp;Salir&nbsp;&nbsp;&nbsp;
+                </button>
+              </div>              
+            </div>
+            
+          </div>
+        </div>
+      </div>
+     <!--  <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+        <button type="button" class="btn btn-primary" onclick="ingresar_presu()">Ingresar</button>
+      </div> -->
+    </div>
+  </div>
+</div>
+
 
 
 <!-- partial:index.partial.html -->

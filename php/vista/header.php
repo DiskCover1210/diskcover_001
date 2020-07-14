@@ -1,5 +1,5 @@
 <?php
-      $imag = '<img src="../../img/logotipos/diskcover_web.gif" style="height:60px ;width: 18%;margin: 5px" alt="user image" class="text-muted pull-left">';
+      $imag = '<img src="../../img/logotipos/diskcover_web.gif" style="height:60px ;width: 30%;margin: 5px" alt="user image" class="text-muted pull-left">';
       
 if(isset($_GET['mod'])) 
 		{
@@ -28,11 +28,11 @@ if(isset($_GET['mod']))
 				if(file_exists( dirname(__DIR__,2). '/img/logotipos/'.$_SESSION['INGRESO']['Logo_Tipo'].'.'.$value))
 				{
 					$url='../../img/logotipos/'.$_SESSION['INGRESO']['Logo_Tipo'].'.'.$value;
-          $imag = '<img src="'.$url.'" style="height:60px ;width: 18%;margin: 5px" alt="user image" class="text-muted pull-left">';
+          $imag = '<img src="'.$url.'" style="height:60px ;width: 30%;margin: 5px" alt="user image" class="text-muted pull-left">';
 					break;
 				}else
 				{
-          $imag = '<img src="../../img/logotipos/diskcover_web.gif" style="height:36% ;width: 18%;margin: 5px" alt="user image" class="text-muted pull-left">';
+          $imag = '<img src="../../img/logotipos/diskcover_web.gif" style="height:36% ;width: 30%;margin: 5px" alt="user image" class="text-muted pull-left">';
 				}
 			}			
 						
@@ -45,11 +45,11 @@ if(isset($_GET['mos3']))
         {
          
           $url='../../img/logotipos/'.$_SESSION['INGRESO']['Logo_Tipo'].'.'.$value;
-          $imag = '<img src="'.$url.'" style="height:60px ;width: 18%;margin: 5px" alt="user image" class="text-muted pull-left">';
+          $imag = '<img src="'.$url.'" style="height:60px ;width: 30%;margin: 5px" alt="user image" class="text-muted pull-left">';
           break;
         }else
         {
-               $imag = '<img src="../../img/logotipos/diskcover_web.gif" style="height:60px ;width: 18%;margin: 5px" alt="user image" class="text-muted pull-left">';
+               $imag = '<img src="../../img/logotipos/diskcover_web.gif" style="height:60px ;width: 30%;margin: 5px" alt="user image" class="text-muted pull-left">';
       
         }
       }
@@ -63,11 +63,11 @@ if(isset($_GET['mos3']))
         {
          
           $url='../../img/logotipos/'.$_SESSION['INGRESO']['Logo_Tipo'].'.'.$value;
-          $imag = '<img src="'.$url.'" style="height:60px ;width: 18%;margin: 5px" alt="user image" class="text-muted pull-left">';
+          $imag = '<img src="'.$url.'" style="height:60px ;width: 30%;margin: 5px" alt="user image" class="text-muted pull-left">';
           break;
         }else
         {
-               $imag = '<img src="../../img/logotipos/diskcover_web.gif" style="height:60px ;width: 18%;margin: 5px" alt="user image" class="text-muted pull-left">';
+               $imag = '<img src="../../img/logotipos/diskcover_web.gif" style="height:60px ;width: 30%;margin: 5px" alt="user image" class="text-muted pull-left">';
       
         }
       }
@@ -143,7 +143,7 @@ $("#datos").fadeIn();
 					</div>
 					<div class="col-sm-6">
 					   <div class="item">            
-						 <img src="../../img/logotipos/diskcover_web.gif" style="height:36% ;width: 18%;margin: 5px" alt="user image" class="text-muted pull-right" data-toggle="modal" data-target="#myModal_info" title="Direccion: PABLO PALACIO N23-154 Y AV. LA GASCA>  
+						 <img src="../../img/logotipos/diskcover_web.gif" style="height:36% ;width: 15%;margin: 5px" alt="user image" class="text-muted pull-right" data-toggle="modal" data-target="#myModal_info" title="Direccion: PABLO PALACIO N23-154 Y AV. LA GASCA>  
 						   <p class="message"  style="color: #394082">
 							 <b>Direccion:</b> PABLO PALACIO N23-154 Y AV. LA GASCA<br>
 							 <b>Telefono:</b> 025008082 / FAX: 025008082<br>
@@ -173,7 +173,7 @@ $("#datos").fadeIn();
 					</div>
 					<div class="col-sm-6">
 					   <div class="item">            
-						 <img src="../../img/logotipos/diskcover_web.gif" style="height:36% ;width: 18%;margin: 5px" alt="user image" class="text-muted pull-right" data-toggle="modal" data-target="#myModal_info" title="Direccion: PABLO PALACIO N23-154 Y AV. LA GASCA
+						 <img src="../../img/logotipos/diskcover_web.gif" style="height:26% ;width: 15%;margin: 5px" alt="user image" class="text-muted pull-right" data-toggle="modal" data-target="#myModal_info" title="Direccion: PABLO PALACIO N23-154 Y AV. LA GASCA
                Telefono: 025008082 / FAX: 025008082
                Email: diskcover@msn.com">  
 						   <p class="message"  style="color: #394082">
@@ -198,7 +198,7 @@ $("#datos").fadeIn();
                  <span class="glyphicon glyphicon-envelope" aria-hidden="true" style="margin-top:10px" title="Email: diskcover@msn.com"></span>
                  <span class="glyphicon glyphicon-map-marker" aria-hidden="true" title="Direccion: PABLO PALACIO N23-154 Y AV. LA GASCA"></span>
                  <span class="glyphicon glyphicon-earphone" aria-hidden="true" title="Telefono: 025008082 / FAX: 025008082"></span>     
-                 <img src="../../img/logotipos/diskcover_web.gif"  style="height:36% ;width: 18%;margin: 5px" class="text-muted pull-right">    
+                 <img src="../../img/logotipos/diskcover_web.gif"  style="height:36% ;width: 15%;margin: 5px" class="text-muted pull-right">    
               </div>
              </div>
         </div>  
