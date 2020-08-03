@@ -9,7 +9,7 @@ error_reporting(E_ALL);
 ini_set('display_errors', '1');
 if(!isset($_SESSION)) 
 	{ 		
-			session_start();
+			@session_start();
 	}
 //require_once("../../lib/excel/plantilla.php");
 require_once(dirname(__DIR__,2)."/lib/excel/plantilla.php");
@@ -26,6 +26,75 @@ if(isset($_POST['RUC']) AND !isset($_POST['submitweb']))
 	$idMen=$_POST['idMen'];
 	$item=$_POST['item'];
 	digito_verificadorf($ruc,$pag,$idMen,$item);
+}
+
+function Actualizar_Datos_ATS_SP($Items,$MBFechaI,$MBFechaF,$Numero)
+{
+  $respuesta = 1;
+  $conn = new Conectar();
+  $cid=$conn->conexion();
+  $FechaIni = $MBFechaI;
+  $FechaFin = $MBFechaF;
+
+$parametros = array(
+array(&$Items, SQLSRV_PARAM_IN),
+array(&$_SESSION['INGRESO']['periodo'], SQLSRV_PARAM_IN),
+array(&$FechaIni, SQLSRV_PARAM_IN),
+array(&$FechaFin, SQLSRV_PARAM_IN),
+array(&$Numero, SQLSRV_PARAM_IN)
+);
+$sql = "EXEC sp_Actualizar_Datos_ATS @Item= ?,@Periodo=?,@FechaDesde=?,@FechaHasta=?,@Numero=?";
+$stmt = sqlsrv_prepare($cid, $sql, $parametros);
+    if (!sqlsrv_execute($stmt)) {
+   
+      echo "Error en consulta PA.\n";  
+      $respuesta = -1;
+      die( print_r( sqlsrv_errors(), true));  
+    die;
+}
+
+    return $respuesta;
+}
+
+
+function Fecha_Del_AT($ATMes, $ATAno)
+{
+$fechas_ats = array();
+$FechaInicial='';$FechaMitad='';$FechaFinal='';
+if($ATMes == 'Todos')
+{
+  $FechaInicial='01/01/'.$ATAno;
+  $FechaMitad = '15/01/'.$ATAno;
+  $FechaFinal =date('dd/mm/yyy');
+  // $fechas_ats = array('FechaIni'=>$FechaInicial,'FechaMit'=>$FechaMitad,'FechaFin'=>$FechaFin);
+}else
+{
+  
+     $FechaInicial='01/'.$ATMes.'/'.$ATAno;
+     $FechaMitad = '15/'.$ATMes.'/'.$ATAno;
+     $FechaFinal = date("d",(mktime(0,0,0,$ATMes+1,1,$ATAno)-1)).'/'.$ATMes.'/'.$ATAno;     
+     // $fechas_ats = array('FechaIni'=>$FechaInicial,'FechaMit'=>$FechaMitad,'FechaFin'=>$FechaFinal);
+ }
+ if($_SESSION['INGRESO']['Tipo_Base'] == 'SQL SERVER')
+  {
+    $mitad = DateTime::createFromFormat('d/m/Y', $FechaMitad);
+    $final = DateTime::createFromFormat('d/m/Y', $FechaFinal);
+    $inicial = DateTime::createFromFormat('d/m/Y',$FechaInicial);
+
+       $FechaInicial=$inicial->format('Ymd');
+       $FechaMitad=$mitad->format('Ymd');
+       $FechaFinal=$final->format('Ymd');
+
+
+  }else
+  {
+    $FechaInicial=date('Y-m-d',strtotime($FechaInicial));
+    $FechaMitad = date('Y-m-d',strtotime($FechaMitad));
+    $FechaFinal = date('Y-m-d',strtotime($FechaFinal));
+
+  }
+  $fechas_ats = array('FechaIni'=>$FechaInicial,'FechaMit'=>$FechaMitad,'FechaFin'=>$FechaFinal);
+  return $fechas_ats;
 }
 
 function copiar_tabla_empresa($NombreTabla,$OldItemEmpresa,$PeriodoCopy,$si_periodo,$AdoStrCnnCopy=false,$NoBorrarTabla=false)
@@ -535,51 +604,51 @@ return $monthNameSpanish;
     $monthNameSpanish='';
     switch($num)
      {   
-       case 'Enero':
+       case ($num =='Enero') || ($num == 'enero'):
        $monthNameSpanish = "01";
        break;
 
-       case 'Febrero':
+       case ($num =='Febrero') || ($num =='febrero'):
        $monthNameSpanish = "02";
        break;
 
-       case 'Marzo':
+       case ($num =='Marzo') || ($num =='marzo'):
        $monthNameSpanish = "03";
        break;
 
-       case 'Abril':
+       case ($num =='Abril') || ($num =='abril'):
        $monthNameSpanish = "04";
        break;
 
-       case 'Mayo':
+       case ($num =='Mayo') || ($num =='mayo'):
        $monthNameSpanish = "05";
        break;
 
-       case 'Junio':
+       case ($num =='Junio') || ($num =='junio'):
        $monthNameSpanish = "06";
        break;
 
-       case 'Julio':
+       case ($num =='Julio') || ($num =='julio'):
        $monthNameSpanish = "07";
        break;
 
-       case 'Agosto':
+       case ($num =='Agosto') || ($num =='agosto'):
        $monthNameSpanish = "08";
        break;
 
-       case 'Septiembre':
+       case ($num =='Septiembre') || ($num =='septiembre'):
        $monthNameSpanish = "09";
        break;
 
-        case 'Octubre':
+        case ($num =='Octubre') || ($num =='octubre'):
        $monthNameSpanish = "10";
        break;
 
-       case 'Noviembre':
+       case ($num =='Noviembre') || ($num =='noviembre'):
        $monthNameSpanish = "11";
        break;
 
-       case 'Diciembre':
+       case ($num =='Diciembre') || ($num =='diciembre'):
        $monthNameSpanish = "12";
        break;
     }
@@ -5193,7 +5262,7 @@ function update_generico($datos,$tabla,$campoWhere)
    	$wherelist = substr($wherelist,0,-5);
    	$where = "WHERE ".$wherelist;   
    	$sql = $sql.$set.$where;
-   //	print_r($sql);	
+   	// print_r($sql);	die();
    	$stmt = sqlsrv_query($cid, $sql);
 	    if( $stmt === false)  
 	      {  
@@ -5453,6 +5522,7 @@ function dimenciones_tabla($tabla)
 		{
 			$campos[]=$obj;
 		}
+    // print_r($campos);die();
 		return $campos;
 	}
 }

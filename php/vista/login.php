@@ -25,10 +25,14 @@ if (isset($_SESSION['autentificado']) != "VERDADERO")
 	if($uri=='https://erp.diskcoversystem.com')
 	{
 		$_SESSION['INGRESO']['RUTA']='/';
+		$_SESSION['INGRESO']['LOCAL_MYSQL'] = '';
+		$_SESSION['INGRESO']['LOCAL_SQLSERVER'] = '';
 	}
 	else
 	{
 		$_SESSION['INGRESO']['RUTA']='https://erp.diskcoversystem.com/';
+		$_SESSION['INGRESO']['LOCAL_MYSQL'] = '';
+		$_SESSION['INGRESO']['LOCAL_SQLSERVER'] = '';
 	}
 }
 ?>

@@ -37,7 +37,7 @@ class PDF_MC_Table extends FPDF
 		$this->aligns=$a;
 	}
 	//data = array con datos, h1 altura, b 0,1 para borde, ali = para tipo de alineacion
-	function Row($data,$h1=null,$b=null,$estiloRow=null,$ali=null)
+	function Row($data,$h1=null,$b=null,$estiloRow=null,$ali=null,$mostrar_cero=false)
 	{
 		//para el alto
 		if ($h1==null)
@@ -133,7 +133,7 @@ class PDF_MC_Table extends FPDF
 				{
 					$this->SetTextColor(255,51,51);
 					$data[$i] = round($data[$i], 2);
-					if($data[$i] == 0)
+					if(($data[$i] == 0 ) )
 					{
 						$data[$i] = '';
 					}
@@ -141,9 +141,12 @@ class PDF_MC_Table extends FPDF
 				{
 			      $this->SetTextColor(0,0,0);
 					$data[$i] = round($data[$i], 2);
-					if($data[$i] == 0)
+					if($data[$i] == 0 and $mostrar_cero==false)
 					{
 						$data[$i] = '';
+					}else
+					{
+						$data[$i] = $data[$i];
 					}
 				}
 			}else

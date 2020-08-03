@@ -386,12 +386,12 @@ $("#datos").fadeIn();
                   
                 </ul>
               </li>
-              <!--<li class="nav-item dropdown">
+              <li class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle" id="anexos" data-toggle="dropdown" aria-haspopup="true" 
                 aria-expanded="false" style='padding-top: 5px;padding-bottom: 5px;'>Anexos transaccionales</a>
                 <ul class="dropdown-menu" aria-labelledby="anexos">
-                  <li class="dropdown-item"><a href="#" >Generar anexos transaccionales (F12)</a></li>
-                  <li class="dropdown-item"><a href="#" >Codigo de retención (AIR) 
+                  <li class="dropdown-item"><a href="contabilidad.php?mod=contabilidad&acc=anexos_trans&acc1=Generar Anexos transaccioneales&b=1" >Generar anexos transaccionales (F12)</a></li>
+                 <!--  <li class="dropdown-item"><a href="#" >Codigo de retención (AIR) 
                   <i  style=' float: right;' align="right">(F11)</i></a></li>
                   <li class="dropdown-item"><a href="#" >Resumen de retensiones 
                   <i  style=' float: right;' align="right">(F9)</i></a></li>
@@ -411,9 +411,9 @@ $("#datos").fadeIn();
                   <li class="dropdown-item"><a href="#" >Relación por dependiencia 
                   <i  style=' float: right;' align="right">(F7)</i></a></li>
                   <li class="dropdown-item"><a href="#" >Anulados 
-                  <i  style=' float: right;' align="right">(F6)</i></a></li>
+                  <i  style=' float: right;' align="right">(F6)</i></a></li> -->
                 </ul>
-              </li>-->
+              </li>
               <li class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle" id="efinan" data-toggle="dropdown" aria-haspopup="true" 
                 aria-expanded="false" style='padding-top: 5px;padding-bottom: 5px;'>Estados financieros</a>

@@ -1,12 +1,17 @@
 <?php
+// require_once('variables_globales.php');
 //require_once("MysqlStreamDriver.php");
-if(!isset($_SESSION)) 
-	{ 		
-			session_start();
-	}
-$_SESSION['TIPOCON']=0;
+// if(!isset($_SESSION)) 
+// 	{ 	
+			@session_start();
+// 		print_r($_SESSION['INGRESO']);die();
+// 	}
 class Conectar{
     public static function conexion($tipo_base=null){
+	
+
+		// print_r($_SESSION['INGRESO']);die();
+
         //$conexion=new mysqli("localhost", "root", "", "diskcover_empresas");
 		//$conexion=new mysqli("192.168.27.2", "diskcover", "disk2017Cover", "DiskCover_Empresas");
 		//$conexion=new mysqli("mysql.diskcoversystem.com:13306", "diskcoverMigra", "diskcover2019Migra@", "DiskCover_Empresas");
@@ -28,6 +33,8 @@ class Conectar{
 			}
 			else
 			{
+				
+
 				if(isset($_SESSION['INGRESO']['IP_VPN_RUTA']) and $_SESSION['INGRESO']['Tipo_Base']=='SQL SERVER') 
 				{
 					/*$fp = fsockopen($_SESSION['INGRESO']['IP_VPN_RUTA'], $_SESSION['INGRESO']['Puerto'], $errno, $errstr, 30);
@@ -47,19 +54,39 @@ class Conectar{
 							</script>";
 						die();
 					}*/ 
-					$server='tcp:localhost, '.$_SESSION['INGRESO']['Puerto'];
-					$connectionInfo = array("Database"=>$_SESSION['INGRESO']['Base_Datos'], "UID" => $_SESSION['INGRESO']['Usuario_DB'],
-					"PWD" => $_SESSION['INGRESO']['Contraseña_DB']);
-
-					$cid = sqlsrv_connect($server, $connectionInfo); //returns false
-					if( $cid === false )
+					if($_SESSION['INGRESO']['LOCAL_SQLSERVER']=='' || $_SESSION['INGRESO']['LOCAL_SQLSERVER']=='SI')
 					{
-						$server=''.$_SESSION['INGRESO']['IP_VPN_RUTA'].', '.$_SESSION['INGRESO']['Puerto'];
+						$server='tcp:localhost, '.$_SESSION['INGRESO']['Puerto'];
+						$connectionInfo = array("Database"=>$_SESSION['INGRESO']['Base_Datos'], "UID" => $_SESSION['INGRESO']['Usuario_DB'],"PWD" => $_SESSION['INGRESO']['Contraseña_DB']);
+						$cid = sqlsrv_connect($server, $connectionInfo); //returns false	
+						if(!$cid)
+							{
+								$server=''.$_SESSION['INGRESO']['IP_VPN_RUTA'].', '.$_SESSION['INGRESO']['Puerto'];
+								$connectionInfo = array("Database"=>$_SESSION['INGRESO']['Base_Datos'], "UID" => $_SESSION['INGRESO']['Usuario_DB'],"PWD" => $_SESSION['INGRESO']['Contraseña_DB']);
+						        $cid = sqlsrv_connect($server, $connectionInfo); //returns false
+						        if(!$cid)
+						        	{
+						        		//echo "fallo conecion sql server";
+						        		echo "<script>
+						        			/*Swal.fire({
+						        				type: 'error',
+						        				title: 'Fallo',
+						        				text: 'fallo conexion sql server',
+						        				footer: 'Fallo conexion sql server'
+						        				})*/
+						        				alert('Fallo conexion sql server ".$server." - ".$connectionInfo[0]." - ".$connectionInfo[1]." - ".$connectionInfo[2]."');
+						        				</script>";
+						        	}
+						        $_SESSION['INGRESO']['LOCAL_SQLSERVER']="NO";
+						    }
+				    }
+				    else
+				    {
+				    	$server=''.$_SESSION['INGRESO']['IP_VPN_RUTA'].', '.$_SESSION['INGRESO']['Puerto'];
 						$connectionInfo = array("Database"=>$_SESSION['INGRESO']['Base_Datos'], "UID" => $_SESSION['INGRESO']['Usuario_DB'],
 						"PWD" => $_SESSION['INGRESO']['Contraseña_DB']);
-
-						$cid = sqlsrv_connect($server, $connectionInfo); //returns false
-						if( $cid === false )
+                        $cid = sqlsrv_connect($server, $connectionInfo); //returns false
+						if(!$cid)
 						{
 							//echo "fallo conecion sql server";
 							echo "<script>
@@ -73,46 +100,134 @@ class Conectar{
 							</script>";
 						}
 					}
-					$_SESSION['TIPOCON']=1;
+						// print_r('expression');die();
 					return $cid;
 				}
 				else
 				{
+					if ($_SESSION['INGRESO']['LOCAL_MYSQL']=="" || $_SESSION['INGRESO']['LOCAL_MYSQL']=="SI") 
+					{
+						mysqli_report(MYSQLI_REPORT_STRICT);//Considera el warning como un error, y así tratar la excepción.
+						try {
+							    // $conexion=new mysqli("localhost", "diskcover", "disk2017Cover", "diskcover_empresas",13306);
+							    $conexion = mysqli_connect("localhost", "diskcover", "disk2017Cover", "diskcover_empresas",13306);
+							    $conexion->query("SET NAMES 'utf8'");
+							    return $conexion;
+							} catch (Exception $e) 
+							{
+								// echo 'ERROR:'.$e->getMessage();
+								// print_r('expressisssson');die();
+								$_SESSION['INGRESO']['LOCAL_MYSQL'] = 'NO';
+								try 
+								{
+									$connection = ssh2_connect('mysql.diskcoversystem.com', 10022); 
+									if (ssh2_auth_password($connection, 'diskcover', 'Dlcjvl1210')) 
+									{
+										 //echo "Authentication Successful!\n";
+									} else 
+									{
+										die('Authentication Failed...');
+									}
+									$tunnel = ssh2_tunnel($connection, 'mysql.diskcoversystem.com', 10022);
+									$_SESSION['TIPOCON']=3;
+									//echo " entroooo ";
+									//shell_exec("ssh -f -L 127.0.0.1:3306:mysql.diskcoversystem.com:13306 diskcover sleep 60 >> logfile"); 
+									$conexion = new mysqli('mysql.diskcoversystem.com', 'diskcover', 'disk2017Cover', 'diskcover_empresas', 13306);
+									$conexion->query("SET NAMES 'utf8'");
+									return $conexion;
+									/*$conexion=new mysqli("localhost", "root", "", "diskcover_empresas");
+									$conexion->query("SET NAMES 'utf8'");
+									return $conexion;*/
+								} catch (Exception $e) 
+								{
+									echo 'ERROR :'.$e->getMessage();
+									return null;
+							    }
+							}
+					}else
+					{
+						try 
+								{
+									$connection = ssh2_connect('mysql.diskcoversystem.com', 10022); 
+									if (ssh2_auth_password($connection, 'diskcover', 'Dlcjvl1210')) 
+									{
+										 //echo "Authentication Successful!\n";
+									} else 
+									{
+										die('Authentication Failed...');
+									}
+									$tunnel = ssh2_tunnel($connection, 'mysql.diskcoversystem.com', 10022);
+									$_SESSION['TIPOCON']=3;
+									//echo " entroooo ";
+									//shell_exec("ssh -f -L 127.0.0.1:3306:mysql.diskcoversystem.com:13306 diskcover sleep 60 >> logfile"); 
+									$conexion = new mysqli('mysql.diskcoversystem.com', 'diskcover', 'disk2017Cover', 'diskcover_empresas', 13306);
+									$conexion->query("SET NAMES 'utf8'");
+									return $conexion;
+									/*$conexion=new mysqli("localhost", "root", "", "diskcover_empresas");
+									$conexion->query("SET NAMES 'utf8'");
+									return $conexion;*/
+								} catch (Exception $e) 
+								{
+									echo 'ERROR :'.$e->getMessage();
+									return null;
+							    }
+
+					}
+					
+
+					
+					
 					//$conexion=new mysqli("mysql.diskcoversystem.com:13306", "diskcoverMigra", "diskcover2019Migra@", "DiskCover_Empresas");
 					//$conexion=new mysqli("localhost:13306", "diskcoverMigra", "diskcover2019Migra@", "diskcover_empresas");
 					//$conexion=new mysqli("mysql.diskcoversystem.com:13306", "diskcover", "disk2017Cover", "diskcover_empresas");
 					//$conexion=new mysqli("localhost", "diskcover", "disk2017Cover", "diskcover_empresas",13306);
-					mysqli_report(MYSQLI_REPORT_STRICT);//Considera el warning como un error, y así tratar la excepción.
-					try {
-						$conexion=new mysqli("localhost", "diskcover", "disk2017Cover", "diskcover_empresas",13306);
-						$conexion->query("SET NAMES 'utf8'");
-						$_SESSION['TIPOCON']=0;
-						return $conexion;
-					} catch (Exception $e) {
-						//echo 'ERROR:'.$e->getMessage();
-						try {
-							$connection = ssh2_connect('mysql.diskcoversystem.com', 10022); 
+				
+
+
+
+					// mysqli_report(MYSQLI_REPORT_STRICT);//Considera el warning como un error, y así tratar la excepción.
+					// try {
+					// 	// $conexion=new mysqli("localhost", "diskcover", "disk2017Cover", "diskcover_empresas",13306);
+					// 	$conn = mysqli_connect("localhost", "diskcover", "disk2017Cover", "diskcover_empresas",13306);
+
+					// 	print_r('expression');die();
+					// 	$conexion->query("SET NAMES 'utf8'");
+					// 	$_SESSION['TIPOCON']=0;
+					// 	return $conexion;
+					// } catch (Exception $e) {
+					// 	echo 'ERROR:'.$e->getMessage();
+					// 	print_r('expressisssson');die();
+
+					// 	try {
+					// 		$connection = ssh2_connect('mysql.diskcoversystem.com', 10022); 
 							
-							if (ssh2_auth_password($connection, 'diskcover', 'Dlcjvl1210')) {
-								   //echo "Authentication Successful!\n";
-							} else {
-								   die('Authentication Failed...');
-							}
-							$tunnel = ssh2_tunnel($connection, 'mysql.diskcoversystem.com', 10022);
-							$_SESSION['TIPOCON']=3;
-							//echo " entroooo ";
-						//	shell_exec("ssh -f -L 127.0.0.1:3306:mysql.diskcoversystem.com:13306 diskcover sleep 60 >> logfile");  
-							$conexion = new mysqli('mysql.diskcoversystem.com', 'diskcover', 'disk2017Cover', 'diskcover_empresas', 13306);
-							$conexion->query("SET NAMES 'utf8'");
-							return $conexion;
-							/*$conexion=new mysqli("localhost", "root", "", "diskcover_empresas");
-							$conexion->query("SET NAMES 'utf8'");
-							return $conexion;*/
-						} catch (Exception $e) {
-							echo 'ERROR :'.$e->getMessage();
-							return null;
-						}
-					}
+					// 		if (ssh2_auth_password($connection, 'diskcover', 'Dlcjvl1210')) {
+					// 			   //echo "Authentication Successful!\n";
+					// 		} else {
+					// 			   die('Authentication Failed...');
+					// 		}
+					// 		$tunnel = ssh2_tunnel($connection, 'mysql.diskcoversystem.com', 10022);
+					// 		$_SESSION['TIPOCON']=3;
+					// 		//echo " entroooo ";
+					// 	//	shell_exec("ssh -f -L 127.0.0.1:3306:mysql.diskcoversystem.com:13306 diskcover sleep 60 >> logfile");  
+					// 		$conexion = new mysqli('mysql.diskcoversystem.com', 'diskcover', 'disk2017Cover', 'diskcover_empresas', 13306);
+					// 		$conexion->query("SET NAMES 'utf8'");
+					// 		return $conexion;
+					// 		/*$conexion=new mysqli("localhost", "root", "", "diskcover_empresas");
+					// 		$conexion->query("SET NAMES 'utf8'");
+					// 		return $conexion;*/
+					// 	} catch (Exception $e) {
+					// 		echo 'ERROR :'.$e->getMessage();
+					// 		return null;
+					// 	}
+					// }
+
+
+
+
+
+
+
 					/*$connection = ssh2_connect('mysql.diskcoversystem.com', 22); 
 
 					ssh2_auth_password($connection, 'diskcover', 'Dlcjvl1210');
@@ -207,6 +322,7 @@ class Conectar{
 						$_SESSION['TIPOCON']=0;
 						return $conexion;
 					} catch (Exception $e) {
+						// print_r('expression');die();
 						//echo 'ERROR:'.$e->getMessage();
 						try {
 							$connection = ssh2_connect('mysql.diskcoversystem.com', 10022); 
@@ -296,21 +412,21 @@ class Conectar{
 					</script>";
 				die();
 			}*/ 
-			//$server=$_SESSION['INGRESO']['IP_VPN_RUTA'];
-			$server='tcp:localhost, '.$_SESSION['INGRESO']['Puerto'];
-			$connectionInfo = array("Database"=>$_SESSION['INGRESO']['Base_Datos'], "UID" => $_SESSION['INGRESO']['Usuario_DB'],
-			"PWD" => $_SESSION['INGRESO']['Contraseña_DB']);
-
-			$cid = sqlsrv_connect($server, $connectionInfo); //returns false
-			if( $cid === false )
+			if($_SESSION['INGRESO']['LOCAL_SQLSERVER']=="" || $_SESSION['INGRESO']['LOCAL_SQLSERVER']=="SI" )
 			{
-				$server=''.$_SESSION['INGRESO']['IP_VPN_RUTA'].', '.$_SESSION['INGRESO']['Puerto'];
-				$connectionInfo = array("Database"=>$_SESSION['INGRESO']['Base_Datos'], "UID" => $_SESSION['INGRESO']['Usuario_DB'],
-				"PWD" => $_SESSION['INGRESO']['Contraseña_DB']);
+			      $server=$_SESSION['INGRESO']['IP_VPN_RUTA'];
+			      $server='tcp:localhost, '.$_SESSION['INGRESO']['Puerto'];
+			      $connectionInfo = array("Database"=>$_SESSION['INGRESO']['Base_Datos'], "UID" => $_SESSION['INGRESO']['Usuario_DB'],"PWD" => $_SESSION['INGRESO']['Contraseña_DB']);
+			      $cid = sqlsrv_connect($server, $connectionInfo); //returns false
+			    if( $cid === false )
+			    {
+				    $server=''.$_SESSION['INGRESO']['IP_VPN_RUTA'].', '.$_SESSION['INGRESO']['Puerto'];
+				    $connectionInfo = array("Database"=>$_SESSION['INGRESO']['Base_Datos'], "UID" => $_SESSION['INGRESO']['Usuario_DB'],
+				    "PWD" => $_SESSION['INGRESO']['Contraseña_DB']);
 
-				$cid = sqlsrv_connect($server, $connectionInfo); //returns false
-				if( $cid === false )
-				{
+				    $cid = sqlsrv_connect($server, $connectionInfo); //returns false
+				    if( $cid === false )
+				    {
 					//echo "fallo conecion sql server";
 					echo "<script>
 							/*Swal.fire({
@@ -321,10 +437,32 @@ class Conectar{
 							})*/
 							alert('Fallo conexion sql server ".$server." - ".$connectionInfo[0]." - ".$connectionInfo[1]." - ".$connectionInfo[2]."');
 					</script>";
-				}
+				    }
+			    }
+			}else
+			{ 
+				$server=''.$_SESSION['INGRESO']['IP_VPN_RUTA'].', '.$_SESSION['INGRESO']['Puerto'];
+				    $connectionInfo = array("Database"=>$_SESSION['INGRESO']['Base_Datos'], "UID" => $_SESSION['INGRESO']['Usuario_DB'],
+				    "PWD" => $_SESSION['INGRESO']['Contraseña_DB']);
+
+				    $cid = sqlsrv_connect($server, $connectionInfo); //returns false
+				    if( $cid === false )
+				    {
+					//echo "fallo conecion sql server";
+					echo "<script>
+							/*Swal.fire({
+								type: 'error',
+								title: 'Fallo',
+								text: 'fallo conexion sql server',
+								footer: 'Fallo conexion sql server'
+							})*/
+							alert('Fallo conexion sql server ".$server." - ".$connectionInfo[0]." - ".$connectionInfo[1]." - ".$connectionInfo[2]."');
+					</script>";
+				    }
+
 			}
-		}
         return $cid;
+		}
     }
 }
 ?>

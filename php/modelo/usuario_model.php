@@ -114,7 +114,8 @@ class usuario_model{
 					// "<script type=\"text/javascript\">
 					// window.location=\"".$uri."/wp-admin/admin.php\";
 					// </script>";
-					echo "<script type='text/javascript'>window.location='".$uri.$_SERVER["REQUEST_URI"]."/../../../php/vista/panel.php'</script>";
+					header('Location: '.$uri.$_SERVER["REQUEST_URI"].'/../../../php/vista/panel.php');
+					// echo "<script type='text/javascript'>window.location='".$uri.$_SERVER["REQUEST_URI"]."/../../../php/vista/panel.php'</script>";
 					//echo "<script type='text/javascript'>window.location='".$uri.$_SERVER["REQUEST_URI"]."/diskcover_php/vista/panel.php'</script>";
 				} 
 			}        
@@ -240,8 +241,8 @@ class usuario_model{
 					}
 					else
 					{
-							session_destroy();
-							session_start(); 
+							// session_destroy();
+							// session_start(); 
 					} 
 					$_SESSION['Nombre'] = $this->Nombre_Usuario;
 					$_SESSION['autentificado'] = "VERDADERO";
@@ -258,7 +259,9 @@ class usuario_model{
 												 "Cambio" =>$filas['Cambio'],
 												 "ID" =>$filas['ID'],
 												 "ERROR" =>'1',
-												 "Tipo_Usuario" =>$filas['Tipo_Usuario']
+												 "Tipo_Usuario" =>$filas['Tipo_Usuario'],
+												 "LOCAL_MYSQL"=>$_SESSION['INGRESO']['LOCAL_MYSQL'],
+												 "LOCAL_SQLSERVER"=>$_SESSION['INGRESO']['LOCAL_SQLSERVER']
 												 //"ClaveEncriptada" =>$Clave
 												 ); 
 				//Asignamos el valor verdadero para retornarlo
@@ -663,7 +666,7 @@ class usuario_model{
 				WHERE        (Usuario = '".$_SESSION['INGRESO']['Mail']."') 
 				AND (Clave = '".$_SESSION['INGRESO']['Clave']."') ";
 		
-		//echo $sql;
+		// echo $sql;
 		$stmt = false;
 		if($this->dbs!='')
 		{
