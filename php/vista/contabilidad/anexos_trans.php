@@ -126,8 +126,8 @@ require_once("panel.php");
 
 <div class="container-lg">
   <div class="row">
-    <div class="col-lg-6 col-sm-4 col-md-6 col-xs-12">     
-     <div class="col-xs-2 col-md-2 col-sm-2  col-lg-1">
+    <div class="col-lg-6 col-sm-10 col-md-6 col-xs-12">     
+     <div class="col-xs-1 col-md-1 col-sm-1 col-lg-1">
        <button type="button" class="btn btn-default dropdown-toggle" title="Año" data-toggle="dropdown">
         <img src="../../img/png/year.png">
          <span class="caret"></span>
@@ -137,7 +137,7 @@ require_once("panel.php");
       <li><a href="#">Smartphone</a></li>
     </ul>
     </div>
-    <div class="col-xs-2 col-md-2 col-sm-2  col-lg-1">                 
+    <div class="col-xs-1 col-md-1 col-sm-1 col-lg-1">                 
      <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" title="Mes">
        <img src="../../img/png/mes.png">
         <span class="caret"></span>
@@ -146,27 +146,27 @@ require_once("panel.php");
       <li><a href="#">Smartphone</a></li>
     </ul>
    </div>
-   <div class="col-xs-2 col-md-2 col-sm-2  col-lg-1">
+   <div class="col-xs-1 col-md-1 col-sm-1 col-lg-1">
      <button title="ATS"  class="btn btn-default" onclick="generar_ats()">
        <img src="../../img/png/ats.png" >
      </button>
    </div>
-   <div class="col-xs-2 col-md-2 col-sm-2  col-lg-1">
+   <div class="col-xs-1 col-md-1 col-sm-1 col-lg-1">
      <button title="ATS Financ"  class="btn btn-default" onclick="vista_ATS()">
        <img src="../../img/png/ats_fin.png" >
      </button>
    </div>
-   <div class="col-xs-2 col-md-2 col-sm-2  col-lg-1">
+   <div class="col-xs-1 col-md-1 col-sm-1 col-lg-1">
      <button title="REOC"  class="btn btn-default" onclick="downloadURI()">
        <img src="../../img/png/es.png" >
      </button>
    </div>
-   <div class="col-xs-2 col-md-2 col-sm-2  col-lg-1">
+   <div class="col-xs-1 col-md-1 col-sm-1 col-lg-1">
      <button title="RDEP"  class="btn btn-default" onclick="grabar_cuenta()">
        <img src="../../img/png/bc.png" >
      </button>
    </div>
-   <div class="col-xs-1 col-md-2 col-sm-2  col-lg-1">
+   <div class="col-xs-1 col-md-1 col-sm-1 col-lg-1">
       <a  href="./contabilidad.php?mod=contabilidad#" title="Salir de modulo" class="btn btn-default">
         <img src="../../img/png/salire.png">
      </a>

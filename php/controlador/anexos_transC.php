@@ -1648,7 +1648,7 @@ return 1;
              $tablaFinal[1]['datos']=array("Firma del Contador","Firma del representante");
              $tablaFinal[2]['medidas']=$tablaFinal[0]['medidas'];
              $tablaFinal[2]['alineado']= $tablaFinal[0]['alineado'];
-             $tablaFinal[2]['datos']=array("Firma del Contador","Firma del representante");
+             $tablaFinal[2]['datos']=array($_SESSION['INGRESO']['RUC_Contador'],$_SESSION['INGRESO']['CI_Representante']);
              $totales = count($tabla_RE_FU);  
              foreach ($tablaFinal as $key => $value){
                $this->pdf->SetXY(5,$this->pdf->GetY());            
