@@ -137,6 +137,7 @@ class usuario_model{
 			//Realizamos un bucle para ir obteniendo los resultados
 			while($filas=$consulta->fetch_assoc()){
 				$this->ID_Entidad=$filas['ID_Empresa'];
+				$_SESSION['INGRESO']['Entidad_No'] = $filas['ID_Empresa'];				
 				//echo $filas['ID_Empresa'];
 				$this->Nombre_Entidad=$filas['Nombre_Entidad'];
 				$this->Mensaje=$this->EscribirMsg("Ok!","Entidad encontrada.");
@@ -261,7 +262,8 @@ class usuario_model{
 												 "ERROR" =>'1',
 												 "Tipo_Usuario" =>$filas['Tipo_Usuario'],
 												 "LOCAL_MYSQL"=>$_SESSION['INGRESO']['LOCAL_MYSQL'],
-												 "LOCAL_SQLSERVER"=>$_SESSION['INGRESO']['LOCAL_SQLSERVER']
+												 "LOCAL_SQLSERVER"=>$_SESSION['INGRESO']['LOCAL_SQLSERVER'],
+												 'Entidad_No'=>$_SESSION['INGRESO']['Entidad_No']
 												 //"ClaveEncriptada" =>$Clave
 												 ); 
 				//Asignamos el valor verdadero para retornarlo
@@ -503,6 +505,7 @@ class usuario_model{
 	//detalle de la empresa sql server
 	function getEmpresasDESQL($item,$nombre){
 		$empresa=array();
+		$sql = '';
 		if($item!=null and $nombre!=null)
 		{
 			/*$sql="SELECT * 
@@ -514,10 +517,17 @@ class usuario_model{
 			FROM Empresas 
 			where Item='".$_SESSION['INGRESO']['item']."' ";
 		}
+		else
+		{
+			$sql="SELECT * 
+			FROM Empresas 
+			where Item='".$_SESSION['INGRESO']['item']."' ";
+		}
 		//echo $sql;
 		$stmt = false;
 		if($this->dbs!='')
 		{
+
 			$stmt = sqlsrv_query( $this->dbs, $sql);
 		}
 		if( $stmt === false)  
@@ -540,9 +550,11 @@ class usuario_model{
 		}  
 		else
 		{
+
 			$i=0;
-			while( $obj = sqlsrv_fetch_object( $stmt)) 
+			while( $obj = sqlsrv_fetch_object($stmt)) 
 			{
+
 				$cam=date_format($obj->Fecha,'Y-m-d H:i:s');
 				$empresa[$i]['Fecha']=$cam;
 				$empresa[$i]['Gerente']=$obj->Gerente;
@@ -560,6 +572,7 @@ class usuario_model{
 				$empresa[$i]['Det_Comp']=$obj->Det_Comp;
 				$empresa[$i]['Signo_Dec']=$obj->Signo_Dec;
 				$empresa[$i]['Signo_Mil']=$obj->Signo_Mil;
+				$empresa[$i]['Ciudad']=$obj->Ciudad;
 				//$empresa[$i]['Sucursal']=$obj->Sucursal;
 				//consultar sucursal
 				$empresa[$i]['Sucursal']=false;

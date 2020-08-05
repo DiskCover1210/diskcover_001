@@ -198,7 +198,13 @@ if (isset($_SESSION['autentificado']) != "VERDADERO")
 					$('#resul').html(data); 
 					// //alert('entrooo '+idMensaje);
 					 // alert($('#Contenedor').height()+$('#alerta').height());
-					 $('#Contenedor').height($('#Contenedor').height()+$('#alerta').height()+50);
+					 var med = $('#Contenedor').height();
+					 // console.log(med);
+					 if( med <= 437.77778)
+					 {
+					 	console.log(med);
+					    $('#Contenedor').height($('#Contenedor').height()+$('#alerta').height()+50);
+					 }
 				});
 		}
 	}

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Autor: Diskcover System.
  * Mail:  diskcover@msn.com
@@ -16,7 +17,7 @@ ini_set('display_errors', '1');
 require_once("../db/variables_globales.php");
 require_once("../controlador/panel.php");
 //enviar correo
-require_once("../../lib/phpmailer/PHPMailerAutoload.php");
+// require_once("../../lib/phpmailer/PHPMailerAutoload.php");
 	//echo ' jjj '.$_SESSION['autentificado'];
 	//die();
 	//asignamos la empresa
@@ -27,7 +28,7 @@ require_once("../../lib/phpmailer/PHPMailerAutoload.php");
 				//document.body.style.cursor = 'wait';
 			</script>
 		<?php
-		
+
 		$_SESSION['INGRESO']['empresa']=$_GET['mos'];
 		//nombre empresa
 		$_SESSION['INGRESO']['noempr']=$_GET['mos1'];
@@ -43,6 +44,8 @@ require_once("../../lib/phpmailer/PHPMailerAutoload.php");
 			//$('#selector').css('cursor', 'wait');
 			
 			$empresa=getEmpresasId($cod[0]);
+
+
 			//print_r($empresa);
 			foreach ($empresa as &$valor) 
 			{
@@ -59,7 +62,9 @@ require_once("../../lib/phpmailer/PHPMailerAutoload.php");
 				$_SESSION['INGRESO']['Fecha_ce']=$valor['Fecha_CE'];
 				//echo $_SESSION['INGRESO']['IP_VPN_RUTA'];
 				//obtenemos el resto de inf. de la empresa tales como correo direccion
+
 				$empresa_d=getEmpresasDE($_SESSION['INGRESO']['item'],$_SESSION['INGRESO']['noempr']);
+				// print_r($empresa_d);die();
 				$_SESSION['INGRESO']['Direccion']=$empresa_d[0]['Direccion'];
 				$_SESSION['INGRESO']['Telefono1']=$empresa_d[0]['Telefono1'];
 				$_SESSION['INGRESO']['FAX']=$empresa_d[0]['FAX'];
@@ -87,13 +92,17 @@ require_once("../../lib/phpmailer/PHPMailerAutoload.php");
 				$_SESSION['INGRESO']['Signo_Dec']=$empresa_d[0]['Signo_Dec'];
 				$_SESSION['INGRESO']['Signo_Mil']=$empresa_d[0]['Signo_Mil'];
 				$_SESSION['INGRESO']['Sucursal']=$empresa_d[0]['Sucursal'];
+				$_SESSION['INGRESO']['RUC_Contador'] = $empresa_d[0]['RUC_Contador'];
+				$_SESSION['INGRESO']['CI_Representante'] = $empresa_d[0]['CI_Representante'];
+				// print_r($empresa_d);die();
+				$_SESSION['INGRESO']['Ciudad'] = $empresa_d[0]['Ciudad'];
 				
 				//verificamos si es sql server o mysql para consultar periodos
 				if(isset($_SESSION['INGRESO']['IP_VPN_RUTA']) ) 
 				{
 					if($_SESSION['INGRESO']['Tipo_Base']=='SQL SERVER')
 					{
-						$periodo=getPeriodoActualSQL();
+						$periodo=getPeriodoActualSQL();						
 						//echo $periodo[0]['Fecha_Inicial'];
 						//$_SESSION['INGRESO']['Fechai']=$periodo[0]['Fecha_Inicial'];
 						//$_SESSION['INGRESO']['Fechaf']=$periodo[0]['Fecha_Final'];
@@ -228,7 +237,7 @@ require_once("../../lib/phpmailer/PHPMailerAutoload.php");
 		{
 			$tam_m=5;
 		}
-	}		
+	}	
 ?>
 <!DOCTYPE html>
 <html>
@@ -388,7 +397,8 @@ require_once("../../lib/phpmailer/PHPMailerAutoload.php");
 			arregloDeSubCadenas = value.split(separador, limite);
 			text =$('#sempresa option:selected').html(); //El texto de la opción seleccionada
 			//console.log(text);
-			//alert(value);
+			// alert(value);
+			// alert(text);
 			//redireccionamos
 			window.location="panel.php?mos="+value+"&mos1="+text+"&mos3="+arregloDeSubCadenas[1]+"";
 		}

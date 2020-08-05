@@ -4,7 +4,7 @@
 if(isset($_GET['mod'])) 
 		{
 			//sesion para saber en que modulo esta 
-			$_SESSION['INGRESO']['modulo']=$_GET['mod'];
+			$_SESSION['INGRESO']['modulo']=ucwords($_GET['mod']);
 			//verificamos accion 
 			if(isset($_GET['acc'])) 
 			{
@@ -17,7 +17,7 @@ if(isset($_GET['mod']))
 			//verificacion titulo accion
 			if(isset($_GET['acc1'])) 
 			{
-				$_SESSION['INGRESO']['accion1']=$_GET['acc1'];
+				$_SESSION['INGRESO']['accion1']=ucwords($_GET['acc1']);
 			}
 			else
 			{
@@ -177,7 +177,11 @@ $("#datos").fadeIn();
                Telefono: 025008082 / FAX: 025008082
                Email: diskcover@msn.com">  
 						   <p class="message"  style="color: #394082">
-							 <b>Direccion:</b> <?php echo $_SESSION['INGRESO']['Direccion']; ?><br>
+							 <b>Direccion:</b> <?php if(strlen($_SESSION['INGRESO']['Ciudad'])>1)
+               {
+                  echo $_SESSION['INGRESO']['Ciudad'].', ';
+               }
+                 echo $_SESSION['INGRESO']['Direccion']; ?><br>
 							 <b>Telefono:</b> <?php echo $_SESSION['INGRESO']['Telefono1'].' / '.$_SESSION['INGRESO']['FAX']; ?><br>
 							 <b>Email:</b> <?php echo $_SESSION['INGRESO']['Email']; 
                if(!empty($_SESSION['INGRESO']['Email_Conexion_CE']))
@@ -223,7 +227,7 @@ $("#datos").fadeIn();
           ?>
          
 
-          <div style="color: #ffff;"><?php echo $_SESSION['INGRESO']['item']; ?>-<?php echo $_SESSION['INGRESO']['noempr'];?> <i class="fa fa-fw fa-chevron-circle-right"></i>
+          <div style="color: #ffff;"><?php echo $_SESSION['INGRESO']['Entidad_No']; ?>-<?php echo $_SESSION['INGRESO']['item']; ?>-<?php echo $_SESSION['INGRESO']['Razon_Social'];?> <i class="fa fa-fw fa-chevron-circle-right"></i>
             <?php echo $_SESSION['INGRESO']['modulo']; ?> <i class="fa fa-fw fa-chevron-circle-right"></i>
             <?php if(isset($_SESSION['INGRESO']['accion1']))
                    {
@@ -350,7 +354,7 @@ $("#datos").fadeIn();
                   <li class="dropdown-item"><a href="#" >Cuotas Pendientes de prestamos</a></li>
                   <li class="dropdown-item"><a href="#" >Catalogo de rol de pagos</a></li>
                   <li class="dropdown-item"><a href="#" >Catalogo de retención</a></li>-->
-                  <li class="dropdown-item"><a href="contabilidad.php?mod=contabilidad&acc=diario_general&acc1=diario_general&b=1" >Diario general 
+                  <li class="dropdown-item"><a href="contabilidad.php?mod=contabilidad&acc=diario_general&acc1=diario general&b=1" >Diario general 
                   <i  style=' float: right;' align="right">(CRTL+D)</i></a></li>
                   <li class="dropdown-item"><a href="contabilidad.php?mod=contabilidad&acc=libro_banco&acc1=Libro Banco&b=1" >Libro banco 
                   <i  style=' float: right;' align="right">(CRTL+F)</i></a></li>
