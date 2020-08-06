@@ -4159,7 +4159,18 @@ function validarUser(){
 			
 			while($filas=$consulta->fetch_assoc())
 			{
-				echo '<div id="alerta" class="alert alert-success visible" align="center">ENTIDAD: '.$_SESSION['INGRESO']['Nombre_Entidad'].'</div>';
+				if(isset($_SESSION['TIPOCON']))
+				{
+					if($_SESSION['TIPOCON']==3)
+					{
+						echo '<div id="alerta" class="alert alert-success visible" align="center">"'.$_SESSION['INGRESO']['Nombre_Entidad'].'"</div>';
+					}
+					if($_SESSION['TIPOCON']==0)
+					{
+						echo '<div id="alerta" class="alert alert-success visible" align="center">'.$_SESSION['INGRESO']['Nombre_Entidad'].'</div>';
+					}
+				}
+				//echo '<div id="alerta" class="alert alert-success visible" align="center">ENTIDAD: '.$_SESSION['INGRESO']['Nombre_Entidad'].'</div>';
 				$i++;
 			}
 		}

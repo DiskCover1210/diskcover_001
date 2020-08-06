@@ -25,16 +25,18 @@
     function fecha_fin()
     {
     	$fecha = $('#desde').val();
+    	partes = $fecha.split('-');
     	var date = new Date($fecha);
     	var primerDia = new Date(date.getFullYear(), date.getMonth(), 1);
-    	var ultimoDia = new Date(date.getFullYear(), date.getMonth() + 1, 0);
+    	var ultimoDia = new Date(partes[0],partes[1],0);
     	var mes= date.getMonth()+1;
+    	console.log(ultimoDia);
 
     	if(mes <10)
     	{
     		mes = '0'+mes;
     	}
-    	$('#hasta').val(date.getFullYear()+"-"+mes+"-"+ultimoDia.getDate());
+    	$('#hasta').val(partes[0]+"-"+partes[1]+"-"+ultimoDia.getDate());
     	consultar_datos();
  
 

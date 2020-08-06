@@ -162,7 +162,7 @@ if (isset($_SESSION['autentificado']) != "VERDADERO")
 				  onkeyup='verifiuser(event,"Entidad","Correo");' placeholder="******" aria-describedby="sizing-addon1" required>
                 </div>
                 <br>
-				<input type="submit" name="submitlog" value="Entrar" class="btn btn-lg btn-primary btn-block btn-signin" id="IngresoLog" />
+				<input type="submit" name="submitlog" id='enviar' value="Entrar" class="btn btn-lg btn-primary btn-block btn-signin" id="IngresoLog" />
                 <div class="opcioncontra"><a href="">Olvidaste tu contraseña?</a></div>
 				<a class="btn btn-lg btn-primary btn-block btn-signin" href="descarga_a.php" style='colo:ffffff;'>
 					Descargas Importantes
@@ -189,8 +189,10 @@ if (isset($_SESSION['autentificado']) != "VERDADERO")
 		var select = document.getElementById(idMensaje); //El <select>
 		value1 = select.value;
 		//alert(value1);
-		if(codigo === 13 || codigo === 1)
+		
+		if(codigo === 13 || codigo === 1 || codigo === 9)
 		{
+			
 			$.post('ajax/vista_ajax.php'
 				, {ajax_page: idMensaje, com: value1 }, function(data){
 					//$('div.pdfcom').load(data);
@@ -200,30 +202,58 @@ if (isset($_SESSION['autentificado']) != "VERDADERO")
 					 // alert($('#Contenedor').height()+$('#alerta').height());
 					 var med = $('#Contenedor').height();
 					 // console.log(med);
-					 if( med <= 437.77778)
+					//alert (codigo+' -- '+med);
+					 	console.log(med);
+					 if( med <= 438.77778)
 					 {
 					 	console.log(med);
 					    $('#Contenedor').height($('#Contenedor').height()+$('#alerta').height()+50);
 					 }
 				});
 		}
+		 
 	}
 	function verifiuser(event,idMensaje,user_msj)
-	{
+	{		
 		var codigo = event.which || event.keyCode;
 		var select = document.getElementById(idMensaje); //El <select>
 		var s_user_msj = document.getElementById(user_msj).value; 
 		value1 = select.value;
 		//alert(value1+' '+s_user_msj+' '+codigo);
-		if(codigo === 13 || codigo === 1 || codigo === 9)
+		if( codigo === 1 || codigo === 9)
 		{
-			$.post('ajax/vista_ajax.php'
-				, {ajax_page: 'USER', com: value1, user:  s_user_msj}, function(data){
+			$.ajax({
+				data:  {ajax_page: 'USER', com: value1, user:  s_user_msj},
+				url:   'ajax/vista_ajax.php',
+				type:  'post',
+				beforeSend: function () 
+				{
+					$("#enviar").show();
+					//$("#response").html("");	
+				},
+				success:  function (response) 
+				{
+					//$('div.pdfcom').load(data);
+					$('#resul').html(''); 
+					$('#resul').html(response); 
+					$("#enviar").show();
+					//alert('entrooo '+idMensaje);
+				}
+			});
+			/*$.post('ajax/vista_ajax.php'
+				, {ajax_page: 'USER', com: value1, user:  s_user_msj},
+			beforeSend: function () {
+				
+				$("#enviar")..hide();
+				//$("#response").html("");	
+			},				
+			success:function(data){
 					//$('div.pdfcom').load(data);
 					$('#resul').html(''); 
 					$('#resul').html(data); 
+					$("#enviar").show();
 					//alert('entrooo '+idMensaje);
-				});
+				});*/
 		}
 	}
 	 
