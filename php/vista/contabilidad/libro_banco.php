@@ -26,18 +26,27 @@
     {
     	$fecha = $('#desde').val();
     	partes = $fecha.split('-');
-    	var date = new Date($fecha);
-    	var primerDia = new Date(date.getFullYear(), date.getMonth(), 1);
-    	var ultimoDia = new Date(partes[0],partes[1],0);
-    	var mes= date.getMonth()+1;
-    	console.log(ultimoDia);
-
-    	if(mes <10)
+    	var fecha = new Date();
+        var ano = fecha.getFullYear();
+    	if(partes[0] <= (ano+10))
     	{
-    		mes = '0'+mes;
-    	}
-    	$('#hasta').val(partes[0]+"-"+partes[1]+"-"+ultimoDia.getDate());
-    	consultar_datos();
+    		console.log(ano+10);
+    	  var date = new Date($fecha);
+    	  var primerDia = new Date(date.getFullYear(), date.getMonth(), 1);
+    	  var ultimoDia = new Date(partes[0],partes[1],0);
+    	  var mes= date.getMonth()+1;
+    	  console.log(ultimoDia);
+
+    	  if(mes <10)
+    	  {
+    		  mes = '0'+mes;
+    	  }
+    	  $('#hasta').val(partes[0]+"-"+partes[1]+"-"+ultimoDia.getDate());
+    	  consultar_datos();
+       }else
+       {
+       	alert('La fecha no puede ser mayor a '+(ano+10));
+       }
  
 
     }
@@ -132,15 +141,15 @@
 				// $('#myModal_espera').modal('show');
 			},
 				success:  function (response) {
-					$('#debe').text(response.Debe);
-					$('#haber').text(response.Haber);					
-					$('#saldo_ant').text(response.SalAnt);
-					$('#saldo').text(response.Saldo);
+					$('#debe').text(addCommas(response.Debe));
+					$('#haber').text(addCommas(response.Haber));					
+					$('#saldo_ant').text(addCommas(response.SalAnt));
+					$('#saldo').text(addCommas(response.Saldo));
 
-					$('#debe_').text(response.Debe_ME);
-					$('#haber_').text(response.Haber_ME);
-					$('#saldo_ant_').text(response.SalAnt_);
-					$('#saldo_').text(response.Saldo_ME);
+					$('#debe_').text(addCommas(response.Debe_ME));
+					$('#haber_').text(addCommas(response.Haber_ME));
+					$('#saldo_ant_').text(addCommas(response.SalAnt_));
+					$('#saldo_').text(addCommas(response.Saldo_ME));
 
 				console.log(response);
 			}
@@ -223,13 +232,13 @@
             </div>
            
             <div class="col-xs-2 col-md-2 col-sm-2">
-              <a href="#" id="imprimir_pdf" class="btn btn-default">
+              <a href="#" id="imprimir_pdf" class="btn btn-default" title="Descargar PDF">
                  <img src="../../img/png/impresora.png">
               </a>                          	
             </div>
             	
             <div class="col-xs-2 col-md-2 col-sm-2">
-            		<a href="#" id="imprimir_excel"  class="btn btn-default">
+            		<a href="#" id="imprimir_excel"  class="btn btn-default" title="Descargar excel">
             	      <img src="../../img/png/table_excel.png">
             	     </a>                          	
                 </div>

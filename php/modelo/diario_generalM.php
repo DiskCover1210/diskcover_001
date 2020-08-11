@@ -49,10 +49,9 @@ ORDER BY Acceso_Sucursales.Item,Empresa";
 	   {
 		$result[] = $row;
 	   }
-
-  cerrarSQLSERVERFUN($cid);
 	   return $result;
-  	
+
+  cerrarSQLSERVERFUN($cid);  	
   }
 
   function cargar_consulta_libro_tabla($FechaIni,$FechaFin,$DCAgencia,$DCUsuario,$TextNumNo,$TextNumNo1,$OpcCI,$OpcCE,$OpcCD,$OpcND,$OpcNC,$OpcA,$CheckAgencia,$CheckUsuario,$CheckNum)

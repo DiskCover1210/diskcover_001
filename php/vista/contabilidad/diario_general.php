@@ -197,10 +197,10 @@ require_once("panel.php");
         success:  function (response){
         if(response)
         {
-          $('#debe').html(response.debe.toFixed(2));
-          $('#haber').html(response.haber.toFixed(2));
-          $('#debe_me').html(response.debe_me.toFixed(2));          
-          $('#haber_me').html(response.haber_me.toFixed(2));
+          $('#debe').html(addCommas(response.debe.toFixed(2)));
+          $('#haber').html(addCommas(response.haber.toFixed(2)));
+          $('#debe_me').html(addCommas(response.debe_me.toFixed(2)));          
+          $('#haber_me').html(addCommas(response.haber_me.toFixed(2)));
 
         }       
          
@@ -337,7 +337,7 @@ require_once("panel.php");
             </a>
         </div>
         <div class="col-xs-2 col-md-2 col-sm-2 col-lg-2">
-          <button type="button" class="btn btn-default" data-toggle="dropdown">
+          <button type="button" class="btn btn-default" data-toggle="dropdown" title="Descargar PDF">
             <img src="../../img/png/impresora.png">
           </button>
             <ul class="dropdown-menu">
@@ -346,7 +346,7 @@ require_once("panel.php");
             </ul>
         </div>
         <div class="col-xs-2 col-md-2 col-sm-2">
-          <button type="button" class="btn btn-default" data-toggle="dropdown">
+          <button type="button" class="btn btn-default" data-toggle="dropdown" title="Descargar Excel">
             <img src="../../img/png/table_excel.png">
           </button>
           <ul class="dropdown-menu">

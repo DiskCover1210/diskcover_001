@@ -460,7 +460,7 @@ class PDF_MC extends PDF_MC_Table
     function Header()
     {
    
-  // print($_SESSION['INGRESO']['Logo_Tipo']);
+   // print($_SESSION['INGRESO']['Logo_Tipo']);
     	
 			      $this->SetTextColor(0,0,0);
 		if(isset($_SESSION['INGRESO']['Logo_Tipo']))
@@ -476,7 +476,7 @@ class PDF_MC extends PDF_MC_Table
 		   			$src = dirname(__DIR__,2).'/img/logotipos/'.$logo.'.png'; 
 		   			if(!file_exists($src))
 		   			{
-		   				$logo="diskcover";
+		   				$logo="diskcover_web";
 		                $src= dirname(__DIR__,2).'/img/logotipos/'.$logo.'.gif';
 
 		   			}

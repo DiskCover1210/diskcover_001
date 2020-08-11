@@ -122,7 +122,7 @@ require_once("panel.php");
          $('#myModal_espera').modal('show');  
 			},
 				success:  function (response) {
-				
+				totales();
 				 $('#tabla_').html(response);				 	
 				 consultar_datos_tempo();
 			    
@@ -135,6 +135,62 @@ require_once("panel.php");
 		});
 
 	}
+	function totales()
+	{
+			var parametros =
+		{
+			'tipocuenta':$('#tipo_cuenta').val(),
+			'ChecksubCta':$("#ChecksubCta").is(':checked'),
+			'OpcP':$("#OpcP").is(':checked'),
+			'CheqCta':$("#CheqCta").is(':checked'),
+			'CheqDet':$("#CheqDet").is(':checked'),
+			'CheqIndiv':$("#CheqIndiv").is(':checked'),
+			'fechaini':$('#txt_desde').val(),
+			'fechafin':$('#txt_hasta').val(),
+			'Cta':$('#select_cuenta').val(),
+			'CodigoCli':$('#select_beneficiario').val(),
+			'DCDet':$('#select_detalle').val(),
+		}
+		$.ajax({
+			data:  {parametros:parametros},
+			url:   '../controlador/saldo_fac_submoduloC.php?consultar_totales=true',
+			type:  'post',
+			dataType: 'json',
+			beforeSend: function () {		
+			  //    var spiner = '<div class="text-center"><img src="../../img/gif/proce.gif" width="100" height="100"></div>'			
+				 // $('#tabla_').html(spiner);
+
+         // $('#myModal_espera').modal('show');  
+			},
+				success:  function (response) {
+					// num.toString().match(/^-?\d+(?:\.\d{0,1})?/)[0];
+
+					$('#total_mn').text(addCommas(Number(response.Total.toString().match(/^-?\d+(?:\.\d{0,1})?/)[0])));
+					$('#saldo_mn').text(addCommas(Number(response.Saldo.toString().match(/^-?\d+(?:\.\d{0,1})?/)[0])));
+
+				console.log(response);
+				console.log(addCommas(response.Total));
+			    
+         // $('#myModal_espera').modal('hide');  
+				
+				
+				//console.log(response.titulo);
+			}
+		});
+
+	}
+
+	function addCommas(nStr) {
+    nStr += '';
+    var x = nStr.split('.');
+    var x1 = x[0];
+    var x2 = x.length > 1 ? '.' + x[1] : '';
+    var rgx = /(\d+)(\d{3})/;
+    while (rgx.test(x1)) {
+        x1 = x1.replace(rgx, '$1' + ',' + '$2');
+    }
+    return x1 + x2;
+}
 
 	function consultar_datos_tempo()
 	{
@@ -233,7 +289,7 @@ require_once("panel.php");
             	<a  href="./contabilidad.php?mod=contabilidad#" title="Salir de modulo" class="btn btn-default">
             		<img src="../../img/png/salire.png">
             	</a>
-            	 <a href="#" class="btn btn-default" id='descargar_pdf'>
+            	 <a href="#" class="btn btn-default" id='descargar_pdf' title="Descargar PDF">
             		<img src="../../img/png/impresora.png">
             	</a>
             	<button title="Consultar SubModulo"  class="btn btn-default" onclick="consultar_datos();">
@@ -338,5 +394,10 @@ require_once("panel.php");
 	  	    	 </div>
 	  	    </div>
 	  	</div>
+	  </div>
+	  <div class="row">
+	  	<table>
+	  		<tr><td width="75px"><b>Total MN</b></td><td width="75px" id="total_mn"></td><td width="75px"><b>Saldo MN</b></td><td width="75px" id="saldo_mn"></td></tr>
+	  	</table>	  	
 	  </div>
 	</div>

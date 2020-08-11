@@ -21,6 +21,14 @@ if(isset($_GET['consultar']))
 	//print_r($tabla['datos']);
 	echo json_decode($tabla['tabla']);
 }
+if(isset($_GET['consultar_totales']))
+{
+	$parametros = $_POST['parametros'];
+	$controlador = new Saldo_fac_sub_M();
+	$tabla = $controlador->cargar_consulta_totales($parametros);
+	// print_r($tabla);die();
+	echo json_encode($tabla);
+}
 if(isset($_GET['consultar_tempo']))
 {
 	$parametros = $_POST['parametros'];
@@ -94,8 +102,27 @@ class Saldo_fac_sub_M
 		$cta = $resultado[0];
 		$fechaini = str_replace("-","",$parametros['fechaini']);
 		$fechafin = str_replace("-","",$parametros['fechafin']);
+			$Total = 0;$Saldo = 0;
 		if($parametros['tipocuenta']=='C' || $parametros['tipocuenta']=='P')
 		{
+			// print_r($parametros);die();
+			$datos_ = $this->modelo->consulta_c_p_datos(
+			$parametros['tipocuenta'],
+			$parametros['ChecksubCta'],
+			$parametros['OpcP'],
+			$parametros['CheqCta'],
+			$parametros['CheqDet'],
+			$parametros['CheqIndiv'],
+			$fechaini,
+			$fechafin,
+			$cta,
+			$parametros['CodigoCli'],
+			$parametros['DCDet']);
+			foreach ($datos_ as $key => $value) {
+				 $Total = $Total + $value["Total"];
+                 $Saldo = $Saldo + $value["Saldo"];
+			}
+			$totales_  = array('Total'=>$Total,'Saldo'=>$Saldo);
 		  return $valores = array('tabla'=>$this->modelo->consulta_c_p_tabla(
 			$parametros['tipocuenta'],
 			$parametros['ChecksubCta'],
@@ -108,7 +135,11 @@ class Saldo_fac_sub_M
 			$cta,
 			$parametros['CodigoCli'],
 			$parametros['DCDet']),
-		   'datos'=> $this->modelo->consulta_c_p_datos(
+		   'datos'=> $datos_,
+		   'totales'=>$totales_);
+		}else if($parametros['tipocuenta']=='I' || $parametros['tipocuenta']=='G')
+		{
+			$datos_=$this->modelo->consulta_ing_egre_datos(
 			$parametros['tipocuenta'],
 			$parametros['ChecksubCta'],
 			$parametros['OpcP'],
@@ -119,9 +150,12 @@ class Saldo_fac_sub_M
 			$fechafin,
 			$cta,
 			$parametros['CodigoCli'],
-			$parametros['DCDet']));
-		}else if($parametros['tipocuenta']=='I' || $parametros['tipocuenta']=='G')
-		{
+			$parametros['DCDet']);
+			foreach ($datos_ as $key => $value) {
+				$Total = $Total + $value["Total"];
+				$saldo = 0;
+			}
+			$totales_  = array('Total'=>$Total,'Saldo'=>$Saldo);
 		   return $valores = array('tabla'=>$this->modelo->consulta_ing_egre_tabla(
 			$parametros['tipocuenta'],
 			$parametros['ChecksubCta'],
@@ -134,7 +168,25 @@ class Saldo_fac_sub_M
 			$cta,
 			$parametros['CodigoCli'],
 			$parametros['DCDet']),
-		   'datos'=> $this->modelo->consulta_ing_egre_datos(
+		   'datos'=> $datos_,
+		   'totales'=>$totales_);
+
+		}
+
+	}
+
+	function cargar_consulta_totales($parametros)
+	{
+
+		$resultado = explode(' ',$parametros['Cta']);
+		$cta = $resultado[0];
+		$fechaini = str_replace("-","",$parametros['fechaini']);
+		$fechafin = str_replace("-","",$parametros['fechafin']);
+			$Total = 0;$Saldo = 0;
+		if($parametros['tipocuenta']=='C' || $parametros['tipocuenta']=='P')
+		{
+			// print_r($parametros);die();
+			$datos_ = $this->modelo->consulta_c_p_datos(
 			$parametros['tipocuenta'],
 			$parametros['ChecksubCta'],
 			$parametros['OpcP'],
@@ -145,7 +197,33 @@ class Saldo_fac_sub_M
 			$fechafin,
 			$cta,
 			$parametros['CodigoCli'],
-			$parametros['DCDet']));
+			$parametros['DCDet']);
+			foreach ($datos_ as $key => $value) {
+				 $Total = $Total + $value["Total"];
+                 $Saldo = $Saldo + $value["Saldo"];
+			}
+			$totales_  = array('Total'=>$Total,'Saldo'=>$Saldo);
+		  return $totales_ ;
+		}else if($parametros['tipocuenta']=='I' || $parametros['tipocuenta']=='G')
+		{
+			$datos_=$this->modelo->consulta_ing_egre_datos(
+			$parametros['tipocuenta'],
+			$parametros['ChecksubCta'],
+			$parametros['OpcP'],
+			$parametros['CheqCta'],
+			$parametros['CheqDet'],
+			$parametros['CheqIndiv'],
+			$fechaini,
+			$fechafin,
+			$cta,
+			$parametros['CodigoCli'],
+			$parametros['DCDet']);
+			foreach ($datos_ as $key => $value) {
+				$Total = $Total + $value["Total"];
+				$saldo = 0;
+			}
+			$totales_  = array('Total'=>$Total,'Saldo'=>$Saldo);
+		   return $totales_;
 
 		}
 

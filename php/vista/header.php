@@ -251,7 +251,7 @@ $("#datos").fadeIn();
                 <a class="nav-link dropdown-toggle" id="archivo" data-toggle="dropdown" aria-haspopup="true" 
                 aria-expanded="false" style='padding-top: 5px;padding-bottom: 5px;'>Archivo</a>
                 <ul class="dropdown-menu" aria-labelledby="archivo">
-                  <li class="dropdown-item dropdown" style='width:100%;height=100%'>
+                  <li class="dropdown-submenu" style='width:100%;height=100%'>
                     <a class="dropdown-toggle" id="del_sistema" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style='width:100%;'>
                     Del sistema 
                     <div style=' float: right;'><i class="fa fa-fw fa-chevron-circle-right" style=' float: right;' align="right"></i></div></a>
@@ -263,6 +263,7 @@ $("#datos").fadeIn();
                         </a></li>
                       <li class="dropdown-item"><a href="empresa.php?mod=empresa&acc=cambioe&acc1=Modificar empresa&b=1">Modificar empresa</a></li>
                       <li class="dropdown-item"><a href="contabilidad.php?mod=contabilidad&acc=campe&acc1=Cambio de periodo&b=1">Cambio de periodo</a></li>
+                       <li class="dropdown-item"><a href="empresa.php?mod=empresa&acc=niveles_seguri&acc1=Niveles de seguridad&b=1">Niveles de seguridad</a></li>
                     </ul>
                   </li>
                   <li class="dropdown-item"><a href="panel.php?sa=s"><span class="glyphicon glyphicon-chevron-left" aria-hidden="true">  Volver

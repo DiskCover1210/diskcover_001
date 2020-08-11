@@ -151,6 +151,7 @@ class diario_generalC
 		$usuario = $this->modelo->llenar_usuario();
 
 		$datos = array('agencia'=>$agencia,'usuario'=>$usuario);
+		
 		return $datos;
 	}
 

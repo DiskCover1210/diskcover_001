@@ -141,7 +141,7 @@
             	<a href="./contabilidad.php?mod=contabilidad#" title="Salir de modulo" class="btn btn-default">
             		<img src="../../img/png/salire.png">
             	</a>
-            	 <a href="#" class="btn btn-default" id='imprimir_pdf'>
+            	 <a href="#" class="btn btn-default" id='imprimir_pdf' title="Descargar PDF">
             		<img src="../../img/png/impresora.png">
             	</a>
             	<a href="#"  class="btn btn-default" title="Descargar excel" id='imprimir_excel'>
