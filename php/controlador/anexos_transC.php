@@ -43,14 +43,20 @@ class anexos_transC
 	}
 	function year()
 	{
-		$mese = array(
-  		array('year'=>'2020','num'=>'01','acro'=>'ENE'),
-  		array('year'=>'2019','num'=>'02','acro'=>'FEB'),
-  		array('year'=>'2018','num'=>'03','acro'=>'MAR'),
-  		array('year'=>'2017','num'=>'04','acro'=>'ABR'),
-  	);
+    $datos = $this->modelo->year();
+    $meses = array();
+    foreach ($datos as $key => $value) {
+      $meses[]= array('year'=>$value['Anio']);
+    }
+  //   print_r($meses);die();
+		// $mese = array(
+  // 		array('year'=>'2020','num'=>'01','acro'=>'ENE'),
+  // 		array('year'=>'2019','num'=>'02','acro'=>'FEB'),
+  // 		array('year'=>'2018','num'=>'03','acro'=>'MAR'),
+  // 		array('year'=>'2017','num'=>'04','acro'=>'ABR'),
+  // 	);
 
-  	return $mese;
+  	return $meses;
 
 	}
 	function generar_ats($parametros)

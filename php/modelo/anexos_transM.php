@@ -14,6 +14,48 @@ class anexos_transM
 	   $this->conn = cone_ajax();
 	}
 
+  function year($ConSucursal=false,$No_ATS=false)
+  {
+    
+  $cid = $this->conn;
+     $sql = "SELECT YEAR(Fecha) As Anio FROM Trans_Compras 
+           WHERE Periodo = '".$_SESSION['INGRESO']['periodo']."' ";
+       if($ConSucursal){
+          if(strlen($No_ATS) > 3){
+            $sql.="AND Item NOT IN (".$No_ATS.") ";
+          }
+       }else{
+          $sql.="AND Item = '".$_SESSION['INGRESO']['item']."' ";
+       }
+       $sql.="UNION 
+       SELECT YEAR(Fecha) As Anio 
+       FROM Trans_Ventas 
+       WHERE Periodo = '".$_SESSION['INGRESO']['periodo']."' ";
+        if($ConSucursal){
+          if(strlen($No_ATS) > 3){
+            $sql.="AND Item NOT IN (".$No_ATS.") ";
+          }
+       }else{
+          $sql.="AND Item = '".$_SESSION['INGRESO']['item']."' ";
+       }
+       $sql.="GROUP BY YEAR(Fecha)
+       ORDER BY YEAR(Fecha) DESC ";
+         $stmt = sqlsrv_query($cid, $sql);
+        $datos =  array();
+     if( $stmt === false)  
+     {  
+     echo "Error en consulta PA.\n";  
+     return '';
+     die( print_r( sqlsrv_errors(), true));  
+     }
+      while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_ASSOC) ) 
+     {
+    $datos[] = $row;
+     }
+       return $datos;
+
+  }
+
 	function codigo_anexo($FechaMid)
 	{
 
