@@ -10,19 +10,18 @@ class usuario_model{
     public $db;
 	private $dbs;
     private $contacto;
-	private $ID_Entidad     ="";
-  private $Entidad        ="";
-  private $Nombre_Entidad ="";
-
-	private $ID_Usuario     ="";
-  private $Nombre_Usuario ="";
-  private $Mail           ="";
-  private $Contrasena     ="";
-  private $IP_Usuario     ="";
-  
-  private $Hora           ="";
-  private $Fecha          ="";
-  public $Mensaje        ="";
+	private $ID_Entidad="";
+    private $Entidad ="";
+    private $Nombre_Entidad="";
+    private $ID_Usuario="";
+    private $Nombre_Usuario="";
+    private $Mail="";
+    private $Contrasena="";
+    private $IP_Usuario="";
+    private $Hora="";
+    private $Fecha="";
+    public $Mensaje="";
+    private $accesos = "";
 	var $vQuery;
  
     public function __construct(){
@@ -114,7 +113,17 @@ class usuario_model{
 					// "<script type=\"text/javascript\">
 					// window.location=\"".$uri."/wp-admin/admin.php\";
 					// </script>";
-					header('Location: '.$uri.$_SERVER["REQUEST_URI"].'/../../../php/vista/panel.php');
+					// print_r($_SESSION['INGRESO']);
+					// die();
+
+					if($_SESSION['INGRESO']['Accesos'] == 1)
+					{
+					  header('Location: '.$uri.$_SERVER["REQUEST_URI"].'/../../../php/vista/panel.php');
+				    }else
+				    {
+				    	// echo "<script type='text/javascript'>Este usuario no eiene acceso</script>";
+				    	header('Location: ../vista/login.php?accs=0');
+				    }
 					// echo "<script type='text/javascript'>window.location='".$uri.$_SERVER["REQUEST_URI"]."/../../../php/vista/panel.php'</script>";
 					//echo "<script type='text/javascript'>window.location='".$uri.$_SERVER["REQUEST_URI"]."/diskcover_php/vista/panel.php'</script>";
 				} 
@@ -217,20 +226,22 @@ class usuario_model{
 					  FROM acceso_usuarios 
 					  WHERE Usuario = '".$this->Mail."' 
 					  AND Clave = '".$this->Contrasena."'
-					  AND ID_Empresa = ".$this->ID_Entidad.";";
+					  AND ID_Empresa = ".$this->ID_Entidad." LIMIT 1;";
 			// Ejecutamos la query
 			//echo $query;
 			//die();
+
 			$consulta=$this->db->query($query) or die($this->db->error);
 			// Realizamos un bucle para ir obteniendo los resultados
-			while($filas=$consulta->fetch_assoc()){
-				
+			while($filas=$consulta->fetch_assoc()){				
 				$this->ID_Usuario = ''.$filas['CI_NIC'];
 				$this->Nombre_Usuario = $filas['Nombre_Usuario'];
 				$this->IP_Usuario = $this->IPuser();
+				$this->accesos = $filas['TODOS'];
 				//Recuperando la hora en el que ingreso
 				$this->Hora = date('H:i:s', time());
 				$this->Fecha = date("m.d.y");
+
 				//$Clave=Conectar::encryption($this->Contrasena);
 				//echo $filas['CI_NIC'].'  '.$this->IP_Usuario;
 				//die();
@@ -260,6 +271,7 @@ class usuario_model{
 												 "Cambio" =>$filas['Cambio'],
 												 "ID" =>$filas['ID'],
 												 "ERROR" =>'1',
+												 "Accesos"=>$this->accesos,
 												 "Tipo_Usuario" =>$filas['Tipo_Usuario'],
 												 "LOCAL_MYSQL"=>$_SESSION['INGRESO']['LOCAL_MYSQL'],
 												 "LOCAL_SQLSERVER"=>$_SESSION['INGRESO']['LOCAL_SQLSERVER'],
@@ -324,42 +336,50 @@ class usuario_model{
 	//devuelve empresas asociadas a la entidad del usuario
 
 	function getEmpresas($id_entidad){
-		$empresa= array();
-		 $consulta=$this->db->query("SELECT * 
-									 FROM `lista_empresas` 
-									 WHERE IP_VPN_RUTA<>'.' 
-									 AND Base_Datos<>'.' 
-									 AND Usuario_DB<>'.' 
-									 AND Contraseña_DB<>'.' 
-									 AND Tipo_Base<>'.' 
-									 AND Puerto<>'0'									 
-									 AND `ID_Empresa`='".$id_entidad."';");
-									
-        while($filas=$consulta->fetch_assoc()){
-            $empresa[]=$filas;
+	    $empresa_2 = array();	    
+		 $empresa= array();
+		$items = '';
+		$sql2 = "SELECT  DISTINCT Item FROM acceso_empresas WHERE ID_Empresa = '".$id_entidad."' AND CI_NIC = '".$_SESSION['INGRESO']['Id']."';";
+		 $consulta_emp=$this->db->query($sql2);
+		   while($filas=$consulta_emp->fetch_assoc()){
+            $empresa_2[]=$filas;
         }
+        foreach ($empresa_2 as $key => $value) {
+        	$items.='"'.$value['Item'].'",';
+        }
+        $items = substr($items,0,-1);
+        
+		if($items!="")
+		{
+		$sql = "SELECT * 
+				FROM `lista_empresas` 
+				WHERE IP_VPN_RUTA<>'.' 
+				AND Base_Datos<>'.' 
+				AND Usuario_DB<>'.' 
+				AND Contrasena_DB<>'.' 
+				AND Tipo_Base<>'.' 
+				AND Puerto<>'0'									 
+				AND `ID_Empresa`='".$id_entidad."' AND Item in (".$items.");";
+				// print_r($sql);die();
+		 $consulta=$this->db->query($sql);		
+		   while($filas=$consulta->fetch_assoc()){
+            $empresa[]=$filas;
+            }
+	  }
         return $empresa;
 	}
 	//devuelve empresa seleccionada por id 
 	function getEmpresasId($id_empresa){
-		/*echo "SELECT * 
-					FROM `lista_empresas` 
-					WHERE IP_VPN_RUTA<>'.' 
-					 AND Base_Datos<>'.' 
-					 AND Usuario_DB<>'.' 
-					 AND Contraseña_DB<>'.' 
-					 AND Tipo_Base<>'.' 
-					 AND Puerto<>'0' 
-					 AND`ID`=".$id_empresa.";";*/
-			$consulta=$this->db->query("SELECT * 
+		    $sql = "SELECT * 
 									FROM `lista_empresas` 
 									WHERE IP_VPN_RUTA<>'.' 
 									 AND Base_Datos<>'.' 
 									 AND Usuario_DB<>'.' 
-									 AND Contraseña_DB<>'.' 
+									 AND Contrasena_DB<>'.' 
 									 AND Tipo_Base<>'.' 
 									 AND Puerto<>'0' 
-									 AND`ID`=".$id_empresa.";");
+									 AND`ID`=".$id_empresa.";";
+			$consulta=$this->db->query($sql);
 		
 		//echo "SELECT * FROM `Lista_Empresas` 
 		//							WHERE `ID`=".$id_empresa.";";

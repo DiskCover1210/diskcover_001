@@ -14,6 +14,7 @@ if(!isset($_SESSION))
 //require_once("../../lib/excel/plantilla.php");
 require_once(dirname(__DIR__,2)."/lib/excel/plantilla.php");
 require_once(dirname(__DIR__,1)."/db/db.php");
+require_once(dirname(__DIR__,1)."/db/variables_globales.php");
 
 //Lutgarda6018
 //require_once("../../diskcover_lib/fpdf/reporte_de.php");
@@ -26,6 +27,122 @@ if(isset($_POST['RUC']) AND !isset($_POST['submitweb']))
 	$idMen=$_POST['idMen'];
 	$item=$_POST['item'];
 	digito_verificadorf($ruc,$pag,$idMen,$item);
+}
+
+function ip()
+{
+  // // print_r($_SESSION);die();
+  //  $ipaddress = '';
+  //   if (getenv('HTTP_CLIENT_IP'))
+  //       $ipaddress = getenv('HTTP_CLIENT_IP');
+  //   else if(getenv('HTTP_X_FORWARDED_FOR'))
+  //       $ipaddress = getenv('HTTP_X_FORWARDED_FOR');
+  //   else if(getenv('HTTP_X_FORWARDED'))
+  //       $ipaddress = getenv('HTTP_X_FORWARDED');
+  //   else if(getenv('HTTP_FORWARDED_FOR'))
+  //       $ipaddress = getenv('HTTP_FORWARDED_FOR');
+  //   else if(getenv('HTTP_FORWARDED'))
+  //      $ipaddress = getenv('HTTP_FORWARDED');
+  //   else if(getenv('REMOTE_ADDR'))
+  //       $ipaddress = getenv('REMOTE_ADDR');
+  //   else
+  //       $ipaddress = 'UNKNOWN';
+  // // echo $ipaddress;
+  // $s = exec("ipconfig");
+
+  $cmd = escapeshellcmd("ipconfig");
+  setcookie("migalleta",shell_exec($cmd));
+  $salida = shell_exec($cmd);
+  $pos = strpos($salida, 'IPv4');
+if ($pos !== false) {
+    $salida = substr($salida,$pos);
+    $pos1 = strpos($salida, ':');
+    $salida = substr($salida,$pos1+1);
+    $pos2 = strpos($salida, 'M');
+    $salida = substr($salida,0,$pos2-1);
+    // setcookie("migalleta",$salida);
+} else {
+     echo "La cadena no fue encontrada en la cadena";
+     // die();
+}
+  return $salida;
+  
+
+}
+
+
+function control_procesos($TipoTrans,$Tarea,$opcional_proceso="",$TMail="")
+{  
+  // print_r($_SESSION);
+  $cid = Conectar::conexion('MYSQL');
+  $ip = ip();
+  print_r($ip);die();
+  $TMail_Credito_No = G_NINGUNO;
+  $NumEmpresa ='';
+  $periodo = '.';
+  if(!isset($_SESSION['INGRESO']['Item']))
+  {
+    $NumEmpresa = G_NINGUNO;
+  }else
+  {
+    $NumEmpresa = $_SESSION['INGRESO']['Item'];
+  }
+  if($TMail == "")
+  {
+    $TMail = G_NINGUNO;
+  }
+  // if($Modulo <> G_NINGUNO AND $TipoTrans<>G_NINGUNO AND $NumEmpresa<>G_NINGUNO)
+  // {
+    if($Tarea == G_NINGUNO)
+    {
+      $Tarea = "Inicio de Sección";
+    }else
+    {
+      $Tarea = substr($Tarea,0,60);
+    }
+    if(isset($_SESSION['INGRESO']['periodo']))
+    {
+      $periodo = $_SESSION['INGRESO']['periodo'];
+    }
+    $proceso = substr($opcional_proceso,0,60);
+    $NombreUsuario1 = substr($_SESSION['INGRESO']['Nombre'], 0, 60);
+    $TipoTrans = strtoupper($TipoTrans);
+    $Mifecha1 = date("Y-m-d");
+    $MiHora1 = date("H:i:s");
+    $CodigoUsuario=$_SESSION['INGRESO']['Id'];
+    if(!isset($_GET['mod']))
+    {
+      $Modulo = G_NINGUNO;
+    }else
+    {
+      
+        $Modulo = $_GET['mod'];
+      
+    }
+    if($Tarea == "")
+    {
+      $Tarea = G_NINGUNO;
+    }
+    if($opcional_proceso=="")
+    {
+      $opcional_proceso = G_NINGUNO;
+    }
+    $sql = "INSERT INTO acceso_pcs (IP_Acceso,CodigoU,Item,Aplicacion,RUC,Fecha,Hora,
+             ES,Tarea,Proceso,Credito_No,Periodo)VALUES('".trim($ip)."','".$CodigoUsuario."','".$NumEmpresa."',
+             '".$Modulo."','".$_SESSION['INGRESO']['RUCEnt']."','".$Mifecha1."','".$MiHora1."','".$TipoTrans."','".$Tarea."','".$proceso."','".$TMail_Credito_No."','".$periodo."');";
+     if($cid)
+     {
+       $resultado = mysqli_query($cid, $sql);
+         if(!$resultado)
+        {
+          echo "Error: " . $sql . "<br>" . mysqli_error($cid);
+          return -1;
+        }       
+         mysqli_close($cid);
+         return 1;
+     }
+
+  // }
 }
 
 function Actualizar_Datos_ATS_SP($Items,$MBFechaI,$MBFechaF,$Numero)

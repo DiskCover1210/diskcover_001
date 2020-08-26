@@ -6,7 +6,7 @@ require_once("../controlador/panel.php");
 				$i=0;
 
 				$num = count($empresa);
-				if($num !=1)
+				if($num > 1)
 				{
 					$html = '
 					<div class="box-body">
@@ -25,9 +25,13 @@ require_once("../controlador/panel.php");
 						</div>
 				 </div>';
 				 echo $html;
-				}else
+				}else if($num == 1)
 				{
 					$html='<script>$("#myModal_espera").modal("show"); window.location="panel.php?mos='.$empresa[0]['ID'].'-'.$empresa[0]['Item'].'&mos1='.$empresa[0]['Empresa'].'&mos3='.$empresa[0]['Item'].'"</script>';
+					echo $html;
+				}else
+				{
+					$html = '<div class="box-body text-center"><div class="col-lg-12 col-xs-9"><img src="../../img/NO_ASIGNADO.gif" style="width: 50%;"></div></div>';
 					echo $html;
 				}
 				

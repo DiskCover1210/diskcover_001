@@ -42,7 +42,8 @@ class niveles_seguriM
 		 	$consulta=$cid->query($sql) or die($cid->error);
 		 	while($filas=$consulta->fetch_assoc())
 			{
-				$datos[]=['id'=>$filas['ID_Empresa'],'text'=>$filas['Nombre_Entidad']];				
+				$datos[]=['id'=>$filas['ID_Empresa'],'text'=>utf8_encode($filas['Nombre_Entidad'])];	
+				// $datos[]=['id'=>$filas['ID_Empresa'],'text'=>$filas['Nombre_Entidad']];				
 			}
 		 }
 
