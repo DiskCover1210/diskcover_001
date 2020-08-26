@@ -14,6 +14,7 @@ if(!isset($_SESSION))
 //require_once("../../lib/excel/plantilla.php");
 require_once(dirname(__DIR__,2)."/lib/excel/plantilla.php");
 require_once(dirname(__DIR__,1)."/db/db.php");
+require_once(dirname(__DIR__,1)."/db/variables_globales.php");
 
 //Lutgarda6018
 //require_once("../../diskcover_lib/fpdf/reporte_de.php");
@@ -26,6 +27,70 @@ if(isset($_POST['RUC']) AND !isset($_POST['submitweb']))
 	$idMen=$_POST['idMen'];
 	$item=$_POST['item'];
 	digito_verificadorf($ruc,$pag,$idMen,$item);
+}
+
+function ip()
+{
+  // print_r($_SESSION);die();
+   $ipaddress = '';
+    if (getenv('HTTP_CLIENT_IP'))
+        $ipaddress = getenv('HTTP_CLIENT_IP');
+    else if(getenv('HTTP_X_FORWARDED_FOR'))
+        $ipaddress = getenv('HTTP_X_FORWARDED_FOR');
+    else if(getenv('HTTP_X_FORWARDED'))
+        $ipaddress = getenv('HTTP_X_FORWARDED');
+    else if(getenv('HTTP_FORWARDED_FOR'))
+        $ipaddress = getenv('HTTP_FORWARDED_FOR');
+    else if(getenv('HTTP_FORWARDED'))
+       $ipaddress = getenv('HTTP_FORWARDED');
+    else if(getenv('REMOTE_ADDR'))
+        $ipaddress = getenv('REMOTE_ADDR');
+    else
+        $ipaddress = 'UNKNOWN';
+  echo $ipaddress;
+
+}
+
+
+function control_procesos($TipoTrans,$Tarea,$opcional_proceso)
+{  
+  $TMail_Credito_No = G_NINGUNO;
+  if($NumEmpresa=="")
+  {
+    $NumEmpresa = G_NINGUNO;
+  }
+  if($TMail == "")
+  {
+    $TMail = G_NINGUNO;
+  }
+  if($Modulo <> G_NINGUNO AND $TipoTrans<>G_NINGUNO AND $NumEmpresa<>G_NINGUNO)
+  {
+    if($Tarea == G_NINGUNO)
+    {
+      $Tarea = "Inicio de Sección";
+    }else
+    {
+      $Tarea = substr($Tarea,0,60);
+    }
+    $proceso = substr($opcional_proceso,0,60);
+    $NombreUsuario1 = substr($NombreUsuario, 0, 60);
+    $TipoTrans = $TipoTrans;
+    $Mifecha1 = date("Y-m-d");
+    $MiHora1 = date("H:i:s");
+    $$CodigoUsuario='';
+    if($Tarea == "")
+    {
+      $Tarea = G_NINGUNO;
+    }
+    if($opcional_proceso=="")
+    {
+      $opcional_proceso = G_NINGUNO;
+    }
+    $sql = "INSERT INTO acceso_pcs (IP_Acceso,CodigoU,Item,Aplicacion,RUC,Fecha,Hora,
+             ES,Tarea,Proceso,Credito_No,Periodo)VALUES('172.168.2.20','".$CodigoUsuario."','".$NumEmpresa."',
+             '".$Modulo."','".$_SESSION['INGRESO']['Id']."','".$Mifecha1."','".$MiHora1."','".$TipoTrans."','".$Tarea."','".$Proceso."','".$TMail_Credito_No."','".$_SESSION['INGRESO']['periodo']."');";
+
+  }
 }
 
 function Actualizar_Datos_ATS_SP($Items,$MBFechaI,$MBFechaF,$Numero)
@@ -4491,9 +4556,62 @@ function grilla_generica($stmt,$ti=null,$camne=null,$b=null,$ch=null,$tabla=null
 			{
 				$tabla=0;
 			}
+					//si lleva o no border
+		$bor='';
+		$bor1='';
+		$bor2='';
+		if($b!=null and $b!='0')
+		{
+			$bor='style="border: #b2b2b2 1px solid;"';
+			$bor1='border: #b2b2b2 1px solid;';
+			$bor2 = 'border';
+			//style="border-top: 1px solid #bce8f1;"
+		}
+		//colocar cero a tabla en caso de no existir definida ninguna
+		if($tabla==null OR $tabla=='0' OR $tabla=='')
+		{
+			$tabla=0;
+		}
+		?>
+	<?php if($estilo)
+	 { 
+		echo  ' <style type="text/css">
+				#datos_t table {
+				border-collapse: collapse;
+			}
+
+			#datos_t table, th, td {
+			  /*border: solid 1px black;*/
+			  padding: 2px;
+			}
+
+			#datos_t tbody tr:nth-child(even) {
+			  background:#fffff;
+			}
+
+			#datos_t tbody tr:nth-child(odd) {
+			  background: #e2fbff;;
+			}
+
+			#datos_t tbody tr:nth-child(even):hover {
+			  background: #DDB;
+			}
+
+			#datos_t tbody tr:nth-child(odd):hover {
+			  background: #DDA;
+			}
+
+			.sombra {
+			  width: 99%;
+			  box-shadow: 10px 10px 6px rgba(0, 0, 0, 0.6);
+			}
+		</style>';
+	 }
 			?>
-				<div class="box-body no-padding">
-					<table class="table table-striped w-auto <?php echo $bor; ?>" >
+
+				<div class="sombra" style="">
+				<!--<div class="box-body no-padding">-->
+					<table <?php echo $bor2; ?> class="table table-striped table-hover" id='datos_t' >
 						<?php
 						if($ti!='' or $ti!=null)
 						{
@@ -4547,6 +4665,11 @@ function grilla_generica($stmt,$ti=null,$camne=null,$b=null,$ch=null,$tabla=null
 								 OR $valor->type==252 OR $valor->type==253 OR $valor->type==254 )
 								{
 									$tipo_campo[($cant)]="style='text-align: left; width:40px;'";
+									$ban=1;
+								}
+								if( $valor->type==10 OR $valor->type==11 OR $valor->type==12  )
+								{
+									$tipo_campo[($cant)]="style='text-align: left; width:80px;'";
 									$ban=1;
 								}
 								//numero
@@ -4834,7 +4957,7 @@ function grilla_generica($stmt,$ti=null,$camne=null,$b=null,$ch=null,$tabla=null
 									if(count($ch1)==2)
 									{
 										$cch=$ch1[0];
-										echo "<td style='text-align: left;'><input type='checkbox' id='id_".$row[$cch]."' name='".$ch1[1]."' value='".$row[$cch]."'
+										echo "<td style='text-align: left;".$bor1."'><input type='checkbox' id='id_".$row[$cch]."' name='".$ch1[1]."' value='".$row[$cch]."'
 										onclick='validarc(\"id_".$row[$cch]."\",\"".$tabla."\")'></td>";
 									}
 									else
@@ -4852,7 +4975,7 @@ function grilla_generica($stmt,$ti=null,$camne=null,$b=null,$ch=null,$tabla=null
 											}
 										}
 										$ca=$ca-1;
-										echo "<td style='text-align: left;'><input type='checkbox' id='id_".$camch."' name='".$ch1[$ca]."' value='".$camch."'
+										echo "<td style='text-align: left;' ".$bor."><input type='checkbox' id='id_".$camch."' name='".$ch1[$ca]."' value='".$camch."'
 										onclick='validarc(\"id_".$camch."\",\"".$tabla."\")'></td>";
 										//die();
 									}
@@ -5125,7 +5248,7 @@ function grilla_generica($stmt,$ti=null,$camne=null,$b=null,$ch=null,$tabla=null
 										//si es cero colocar -
 										if(number_format($row[$i],2, '.', ',')==0 OR number_format($row[$i],2, '.', ',')=='0,00')
 										{
-											echo "<td ".$tipo_campo[$i].">".$cfila1.$ita3.$sub3.$inden."-".$sub4.$ita4.$cfila2."</td>";
+											echo "<td ".$bor." ".$tipo_campo[$i].">".$cfila1.$ita3.$sub3.$inden."-".$sub4.$ita4.$cfila2."</td>";
 										}
 										else
 										{
@@ -5135,11 +5258,11 @@ function grilla_generica($stmt,$ti=null,$camne=null,$b=null,$ch=null,$tabla=null
 												//reemplazo una parte de la cadena por otra
 												$longitud_cad = strlen($tipo_campo[$i]); 
 												$cam2 = substr_replace($tipo_campo[$i],"color: red;'",$longitud_cad-1,1); 
-												echo "<td ".$cam2." > ".$cfila1.$ita3.$inden.$sub3."".number_format($row[$i],2, '.', ',')."".$sub4.$ita4.$cfila2."</td>";
+												echo "<td ".$bor." ".$cam2." > ".$cfila1.$ita3.$inden.$sub3."".number_format($row[$i],2, '.', ',')."".$sub4.$ita4.$cfila2."</td>";
 											}
 											else
 											{
-												echo "<td ".$tipo_campo[$i].">".$cfila1.$ita3.$inden.$sub3."".number_format($row[$i],2, '.', ',')."".$sub4.$ita4.$cfila2."</td>";
+												echo "<td ".$bor." ".$tipo_campo[$i].">".$cfila1.$ita3.$inden.$sub3."".number_format($row[$i],2, '.', ',')."".$sub4.$ita4.$cfila2."</td>";
 											}
 										}
 										
@@ -5148,13 +5271,13 @@ function grilla_generica($stmt,$ti=null,$camne=null,$b=null,$ch=null,$tabla=null
 									{
 										if(strlen($row[$i])<=50)
 										{
-											echo "<td ".$tipo_campo[$i].">".$cfila1.$ita3.$inden.$sub3."".$row[$i]."".$sub4.$ita4.$cfila2."</td>";
+											echo "<td ".$bor." ".$tipo_campo[$i].">".$cfila1.$ita3.$inden.$sub3."".$row[$i]."".$sub4.$ita4.$cfila2."</td>";
 										}
 										else
 										{
 											$resultado = substr($row[$i], 0, 50);
 											//echo $resultado; // imprime "ue"
-											echo "<td ".$tipo_campo[$i]." data-toggle='tooltip' data-placement='left' title='".$row[$i]."'>".$cfila1.$ita3.$inden.$sub3."".$resultado."...".$sub4.$ita4.$cfila2."</td>";
+											echo "<td ".$bor." ".$tipo_campo[$i]." data-toggle='tooltip' data-placement='left' title='".$row[$i]."'>".$cfila1.$ita3.$inden.$sub3."".$resultado."...".$sub4.$ita4.$cfila2."</td>";
 										}
 									}
 								}
