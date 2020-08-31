@@ -568,7 +568,37 @@ $("#datos").fadeIn();
       }
 
       ?>
-<!--------inicio de pestañas de educativo---->
+<!--------fin de pestañas de educativo---->
+<!------------ empiesa pestaña inventario------>
+
+   <?php
+          if(isset($_GET['mod']))
+          {
+             if($_GET['mod']=='Inventario' ) 
+               {         
+
+      ?>       
+              <!-- archivo -->
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" id="archivo" data-toggle="dropdown" aria-haspopup="true" 
+              aria-expanded="false" style='padding-top: 5px;padding-bottom: 5px;'>Archivo</a>
+              <ul class="dropdown-menu" aria-labelledby="archivo">
+                <li class="dropdown-submenu">
+                  <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" id="de_operacion" role="button" aria-haspopup="true" aria-expanded="false">De operación  &nbsp;&nbsp;&nbsp;&nbsp;<span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></a>
+                  <ul class="dropdown-menu" aria-labelledby="de_operacion">
+                    <li class="dropdown-item"><a href="inventario.php?mod=Inventario&acc=inventario_online&acc1=Inventario online&b=1&po=subcu">
+                    Ingreso online <i  style=' float: right;' align="right"></i></a></li>
+                  </ul>
+                </li>
+                
+                <li class="dropdown-item"><a href="panel.php"><span class="glyphicon glyphicon-chevron-left" aria-hidden="true">  Volver</a></li>
+              </ul>
+            </li>    
+      <?php
+       }}
+       ?>
+
+<!-----------fin de pestaña ionventario---------->
      
 
 

@@ -6,13 +6,13 @@
  * web:   www.discoversystem.com
  */
 //require_once 'determ.php';
-
 if(!isset($_SESSION)) 
 {	
 	session_start();
 }
 if (isset($_SESSION['autentificado']) != "VERDADERO") 
 { 
+	
 	if (!empty($_SERVER['HTTPS']) && ('on' == $_SERVER['HTTPS'])) 
 	{
 		$uri = 'https://';
@@ -67,59 +67,14 @@ if (isset($_SESSION['autentificado']) != "VERDADERO")
 	  <script src="../../lib/dist/js/sweetalert-dev.js"></script>
 	  
 	  <script src="../../lib/dist/js/sweetalert2.min.js"></script>
-	  <script type="text/javascript" src="../../lib/dist/js/typeahead.js"></script>
 	  <link rel="stylesheet" href="../../lib/dist/css/sweetalert2.min.css">
 	  
 	
 	<link href="https://cdn.jsdelivr.net/npm/simple-line-icons@2.4.1/css/simple-line-icons.css" rel="stylesheet" type="text/css" />
-	<!--<link href="/components/com_k2/css/k2.css?v=2.10.2&b=20191212" rel="stylesheet" type="text/css" />-->  
-
-    <!-- CSS -->  
-    <link rel="stylesheet" href="/templates/css/bootstrap.min.css">
-    <link rel="stylesheet" href="/templates/css/template_home.css">
-    <link rel="stylesheet" href="/templates/css/animate.min.css"> 
-    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css" 
-	integrity="sha384-oS3vJWv+0UjzBfQzYUhtDYW+Pj2yciDJxpsK1OYPAYjqT085Qq/1cq5FLXAZQ7Ay" crossorigin="anonymous">
+	
 </head>
 <body >
-	<!--<div class="row justify-content-between align-items-center">
-		<div class="d-none d-md-block col-12 col-sm-8 col-md-9 align-middle">
-			<a href="https://www.google.com/maps?cid=9021962645809441259&amp;authuser=1" target="_blank">
-				<i class="fas fa-map-marker-alt pr-1"></i><span class="pr-3">Atacames N23-226 y Av. la Gasca, Quito</span>
-			</a>
-			<script>
-				var login  = 'info';
-				var server = 'diskcoversystem.com';
-				var email  = login+'@'+server;
-				var url = 'mailto:'+email;
-				document.write('<a title="e-mail" rel="nofollow" href="'+url+'"><i class="fas fa-envelope pr-1"></i><span class="pr-3">'+email+'</span></a>');
-			</script>
-			<a title="e-mail" rel="nofollow" href="mailto:info@diskcoversystem.com">
-				<i class="fas fa-envelope pr-1"></i><span class="pr-3">info@diskcoversystem.com</span>
-			</a> 
-			<a href="tel:+59323210051">
-				<i class="fas fa-phone pr-1"></i>
-				<span class="pr-3">(02) 321-0051</span>
-			</a>
-		</div>
-		<div class="d-block d-md-none col-6 col-sm-4 col-md-3">
-			<a href="https://www.google.com/maps?cid=9021962645809441259&amp;authuser=1" target="_blank"><i class="fas fa-map-marker-alt pr-3"></i></a>
-			<script>
-				var login  = 'info';
-				var server = 'diskcoversystem.com';
-				var email  = login+'@'+server;
-				var url = 'mailto:'+email;
-				document.write('<a title="e-mail" rel="nofollow" href="'+url+'"><i class="fas fa-envelope pr-3"></i></a>');
-			</script>
-			<a title="e-mail" rel="nofollow" href="mailto:info@diskcoversystem.com"><i class="fas fa-envelope pr-3"></i></a> 
-			<a href="tel:+59323210051"><i class="fas fa-phone pr-1"></i></a>
-		</div>      
-		<div class="col-6 col-sm-4 col-md-3 text-right">
-			<a href="https://facebook.com/DiskCoverSystem/" rel="nofollow" target="_blank"><i class="fab fa-facebook pr-3"></i></a>
-			<a href="https://instagram.com/DiskCoverSystem/" rel="nofollow" target="_blank"><i class="fab fa-instagram pr-3"></i></a>
-			<a href="https://api.whatsapp.com/send?phone=593986524396" rel="nofollow" target="_blank"><i class="fab fa-whatsapp"></i></a>
-		</div>
-    </div>-->
+	
     <div id="Contenedor" style="background:rgba(201, 223, 241,0.4);">
         <div class="Icon">
 			<img src="../../img/jpg/logo.jpg" class="img-circle" alt="User Image" style="width: 20%; height:20%;">
@@ -286,6 +241,31 @@ if (isset($_SESSION['autentificado']) != "VERDADERO")
 		}
 	});
 </script>
+<script type="text/javascript">
+	$(document).ready(function()
+  {
+  	var acc = '<?php if(isset($_GET['accs'])){echo $_GET['accs'];}else{echo '1';}?>';
+  	console.log(acc);
+  	if(acc == 0)
+  	{
+  		Swal.fire({
+  			title: 'Usuario Bloqueao o sin permisos?',
+  			text:'Consulte con su administrador',
+  			type: 'warning',
+  			confirmButtonColor: '#3085d6',
+  			confirmButtonText: 'Ok!'
+  		}).then((result) => {
+  			if (result.value) {
+  				  window.location.href='login.php';
+  			 }
+  		})
+  		// window.location.href='login.php';
+  	}
+  
+  });
+</script>
+	<!--  -->
+
 <!-- vinculando a libreria Jquery
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>-->
 <!-- Libreria java scritp de bootstrap 

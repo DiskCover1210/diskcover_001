@@ -1,6 +1,6 @@
 <?php 
 include('../modelo/anexos_transM.php');
-include(dirname(__DIR__).'/db/variables_globales.php');//
+// include(dirname(__DIR__).'/db/variables_globales.php');//
 include('../../lib/fpdf/PDF_MC_Table.php');
 /**
  * 

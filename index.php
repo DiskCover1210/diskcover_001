@@ -51,7 +51,7 @@ if ($_SESSION['autentificado'] != "VERDADERO")
 	exit(); 
 }
 }
-
+echo "<script type='text/javascript'>window.location='php/vista/login.php'</script>"; 
 ?>
 <script>
 sum(10,20);

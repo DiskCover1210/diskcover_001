@@ -8,7 +8,6 @@ require_once("../../funciones/funciones_ajax.php");
 require_once("../../../lib/excel/plantilla.php");
 require_once("../../../lib/fpdf/reporte_comp.php");
 require_once("../../funciones/numeros_en_letras.php");
-
 //caso comprobantes aprobados codigo para buscar los comprobantes
 if(isset($_POST['ajax_page']) ) 
 {

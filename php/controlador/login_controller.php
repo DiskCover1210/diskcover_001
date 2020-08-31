@@ -34,7 +34,7 @@ if(isset($_POST['submitlog']))
 	{
 		//llamamos al modelo
 		$per=new usuario_model();
-		$per->Ingresar($ent,$cor,$pas);
+		 $per->Ingresar($ent,$cor,$pas);
 		//die();
 		//$datos=$per->get_contacto();
 		//Llamada a la vista

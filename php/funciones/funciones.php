@@ -5501,11 +5501,11 @@ function update_generico($datos,$tabla,$campoWhere)
    		{
    		   $wherelist.= $value['campo'].'='.$value['valor'].' AND ';
    		}else{
-   		  $wherelist.= $value['campo'].'="'.$value['valor'].'" AND ';
+   		  $wherelist.= $value['campo']."='".$value['valor']."' AND ";
    	    }
    	}
    	$wherelist = substr($wherelist,0,-5);
-   	$where = "WHERE ".$wherelist;   
+   	$where = " WHERE ".$wherelist;   
    	$sql = $sql.$set.$where;
    	// print_r($sql);	die();
    	$stmt = sqlsrv_query($cid, $sql);
@@ -5725,7 +5725,7 @@ function insert_generico($tabla=null,$datos=null)
 			echo "Error en consulta PA.\n";  
 			die( print_r( sqlsrv_errors(), true));  
 		}
-		
+		return 1;
 		  // cerrarSQLSERVERFUN($cid);
 		
 	}

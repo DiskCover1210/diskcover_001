@@ -14,8 +14,12 @@ error_reporting(E_ALL);
 ini_set('display_errors', '1');
 //include("chequear_seguridad.php"); 
 //variables globales
-require_once("../db/variables_globales.php");
-require_once("../controlador/panel.php");
+// require_once("../db/variables_globales.php");
+require("../controlador/panel.php");
+require_once("../funciones/funciones.php");
+// control_procesos("NORMAL",'ingreso sesion',"ingreso ");
+
+ // echo "<script>alert('ingresado')</script>";
 //enviar correo
 // require_once("../../lib/phpmailer/PHPMailerAutoload.php");
 	//echo ' jjj '.$_SESSION['autentificado'];
@@ -52,7 +56,7 @@ require_once("../controlador/panel.php");
 				$_SESSION['INGRESO']['IP_VPN_RUTA']=$valor['IP_VPN_RUTA'];
 				$_SESSION['INGRESO']['Base_Datos']=$valor['Base_Datos'];
 				$_SESSION['INGRESO']['Usuario_DB']=$valor['Usuario_DB'];
-				$_SESSION['INGRESO']['Contraseña_DB']=$valor['Contraseña_DB'];
+				$_SESSION['INGRESO']['Contraseña_DB']=$valor['Contrasena_DB'];
 				$_SESSION['INGRESO']['Tipo_Base']=$valor['Tipo_Base'];
 				$_SESSION['INGRESO']['Puerto']=$valor['Puerto'];
 				$_SESSION['INGRESO']['Fecha']=$valor['Fecha'];
@@ -313,6 +317,10 @@ require_once("../controlador/panel.php");
 <script src="../../lib/dist/js/adminlte.min.js"></script>
 <!-- AdminLTE for demo purposes -->
 <script src="../../lib/dist/js/demo.js"></script>
+
+
+<script src="../../lib/dist/js/select2.min.js"></script>
+  <link rel="stylesheet" href="../../lib/dist/css/select2.min.css">
   
  <link rel="stylesheet" href="../../lib/dist/css/sweetalert.css">
   <script src="../../lib/dist/js/sweetalert-dev.js"></script>
@@ -565,6 +573,8 @@ require_once("../controlador/panel.php");
 		<script>
 
 		$(document).ready(function () {
+			console.log(navigator);
+
 			var es_chrome = navigator.userAgent.toLowerCase().indexOf('chrome') > -1;
 		if(es_chrome)
 		{
@@ -881,7 +891,7 @@ require_once("../controlador/panel.php");
 		let cap = $('#'+id).val();
 		let cuentaini = cap.replace(/[.]/gi,'');
 	//	var cuentafin = $('#txt_CtaF').val();
-		var formato = "<?php echo $_SESSION['INGRESO']['Formato_Cuentas']; ?>";
+		var formato = "<?php if(isset($_SESSION['INGRESO']['Formato_Cuentas']))echo $_SESSION['INGRESO']['Formato_Cuentas']; ?>";
 		let parte =formato.split('.');
 		var nuevo =  new Array(); 
 		let cadnew ='';
@@ -1006,6 +1016,7 @@ require_once("../controlador/panel.php");
 			}
 		?>
 <!-- Site wrapper -->
+<script type="text/javascript"></script>
 <section class="content-wrapper">
   <div class="box box-default">
    <div class="box-body"> 
@@ -1116,6 +1127,10 @@ require_once("../controlador/panel.php");
 									<a class="btn btn-app" href="educativo.php?mod=educativo&acc=detalle_estudiante&acc1=Detalle%20Estudiante&b=1&po=subcu" style='width:60px;' data-toggle="tooltip" title="Educativo">
 										<i ><img src="../../img/gif/Contabilidad.gif" class="user-image" alt="User Image"
 										style='font-size:20px; display:block; height:100%; width:80%;'></i> Educativo
+									</a>
+									<a class="btn btn-app" href="inventario.php?mod=Inventario" style='width:60px;' data-toggle="tooltip" title="Inventario">
+										<i ><img src="../../img/gif/Inventario.gif" class="user-image" alt="User Image"
+										style='font-size:20px; display:block; height:100%; width:80%;'></i> Inventario
 									</a>
 									<?php
 									if($_SESSION['INGRESO']['RUCEnt']=='1792164710001'  AND $_SESSION['INGRESO']['noempr']=='Prismanet Profesional S.A.') 
@@ -1459,10 +1474,10 @@ require_once("../controlador/panel.php");
 									if($_SESSION['INGRESO']['permiso']['inven']=='1') 
 									{
 									?>
-										<!--<a class="btn btn-app" style='width:60px;' data-toggle="tooltip" title="Inventario">
+										<a class="btn btn-app" style='width:60px;' data-toggle="tooltip" title="Inventario">
 											<i ><img src="../../img/gif/Inventario.gif" class="user-image" alt="User Image"
 											style='font-size:20px; display:block; height:100%; width:80%;'></i> Inventario
-										</a>-->
+										</a>
 									<?php
 									}
 									else
