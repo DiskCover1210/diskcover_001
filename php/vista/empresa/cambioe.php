@@ -1,4 +1,5 @@
 <?php
+
     if(!isset($_SESSION)) 
 	 		session_start();
 	//datos para consultar
@@ -72,6 +73,27 @@
 						Collapsible Group Item #1
 					  </a> -->
 					</h4>
+					<h4 class="box-title">
+						<a class="btn btn-default"  title="Mostrar Vencimiento" href="#" data-placement="right"
+						onclick='mostrarEmpresa();'>
+							<i ><img src="../../img/png/reporte_1.png" class="user-image" alt="User Image"
+							style='font-size:20px; display:block; height:100%; width:100%;'></i> 
+						</a>
+					  <!--<a data-toggle="collapse" data-parent="#accordion" href="#collapseOne">
+						Collapsible Group Item #1
+					  </a> -->
+					</h4>
+					<h4 class="box-title" id='mostraEm' hidden="true">
+						<a class="btn btn-default"  title="Mostrar Vencimiento" data-placement="right"
+						onclick='mostrarEmpresa();' target="_blank" href="descarga.php?mod=contabilidad&acc=mosEm&acc1=Balance de Comprobacion/Situación/General&ti=<?php echo $_SESSION['INGRESO']['ti']; ?>
+						&Opcb=6&Opcen=0&b=0&ex=1">
+							<i ><img src="../../img/png/table_excel.png" class="user-image" alt="User Image"
+							style='font-size:20px; display:block; height:100%; width:100%;'></i> 
+						</a>
+					  <!--<a data-toggle="collapse" data-parent="#accordion" href="#collapseOne">
+						Collapsible Group Item #1
+					  </a> -->
+					</h4>
 			  </div>
 			 </div>
 		 </div>
@@ -91,6 +113,22 @@
 					</td>
 				</tr>
 			  </table>
+			  <table id='mostraEm1' hidden="true">
+				<tr>
+					<td>
+						<b>Desde:</b>
+					</td>
+					<td>
+					   <!--<input type="date" id="desde" class="form-control"  value="<?php //echo date("d-m-Y");?>" >-->
+					   <input type="date" class="form-control input-sm" id="desde" value="<?php echo date("d-m-Y");?>">
+					</td>
+					<td>
+						<b>Hasta:&nbsp;</b>
+					</td>
+					<td>
+						<input type="date" id="hasta"  class="form-control"  value="<?php echo date("d-m-Y");?>" onblur="consultar_datos();">
+					</td>
+			  </table>
 			<?php
 					
 					?>
@@ -99,7 +137,53 @@
 					$texto[0]=1;
 					if(count($texto)>0)
 							{
-					?>	
+					?>			
+								<div id='mostraE' style="display:none;">
+									
+									<div class="tab-content" style="background-color:#E7F5FF">
+										<div id="home" class="tab-pane fade in active">									
+										   <div class="table-responsive" id="tabla_" style="overflow-y: scroll; overflow-x: scroll; height:450px; width: auto;">
+												<style type="text/css">
+													#datos_t table {
+													  border-collapse: collapse;
+													}
+
+													#datos_t table, th, td {
+													  /*border: solid 1px black;*/
+													  padding: 2px;
+													}
+
+													#datos_t tbody tr:nth-child(even) {
+													  background:#fffff;
+													}
+
+													#datos_t tbody tr:nth-child(odd) {
+													  background: #e2fbff;;
+													}
+
+													#datos_t tbody tr:nth-child(even):hover {
+													  background: #DDB;
+													}
+
+													#datos_t tbody tr:nth-child(odd):hover {
+													  background: #DDA;
+													}
+
+													.sombra {
+													  width: 99%;
+													  box-shadow: 10px 10px 6px rgba(0, 0, 0, 0.6);
+													}
+												</style>
+												<div id='lista'>
+													<?php //$balance=ListarEmpresasSQL('Analisis de vencimiento',null,null,null,null,null,null); ?>	
+												</div>
+										   </div>
+										</div>		  	    	  	    	
+									</div>
+									<!--<div class="box table-responsive">
+										
+									</div>-->
+								</div>
 								<!-- Modal -->
 								<div class="col-md-3">
 									<div class="form-group">
@@ -198,10 +282,68 @@
 								  $(this).tab('show');
 									});
 									$(".loader1").hide();
+									$("#mostraEm").hide();
+									$("#0").hide();
 									$(function() { 
 										$("#myModal").modal();
 										//$("#dialog").dialog(); 
 									});
+								
+									function consultar_datos()
+									{
+										let desde= document.getElementById('desde');
+										let hasta= document.getElementById('hasta');
+										///alert(desde.value+' '+hasta.value);
+										var parametros =
+										{
+											'desde':desde.value,
+											'hasta':hasta.value			
+										}
+										$titulo = 'Mayor de '+$('#DCCtas option:selected').html(),
+										$.ajax({
+											data:  {parametros:parametros},
+											url:   '../controlador/contabilidad_controller.php?consultar=true',
+											type:  'post',
+											//dataType: 'json',
+											beforeSend: function () {		
+											  //    var spiner = '<div class="text-center"><img src="../../img/gif/proce.gif" width="100" height="100"></div>'			
+												 // $('#tabla_').html(spiner);
+												 $('#myModal_espera').modal('show');
+											},
+												success:  function (response) {
+													$('#lista').html(response);
+													$('#myModal_espera').modal('hide');
+												/*consultar_totales();
+												
+												 $('#tabla_').html(response);
+												 var nFilas = $("#tabla_ tr").length;
+												 // $('#num_r').html(nFilas-1);	
+												 $('#myModal_espera').modal('hide');	
+												 $('#tit').text($titulo);	*/	
+											}
+										});
+										//document.getElementById('desde').value=desde;
+									   // document.getElementById('hasta').value=hasta;
+									}
+									function mostrarEmpresa()
+									{
+										//$(".loader1").show();
+										var x = document.getElementById('mostraE');
+										var x1 = document.getElementById('mostraEm');
+										
+										if (x.style.display === 'none') 
+										{
+											x.style.display = 'block';
+											$("#mostraEm").show();
+											$("#mostraEm1").show();
+										} 
+										else 
+										{
+											x.style.display = 'none';
+											$("#mostraEm").hide();
+											$("#mostraEm1").hide();
+										}
+									}
 									function cambiarEmpresaMa()
 									{
 										var entidad = document.getElementById('entidad');
@@ -577,14 +719,14 @@
 
 
 	//Date picker
-    $('#desde').datepicker({
+    /*$('#desde').datepicker({
 		dateFormat: 'dd/mm/yyyy',
       autoclose: true
     });
 	$('#hasta').datepicker({
 		dateFormat: 'dd/mm/yyyy',
       autoclose: true
-    });
+    });*/
 	//modificar url
 	function modificar(texto){
 		var l1=$('#l1').attr("href");  

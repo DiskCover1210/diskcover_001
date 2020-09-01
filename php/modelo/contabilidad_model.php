@@ -102,6 +102,302 @@ class contabilidad_model{
         }
         return $empresa;
 	}
+	function ListarEmpresasMYSQL($ti=null,$Opcb=null,$Opcem=null,$OpcDG=null,$b=null,$opcr=null,$OpcCE=null,$desde=null,$hasta=null)
+	{
+		$sql='SELECT A.Id_Empresa,A.Item,Empresa,A.Fecha,
+		 A.enero,
+		 A.febrero,
+		 A.marzo,
+		 A.abril,
+		 A.mayo,
+		 A.junio,
+		 A.julio,
+		 A.agosto,
+		 A.septiembre,
+		 A.octubre,
+		 A.noviembre,
+		 A.diciembre 
+		FROM
+		(SELECT Id_Empresa,Item,Empresa,Fecha,
+		IF((MONTH(Fecha) = 01 AND YEAR(Fecha) = 2020), Fecha, "") AS enero,
+		IF((MONTH(Fecha) = 02 AND YEAR(Fecha) = 2020), Fecha, "") AS febrero,
+		IF((MONTH(Fecha) = 03 AND YEAR(Fecha) = 2020), Fecha, "") AS marzo,
+		IF((MONTH(Fecha) = 04 AND YEAR(Fecha) = 2020), Fecha, "") AS abril,
+		IF((MONTH(Fecha) = 05 AND YEAR(Fecha) = 2020), Fecha, "") AS mayo,
+		IF((MONTH(Fecha) = 06 AND YEAR(Fecha) = 2020), Fecha, "") AS junio,
+		IF((MONTH(Fecha) = 07 AND YEAR(Fecha) = 2020), Fecha, "") AS julio,
+		IF((MONTH(Fecha) = 08 AND YEAR(Fecha) = 2020), Fecha, "") AS agosto,
+		IF((MONTH(Fecha) = 09 AND YEAR(Fecha) = 2020), Fecha, "") AS septiembre,
+		IF((MONTH(Fecha) = 10 AND YEAR(Fecha) = 2020), Fecha, "") AS octubre,
+		IF((MONTH(Fecha) = 11 AND YEAR(Fecha) = 2020), Fecha, "") AS noviembre,
+		IF((MONTH(Fecha) = 12 AND YEAR(Fecha) = 2020), Fecha, "") AS diciembre FROM lista_empresas
+		union
+		SELECT Id_Empresa,Item,Empresa,Fecha_CE AS fecha,
+		IF((MONTH(Fecha_CE) = 01 AND YEAR(Fecha_CE) = 2020), Fecha_CE, "") AS enero,
+		IF((MONTH(Fecha_CE) = 02 AND YEAR(Fecha_CE) = 2020), Fecha_CE, "") AS febrero,
+		IF((MONTH(Fecha_CE) = 03 AND YEAR(Fecha_CE) = 2020), Fecha_CE, "") AS marzo,
+		IF((MONTH(Fecha_CE) = 04 AND YEAR(Fecha_CE) = 2020), Fecha_CE, "") AS abril,
+		IF((MONTH(Fecha_CE) = 05 AND YEAR(Fecha_CE) = 2020), Fecha_CE, "") AS mayo,
+		IF((MONTH(Fecha_CE) = 06 AND YEAR(Fecha_CE) = 2020), Fecha_CE, "") AS junio,
+		IF((MONTH(Fecha_CE) = 07 AND YEAR(Fecha_CE) = 2020), Fecha_CE, "") AS julio,
+		IF((MONTH(Fecha_CE) = 08 AND YEAR(Fecha_CE) = 2020), Fecha_CE, "") AS agosto,
+		IF((MONTH(Fecha_CE) = 09 AND YEAR(Fecha_CE) = 2020), Fecha_CE, "") AS septiembre,
+		IF((MONTH(Fecha_CE) = 10 AND YEAR(Fecha_CE) = 2020), Fecha_CE, "") AS octubre,
+		IF((MONTH(Fecha_CE) = 11 AND YEAR(Fecha_CE) = 2020), Fecha_CE, "") AS noviembre,
+		IF((MONTH(Fecha_CE) = 12 AND YEAR(Fecha_CE) = 2020), Fecha_CE, "") AS diciembre FROM lista_empresas
+		union
+		SELECT Id_Empresa,Item,Empresa,Fecha_VPN AS fecha,
+		IF((MONTH(Fecha_VPN) = 01 AND YEAR(Fecha_VPN) = 2020), Fecha_VPN, "") AS enero,
+		IF((MONTH(Fecha_VPN) = 02 AND YEAR(Fecha_VPN) = 2020), Fecha_VPN, "") AS febrero,
+		IF((MONTH(Fecha_VPN) = 03 AND YEAR(Fecha_VPN) = 2020), Fecha_VPN, "") AS marzo,
+		IF((MONTH(Fecha_VPN) = 04 AND YEAR(Fecha_VPN) = 2020), Fecha_VPN, "") AS abril,
+		IF((MONTH(Fecha_VPN) = 05 AND YEAR(Fecha_VPN) = 2020), Fecha_VPN, "") AS mayo,
+		IF((MONTH(Fecha_VPN) = 06 AND YEAR(Fecha_VPN) = 2020), Fecha_VPN, "") AS junio,
+		IF((MONTH(Fecha_VPN) = 07 AND YEAR(Fecha_VPN) = 2020), Fecha_VPN, "") AS julio,
+		IF((MONTH(Fecha_VPN) = 08 AND YEAR(Fecha_VPN) = 2020), Fecha_VPN, "") AS agosto,
+		IF((MONTH(Fecha_VPN) = 09 AND YEAR(Fecha_VPN) = 2020), Fecha_VPN, "") AS septiembre,
+		IF((MONTH(Fecha_VPN) = 10 AND YEAR(Fecha_VPN) = 2020), Fecha_VPN, "") AS octubre,
+		IF((MONTH(Fecha_VPN) = 11 AND YEAR(Fecha_VPN) = 2020), Fecha_VPN, "") AS noviembre,
+		IF((MONTH(Fecha_VPN) = 12 AND YEAR(Fecha_VPN) = 2020), Fecha_VPN, "") AS diciembre FROM lista_empresas) AS A
+		ORDER BY A.Id_Empresa ,A.Item';
+		
+	}
+	//consulta empresa
+	function ListarEmpresasSQL($ti=null,$Opcb=null,$Opcem=null,$OpcDG=null,$b=null,$opcr=null,$OpcCE=null,$desde=null,$hasta=null){
+		
+		$cid = Conectar::conexion('MYSQL');
+		//echo $desde.'  '.$hasta;
+		$f1 = new DateTime($desde);
+		$f2 = new DateTime($hasta);
+
+		$cant_meses = $f2->diff($f1);
+		$cant_meses = $cant_meses->format('%m'); //devuelve el numero de meses entre ambas fechas.
+		$listaMeses = array($f1->format('Y-m-d'));
+		$mes = explode('-',$listaMeses[0]);
+		$sql1='';
+		$sql2='';
+		$sql3='';
+		$sql4='';
+		if($mes[1]=='01')
+		{
+			$sql1=$sql1.' IF((MONTH(Fecha) = '.$mes[1].' AND YEAR(Fecha) = '.$mes[0].'), Fecha, "") AS enero,';
+			$sql2=$sql2.' IF((MONTH(Fecha_CE) = '.$mes[1].' AND YEAR(Fecha_CE) = '.$mes[0].'), Fecha_CE, "") AS enero,';
+			$sql3=$sql3.' IF((MONTH(Fecha_VPN) = '.$mes[1].' AND YEAR(Fecha_VPN) = '.$mes[0].'), Fecha_VPN, "") AS enero,';
+			$sql4=$sql4.' A.enero,';
+		}
+		if($mes[1]=='02')
+		{
+			$sql1=$sql1.' IF((MONTH(Fecha) = '.$mes[1].' AND YEAR(Fecha) = '.$mes[0].'), Fecha, "") AS febrero,';
+			$sql2=$sql2.' IF((MONTH(Fecha_CE) = '.$mes[1].' AND YEAR(Fecha_CE) = '.$mes[0].'), Fecha_CE, "") AS febrero,';
+			$sql3=$sql3.' IF((MONTH(Fecha_VPN) = '.$mes[1].' AND YEAR(Fecha_VPN) = '.$mes[0].'), Fecha_VPN, "") AS febrero,';
+			$sql4=$sql4.' A.febrero,';
+		}
+		if($mes[1]=='03')
+		{
+			$sql1=$sql1.' IF((MONTH(Fecha) = '.$mes[1].' AND YEAR(Fecha) = '.$mes[0].'), Fecha, "") AS marzo,';
+			$sql2=$sql2.' IF((MONTH(Fecha_CE) = '.$mes[1].' AND YEAR(Fecha_CE) = '.$mes[0].'), Fecha_CE, "") AS marzo,';
+			$sql3=$sql3.' IF((MONTH(Fecha_VPN) = '.$mes[1].' AND YEAR(Fecha_VPN) = '.$mes[0].'), Fecha_VPN, "") AS marzo,';
+			$sql4=$sql4.' A.marzo,';
+		}
+		if($mes[1]=='04')
+		{
+			$sql1=$sql1.' IF((MONTH(Fecha) = '.$mes[1].' AND YEAR(Fecha) = '.$mes[0].'), Fecha, "") AS abril,';
+			$sql2=$sql2.' IF((MONTH(Fecha_CE) = '.$mes[1].' AND YEAR(Fecha_CE) = '.$mes[0].'), Fecha_CE, "") AS abril,';
+			$sql3=$sql3.' IF((MONTH(Fecha_VPN) = '.$mes[1].' AND YEAR(Fecha_VPN) = '.$mes[0].'), Fecha_VPN, "") AS abril,';
+			$sql4=$sql4.' A.abril,';
+		}
+		if($mes[1]=='05')
+		{
+			$sql1=$sql1.' IF((MONTH(Fecha) = '.$mes[1].' AND YEAR(Fecha) = '.$mes[0].'), Fecha, "") AS mayo,';
+			$sql2=$sql2.' IF((MONTH(Fecha_CE) = '.$mes[1].' AND YEAR(Fecha_CE) = '.$mes[0].'), Fecha_CE, "") AS mayo,';
+			$sql3=$sql3.' IF((MONTH(Fecha_VPN) = '.$mes[1].' AND YEAR(Fecha_VPN) = '.$mes[0].'), Fecha_VPN, "") AS mayo,';
+			$sql4=$sql4.' A.mayo,';
+		}
+		if($mes[1]=='06')
+		{
+			$sql1=$sql1.' IF((MONTH(Fecha) = '.$mes[1].' AND YEAR(Fecha) = '.$mes[0].'), Fecha, "") AS junio,';
+			$sql2=$sql2.' IF((MONTH(Fecha_CE) = '.$mes[1].' AND YEAR(Fecha_CE) = '.$mes[0].'), Fecha_CE, "") AS junio,';
+			$sql3=$sql3.' IF((MONTH(Fecha_VPN) = '.$mes[1].' AND YEAR(Fecha_VPN) = '.$mes[0].'), Fecha_VPN, "") AS junio,';
+			$sql4=$sql4.' A.junio,';
+		}
+		if($mes[1]=='07')
+		{
+			$sql1=$sql1.' IF((MONTH(Fecha) = '.$mes[1].' AND YEAR(Fecha) = '.$mes[0].'), Fecha, "") AS julio,';
+			$sql2=$sql2.' IF((MONTH(Fecha_CE) = '.$mes[1].' AND YEAR(Fecha_CE) = '.$mes[0].'), Fecha_CE, "") AS julio,';
+			$sql3=$sql3.' IF((MONTH(Fecha_VPN) = '.$mes[1].' AND YEAR(Fecha_VPN) = '.$mes[0].'), Fecha_VPN, "") AS julio,';
+			$sql4=$sql4.' A.julio,';
+		}
+		if($mes[1]=='08')
+		{
+			$sql1=$sql1.' IF((MONTH(Fecha) = '.$mes[1].' AND YEAR(Fecha) = '.$mes[0].'), Fecha, "") AS agosto,';
+			$sql2=$sql2.' IF((MONTH(Fecha_CE) = '.$mes[1].' AND YEAR(Fecha_CE) = '.$mes[0].'), Fecha_CE, "") AS agosto,';
+			$sql3=$sql3.' IF((MONTH(Fecha_VPN) = '.$mes[1].' AND YEAR(Fecha_VPN) = '.$mes[0].'), Fecha_VPN, "") AS agosto,';
+			$sql4=$sql4.' A.agosto,';
+		}
+		if($mes[1]=='09')
+		{
+			$sql1=$sql1.' IF((MONTH(Fecha) = '.$mes[1].' AND YEAR(Fecha) = '.$mes[0].'), Fecha, "") AS septiembre,';
+			$sql2=$sql2.' IF((MONTH(Fecha_CE) = '.$mes[1].' AND YEAR(Fecha_CE) = '.$mes[0].'), Fecha_CE, "") AS septiembre,';
+			$sql3=$sql3.' IF((MONTH(Fecha_VPN) = '.$mes[1].' AND YEAR(Fecha_VPN) = '.$mes[0].'), Fecha_VPN, "") AS septiembre,';
+			$sql4=$sql4.' A.septiembre,';
+		}
+		if($mes[1]=='10')
+		{
+			$sql1=$sql1.' IF((MONTH(Fecha) = '.$mes[1].' AND YEAR(Fecha) = '.$mes[0].'), Fecha, "") AS octubre,';
+			$sql2=$sql2.' IF((MONTH(Fecha_CE) = '.$mes[1].' AND YEAR(Fecha_CE) = '.$mes[0].'), Fecha_CE, "") AS octubre,';
+			$sql3=$sql3.' IF((MONTH(Fecha_VPN) = '.$mes[1].' AND YEAR(Fecha_VPN) = '.$mes[0].'), Fecha_VPN, "") AS octubre,';
+			$sql4=$sql4.' A.octubre,';
+		}
+		if($mes[1]=='11')
+		{
+			$sql1=$sql1.' IF((MONTH(Fecha) = '.$mes[1].' AND YEAR(Fecha) = '.$mes[0].'), Fecha, "") AS noviembre,';
+			$sql2=$sql2.' IF((MONTH(Fecha_CE) = '.$mes[1].' AND YEAR(Fecha_CE) = '.$mes[0].'), Fecha_CE, "") AS noviembre,';
+			$sql3=$sql3.' IF((MONTH(Fecha_VPN) = '.$mes[1].' AND YEAR(Fecha_VPN) = '.$mes[0].'), Fecha_VPN, "") AS noviembre,';
+			$sql4=$sql4.' A.noviembre,';
+		}
+		if($mes[1]=='12')
+		{
+			$sql1=$sql1.' IF((MONTH(Fecha) = '.$mes[1].' AND YEAR(Fecha) = '.$mes[0].'), Fecha, "") AS diciembre,';
+			$sql2=$sql2.' IF((MONTH(Fecha_CE) = '.$mes[1].' AND YEAR(Fecha_CE) = '.$mes[0].'), Fecha_CE, "") AS diciembre,';
+			$sql3=$sql3.' IF((MONTH(Fecha_VPN) = '.$mes[1].' AND YEAR(Fecha_VPN) = '.$mes[0].'), Fecha_VPN, "") AS diciembre,';
+			$sql4=$sql4.' A.diciembre,';
+		}
+		for ($i = 1; $i <= $cant_meses; $i++) {
+			$ultimaFecha = end($listaMeses);
+			$ultimaFecha = new DateTime($ultimaFecha);
+			$nuevaFecha = $ultimaFecha->add(new DateInterval("P1M"));
+			$nuevaFecha = $nuevaFecha->format('Y-m-d');
+			$mes = explode('-',$nuevaFecha);
+			if($mes[1]=='01')
+			{
+				$sql1=$sql1.' IF((MONTH(Fecha) = '.$mes[1].' AND YEAR(Fecha) = '.$mes[0].'), Fecha, "") AS enero,';
+				$sql2=$sql2.' IF((MONTH(Fecha_CE) = '.$mes[1].' AND YEAR(Fecha_CE) = '.$mes[0].'), Fecha_CE, "") AS enero,';
+				$sql3=$sql3.' IF((MONTH(Fecha_VPN) = '.$mes[1].' AND YEAR(Fecha_VPN) = '.$mes[0].'), Fecha_VPN, "") AS enero,';
+				$sql4=$sql4.' A.enero,';
+			}
+			if($mes[1]=='02')
+			{
+				$sql1=$sql1.' IF((MONTH(Fecha) = '.$mes[1].' AND YEAR(Fecha) = '.$mes[0].'), Fecha, "") AS febrero,';
+				$sql2=$sql2.' IF((MONTH(Fecha_CE) = '.$mes[1].' AND YEAR(Fecha_CE) = '.$mes[0].'), Fecha_CE, "") AS febrero,';
+				$sql3=$sql3.' IF((MONTH(Fecha_VPN) = '.$mes[1].' AND YEAR(Fecha_VPN) = '.$mes[0].'), Fecha_VPN, "") AS febrero,';
+				$sql4=$sql4.' A.febrero,';
+			}
+			if($mes[1]=='03')
+			{
+				$sql1=$sql1.' IF((MONTH(Fecha) = '.$mes[1].' AND YEAR(Fecha) = '.$mes[0].'), Fecha, "") AS marzo,';
+				$sql2=$sql2.' IF((MONTH(Fecha_CE) = '.$mes[1].' AND YEAR(Fecha_CE) = '.$mes[0].'), Fecha_CE, "") AS marzo,';
+				$sql3=$sql3.' IF((MONTH(Fecha_VPN) = '.$mes[1].' AND YEAR(Fecha_VPN) = '.$mes[0].'), Fecha_VPN, "") AS marzo,';
+				$sql4=$sql4.' A.marzo,';
+			}
+			if($mes[1]=='04')
+			{
+				$sql1=$sql1.' IF((MONTH(Fecha) = '.$mes[1].' AND YEAR(Fecha) = '.$mes[0].'), Fecha, "") AS abril,';
+				$sql2=$sql2.' IF((MONTH(Fecha_CE) = '.$mes[1].' AND YEAR(Fecha_CE) = '.$mes[0].'), Fecha_CE, "") AS abril,';
+				$sql3=$sql3.' IF((MONTH(Fecha_VPN) = '.$mes[1].' AND YEAR(Fecha_VPN) = '.$mes[0].'), Fecha_VPN, "") AS abril,';
+				$sql4=$sql4.' A.abril,';
+			}
+			if($mes[1]=='05')
+			{
+				$sql1=$sql1.' IF((MONTH(Fecha) = '.$mes[1].' AND YEAR(Fecha) = '.$mes[0].'), Fecha, "") AS mayo,';
+				$sql2=$sql2.' IF((MONTH(Fecha_CE) = '.$mes[1].' AND YEAR(Fecha_CE) = '.$mes[0].'), Fecha_CE, "") AS mayo,';
+				$sql3=$sql3.' IF((MONTH(Fecha_VPN) = '.$mes[1].' AND YEAR(Fecha_VPN) = '.$mes[0].'), Fecha_VPN, "") AS mayo,';
+				$sql4=$sql4.' A.mayo,';
+			}
+			if($mes[1]=='06')
+			{
+				$sql1=$sql1.' IF((MONTH(Fecha) = '.$mes[1].' AND YEAR(Fecha) = '.$mes[0].'), Fecha, "") AS junio,';
+				$sql2=$sql2.' IF((MONTH(Fecha_CE) = '.$mes[1].' AND YEAR(Fecha_CE) = '.$mes[0].'), Fecha_CE, "") AS junio,';
+				$sql3=$sql3.' IF((MONTH(Fecha_VPN) = '.$mes[1].' AND YEAR(Fecha_VPN) = '.$mes[0].'), Fecha_VPN, "") AS junio,';
+				$sql4=$sql4.' A.junio,';
+			}
+			if($mes[1]=='07')
+			{
+				$sql1=$sql1.' IF((MONTH(Fecha) = '.$mes[1].' AND YEAR(Fecha) = '.$mes[0].'), Fecha, "") AS julio,';
+				$sql2=$sql2.' IF((MONTH(Fecha_CE) = '.$mes[1].' AND YEAR(Fecha_CE) = '.$mes[0].'), Fecha_CE, "") AS julio,';
+				$sql3=$sql3.' IF((MONTH(Fecha_VPN) = '.$mes[1].' AND YEAR(Fecha_VPN) = '.$mes[0].'), Fecha_VPN, "") AS julio,';
+				$sql4=$sql4.' A.julio,';
+			}
+			if($mes[1]=='08')
+			{
+				$sql1=$sql1.' IF((MONTH(Fecha) = '.$mes[1].' AND YEAR(Fecha) = '.$mes[0].'), Fecha, "") AS agosto,';
+				$sql2=$sql2.' IF((MONTH(Fecha_CE) = '.$mes[1].' AND YEAR(Fecha_CE) = '.$mes[0].'), Fecha_CE, "") AS agosto,';
+				$sql3=$sql3.' IF((MONTH(Fecha_VPN) = '.$mes[1].' AND YEAR(Fecha_VPN) = '.$mes[0].'), Fecha_VPN, "") AS agosto,';
+				$sql4=$sql4.' A.agosto,';
+			}
+			if($mes[1]=='09')
+			{
+				$sql1=$sql1.' IF((MONTH(Fecha) = '.$mes[1].' AND YEAR(Fecha) = '.$mes[0].'), Fecha, "") AS septiembre,';
+				$sql2=$sql2.' IF((MONTH(Fecha_CE) = '.$mes[1].' AND YEAR(Fecha_CE) = '.$mes[0].'), Fecha_CE, "") AS septiembre,';
+				$sql3=$sql3.' IF((MONTH(Fecha_VPN) = '.$mes[1].' AND YEAR(Fecha_VPN) = '.$mes[0].'), Fecha_VPN, "") AS septiembre,';
+				$sql4=$sql4.' A.septiembre,';
+			}
+			if($mes[1]=='10')
+			{
+				$sql1=$sql1.' IF((MONTH(Fecha) = '.$mes[1].' AND YEAR(Fecha) = '.$mes[0].'), Fecha, "") AS octubre,';
+				$sql2=$sql2.' IF((MONTH(Fecha_CE) = '.$mes[1].' AND YEAR(Fecha_CE) = '.$mes[0].'), Fecha_CE, "") AS octubre,';
+				$sql3=$sql3.' IF((MONTH(Fecha_VPN) = '.$mes[1].' AND YEAR(Fecha_VPN) = '.$mes[0].'), Fecha_VPN, "") AS octubre,';
+				$sql4=$sql4.' A.octubre,';
+			}
+			if($mes[1]=='11')
+			{
+				$sql1=$sql1.' IF((MONTH(Fecha) = '.$mes[1].' AND YEAR(Fecha) = '.$mes[0].'), Fecha, "") AS noviembre,';
+				$sql2=$sql2.' IF((MONTH(Fecha_CE) = '.$mes[1].' AND YEAR(Fecha_CE) = '.$mes[0].'), Fecha_CE, "") AS noviembre,';
+				$sql3=$sql3.' IF((MONTH(Fecha_VPN) = '.$mes[1].' AND YEAR(Fecha_VPN) = '.$mes[0].'), Fecha_VPN, "") AS noviembre,';
+				$sql4=$sql4.' A.noviembre,';
+			}
+			if($mes[1]=='12')
+			{
+				$sql1=$sql1.' IF((MONTH(Fecha) = '.$mes[1].' AND YEAR(Fecha) = '.$mes[0].'), Fecha, "") AS diciembre,';
+				$sql2=$sql2.' IF((MONTH(Fecha_CE) = '.$mes[1].' AND YEAR(Fecha_CE) = '.$mes[0].'), Fecha_CE, "") AS diciembre,';
+				$sql3=$sql3.' IF((MONTH(Fecha_VPN) = '.$mes[1].' AND YEAR(Fecha_VPN) = '.$mes[0].'), Fecha_VPN, "") AS diciembre,';
+				$sql4=$sql4.' A.diciembre,';
+			}
+			array_push($listaMeses, $nuevaFecha) ;
+		}
+		$longitud_cad = strlen($sql1); 
+		$sql1 = substr_replace($sql1," ",$longitud_cad-1,1); 
+		$longitud_cad = strlen($sql2); 
+		$sql2 = substr_replace($sql2," ",$longitud_cad-1,1); 
+		$longitud_cad = strlen($sql3); 
+		$sql3 = substr_replace($sql3," ",$longitud_cad-1,1); 
+		$longitud_cad = strlen($sql4); 
+		$sql4 = substr_replace($sql4," ",$longitud_cad-1,1); 
+		//$stmt = str_replace("ï»¿", "", $stmt);
+		//var_dump($listaMeses);
+		//echo $sql1.' '.$sql2.' '.$sql3;
+		//die();
+		 $sql ='SELECT A.tipo,A.Item,A.Empresa,A.Fecha,
+		 '.$sql4.' 
+		FROM
+		(SELECT "Licencia" as tipo,Item,Id_Empresa,Empresa,Fecha,
+		'.$sql1.' FROM lista_empresas
+		union
+		SELECT "CE" as tipo,Item,Id_Empresa,Empresa,Fecha_CE AS fecha,
+		'.$sql2.' FROM lista_empresas
+		union
+		SELECT "VPN" as tipo,Item,Id_Empresa,Empresa,Fecha_VPN AS fecha,
+		'.$sql3.' FROM lista_empresas) AS A
+		where (Fecha BETWEEN "'.$desde.'" AND "'.$hasta.'" )
+		ORDER BY A.fecha,A.Id_Empresa ,A.Item';
+		//echo $sql;
+		//die();
+		$consulta=$cid->query($sql) or die($cid->error);
+		//grilla_generica($consulta,null,NULL,'1',null,null,'MYSQL');
+		
+		//grilla_generica($consulta,null,NULL,'1',null,null,'MYSQL');
+		//para saber si es excel o grilla
+		if($opcr==null or $opcr==1)
+		{
+			//grilla_generica($stmt,$ti,$camne,$b,null,null,null,true);
+			grilla_generica($consulta,null,NULL,'1',null,null,'MYSQL');
+		}
+		if($opcr==2)
+		{
+			//die();
+			exportar_excel_generico($consulta,$ti,null,null,'MYSQL');
+		}
+		
+	}
 	//consulta listar balance sql server
 	function ListarTipoDeBalanceSQL($ti=null,$Opcb=null,$Opcem=null,$OpcDG=null,$b=null,$opcr=null,$OpcCE=null){
 		//opciones para generar consultas
