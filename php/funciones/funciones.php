@@ -31,137 +31,40 @@ if(isset($_POST['RUC']) AND !isset($_POST['submitweb']))
 
 function ip()
 {
-
-  // // print_r($_SESSION);die();
-  //  $ipaddress = '';
-  //   if (getenv('HTTP_CLIENT_IP'))
-  //       $ipaddress = getenv('HTTP_CLIENT_IP');
-  //   else if(getenv('HTTP_X_FORWARDED_FOR'))
-  //       $ipaddress = getenv('HTTP_X_FORWARDED_FOR');
-  //   else if(getenv('HTTP_X_FORWARDED'))
-  //       $ipaddress = getenv('HTTP_X_FORWARDED');
-  //   else if(getenv('HTTP_FORWARDED_FOR'))
-  //       $ipaddress = getenv('HTTP_FORWARDED_FOR');
-  //   else if(getenv('HTTP_FORWARDED'))
-  //      $ipaddress = getenv('HTTP_FORWARDED');
-  //   else if(getenv('REMOTE_ADDR'))
-  //       $ipaddress = getenv('REMOTE_ADDR');
-  //   else
-  //       $ipaddress = 'UNKNOWN';
-  // // echo $ipaddress;
-  // $s = exec("ipconfig");
-
-  $cmd = escapeshellcmd("ipconfig");
-  setcookie("migalleta",shell_exec($cmd));
-  $salida = shell_exec($cmd);
-  $pos = strpos($salida, 'IPv4');
-if ($pos !== false) {
-    $salida = substr($salida,$pos);
-    $pos1 = strpos($salida, ':');
-    $salida = substr($salida,$pos1+1);
-    $pos2 = strpos($salida, 'M');
-    $salida = substr($salida,0,$pos2-1);
-    // setcookie("migalleta",$salida);
-} else {
-     echo "La cadena no fue encontrada en la cadena";
-     // die();
-}
-  return $salida;
+  // print_r($_SESSION);die();
+   $ipaddress = '';
+    if (getenv('HTTP_CLIENT_IP'))
+        $ipaddress = getenv('HTTP_CLIENT_IP');
+    else if(getenv('HTTP_X_FORWARDED_FOR'))
+        $ipaddress = getenv('HTTP_X_FORWARDED_FOR');
+    else if(getenv('HTTP_X_FORWARDED'))
+        $ipaddress = getenv('HTTP_X_FORWARDED');
+    else if(getenv('HTTP_FORWARDED_FOR'))
+        $ipaddress = getenv('HTTP_FORWARDED_FOR');
+    else if(getenv('HTTP_FORWARDED'))
+       $ipaddress = getenv('HTTP_FORWARDED');
+    else if(getenv('REMOTE_ADDR'))
+        $ipaddress = getenv('REMOTE_ADDR');
+    else
+        $ipaddress = 'UNKNOWN';
+  echo $ipaddress;
 
 }
-
-function get_ip_address() {
-
-    // Check for shared Internet/ISP IP
-    if (!empty($_SERVER['HTTP_CLIENT_IP']) && validate_ip($_SERVER['HTTP_CLIENT_IP'])) {
-        return $_SERVER['HTTP_CLIENT_IP'];
-    }
-
-    // Check for IP addresses passing through proxies
-    if (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
-
-        // Check if multiple IP addresses exist in var
-        if (strpos($_SERVER['HTTP_X_FORWARDED_FOR'], ',') !== false) {
-            $iplist = explode(',', $_SERVER['HTTP_X_FORWARDED_FOR']);
-            foreach ($iplist as $ip) {
-                if (validate_ip($ip))
-                    return $ip;
-            }
-        }
-        else {
-            if (validate_ip($_SERVER['HTTP_X_FORWARDED_FOR']))
-                return $_SERVER['HTTP_X_FORWARDED_FOR'];
-        }
-    }
-    if (!empty($_SERVER['HTTP_X_FORWARDED']) && validate_ip($_SERVER['HTTP_X_FORWARDED']))
-        return $_SERVER['HTTP_X_FORWARDED'];
-    if (!empty($_SERVER['HTTP_X_CLUSTER_CLIENT_IP']) && validate_ip($_SERVER['HTTP_X_CLUSTER_CLIENT_IP']))
-        return $_SERVER['HTTP_X_CLUSTER_CLIENT_IP'];
-    if (!empty($_SERVER['HTTP_FORWARDED_FOR']) && validate_ip($_SERVER['HTTP_FORWARDED_FOR']))
-        return $_SERVER['HTTP_FORWARDED_FOR'];
-    if (!empty($_SERVER['HTTP_FORWARDED']) && validate_ip($_SERVER['HTTP_FORWARDED']))
-        return $_SERVER['HTTP_FORWARDED'];
-
-    // Return unreliable IP address since all else failed
-    echo "<script type='text/javascript'>alert('".$_SERVER['REMOTE_ADDR']."')</script>";
-}
-
-/**
- * Ensures an IP address is both a valid IP address and does not fall within
- * a private network range.
- */
-function validate_ip($ip) {
-
-    if (strtolower($ip) === 'unknown')
-        return false;
-
-    // Generate IPv4 network address
-    $ip = ip2long($ip);
-
-    // If the IP address is set and not equivalent to 255.255.255.255
-    if ($ip !== false && $ip !== -1) {
-        // Make sure to get unsigned long representation of IP address
-        // due to discrepancies between 32 and 64 bit OSes and
-        // signed numbers (ints default to signed in PHP)
-        $ip = sprintf('%u', $ip);
-
-        // Do private network range checking
-        if ($ip >= 0 && $ip <= 50331647)
-            return false;
-        if ($ip >= 167772160 && $ip <= 184549375)
-            return false;
-        if ($ip >= 2130706432 && $ip <= 2147483647)
-            return false;
-        if ($ip >= 2851995648 && $ip <= 2852061183)
-            return false;
-        if ($ip >= 2886729728 && $ip <= 2887778303)
-            return false;
-        if ($ip >= 3221225984 && $ip <= 3221226239)
-            return false;
-        if ($ip >= 3232235520 && $ip <= 3232301055)
-            return false;
-        if ($ip >= 4294967040)
-            return false;
-    }
-    return true;
-}
-
-
 
 
 function control_procesos($TipoTrans,$Tarea,$opcional_proceso)
 {  
-  $cid = Conectar::conexion('MYSQL');;
-  $ip = get_ip_address();
   $TMail_Credito_No = G_NINGUNO;
-  if(!isset($_SESSION['INGRESO']['item']))
+  if($NumEmpresa=="")
   {
     $NumEmpresa = G_NINGUNO;
-  }else
-  {
-    $NumEmpresa = $_SESSION['INGRESO']['item'];
   }
+  if($TMail == "")
+  {
     $TMail = G_NINGUNO;
+  }
+  if($Modulo <> G_NINGUNO AND $TipoTrans<>G_NINGUNO AND $NumEmpresa<>G_NINGUNO)
+  {
     if($Tarea == G_NINGUNO)
     {
       $Tarea = "Inicio de Sección";
@@ -169,25 +72,12 @@ function control_procesos($TipoTrans,$Tarea,$opcional_proceso)
     {
       $Tarea = substr($Tarea,0,60);
     }
-
-    if(isset($_SESSION['INGRESO']['periodo']))
-    {
-      $periodo = $_SESSION['INGRESO']['periodo'];
-    }
     $proceso = substr($opcional_proceso,0,60);
-    $NombreUsuario1 = substr($_SESSION['INGRESO']['Nombre'], 0, 60);
-    $TipoTrans = strtoupper($TipoTrans);
+    $NombreUsuario1 = substr($NombreUsuario, 0, 60);
+    $TipoTrans = $TipoTrans;
     $Mifecha1 = date("Y-m-d");
     $MiHora1 = date("H:i:s");
-    $CodigoUsuario=$_SESSION['INGRESO']['Id'];
-    if(!isset($_GET['mod']))
-    {
-      $Modulo = G_NINGUNO;
-    }else
-    {      
-        $Modulo = $_GET['mod'];      
-    }
-
+    $$CodigoUsuario='';
     if($Tarea == "")
     {
       $Tarea = G_NINGUNO;
@@ -197,22 +87,10 @@ function control_procesos($TipoTrans,$Tarea,$opcional_proceso)
       $opcional_proceso = G_NINGUNO;
     }
     $sql = "INSERT INTO acceso_pcs (IP_Acceso,CodigoU,Item,Aplicacion,RUC,Fecha,Hora,
-             ES,Tarea,Proceso,Credito_No,Periodo)VALUES('".trim($ip)."','".$CodigoUsuario."','".$NumEmpresa."',
-             '".$Modulo."','".$_SESSION['INGRESO']['RUCEnt']."','".$Mifecha1."','".$MiHora1."','".$TipoTrans."','".$Tarea."','".$proceso."','".$TMail_Credito_No."','".$periodo."');";
-     if($cid)
-     {
-       $resultado = mysqli_query($cid, $sql);
-         if(!$resultado)
-        {
-          echo "Error: " . $sql . "<br>" . mysqli_error($cid);
-          return -1;
-        }       
-         mysqli_close($cid);
-         return 1;
-     }
+             ES,Tarea,Proceso,Credito_No,Periodo)VALUES('172.168.2.20','".$CodigoUsuario."','".$NumEmpresa."',
+             '".$Modulo."','".$_SESSION['INGRESO']['Id']."','".$Mifecha1."','".$MiHora1."','".$TipoTrans."','".$Tarea."','".$Proceso."','".$TMail_Credito_No."','".$_SESSION['INGRESO']['periodo']."');";
 
-  // }
-
+  }
 }
 
 function Actualizar_Datos_ATS_SP($Items,$MBFechaI,$MBFechaF,$Numero)
@@ -4796,7 +4674,7 @@ function grilla_generica($stmt,$ti=null,$camne=null,$b=null,$ch=null,$tabla=null
 								}
 								//numero
 								if($valor->type==3 OR $valor->type==2 OR $valor->type==4 OR $valor->type==5
-								 OR $valor->type['Type']==8 OR $valor->type==9 OR $valor->type==246)
+								 OR isset($valor->type['Type'])==8  OR ($valor->type)==8  OR $valor->type==9 OR $valor->type==246)
 								{
 									//number_format($item_i['nombre'],2, ',', '.')
 									$tipo_campo[($cant)]="style='text-align: right;'";
@@ -5501,11 +5379,11 @@ function update_generico($datos,$tabla,$campoWhere)
    		{
    		   $wherelist.= $value['campo'].'='.$value['valor'].' AND ';
    		}else{
-   		  $wherelist.= $value['campo']."='".$value['valor']."' AND ";
+   		  $wherelist.= $value['campo'].'="'.$value['valor'].'" AND ';
    	    }
    	}
    	$wherelist = substr($wherelist,0,-5);
-   	$where = " WHERE ".$wherelist;   
+   	$where = "WHERE ".$wherelist;   
    	$sql = $sql.$set.$where;
    	// print_r($sql);	die();
    	$stmt = sqlsrv_query($cid, $sql);
@@ -5725,7 +5603,7 @@ function insert_generico($tabla=null,$datos=null)
 			echo "Error en consulta PA.\n";  
 			die( print_r( sqlsrv_errors(), true));  
 		}
-		return 1;
+		
 		  // cerrarSQLSERVERFUN($cid);
 		
 	}

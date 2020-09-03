@@ -85,7 +85,7 @@
 					</h4>
 					<h4 class="box-title" id='mostraEm' hidden="true">
 						<a class="btn btn-default"  title="Mostrar Vencimiento" data-placement="right"
-						onclick='mostrarEmpresa();' target="_blank" href="descarga.php?mod=contabilidad&acc=mosEm&acc1=Balance de Comprobacion/Situación/General&ti=<?php echo $_SESSION['INGRESO']['ti']; ?>
+						onclick='mostrarEmpresa();' target="_blank" id='mostraEm_' href="descarga.php?mod=contabilidad&acc=mosEm&acc1=Balance de Comprobacion/Situación/General&ti=<?php echo $_SESSION['INGRESO']['ti']; ?>
 						&Opcb=6&Opcen=0&b=0&ex=1">
 							<i ><img src="../../img/png/table_excel.png" class="user-image" alt="User Image"
 							style='font-size:20px; display:block; height:100%; width:100%;'></i> 
@@ -313,6 +313,10 @@
 												success:  function (response) {
 													$('#lista').html(response);
 													$('#myModal_espera').modal('hide');
+													var mostraEm_=$('#mostraEm_').attr("href");  
+													var mostraEm_=mostraEm_+'&desde='+desde.value+'&hasta='+hasta.value;
+													//asignamos
+													$("#mostraEm_").attr("href",mostraEm_);
 												/*consultar_totales();
 												
 												 $('#tabla_').html(response);

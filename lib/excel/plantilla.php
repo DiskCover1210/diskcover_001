@@ -1090,7 +1090,9 @@ function excel_file($stmt,$ti=null,$camne=null,$b=null,$base=null)
 			foreach ($info_campo as $valor) 
 			{
 				$cant++;
+				//echo $valor->name;
 			}
+			//die();
 			//cabecera
 			//diseño de nombres de campos
 			//'horizontal' => Alignment::HORIZONTAL_RIGHT,
@@ -1337,9 +1339,15 @@ function excel_file($stmt,$ti=null,$camne=null,$b=null,$base=null)
 					$tipo_campo[($cant)]="style='text-align: left;'";
 					$ban=1;
 				}
+				if( $valor->type==10 OR $valor->type==11 OR $valor->type==12  )
+				{
+					$tipo_campo[($cant)]="style='text-align: left; width:80px;'";
+					$ban=1;
+				}
+				
 				//numero
 				if($valor->type==3 OR $valor->type==2 OR $valor->type==4 OR $valor->type==5
-				 OR $valor->type['Type']==8 OR $valor->type==9 OR $valor->type==246)
+				 OR isset($valor->type['Type'])==8 OR $valor->type==8 OR $valor->type==9 OR $valor->type==246)
 				{
 					//number_format($item_i['nombre'],2, ',', '.')
 					$tipo_campo[($cant)]="style='text-align: right;'";
@@ -1797,7 +1805,6 @@ function excel_file($stmt,$ti=null,$camne=null,$b=null,$base=null)
 				$je='A';
 				for($i=0;$i<$cant;$i++)
 				{
-					
 					//caso indentar
 					for($j=0;$j<count($indencam);$j++)
 					{
