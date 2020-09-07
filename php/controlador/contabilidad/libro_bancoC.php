@@ -1,7 +1,7 @@
 <?php 
-include(dirname(__DIR__).'/modelo/libro_bancoM.php');
-require(dirname(__DIR__,2).'/lib/fpdf/cabecera_pdf.php');
-require(dirname(__DIR__).'/modelo/catalogoCtaM.php');
+include(dirname(__DIR__,2).'/modelo/contabilidad/libro_bancoM.php');
+require(dirname(__DIR__,3).'/lib/fpdf/cabecera_pdf.php');
+require(dirname(__DIR__,2).'/modelo/contabilidad/catalogoCtaM.php');
 
 if(isset($_GET['cuentas']))
 {

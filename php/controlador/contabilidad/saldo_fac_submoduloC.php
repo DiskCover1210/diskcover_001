@@ -1,6 +1,6 @@
 <?php 
 //include(dirname(__DIR__).'/funciones/funciones.php');
-include(dirname(__DIR__).'/modelo/saldo_fac_submoduloM.php');
+include(dirname(__DIR__,3).'/modelo/contabilidad/saldo_fac_submoduloM.php');
 /**
  * 
  */

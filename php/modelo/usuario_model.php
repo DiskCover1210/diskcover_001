@@ -139,7 +139,7 @@ class usuario_model{
 			$query = "SELECT *
 					  FROM entidad
 					  WHERE RUC_CI_NIC = '".$this->Entidad."';";
-			//echo $query;
+			// echo $query;
 					
 			$consulta=$this->db->query($query) or die($this->db->error);
 			
@@ -917,6 +917,36 @@ class usuario_model{
 	}
 	function cerrarSQLSERVER(){
 		sqlsrv_close( $this->dbs );
+	}
+
+
+	function modulos_registrados()
+	{
+		$usuario=array();
+		 $this->db=Conectar::conexion('MYSQL');
+		$sql="SELECT A.Modulo as 'modulo',M.Aplicacion as 'apli',M.link as 'link',M.icono as 'icono' FROM acceso_empresas A LEFT JOIN modulos M on A.Modulo = M.modulo WHERE CI_NIC='".$_SESSION['INGRESO']['Id']."' AND Item='".$_SESSION['INGRESO']['item']."' AND ID_Empresa='".$_SESSION['INGRESO']['IDEntidad']."' ";
+		// echo $sql;
+		$consulta=$this->db->query($sql);
+		while($filas=$consulta->fetch_assoc()){
+            $usuario[]=$filas;
+			//echo ' vvv '.$filas['IP_VPN_RUTA'];
+        }
+        return $usuario;
+
+	}
+	function modulos_todos()
+	{
+		$usuario=array();
+		 $this->db=Conectar::conexion('MYSQL');
+		$sql="select Modulo,Aplicacion,link,icono from modulos where Modulo !='VS' ";
+		// echo $sql;
+		$consulta=$this->db->query($sql);
+		while($filas=$consulta->fetch_assoc()){
+            $usuario[]=$filas;
+			//echo ' vvv '.$filas['IP_VPN_RUTA'];
+        }
+        return $usuario;
+
 	}
 }
 ?>

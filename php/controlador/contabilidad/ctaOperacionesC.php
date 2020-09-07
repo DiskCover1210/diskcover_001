@@ -1,6 +1,9 @@
 <?php 
-include('../modelo/ctaOperacionesM.php');
-include(dirname(__DIR__).'/db/variables_globales.php');//
+include(dirname(__DIR__,2).'/modelo/contabilidad/ctaOperacionesM.php');
+if(!class_exists('variables_g'))
+{
+  include(dirname(__DIR__,1).'/db/variables_globales.php');//
+}
 /**
  * 
  */

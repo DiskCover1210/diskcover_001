@@ -1,6 +1,6 @@
 <?php
-include(dirname(__DIR__).'/modelo/catalogoCtaM.php');
-require(dirname(__DIR__,2).'/lib/fpdf/cabecera_pdf.php');
+include(dirname(__DIR__,2).'/modelo/contabilidad/catalogoCtaM.php');
+require(dirname(__DIR__,3).'/lib/fpdf/cabecera_pdf.php');
 /**
  * 
  */

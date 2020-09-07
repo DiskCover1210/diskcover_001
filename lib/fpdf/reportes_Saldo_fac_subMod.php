@@ -1,7 +1,7 @@
 <?php
 //require('html_table.php');
 require('cabecera_pdf.php');
-include(dirname(__DIR__,2)."/php/modelo/saldo_fac_submoduloM.php");
+include(dirname(__DIR__,2)."/php/modelo/contabilidad/saldo_fac_submoduloM.php");
 //include(dirname(__DIR__,2)."/php/db/db.php");
 //echo dirname(__DIR__,1);
 

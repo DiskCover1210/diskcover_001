@@ -73,34 +73,46 @@ if(isset($_GET['mos3']))
       }
  }
 ?>
+  <script type="text/javascript">
+     $(document).ready(function()
+     {
+        $('.dropdown-menu a.dropdown-toggle').on('click', function(e) {
+          if (!$(this).next().hasClass('show')) {
+            $(this).parents('.dropdown-menu').first().find('.show').removeClass('show');
+            }
+            var $subMenu = $(this).next('.dropdown-menu');
+            $subMenu.toggleClass('show');
+            $(this).parents('li.nav-item.dropdown.show').on('hidden.bs.dropdown', function(e) {
+               $('.dropdown-submenu .show').removeClass('show');
+               });
+             return false;
+           });
+      });
+</script>
 <style type="text/css">
   .color
   {
     background: #3c8dbc;
   }
-  .dropdown-submenu{
-       position: relative;
+  .select2 {
+width:100%!important;
 }
-.dropdown-submenu a::after{
-       transform: rotate(-90deg);
-       position: absolute;
-       right: 3px;
-       top: 40%;
+.dropdown-submenu {
+  position: relative;
 }
-.dropdown-submenu:hover .dropdown-menu, .dropdown-submenu:focus .dropdown-menu{
-       display: flex;
-       flex-direction: column;
-       position: absolute !important;
-       margin-top: -30px;
-       left: 100%;
+
+.dropdown-submenu a::after {
+  transform: rotate(-90deg);
+  position: absolute;
+  right: 6px;
+  top: .8em;
 }
-@media (max-width: 992px) {
-       .dropdown-menu{
-           width: 50%;
-       }
-       .dropdown-menu .dropdown-submenu{
-           width: auto;
-       }
+
+.dropdown-submenu .dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-left: .1rem;
+  margin-right: .1rem;
 }
 </style>
 <script>
@@ -593,7 +605,43 @@ $("#datos").fadeIn();
                 
                 <li class="dropdown-item"><a href="panel.php"><span class="glyphicon glyphicon-chevron-left" aria-hidden="true">  Volver</a></li>
               </ul>
-            </li>    
+            </li>              
+<!-- ------------------------------------------------------ -->
+      <!--       <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" href="http://example.com" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          Dropdown link
+        </a>
+        <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+          <li><a class="dropdown-item" href="#">Action</a></li>
+          <li><a class="dropdown-item" href="#">Another action</a></li>
+          <li class="dropdown-submenu">
+            <a class="dropdown-item dropdown-toggle" href="#">Submenu</a>
+            <ul class="dropdown-menu">
+              <li><a class="dropdown-item" href="#">Submenu action</a></li>
+              <li><a class="dropdown-item" href="#">Another submenu action</a></li>
+
+
+              <li class="dropdown-submenu">
+                <a class="dropdown-item dropdown-toggle" href="#">Subsubmenu</a>
+                <ul class="dropdown-menu">
+                  <li><a class="dropdown-item" href="#">Subsubmenu action</a></li>
+                  <li><a class="dropdown-item" href="#">Another subsubmenu action</a></li>
+                </ul>
+              </li>
+              <li class="dropdown-submenu">
+                <a class="dropdown-item dropdown-toggle" href="#">Second subsubmenu</a>
+                <ul class="dropdown-menu">
+                  <li><a class="dropdown-item" href="#">Subsubmenu action</a></li>
+                  <li><a class="dropdown-item" href="#">Another subsubmenu action</a></li>
+                </ul>
+              </li>
+
+
+
+            </ul>
+          </li>
+        </ul>
+      </li> -->
       <?php
        }}
        ?>

@@ -1,5 +1,5 @@
 <?php 
-include(dirname(__DIR__).'/funciones/funciones.php');
+include(dirname(__DIR__,2).'/funciones/funciones.php');
 // include(dirname(__DIR__).'/db/variables_globales.php');
 @session_start(); 
 /**

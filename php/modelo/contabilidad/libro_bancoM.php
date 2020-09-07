@@ -1,7 +1,7 @@
 <?php
 error_reporting(-1);
 //include(dirname(__DIR__).'/funciones/funciones.php');//
-include(dirname(__DIR__).'/db/variables_globales.php');//
+include(dirname(__DIR__,2).'/db/variables_globales.php');//
  class libro_bancoM
  {
  	private $conn;

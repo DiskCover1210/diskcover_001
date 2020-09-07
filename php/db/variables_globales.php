@@ -1,4 +1,15 @@
 <?php
+/**
+ * 
+ */
+class variables_g
+{
+	
+	function __construct()
+	{
+		# code...
+	}
+}
 //variables globales del sistema diskcover system
 DEFINE('LOGO_DISKCOVER',"img/logotipos/diskcover_web.gif");
 DEFINE('NOMBRE_SISTEMA',"Diskcover Systema");

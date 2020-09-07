@@ -31,7 +31,7 @@ require_once("panel.php");
   {
     $.ajax({
    // data:  {parametros:parametros},
-   url:   '../controlador/ctaOperacionesC.php?cuentas=true',
+   url:   '../controlador/contabilidad/ctaOperacionesC.php?cuentas=true',
    type:  'post',
    dataType: 'json',
    beforeSend: function () {   
@@ -91,7 +91,7 @@ require_once("panel.php");
     }
     $.ajax({
      data:  {parametros:parametros},
-     url:   '../controlador/ctaOperacionesC.php?cambiar_op=true',
+     url:   '../controlador/contabilidad/ctaOperacionesC.php?cambiar_op=true',
      type:  'post',
      dataType: 'json',
      beforeSend: function () {
@@ -133,7 +133,7 @@ require_once("panel.php");
     }
      $.ajax({
               data:  {parametros:parametros},
-              url:   '../controlador/ctaOperacionesC.php?copiar=true',
+              url:   '../controlador/contabilidad/ctaOperacionesC.php?copiar=true',
               type:  'post',
               dataType: 'json',
               beforeSend: function () {   
@@ -166,7 +166,7 @@ require_once("panel.php");
     var empresas = '<option value="">Elija empresa a copiar el catalogo</option>';
     $.ajax({
    // data:  {parametros:parametros},
-   url:   '../controlador/ctaOperacionesC.php?copy_empresa=true',
+   url:   '../controlador/contabilidad/ctaOperacionesC.php?copy_empresa=true',
    type:  'post',
    dataType: 'json',
    beforeSend: function () {   
@@ -191,7 +191,7 @@ require_once("panel.php");
     var empresas = '<option value="">Seleccione la cuenta a cambiar</option>';
     $.ajax({
     data:  {cta:cta},
-   url:   '../controlador/ctaOperacionesC.php?cambiar_empresa=true',
+   url:   '../controlador/contabilidad/ctaOperacionesC.php?cambiar_empresa=true',
    type:  'post',
    dataType: 'json',
    beforeSend: function () {   
@@ -225,7 +225,7 @@ require_once("panel.php");
    
     $.ajax({
       data:  {parametros:parametros},
-      url:   '../controlador/ctaOperacionesC.php?ingresar_presu=true',
+      url:   '../controlador/contabilidad/ctaOperacionesC.php?ingresar_presu=true',
       type:  'post',
       dataType: 'json',
       // beforeSend: function () {   
@@ -259,7 +259,7 @@ require_once("panel.php");
     var meses='<option value="">Seleccione mes</option>'
     $.ajax({
       // data:  {parametros:parametros},
-      url:   '../controlador/ctaOperacionesC.php?meses=true',
+      url:   '../controlador/contabilidad/ctaOperacionesC.php?meses=true',
       type:  'post',
       dataType: 'json',
       success:  function (response) { 
@@ -277,7 +277,7 @@ require_once("panel.php");
     var pago = '<option value="">Selecciopne tipo de pago</option>';
     $.ajax({
    // data:  {parametros:parametros},
-   url:   '../controlador/ctaOperacionesC.php?tipo_pago=true',
+   url:   '../controlador/contabilidad/ctaOperacionesC.php?tipo_pago=true',
    type:  'post',
    dataType: 'json',
    success:  function (response) { 
@@ -342,7 +342,7 @@ require_once("panel.php");
 
     }
     $.ajax({   
-     url:   '../controlador/ctaOperacionesC.php?grabar=true',
+     url:   '../controlador/contabilidad/ctaOperacionesC.php?grabar=true',
      type:  'post',
      dataType: 'json',
      data:{parametros:parametros} ,     
@@ -390,7 +390,7 @@ function cargar_presupuesto(cod)
   var suma = 0.00;
     $.ajax({
     data:  {cod:cod},
-   url:   '../controlador/ctaOperacionesC.php?presupuesto=true',
+   url:   '../controlador/contabilidad/ctaOperacionesC.php?presupuesto=true',
    type:  'post',
    dataType: 'json',
    success:  function (response) { 
@@ -414,7 +414,7 @@ function cargar_datos_cuenta(cod)
 {
     $.ajax({
     data:  {cod:cod},
-   url:   '../controlador/ctaOperacionesC.php?datos_cuenta=true',
+   url:   '../controlador/contabilidad/ctaOperacionesC.php?datos_cuenta=true',
    type:  'post',
    dataType: 'json',
    success:  function (response) { 

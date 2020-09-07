@@ -12,7 +12,7 @@
 //require_once 'determ.php';
 error_reporting(E_ALL);
 ini_set('display_errors', '1');
-//include("chequear_seguridad.php"); 
+include("chequear_seguridad.php"); 
 //variables globales
 // require_once("../db/variables_globales.php");
 require("../controlador/panel.php");
@@ -25,14 +25,9 @@ require_once("../funciones/funciones.php");
 	//echo ' jjj '.$_SESSION['autentificado'];
 	//die();
 	//asignamos la empresa
+
 	if(isset($_GET['mos']) and !isset($_SESSION['INGRESO']['IP_VPN_RUTA'])) 
 	{
-		?>
-			<script>
-				//document.body.style.cursor = 'wait';
-			</script>
-		<?php
-
 		$_SESSION['INGRESO']['empresa']=$_GET['mos'];
 		//nombre empresa
 		$_SESSION['INGRESO']['noempr']=$_GET['mos1'];
@@ -100,6 +95,9 @@ require_once("../funciones/funciones.php");
 				$_SESSION['INGRESO']['CI_Representante'] = $empresa_d[0]['CI_Representante'];
 				// print_r($empresa_d);die();
 				$_SESSION['INGRESO']['Ciudad'] = $empresa_d[0]['Ciudad'];
+				$_SESSION['INGRESO']['modulo']=modulos_habiliatados();
+				// print_r($_SESSION['INGRESO']);die();	
+
 				
 				//verificamos si es sql server o mysql para consultar periodos
 				if(isset($_SESSION['INGRESO']['IP_VPN_RUTA']) ) 
@@ -116,8 +114,8 @@ require_once("../funciones/funciones.php");
 						$_SESSION['INGRESO']['Nombre_Completo']=$usuario[0]['Nombre_Completo'];
 						//verificamos en acceso si puede ingresar a esa empresa
 						$_SESSION['INGRESO']['accesoe']='0';
-						$_SESSION['INGRESO']['modulo'][0]='0';
-						$permiso=getAccesoEmpresas();
+						//$_SESSION['INGRESO']['modulo'][0]='0';
+						//$permiso=getAccesoEmpresas();
 					}
 					else
 					{
@@ -130,8 +128,8 @@ require_once("../funciones/funciones.php");
 						$_SESSION['INGRESO']['Nombre_Completo']=$usuario[0]['Nombre_Completo'];
 						//verificamos en acceso si puede ingresar a esa empresa
 						$_SESSION['INGRESO']['accesoe']='0';
-						$_SESSION['INGRESO']['modulo'][0]='0';
-						$permiso=getAccesoEmpresas();
+						//$_SESSION['INGRESO']['modulo'][0]='0';
+						//$permiso=getAccesoEmpresas();
 					}
 				}
 				
@@ -212,8 +210,8 @@ require_once("../funciones/funciones.php");
 			$_SESSION['INGRESO']['CodigoU']=$usuario[0]['CodigoU'];
 			$_SESSION['INGRESO']['Nombre_Completo']=$usuario[0]['Nombre_Completo'];
 			//verificamos en acceso si puede ingresar a esa empresa
-			$_SESSION['INGRESO']['accesoe']='0';
-			$_SESSION['INGRESO']['modulo'][0]='0';
+			//$_SESSION['INGRESO']['accesoe']='0';
+			//$_SESSION['INGRESO']['modulo'][0]='0';
 
 			$permiso=getAccesoEmpresas();
 		}
@@ -1020,6 +1018,7 @@ require_once("../funciones/funciones.php");
 <section class="content-wrapper">
   <div class="box box-default">
    <div class="box-body"> 
+   	<br>
    	<?php
 			//llamamos a los parciales para menus
 			if (isset($_SESSION['INGRESO']['accion'])) 
@@ -1038,7 +1037,6 @@ require_once("../funciones/funciones.php");
 					
 			}	
 				?>	
-   	  <div class="loader1">Procesando</div>	
    	  <?php
 			
 			if (!isset($_SESSION['INGRESO']['empresa'])) 
@@ -1048,607 +1046,36 @@ require_once("../funciones/funciones.php");
 			}
 			else
 			{
-					//si esta en panel
-					if(isset($_SESSION['INGRESO']['CodigoU']))
+				 // nuevo contruccion javier               
+               if(!isset($_GET['mod']))
+               { 
+               	$_SESSION['INGRESO']['modulo_']='';
+               	$_SESSION['INGRESO']['modulo']=modulos_habiliatados();
+				$todo = false;
+				foreach ($_SESSION['INGRESO']['modulo'] as  $key => $value) {
+					if($value['modulo']=='TO')
 					{
-						if($ban==0 and $_SESSION['INGRESO']['CodigoU']!='')
-						{
-							?>
-							<script>
-								var esVisible = $(".loader1").is(":visible");
-								$(".cargando").removeClass('cargando');
-							</script>
-							<?php
-							if($_SESSION['INGRESO']['modulo'][0]=='0')
-							{
-								$_SESSION['INGRESO']['accesoe']='0';
-								
-								$permiso=getAccesoEmpresas();
-							}
-							//echo $_SESSION['INGRESO']['modulo'][0];
-							//die();
-							//verificamos los accesos
-							if(trim($_SESSION['INGRESO']['modulo'][0])=='TODOS' or trim($_SESSION['INGRESO']['modulo'][0])=='T')
-							{
-						?>
-								<!--<h3 class="box-title">Modulos </h3>-->
-								
-								<br/>
-								<div class="box-body">
-									<!--<a class="btn btn-app" style='width:60px;' data-toggle="tooltip" title="Ahorros">
-										<i ><img src="../../img/gif/Ahorros.gif" class="user-image" alt="User Image"
-										style='font-size:20px; display:block; height:100%; width:80%;'></i> Ahorros
-									</a>
-									<a class="btn btn-app" style='width:60px;' data-toggle="tooltip" title="Anexos">
-										<i ><img src="../../img/gif/Anexos.gif" class="user-image" alt="User Image"
-										style='font-size:20px; display:block; height:100%; width:80%;'></i> Anexos
-									</a>
-									
-									<a class="btn btn-app" style='width:60px;' data-toggle="tooltip" title="Constructor">
-										<i ><img src="../../img/gif/Constructor.gif" class="user-image" alt="User Image"
-										style='font-size:20px; display:block; height:100%; width:80%;'></i> Constructor
-									</a>-->
-								
-									
-									<a class="btn btn-app" href="contabilidad.php?mod=contabilidad" style='width:60px;' data-toggle="tooltip" title="Contabilidad">
-										<i ><img src="../../img/gif/Contabilidad.gif" class="user-image" alt="User Image"
-										style='font-size:20px; display:block; height:100%; width:80%;'></i> Contabilidad
-									</a>
-									<!--<a class="btn btn-app" style='width:60px;' data-toggle="tooltip" title="Credito">
-										<i ><img src="../../img/gif/Credito.gif" class="user-image" alt="User Image"
-										style='font-size:20px; display:block; height:100%; width:80%;'></i> Credito
-									</a>-->
-																
-									<!--<a class="btn btn-app" style='width:60px;' data-toggle="tooltip" title="Factura">
-										<i ><img src="../../img/gif/Factura.gif" class="user-image" alt="User Image"
-										style='font-size:20px; display:block; height:100%; width:80%;'></i> Factura
-									</a>
-									<a class="btn btn-app" style='width:60px;' data-toggle="tooltip" title="Gerencia">
-										<i ><img src="../../img/gif/Gerencia.gif" class="user-image" alt="User Image"
-										style='font-size:20px; display:block; height:100%; width:80%;'></i> Gerencia
-									</a>
-									<a class="btn btn-app" style='width:60px;' data-toggle="tooltip" title="Inventario">
-										<i ><img src="../../img/gif/Inventario.gif" class="user-image" alt="User Image"
-										style='font-size:20px; display:block; height:100%; width:80%;'></i> Inventario
-									</a>
-									<a class="btn btn-app" style='width:60px;' data-toggle="tooltip" title="Mantenimento">
-										<i ><img src="../../img/gif/logosMod.gif" class="user-image" alt="User Image"
-										style='font-size:20px; display:block; height:100%; width:80%;'></i>Mantenimento
-									</a>
-									
-									<a class="btn btn-app" style='width:60px;' data-toggle="tooltip" title="Respaldo">
-										<i ><img src="../../img/gif/Respaldo.gif" class="user-image" alt="User Image"
-										style='font-size:20px; display:block; height:100%; width:80%;'></i> Respaldo
-									</a>
-									<a class="btn btn-app" style='width:60px;' data-toggle="tooltip" title="Rol de Pago">
-										<i ><img src="../../img/gif/RolPago.gif" class="user-image" alt="User Image"
-										style='font-size:20px; display:block; height:100%; width:80%;'></i> RolPago
-									</a>-->
-									<a class="btn btn-app" href="educativo.php?mod=educativo&acc=detalle_estudiante&acc1=Detalle%20Estudiante&b=1&po=subcu" style='width:60px;' data-toggle="tooltip" title="Educativo">
-										<i ><img src="../../img/gif/Contabilidad.gif" class="user-image" alt="User Image"
-										style='font-size:20px; display:block; height:100%; width:80%;'></i> Educativo
-									</a>
-									<a class="btn btn-app" href="inventario.php?mod=Inventario" style='width:60px;' data-toggle="tooltip" title="Inventario">
-										<i ><img src="../../img/gif/Inventario.gif" class="user-image" alt="User Image"
-										style='font-size:20px; display:block; height:100%; width:80%;'></i> Inventario
-									</a>
-									<?php
-									if($_SESSION['INGRESO']['RUCEnt']=='1792164710001'  AND $_SESSION['INGRESO']['noempr']=='Prismanet Profesional S.A.') 
-									{
-									?>
-										<a class="btn btn-app" href="migra4.php" style='width:60px;' data-toggle="tooltip" title="Migracion">
-											<i class="fa fa-fw fa-server"></i> Migracion
-										</a>
-										<a class="btn btn-app" href="reindexar.php" style='width:60px;' data-toggle="tooltip" title="Re-indexar">
-											<i class="fa fa-fw fa-server"></i> Re-indexar
-										</a>
+						$todo = true;
+						break;
+					}					
+				}
 
-									<?php
-									}
-									?>
-									<a class="btn btn-app" href="afe.php?mod=contabilidad" style='width:60px;' data-toggle="tooltip" title="Autorizacion Factura Electronica">
-										<i class="fa fa-fw fa-file-excel-o"></i> Aut. Fact. Elec.
-									</a>
-									<a class="btn btn-app" href="rde.php?mod=contabilidad&acc=rde&acc1=Reporte Doc. Electrónico" style='width:60px;' data-toggle="tooltip" title="Reporte Documento Electronico">
-										<i class="fa fa-fw fa-file-excel-o"></i> Rep. Doc. Elect.
-									</a>
-									<a class="btn btn-app" href="fact.php?mod=contabilidad&acc=fact&acc1=Reporte Facturación" style='width:60px;' data-toggle="tooltip" title="Reporte Facturas">
-										<i class="fa fa-fw fa-file-excel-o"></i> Rep. Fact
-									</a>
-									<?php
-									if($_SESSION['INGRESO']['RUCEnt']=='1792164710001'  AND $_SESSION['INGRESO']['noempr']=='Prismanet Profesional S.A.' ) 
-									{
-									?>
-										<a class="btn btn-app" href="empresa.php?mod=empresa&acc=cambioe&acc1=Modificar empresa" style='width:60px;' data-toggle="tooltip" title="Administrar empresas">
-											<i class="fa fa-fw fa-industry"></i> Admi. Empre
-										</a>
-										<a class="btn btn-app" href="empresa.php?mod=empresa&acc=cambiou&acc1=Administrar Usuario" style='width:60px;' data-toggle="tooltip" title="Administrar empresas">
-											<i class="fa fa-fw fa-users"></i> Admi. User
-										</a>
-									
-										
-									<?php
-									}
-									?>
-									<?php
-										$ove=200;
-									?>
-									<button type="button"  class="btn btn-app" data-toggle="modal" style='width:60px;' data-target="#myModal_doc" title="APPR">
-										<!--<i class="fa fa-fw fa-spoon"></i>-->
-										<i><img src="../../img/jpg/logo_doc.jpg" class="user-image" alt="User Image"
-										style='font-size:20px; display:block; height:100%; width:80%;'></i>DOC
-									</button>
-									<div class="modal fade" id="myModal_doc" role="dialog" >
-										<div class="modal-dialog" style="width:50%;">
-										  <div class="modal-content" style="width:50%;">
-											<div class="modal-header">
-											  <button type="button" class="close" data-dismiss="modal">&times;</button>
-											  <h4 class="modal-title"><img  width='5%'  height='5%' src="../../../img/jpg/logo.jpg">DOC MENU </h4>
-											</div>
-											<div class="modal-body" style="height:<?php echo $ove; ?>px;overflow-y: scroll;">
-												<div class="form-group">
-													<div id='botones'>
-														<a class="btn btn-app" href="appr/mesa.php?mod=appr&acc=cambiou&acc1=Administrar Usuario" style='width:60px;' data-toggle="tooltip" title="Administrar empresas">
-															<!--<i class="fa fa-fw fa-spoon"></i>-->
-															<i><img src="../../img/jpg/logo_doc.jpg" class="user-image" alt="User Image"
-															style='font-size:20px; display:block; height:100%; width:80%;'></i>DOC MESAS
-														</a>
-														<a class="btn btn-app" href="appr/panel1.php?mod=appr&acc=cambiou&acc1=Administrar Usuario" style='width:60px;' data-toggle="tooltip" title="Administrar empresas">
-															<!--<i class="fa fa-fw fa-spoon"></i>-->
-															<i><img src="../../img/jpg/logo_doc.jpg" class="user-image" alt="User Image"
-															style='font-size:20px; display:block; height:100%; width:80%;'></i>DOC ESTATUS
-														</a>
-													</div>
-												</div>
-											</div>
-											<div class="modal-footer">
-												<button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
-											</div>
-										  </div>
-										  
-										</div>
-									</div>
-									<script>
-										function abrir_doc(id,nom)
-										{
-											$("#myModal_doc").modal();		
-										}
-									</script>
-								</div>
-						<?php
-							}
-							else
-							{
-								//verificamos sesion sql
-								if(isset($_SESSION['INGRESO']['IP_VPN_RUTA'])) 
-								{
-									//echo "entroooooo   ";
-									$database=$_SESSION['INGRESO']['Base_Datos'];
-									$server=$_SESSION['INGRESO']['IP_VPN_RUTA'];
-									$user=$_SESSION['INGRESO']['Usuario_DB'];
-									$password=$_SESSION['INGRESO']['Contraseña_DB'];
-									$usuario=getUsuario();
-									$_SESSION['INGRESO']['CodigoU']=$usuario[0]['CodigoU'];
-									$_SESSION['INGRESO']['Nombre_Completo']=$usuario[0]['Nombre_Completo'];
-									//verificamos en acceso si puede ingresar a esa empresa
-									$_SESSION['INGRESO']['accesoe']='0';
-									$_SESSION['INGRESO']['modulo'][0]='0';
-									//echo $_SESSION['INGRESO']['CodigoU'].' '.$_SESSION['INGRESO']['Nombre_Completo'].' ';
-									$permiso=getAccesoEmpresas();
-									//echo $_SESSION['INGRESO']['modulo'][0];
-								}
-								//verificamos que modulos habilitar
-								$_SESSION['INGRESO']['permiso']['cont']=0;
-								$_SESSION['INGRESO']['permiso']['fact']=0;
-								$_SESSION['INGRESO']['permiso']['anexo']=0;
-								$_SESSION['INGRESO']['permiso']['ahorro']=0;
-								$_SESSION['INGRESO']['permiso']['constru']=0;
-								$_SESSION['INGRESO']['permiso']['gerenc']=0;
-								$_SESSION['INGRESO']['permiso']['inven']=0;
-								$_SESSION['INGRESO']['permiso']['seteos']=0;
-								$_SESSION['INGRESO']['permiso']['respa']=0;
-								$_SESSION['INGRESO']['permiso']['rpagos']=0;
-								$_SESSION['INGRESO']['permiso']['appr']=0;
-								$_SESSION['INGRESO']['permiso']['educa']=0;
-								//llamamos al modulo
-								$modulo=getModulo();
-								$jj=0;
-								for($i=0;$i<count($_SESSION['INGRESO']['modulo']);$i++)
-								{
-									for($j=0;$j<count($modulo);$j++)
-									{
-										if($_SESSION['INGRESO']['modulo'][$i]==$modulo[$j]['Modulo'])
-										{
-											
-										}
-									}
-									if($_SESSION['INGRESO']['modulo'][$i]=='01')
-									{
-										$_SESSION['INGRESO']['permiso']['cont']=1;
-									}
-									if($_SESSION['INGRESO']['modulo'][$i]=='02')
-									{
-										$_SESSION['INGRESO']['permiso']['fact']=1;
-									}
-									if($_SESSION['INGRESO']['modulo'][$i]=='21')
-									{
-										$_SESSION['INGRESO']['permiso']['anexo']=1;
-									}
-									if($_SESSION['INGRESO']['modulo'][$i]=='04')
-									{
-										$_SESSION['INGRESO']['permiso']['ahorro']=1;
-									}
-									if($_SESSION['INGRESO']['modulo'][$i]=='13')
-									{
-										$_SESSION['INGRESO']['permiso']['constru']=1;
-									}
-									if($_SESSION['INGRESO']['modulo'][$i]=='15')
-									{
-										$_SESSION['INGRESO']['permiso']['gerenc']=1;
-									}
-									if($_SESSION['INGRESO']['modulo'][$i]=='03')
-									{
-										$_SESSION['INGRESO']['permiso']['inven']=1;
-									}
-									if($_SESSION['INGRESO']['modulo'][$i]=='26')
-									{
-										$_SESSION['INGRESO']['permiso']['seteos']=1;
-									}
-									if($_SESSION['INGRESO']['modulo'][$i]=='07')
-									{
-										$_SESSION['INGRESO']['permiso']['respa']=1;
-									}
-									if($_SESSION['INGRESO']['modulo'][$i]=='10')
-									{
-										$_SESSION['INGRESO']['permiso']['rpagos']=1;
-									}
-									if($_SESSION['INGRESO']['modulo'][$i]=='33')
-									{
-										$_SESSION['INGRESO']['permiso']['appr']=1;
-									}
-									if($_SESSION['INGRESO']['modulo'][$i]=='11')
-									{
-										$_SESSION['INGRESO']['permiso']['educa']=1;
-									}
+				if($todo == true)
+				  {
+				  	if(!isset($_SESSION['INGRESO']['modulo_']) || $_SESSION['INGRESO']['modulo_']==""){
+				  	echo '<div class="row">'.contruir_todos_modulos().'</div>';
+				    }
+					
+				   }else
+					{
+						if(!isset($_SESSION['INGRESO']['modulo_']) || $_SESSION['INGRESO']['modulo_']==""){
+				         echo $l ='<div class="row">'.contruir_modulos($_SESSION['INGRESO']['modulo']).'</div>';
+				       }
 
-								}
-								?>
-								<br/>
-								<div class="box-body">
-									<?php
-									if($_SESSION['INGRESO']['permiso']['ahorro']=='1') 
-									{
-									?>
-										<!--<a class="btn btn-app" style='width:60px;' data-toggle="tooltip" title="Ahorros">
-											<i ><img src="../../img/gif/Ahorros.gif" class="user-image" alt="User Image"
-											style='font-size:20px; display:block; height:100%; width:80%;'></i> Ahorros
-										</a>-->
-									<?php
-									}
-									else
-									{
-									?>
-										<a class="btn btn-app" style='width:60px;' data-toggle="tooltip" title="Ahorros" disabled>
-											<div style='float: right;position:absolute;top: 1%;left: 70%;'><img src="../../img/png/bloqueo.png" class="user-image" alt="User Image"
-													style='font-size:20px; display:block; height:80%; width:80%;'></div>
-											<i ><img src="../../img/gif/Ahorros.gif" class="user-image" alt="User Image"
-											style='font-size:20px; display:block; height:100%; width:80%;'></i> Ahorros
-										</a>
-									<?php
-									}
-									?>
-									<?php
-									if($_SESSION['INGRESO']['permiso']['anexo']=='1') 
-									{
-									?>
-										<!--<a class="btn btn-app" style='width:60px;' data-toggle="tooltip" title="Anexos">
-											<i ><img src="../../img/gif/Anexos.gif" class="user-image" alt="User Image"
-											style='font-size:20px; display:block; height:100%; width:80%;'></i> Anexos
-										</a>-->
-									<?php
-									}
-									else
-									{
-									?>
-										<a class="btn btn-app" style='width:60px;' data-toggle="tooltip" title="Anexos" disabled>
-											<div style='float: right;position:absolute;top: 1%;left: 70%;'><img src="../../img/png/bloqueo.png" class="user-image" alt="User Image"
-													style='font-size:20px; display:block; height:80%; width:80%; '></div>
-											<i ><img src="../../img/gif/Anexos.gif" class="user-image" alt="User Image"
-											style='font-size:20px; display:block; height:100%; width:80%;'></i> Anexos
-										</a>
-									<?php
-									}
-									?>
-									<?php
-									if($_SESSION['INGRESO']['permiso']['constru']=='1') 
-									{
-									?>
-										<!--<a class="btn btn-app" style='width:60px;' data-toggle="tooltip" title="Constructor">
-											<i ><img src="../../img/gif/Constructor.gif" class="user-image" alt="User Image"
-											style='font-size:20px; display:block; height:100%; width:80%;'></i> Constructor
-										</a>-->
-									<?php
-									}
-									else
-									{
-									?>
-										<a class="btn btn-app" style='width:60px;' data-toggle="tooltip" title="Constructor" disabled>
-											<div style='float: right;position:absolute;top: 1%;left: 70%;'><img src="../../img/png/bloqueo.png" class="user-image" alt="User Image"
-													style='font-size:20px; display:block; height:80%; width:80%;'></div>
-											<i ><img src="../../img/gif/Constructor.gif" class="user-image" alt="User Image"
-											style='font-size:20px; display:block; height:100%; width:80%;'></i> Constructor
-										</a>
-									<?php
-									}
-									?>
-									<?php
-									if($_SESSION['INGRESO']['permiso']['cont']=='1') 
-									{
-									?>
-										<a class="btn btn-app" href="contabilidad.php?mod=contabilidad" style='width:60px;' data-toggle="tooltip" 
-										title="Contabilidad">
-											<i ><img src="../../img/gif/Contabilidad.gif" class="user-image" alt="User Image"
-											style='font-size:20px; display:block; height:100%; width:80%;'></i> Contabilidad
-										</a>
-									<?php
-									}
-									else
-									{
-									?>
-										<a class="btn btn-app" href="#" style='width:60px;' data-toggle="tooltip" title="Contabilidad" disabled>
-											<div style='float: right;position:absolute;top: 1%;left: 70%;'><img src="../../img/png/bloqueo.png" class="user-image" alt="User Image"
-													style='font-size:20px; display:block; height:80%; width:80%;'></div>
-											<i ><img src="../../img/gif/Contabilidad.gif" class="user-image" alt="User Image"
-											style='font-size:20px; display:block; height:100%; width:80%;'></i> Contabilidad
-										</a>
-									<?php
-									}
-									?>
-									<?php
-									if($_SESSION['INGRESO']['permiso']['fact']=='1') 
-									{
-									?>
-										<!--<a class="btn btn-app" style='width:60px;' data-toggle="tooltip" title="Factura">
-											<i ><img src="../../img/gif/Factura.gif" class="user-image" alt="User Image"
-											style='font-size:20px; display:block; height:100%; width:80%;'></i> Factura
-										</a>-->
-									<?php
-									}
-									else
-									{
-									?>
-										<a class="btn btn-app" style='width:60px;' data-toggle="tooltip" title="Factura" disabled>
-											<div style='float: right;position:absolute;top: 1%;left: 70%;'><img src="../../img/png/bloqueo.png" class="user-image" alt="User Image"
-													style='font-size:20px; display:block; height:80%; width:80%;'></div>
-											<i ><img src="../../img/gif/Factura.gif" class="user-image" alt="User Image"
-											style='font-size:20px; display:block; height:100%; width:80%;'></i> Factura
-										</a>
-									<?php
-									}
-									?>
-									<?php
-									if($_SESSION['INGRESO']['permiso']['gerenc']=='1') 
-									{
-									?>
-										<!--<a class="btn btn-app" style='width:60px;' data-toggle="tooltip" title="Gerencia">
-											<i ><img src="../../img/gif/Gerencia.gif" class="user-image" alt="User Image"
-											style='font-size:20px; display:block; height:100%; width:80%;'></i> Gerencia
-										</a>-->
-									<?php
-									}
-									else
-									{
-									?>
-										<a class="btn btn-app" style='width:60px;' data-toggle="tooltip" title="Gerencia" disabled>
-											<div style='float: right;position:absolute;top: 1%;left: 70%;'><img src="../../img/png/bloqueo.png" class="user-image" alt="User Image"
-													style='font-size:20px; display:block; height:80%; width:80%;'></div>
-											<i ><img src="../../img/gif/Gerencia.gif" class="user-image" alt="User Image"
-											style='font-size:20px; display:block; height:100%; width:80%;'></i> Gerencia
-										</a>
-									<?php
-									}
-									?>
-									<?php
-									if($_SESSION['INGRESO']['permiso']['educa']=='1') 
-									{
-									?>
-										<a class="btn btn-app" href="educativo.php?mod=educativo&acc=detalle_estudiante&acc1=Detalle%20Estudiante&b=1&po=subcu" style='width:60px;' data-toggle="tooltip" 
-										title="Educativo">
-											<i ><img src="../../img/gif/Contabilidad.gif" class="user-image" alt="User Image"
-											style='font-size:20px; display:block; height:100%; width:80%;'></i> Educativo
-										</a>
-									<?php
-									}
-									else
-									{
-									?>
-										<a class="btn btn-app" href="#" style='width:60px;' data-toggle="tooltip" title="Educativo" disabled>
-											<div style='float: right;position:absolute;top: 1%;left: 70%;'><img src="../../img/png/bloqueo.png" class="user-image" alt="User Image"
-													style='font-size:20px; display:block; height:80%; width:80%;'></div>
-											<i ><img src="../../img/gif/Contabilidad.gif" class="user-image" alt="User Image"
-											style='font-size:20px; display:block; height:100%; width:80%;'></i> Educativo
-										</a>
-									<?php
-									}
-									
-									if($_SESSION['INGRESO']['permiso']['inven']=='1') 
-									{
-									?>
-										<a class="btn btn-app" style='width:60px;' data-toggle="tooltip" title="Inventario">
-											<i ><img src="../../img/gif/Inventario.gif" class="user-image" alt="User Image"
-											style='font-size:20px; display:block; height:100%; width:80%;'></i> Inventario
-										</a>
-									<?php
-									}
-									else
-									{
-									?>
-										<a class="btn btn-app" style='width:60px;' data-toggle="tooltip" title="Inventario" disabled>
-											<div style='float: right;position:absolute;top: 1%;left: 70%;'><img src="../../img/png/bloqueo.png" class="user-image" alt="User Image"
-													style='font-size:20px; display:block; height:80%; width:80%;'></div>
-											<i ><img src="../../img/gif/Inventario.gif" class="user-image" alt="User Image"
-											style='font-size:20px; display:block; height:100%; width:80%;'></i> Inventario
-										</a>
-									<?php
-									}
-									?>
-									<?php
-									if($_SESSION['INGRESO']['permiso']['seteos']=='1') 
-									{
-									?>
-										<!--<a class="btn btn-app" style='width:60px;' data-toggle="tooltip" title="Mantenimento">
-											<i ><img src="../../img/gif/logosMod.gif" class="user-image" alt="User Image"
-											style='font-size:20px; display:block; height:100%; width:80%;'></i>Mantenimento
-										</a>-->
-									<?php
-									}
-									else
-									{
-									?>
-										<a class="btn btn-app" style='width:60px;' data-toggle="tooltip" title="Mantenimento" disabled>
-											<div style='float: right;position:absolute;top: 1%;left: 70%;'><img src="../../img/png/bloqueo.png" class="user-image" alt="User Image"
-													style='font-size:20px; display:block; height:80%; width:80%;'></div>
-											<i ><img src="../../img/gif/logosMod.gif" class="user-image" alt="User Image"
-											style='font-size:20px; display:block; height:100%; width:80%;'></i>Mantenimento
-										</a>
-									<?php
-									}
-									?>
-									<?php
-									if($_SESSION['INGRESO']['permiso']['respa']=='1') 
-									{
-									?>
-										<!--<a class="btn btn-app" style='width:60px;' data-toggle="tooltip" title="Respaldo">
-											<i ><img src="../../img/gif/Respaldo.gif" class="user-image" alt="User Image"
-											style='font-size:20px; display:block; height:100%; width:80%;'></i> Respaldo
-										</a>-->
-									<?php
-									}
-									else
-									{
-									?>
-										<a class="btn btn-app" style='width:60px;' data-toggle="tooltip" title="Respaldo" disabled>
-											<div style='float: right;position:absolute;top: 1%;left: 70%;'><img src="../../img/png/bloqueo.png" class="user-image" alt="User Image"
-													style='font-size:20px; display:block; height:80%; width:80%;'></div>
-											<i ><img src="../../img/gif/Respaldo.gif" class="user-image" alt="User Image"
-											style='font-size:20px; display:block; height:100%; width:80%;'></i> Respaldo
-										</a>
-									<?php
-									}
-									?>
-									<?php
-									if($_SESSION['INGRESO']['permiso']['rpagos']=='1') 
-									{
-									?>
-										<!--<a class="btn btn-app" style='width:60px;' data-toggle="tooltip" title="Rol de Pago">
-											<i ><img src="../../img/gif/RolPago.gif" class="user-image" alt="User Image"
-											style='font-size:20px; display:block; height:100%; width:80%;'></i> RolPago
-										</a>-->
-									<?php
-									}
-									else
-									{
-									?>
-										<a class="btn btn-app" style='width:60px;' data-toggle="tooltip" title="Rol de Pago" disabled>
-											<div style='float: right;position:absolute;top: 1%;left: 70%;'><img src="../../img/png/bloqueo.png" class="user-image" alt="User Image"
-													style='font-size:20px; display:block; height:80%; width:80%;'></div>
-											<i>
-												<img src="../../img/gif/RolPago.gif" class="user-image" alt="User Image"
-													style='font-size:20px; display:block; height:100%; width:80%;'>
-											</i> RolPago
-										</a>
-									<?php
-									}
-									if($_SESSION['INGRESO']['permiso']['appr']=='1') 
-									{
-										$ove=200;
-									?>										
-									<button type="button"  class="btn btn-app" data-toggle="modal" style='width:60px;' data-target="#myModal_doc" title="APPR">
-											<!--<i class="fa fa-fw fa-spoon"></i>-->
-											<i><img src="../../img/jpg/logo_doc.jpg" class="user-image" alt="User Image"
-											style='font-size:20px; display:block; height:100%; width:80%;'></i>DOC
-									</button>
-										<div class="modal fade" id="myModal_doc" role="dialog" >
-											<div class="modal-dialog" style="width:80%;">
-											  <div class="modal-content" style="width:80%;">
-												<div class="modal-header">
-												  <button type="button" class="close" data-dismiss="modal">&times;</button>
-												  <h4 class="modal-title"><img  width='5%'  height='5%' src="../../../img/jpg/logo.jpg">DOC MENU </h4>
-												</div>
-												<div class="modal-body" style="height:<?php echo $ove; ?>px;overflow-y: scroll;">
-													<div class="form-group">
-														<div id='botones'>
-															<a class="btn btn-app" href="appr/mesa.php?mod=appr&acc=cambiou&acc1=Administrar Usuario" style='width:60px;' data-toggle="tooltip" title="Administrar empresas">
-																<i class="fa fa-fw fa-spoon"></i>
-																DOC MESAS
-															</a>
-															<a class="btn btn-app" href="appr/panel1.php?mod=appr&acc=cambiou&acc1=Administrar Usuario" style='width:60px;' data-toggle="tooltip" title="Administrar empresas">
-																<!--<i class="fa fa-fw fa-spoon"></i>-->
-																<i><img src="../../img/jpg/logo_doc.jpg" class="user-image" alt="User Image"
-																style='font-size:20px; display:block; height:100%; width:80%;'></i>DOC ESTATUS
-															</a>
-														</div>
-													</div>
-												</div>
-												<div class="modal-footer">
-													<button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
-												</div>
-											  </div>
-											  
-											</div>
-										</div>										
-									<?php
-									}
-									else
-									{
-									?>
-										<a class="btn btn-app" href="#" style='width:60px;' data-toggle="tooltip" title="APP" disabled>
-											<div style='float: right;position:absolute;top: 1%;left: 70%;'><img src="../../img/png/bloqueo.png" class="user-image" alt="User Image"
-													style='font-size:20px; display:block; height:80%; width:80%;'></div>
-											<!--<i class="fa fa-fw fa-spoon"></i>-->
-											<i ><img src="../../img/jpg/logo_doc.jpeg" class="user-image" alt="User Image"
-											style='font-size:20px; display:block; height:100%; width:80%;'></i>DOC
-										</a>
-									<?php
-									}
-									?>
-									<?php
-									if($_SESSION['INGRESO']['RUCEnt']=='1792164710001'  AND $_SESSION['INGRESO']['noempr']=='Prismanet Profesional S.A.') 
-									{
-									?>
-										<a class="btn btn-app" href="migra4.php" style='width:60px;' data-toggle="tooltip" title="Migracion">
-											<i class="fa fa-fw fa-server"></i> Migracion
-										</a>
-										<a class="btn btn-app" href="reindexar.php" style='width:60px;' data-toggle="tooltip" title="Re-indexar">
-											<i class="fa fa-fw fa-server"></i> Re-indexar
-										</a>
-
-									<?php
-									}
-									?>
-									<?php
-									if($_SESSION['INGRESO']['RUCEnt']=='1792164710001'  AND $_SESSION['INGRESO']['noempr']=='Prismanet Profesional S.A.' ) 
-									{
-									?>
-										<a class="btn btn-app" href="empresa.php?mod=empresa&acc=cambioe&acc1=Modificar empresa" style='width:60px;' data-toggle="tooltip" title="Administrar empresas">
-											<i class="fa fa-fw fa-industry"></i> Admi. Empre
-										</a>
-										<a class="btn btn-app" href="empresa.php?mod=empresa&acc=cambiou&acc1=Administrar Usuario&ti=Administración de usuario" style='width:60px;' data-toggle="tooltip" title="Administrar empresas">
-											<i class="fa fa-fw fa-users"></i> Admi. User
-										</a>
-									<?php
-									}
-									?>
-								</div>
-								 <script>
-								  $(".loader1").hide();
-								 </script>
-								<?php
-							}	
-
-									include('panel2.php');						
-						}
 					}
+			}
+
+
 			}
 	  ?>
 	  <script>

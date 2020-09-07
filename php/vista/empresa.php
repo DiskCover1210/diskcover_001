@@ -38,21 +38,7 @@ if(isset($_SESSION['INGRESO']['IP_VPN_RUTA']))
 	<!-- <h3 class="box-title">Entidad </h3>-->
 		<div class="row">
 			<div class="col-xs-12">
-			 <div class="box">
-				<div class="box-header">
-					
-				 <!--  <h3 class="box-title">Responsive Hover Table</h3>
-
-				  <div class="box-tools">
-					<div class="input-group input-group-sm" style="width: 150px;">
-					  <input type="text" name="table_search" class="form-control pull-right" placeholder="Search">
-
-					  <div class="input-group-btn">
-						<button type="submit" class="btn btn-default"><i class="fa fa-search"></i></button>
-					  </div>
-					</div>-->
-				  </div>
-				</div>
+			
 				<!-- /.box-header -->
 				
 				<!-- /.box-body -->
@@ -75,6 +61,9 @@ if(isset($_SESSION['INGRESO']['IP_VPN_RUTA']))
 							require_once("empresa/niveles_seguri.php");
 						}
 						
+					}else
+					{
+						echo "<div class='box-body'><img src='../../img/modulo_empresa.png' width='100%' heigth='500px'></div>";
 					}
 					
 				?>	

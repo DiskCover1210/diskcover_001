@@ -6,14 +6,14 @@
 		llenar_combobox();
 		llenar_combobox_cuentas();    
 		   $('#imprimir_pdf').click(function(){
-            var url = '../controlador/libro_bancoC.php?imprimir_pdf=true&CheckUsu='+$("#CheckUsu").is(':checked')+'&CheckAgencia='+$("#CheckAgencia").is(':checked')+'&desde='+$('#desde').val()+'&hasta='+$('#hasta').val()+'&DCAgencia='+$('#DCAgencia').val()+'&DCUsuario='+$('#DCUsuario').val()+'&DCCtas='+$('#DCCtas').val();
+            var url = '../controlador/contabilidad/libro_bancoC.php?imprimir_pdf=true&CheckUsu='+$("#CheckUsu").is(':checked')+'&CheckAgencia='+$("#CheckAgencia").is(':checked')+'&desde='+$('#desde').val()+'&hasta='+$('#hasta').val()+'&DCAgencia='+$('#DCAgencia').val()+'&DCUsuario='+$('#DCUsuario').val()+'&DCCtas='+$('#DCCtas').val();
                  
       	   window.open(url, '_blank');
        });
 
 	
 	  $('#imprimir_excel').click(function(){
-            var url = '../controlador/libro_bancoC.php?imprimir_excel=true&CheckUsu='+$("#CheckUsu").is(':checked')+'&CheckAgencia='+$("#CheckAgencia").is(':checked')+'&txt_CtaI='+$('#txt_CtaI').val()+'&txt_CtaF='+$('#txt_CtaF').val()+'&desde='+$('#desde').val()+'&hasta='+$('#hasta').val()+'&DCAgencia='+$('#DCAgencia').val()+'&DCUsuario='+$('#DCUsuario').val()+'&DCCtas='+$('#DCCtas').val()+'&OpcUno='+$('#OpcU').val()+'&PorConceptos='+Individual+'&submodulo=false';
+            var url = '../controlador/contabilidad/libro_bancoC.php?imprimir_excel=true&CheckUsu='+$("#CheckUsu").is(':checked')+'&CheckAgencia='+$("#CheckAgencia").is(':checked')+'&txt_CtaI='+$('#txt_CtaI').val()+'&txt_CtaF='+$('#txt_CtaF').val()+'&desde='+$('#desde').val()+'&hasta='+$('#hasta').val()+'&DCAgencia='+$('#DCAgencia').val()+'&DCUsuario='+$('#DCUsuario').val()+'&DCCtas='+$('#DCCtas').val()+'&OpcUno='+$('#OpcU').val()+'&PorConceptos='+Individual+'&submodulo=false';
                  
       	   window.open(url, '_blank');
        });
@@ -55,7 +55,7 @@
 
      $.ajax({
       //data:  {parametros:parametros},
-      url:   '../controlador/diario_generalC.php?sucu_exi=true',
+      url:   '../controlador/contabilidad/diario_generalC.php?sucu_exi=true',
       type:  'post',
       dataType: 'json',
       /*beforeSend: function () {   
@@ -95,7 +95,7 @@
 		$titulo = 'Mayor de '+$('#DCCtas option:selected').html(),
 		$.ajax({
 			data:  {parametros:parametros},
-			url:   '../controlador/libro_bancoC.php?consultar=true',
+			url:   '../controlador/contabilidad/libro_bancoC.php?consultar=true',
 			type:  'post',
 			//dataType: 'json',
 			beforeSend: function () {		
@@ -132,7 +132,7 @@
 		$titulo = 'Mayor de '+$('#DCCtas option:selected').html(),
 		$.ajax({
 			data:  {parametros:parametros},
-			url:   '../controlador/libro_bancoC.php?consultar_tot=true',
+			url:   '../controlador/contabilidad/libro_bancoC.php?consultar_tot=true',
 			type:  'post',
 			dataType: 'json',
 			beforeSend: function () {		
@@ -165,7 +165,7 @@
 		var usu='<option value="">Seleccione Usuario</option>';
 		$.ajax({
 			//data:  {parametros:parametros},
-			url:   '../controlador/diario_generalC.php?drop=true',
+			url:   '../controlador/contabilidad/diario_generalC.php?drop=true',
 			type:  'post',
 			dataType: 'json',
 			/*beforeSend: function () {		
@@ -193,7 +193,7 @@
 		var agencia='<option value="">Seleccione Cuenta</option>';
 		$.ajax({
 			//data:  {ini:ini,fin:fin},
-			url:   '../controlador/libro_bancoC.php?cuentas=true',
+			url:   '../controlador/contabilidad/libro_bancoC.php?cuentas=true',
 			type:  'post',
 			dataType: 'json',
 			/*beforeSend: function () {		

@@ -16,6 +16,7 @@ require_once(dirname(__DIR__,2)."/lib/excel/plantilla.php");
 require_once(dirname(__DIR__,1)."/db/db.php");
 require_once(dirname(__DIR__,1)."/db/variables_globales.php");
 
+
 //Lutgarda6018
 //require_once("../../diskcover_lib/fpdf/reporte_de.php");
 //C:\wamp64\www\diskcover_lib\excel

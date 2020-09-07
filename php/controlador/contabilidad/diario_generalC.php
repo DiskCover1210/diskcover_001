@@ -1,6 +1,6 @@
 <?php 
-include(dirname(__DIR__).'/modelo/diario_generalM.php');
-require(dirname(__DIR__,2).'/lib/fpdf/cabecera_pdf.php');
+include(dirname(__DIR__,2).'/modelo/contabilidad/diario_generalM.php');
+require(dirname(__DIR__,3).'/lib/fpdf/cabecera_pdf.php');
 /**
  * 
  */

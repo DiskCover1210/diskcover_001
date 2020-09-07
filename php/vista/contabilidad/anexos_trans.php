@@ -14,7 +14,7 @@ require_once("panel.php");
     var meses='';
     $.ajax({
    // data:  {parametros:parametros},
-   url:   '../controlador/anexos_transC.php?meses=true',
+   url:   '../controlador/contabilidad/anexos_transC.php?meses=true',
    type:  'post',
    dataType: 'json',
    // beforeSend: function () {   
@@ -39,7 +39,7 @@ require_once("panel.php");
     var year='';
     $.ajax({
    // data:  {parametros:parametros},
-   url:   '../controlador/anexos_transC.php?year=true',
+   url:   '../controlador/contabilidad/anexos_transC.php?year=true',
    type:  'post',
    dataType: 'json',
    // beforeSend: function () {   
@@ -72,7 +72,7 @@ require_once("panel.php");
     }
     $.ajax({
      data:  {parametros:parametros},
-     url:   '../controlador/anexos_transC.php?generar_ats=true',
+     url:   '../controlador/contabilidad/anexos_transC.php?generar_ats=true',
      type:  'post',
      // dataType: 'json',
      beforeSend: function () {   
@@ -96,7 +96,7 @@ require_once("panel.php");
     }
     $.ajax({
      data:  {parametros:parametros},
-     url:   '../controlador/anexos_transC.php?vista_ats=true',
+     url:   '../controlador/contabilidad/anexos_transC.php?vista_ats=true',
      type:  'post',
      dataType: 'json',
      success:  function (response) { 

@@ -17,7 +17,7 @@
 		}
 		$.ajax({
 			data:  {parametros:parametros},
-			url:   '../controlador/catalogoCtaC.php?consultar=true',
+			url:   '../controlador/contabilidad/catalogoCtaC.php?consultar=true',
 			type:  'post',
 			//dataType: 'json',
 			beforeSend: function () {		
@@ -115,13 +115,13 @@
 
        $('#imprimir_excel').click(function(){      		
 
-      	var url = '../controlador/catalogoCtaC.php?imprimir_excel=true&OpcT='+$("#OpcT").is(':checked')+'&OpcG='+$("#OpcG").is(':checked')+'&OpcD='+$("#OpcD").is(':checked')+'&txt_CtaI='+$('#txt_CtaI').val()+'&txt_CtaF='+$('#txt_CtaF').val();
+      	var url = '../controlador/contabilidad/catalogoCtaC.php?imprimir_excel=true&OpcT='+$("#OpcT").is(':checked')+'&OpcG='+$("#OpcG").is(':checked')+'&OpcD='+$("#OpcD").is(':checked')+'&txt_CtaI='+$('#txt_CtaI').val()+'&txt_CtaF='+$('#txt_CtaF').val();
       	    window.open(url, '_blank');
        });
 
         $('#imprimir_pdf').click(function(){      		
 
-      	var url = '../controlador/catalogoCtaC.php?imprimir_pdf=true&OpcT='+$("#OpcT").is(':checked')+'&OpcG='+$("#OpcG").is(':checked')+'&OpcD='+$("#OpcD").is(':checked')+'&txt_CtaI='+$('#txt_CtaI').val()+'&txt_CtaF='+$('#txt_CtaF').val();
+      	var url = '../controlador/contabilidad/catalogoCtaC.php?imprimir_pdf=true&OpcT='+$("#OpcT").is(':checked')+'&OpcG='+$("#OpcG").is(':checked')+'&OpcD='+$("#OpcD").is(':checked')+'&txt_CtaI='+$('#txt_CtaI').val()+'&txt_CtaF='+$('#txt_CtaF').val();
       	    window.open(url, '_blank');
        });
 

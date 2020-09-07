@@ -57,7 +57,7 @@ require_once("panel.php");
 		var bene='<option value="">Seleccione Beneficiario</option>';
 		$.ajax({
 			data:  {select:select},
-			url:   '../controlador/saldo_fac_submoduloC.php?cargar=true',
+			url:   '../controlador/contabilidad/saldo_fac_submoduloC.php?cargar=true',
 			type:  'post',
 			dataType: 'json',
 			beforeSend: function () {					
@@ -112,7 +112,7 @@ require_once("panel.php");
 		}
 		$.ajax({
 			data:  {parametros:parametros},
-			url:   '../controlador/saldo_fac_submoduloC.php?consultar=true',
+			url:   '../controlador/contabilidad/saldo_fac_submoduloC.php?consultar=true',
 			type:  'post',
 			//dataType: 'json',
 			beforeSend: function () {		
@@ -153,7 +153,7 @@ require_once("panel.php");
 		}
 		$.ajax({
 			data:  {parametros:parametros},
-			url:   '../controlador/saldo_fac_submoduloC.php?consultar_totales=true',
+			url:   '../controlador/contabilidad/saldo_fac_submoduloC.php?consultar_totales=true',
 			type:  'post',
 			dataType: 'json',
 			beforeSend: function () {		
@@ -210,7 +210,7 @@ require_once("panel.php");
 		}
 		$.ajax({
 			data:  {parametros:parametros},
-			url:   '../controlador/saldo_fac_submoduloC.php?consultar_tempo=true',
+			url:   '../controlador/contabilidad/saldo_fac_submoduloC.php?consultar_tempo=true',
 			type:  'post',
 			//dataType: 'json'
 			beforeSend: function () {		

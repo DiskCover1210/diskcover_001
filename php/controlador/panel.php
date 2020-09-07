@@ -133,4 +133,93 @@ function getModulo()
 	
 	return $empresa;
 } 
+
+function modulos_habiliatados()
+{
+	$per=new usuario_model();
+	$modulos=$per->modulos_registrados();
+	return $modulos;
+	
+}
+
+function contruir_modulos($modulos)
+{
+	$mod="";
+	$color = array('1'=>'bg-green','2'=>'bg-yellow','3'=>'bg-red','4'=>'bg-aqua');
+
+	$pos = 1;
+	foreach ($modulos  as $key => $value) {
+		// print_r($value);die();
+		$mod .= '<div class="col-lg-3 col-xs-6">
+          <!-- small box -->
+          <div class="small-box '.$color[$pos].'"  style="border-radius: 10px;">
+            <div class="inner"><a href="'.$value['link'].'" style="color: #ffffff;">';
+            if(strlen($value['apli'])<9)
+            {
+            	$mod.= '<h3>'.$value['apli'].'</h3>';
+            }else
+            {
+            	$mod.= '<h4>'.$value['apli'].'</h4>';
+
+            }
+              $mod.='<p>New Orders</p>
+              </a>
+            </div>
+            <div class="icon">
+              <i class="ion ion-bag"></i>
+            </div>
+            <a href="#" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>
+          </div>
+        </div>';        
+        $pos+=1;
+        if($pos==5)
+        {
+        	$pos = 1;
+        }
+
+	}
+	return $mod;
+
+}
+function contruir_todos_modulos()
+{
+
+	$per=new usuario_model();
+	$modulos=$per->modulos_todos();
+	$mod="";
+	$color = array('1'=>'bg-green','2'=>'bg-yellow','3'=>'bg-red','4'=>'bg-aqua');
+	$pos =1;
+	foreach ($modulos  as $key => $value) {
+		$mod .= '<div class="col-lg-3 col-xs-6">
+		<a href="'.$value['link'].'">
+          <!-- small box -->
+          <div class="small-box '.$color[$pos].'" style="border-radius: 10px;">
+            <div class="inner"><a href="'.$value['link'].'" style="color: #ffffff;">';
+            if(strlen($value['Aplicacion'])<9)
+            {
+            	$mod.= '<h3>'.$value['Aplicacion'].'</h3>';
+            }else{
+               $mod.= '<h4 style="font-size: 30px;"><b>'.$value['Aplicacion'].'</b></h4>';
+            }
+
+           $mod.='<p>New Orders</p>
+           <a>
+            </div>
+            <div class="icon">
+              <i class="ion ion-bag"></i>
+            </div>
+            <a href="#" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>
+          </div>
+          </a>
+        </div>';        
+        $pos= $pos+1;
+        if($pos==5)
+        {
+        	$pos = 1;
+        }
+        
+	}
+	return $mod;
+
+}
 ?>

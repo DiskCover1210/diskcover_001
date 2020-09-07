@@ -1,5 +1,5 @@
 <?php
-include(dirname(__DIR__).'/funciones/funciones.php');//
+include(dirname(__DIR__,2).'/funciones/funciones.php');//
 @session_start(); 
 
 /**

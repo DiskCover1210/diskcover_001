@@ -1,6 +1,9 @@
 <?php
-include(dirname(__DIR__).'/funciones/funciones.php');//
-include(dirname(__DIR__).'/db/variables_globales.php');//
+include(dirname(__DIR__,2).'/funciones/funciones.php');//
+if(!class_exists('variables_g'))
+{
+include(dirname(__DIR__,2).'/db/variables_globales.php');//
+}
 @session_start(); 
 
 /**

@@ -19,25 +19,25 @@
 			}
 		 })
 		   $('#imprimir_pdf').click(function(){
-            var url = '../controlador/mayor_auxiliarC.php?imprimir_pdf=true&CheckUsu='+$("#CheckUsu").is(':checked')+'&CheckAgencia='+$("#CheckAgencia").is(':checked')+'&txt_CtaI='+$('#txt_CtaI').val()+'&txt_CtaF='+$('#txt_CtaF').val()+'&desde='+$('#desde').val()+'&hasta='+$('#hasta').val()+'&DCAgencia='+$('#DCAgencia').val()+'&DCUsuario='+$('#DCUsuario').val()+'&DCCtas='+$('#DCCtas').val()+'&OpcUno='+$('#OpcU').val()+'&PorConceptos='+Individual+'&submodulo=false';
+            var url = '../controlador/contabilidad/mayor_auxiliarC.php?imprimir_pdf=true&CheckUsu='+$("#CheckUsu").is(':checked')+'&CheckAgencia='+$("#CheckAgencia").is(':checked')+'&txt_CtaI='+$('#txt_CtaI').val()+'&txt_CtaF='+$('#txt_CtaF').val()+'&desde='+$('#desde').val()+'&hasta='+$('#hasta').val()+'&DCAgencia='+$('#DCAgencia').val()+'&DCUsuario='+$('#DCUsuario').val()+'&DCCtas='+$('#DCCtas').val()+'&OpcUno='+$('#OpcU').val()+'&PorConceptos='+Individual+'&submodulo=false';
                  
       	   window.open(url, '_blank');
        });
 
 		   $('#imprimir_pdf_2').click(function(){
-            var url = '../controlador/mayor_auxiliarC.php?imprimir_pdf=true&CheckUsu='+$("#CheckUsu").is(':checked')+'&CheckAgencia='+$("#CheckAgencia").is(':checked')+'&txt_CtaI='+$('#txt_CtaI').val()+'&txt_CtaF='+$('#txt_CtaF').val()+'&desde='+$('#desde').val()+'&hasta='+$('#hasta').val()+'&DCAgencia='+$('#DCAgencia').val()+'&DCUsuario='+$('#DCUsuario').val()+'&DCCtas='+$('#DCCtas').val()+'&OpcUno='+$('#OpcU').val()+'&PorConceptos='+Individual+'&submodulo=true';
+            var url = '../controlador/contabilidad/mayor_auxiliarC.php?imprimir_pdf=true&CheckUsu='+$("#CheckUsu").is(':checked')+'&CheckAgencia='+$("#CheckAgencia").is(':checked')+'&txt_CtaI='+$('#txt_CtaI').val()+'&txt_CtaF='+$('#txt_CtaF').val()+'&desde='+$('#desde').val()+'&hasta='+$('#hasta').val()+'&DCAgencia='+$('#DCAgencia').val()+'&DCUsuario='+$('#DCUsuario').val()+'&DCCtas='+$('#DCCtas').val()+'&OpcUno='+$('#OpcU').val()+'&PorConceptos='+Individual+'&submodulo=true';
                  
       	   window.open(url, '_blank');
        });
 
 	  $('#imprimir_excel').click(function(){
-            var url = '../controlador/mayor_auxiliarC.php?imprimir_excel=true&CheckUsu='+$("#CheckUsu").is(':checked')+'&CheckAgencia='+$("#CheckAgencia").is(':checked')+'&txt_CtaI='+$('#txt_CtaI').val()+'&txt_CtaF='+$('#txt_CtaF').val()+'&desde='+$('#desde').val()+'&hasta='+$('#hasta').val()+'&DCAgencia='+$('#DCAgencia').val()+'&DCUsuario='+$('#DCUsuario').val()+'&DCCtas='+$('#DCCtas').val()+'&OpcUno='+$('#OpcU').val()+'&PorConceptos='+Individual+'&submodulo=false';
+            var url = '../controlador/contabilidad/mayor_auxiliarC.php?imprimir_excel=true&CheckUsu='+$("#CheckUsu").is(':checked')+'&CheckAgencia='+$("#CheckAgencia").is(':checked')+'&txt_CtaI='+$('#txt_CtaI').val()+'&txt_CtaF='+$('#txt_CtaF').val()+'&desde='+$('#desde').val()+'&hasta='+$('#hasta').val()+'&DCAgencia='+$('#DCAgencia').val()+'&DCUsuario='+$('#DCUsuario').val()+'&DCCtas='+$('#DCCtas').val()+'&OpcUno='+$('#OpcU').val()+'&PorConceptos='+Individual+'&submodulo=false';
                  
       	   window.open(url, '_blank');
        });
 
 	   $('#imprimir_excel_2').click(function(){
-            var url = '../controlador/mayor_auxiliarC.php?imprimir_excel=true&CheckUsu='+$("#CheckUsu").is(':checked')+'&CheckAgencia='+$("#CheckAgencia").is(':checked')+'&txt_CtaI='+$('#txt_CtaI').val()+'&txt_CtaF='+$('#txt_CtaF').val()+'&desde='+$('#desde').val()+'&hasta='+$('#hasta').val()+'&DCAgencia='+$('#DCAgencia').val()+'&DCUsuario='+$('#DCUsuario').val()+'&DCCtas='+$('#DCCtas').val()+'&OpcUno='+$('#OpcU').val()+'&PorConceptos='+Individual+'&submodulo=true';
+            var url = '../controlador/contabilidad/mayor_auxiliarC.php?imprimir_excel=true&CheckUsu='+$("#CheckUsu").is(':checked')+'&CheckAgencia='+$("#CheckAgencia").is(':checked')+'&txt_CtaI='+$('#txt_CtaI').val()+'&txt_CtaF='+$('#txt_CtaF').val()+'&desde='+$('#desde').val()+'&hasta='+$('#hasta').val()+'&DCAgencia='+$('#DCAgencia').val()+'&DCUsuario='+$('#DCUsuario').val()+'&DCCtas='+$('#DCCtas').val()+'&OpcUno='+$('#OpcU').val()+'&PorConceptos='+Individual+'&submodulo=true';
                  
       	   window.open(url, '_blank');
        });
@@ -65,7 +65,7 @@
 		$titulo = 'Mayor de '+$('#DCCtas option:selected').html(),
 		$.ajax({
 			data:  {parametros:parametros},
-			url:   '../controlador/mayor_auxiliarC.php?consultar=true',
+			url:   '../controlador/contabilidad/mayor_auxiliarC.php?consultar=true',
 			type:  'post',
 			//dataType: 'json',
 			beforeSend: function () {		
@@ -107,7 +107,7 @@
 		$titulo = 'Mayor de '+$('#DCCtas option:selected').html(),
 		$.ajax({
 			data:  {parametros:parametros},
-			url:   '../controlador/mayor_auxiliarC.php?consultar_tot=true',
+			url:   '../controlador/contabilidad/mayor_auxiliarC.php?consultar_tot=true',
 			type:  'post',
 			dataType: 'json',
 			beforeSend: function () {		
@@ -133,7 +133,7 @@
 
      $.ajax({
       //data:  {parametros:parametros},
-      url:   '../controlador/diario_generalC.php?sucu_exi=true',
+      url:   '../controlador/contabilidad/diario_generalC.php?sucu_exi=true',
       type:  'post',
       dataType: 'json',
       /*beforeSend: function () {   
@@ -165,7 +165,7 @@
 		var usu='<option value="">Seleccione Usuario</option>';
 		$.ajax({
 			//data:  {parametros:parametros},
-			url:   '../controlador/diario_generalC.php?drop=true',
+			url:   '../controlador/contabilidad/diario_generalC.php?drop=true',
 			type:  'post',
 			dataType: 'json',
 			/*beforeSend: function () {		
@@ -194,7 +194,7 @@
 		var fin = $('#txt_CtaF').val();
 		$.ajax({
 			data:  {ini:ini,fin:fin},
-			url:   '../controlador/mayor_auxiliarC.php?cuentas=true',
+			url:   '../controlador/contabilidad/mayor_auxiliarC.php?cuentas=true',
 			type:  'post',
 			dataType: 'json',
 			/*beforeSend: function () {		

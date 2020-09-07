@@ -1,7 +1,10 @@
 <?php 
-include('../modelo/anexos_transM.php');
-// include(dirname(__DIR__).'/db/variables_globales.php');//
-include('../../lib/fpdf/PDF_MC_Table.php');
+include(dirname(__DIR__,2).'/modelo/contabilidad/anexos_transM.php');
+if(!class_exists('variables_g'))
+{
+include(dirname(__DIR__,2).'/db/variables_globales.php');//
+}
+include(dirname(__DIR__,3).'/lib/fpdf/PDF_MC_Table.php');
 /**
  * 
  */
@@ -43,20 +46,14 @@ class anexos_transC
 	}
 	function year()
 	{
-    $datos = $this->modelo->year();
-    $meses = array();
-    foreach ($datos as $key => $value) {
-      $meses[]= array('year'=>$value['Anio']);
-    }
-  //   print_r($meses);die();
-		// $mese = array(
-  // 		array('year'=>'2020','num'=>'01','acro'=>'ENE'),
-  // 		array('year'=>'2019','num'=>'02','acro'=>'FEB'),
-  // 		array('year'=>'2018','num'=>'03','acro'=>'MAR'),
-  // 		array('year'=>'2017','num'=>'04','acro'=>'ABR'),
-  // 	);
+		$mese = array(
+  		array('year'=>'2020','num'=>'01','acro'=>'ENE'),
+  		array('year'=>'2019','num'=>'02','acro'=>'FEB'),
+  		array('year'=>'2018','num'=>'03','acro'=>'MAR'),
+  		array('year'=>'2017','num'=>'04','acro'=>'ABR'),
+  	);
 
-  	return $meses;
+  	return $mese;
 
 	}
 	function generar_ats($parametros)
@@ -396,7 +393,7 @@ class anexos_transC
 			}
 		}
 		
-   $ruta = '../../php/vista/TEMP/';
+   $ruta = dirname(__DIR__,3).'/php/vista/TEMP/';
    $carpeta = "AT".$_SESSION['INGRESO']['item'];
    $archivo = 'AT'.date('m',strtotime($FechaInicial)).''.date('Y',strtotime($FechaInicial)).'.xml';
    fopen($ruta.$carpeta.'/'.$archivo, 'w');
@@ -952,7 +949,7 @@ return 1;
     // print_r($FechaIni);die();
     $pagina2 = False;
     $this->pdf->AddPage();
-    $src="../../img/logotipos/SRI.jpg";
+    $src=dirname(__DIR__,3)."/img/logotipos/SRI.jpg";
     $this->pdf->Image($src,10,3,35,20);      
     $this->pdf->SetFont('Arial','',14);
     $this->pdf->SetTextColor(7, 89, 147);
@@ -1654,7 +1651,7 @@ return 1;
              $tablaFinal[1]['datos']=array("Firma del Contador","Firma del representante");
              $tablaFinal[2]['medidas']=$tablaFinal[0]['medidas'];
              $tablaFinal[2]['alineado']= $tablaFinal[0]['alineado'];
-             $tablaFinal[2]['datos']=array($_SESSION['INGRESO']['RUC_Contador'],$_SESSION['INGRESO']['CI_Representante']);
+             $tablaFinal[2]['datos']=array("Firma del Contador","Firma del representante");
              $totales = count($tabla_RE_FU);  
              foreach ($tablaFinal as $key => $value){
                $this->pdf->SetXY(5,$this->pdf->GetY());            
