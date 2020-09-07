@@ -195,7 +195,8 @@ ini_set('display_errors', '1');
 						}
 						if(substr($_SESSION['INGRESO']['CodigoU'], 5)<>'999')
 						{
-							$subcta="(SubCta = '".substr($_SESSION['INGRESO']['CodigoU'], 5)."')";
+							//$subcta="(SubCta = '".substr($_SESSION['INGRESO']['CodigoU'], 5)."')";
+							$subcta='1=1';
 						}
 						else
 						{

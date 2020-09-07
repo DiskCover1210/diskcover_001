@@ -1515,75 +1515,41 @@ class contabilidad_model{
 				  AND Periodo = '".$_SESSION['INGRESO']['periodo']."' 
 				  $_SESSION['INGRESO']['CodigoU']
 		*/
-		if(substr($_SESSION['INGRESO']['CodigoU'], 5)<>'999')
+		/*if(substr($_SESSION['INGRESO']['CodigoU'], 5)<>'999')
 		{
-			$subcta="(SubCta = '".substr($_SESSION['INGRESO']['CodigoU'], 5)."')";
+			//$subcta="(SubCta = '".substr($_SESSION['INGRESO']['CodigoU'], 5)."')";
+			$subcta='1=1';
 		}
 		else
 		{
 			$subcta='1=1';
-		}
+		}*/
 		if($filtro==null or $filtro=='')
 		{
 			$filtro=' 1=1 ';
 		}
-		
-		$filtro = str_replace("BETWEEN", " BETWEEN", $filtro);
-		if($Opcb==null)
-		{
-			if($record_per_page==null)
-			{
-				$sql="SELECT  Facturas.T, 
-				 Serie, Autorizacion, Factura, Facturas.Fecha, SubTotal, Con_IVA, Sin_IVA, IVA, Facturas.Descuento, Descuento2, 
-				 Total_MN, RUC_CI, Razon_Social,
-				 Clientes.Email,clientes.Direccion,Clientes.Telefono, Email, Direccion, Telefono FROM Facturas 
-				 inner join clientes on clientes.codigo=Facturas.codigoc
-				WHERE  ".$filtro." 
-				";
-			}
-			else
-			{
-				$sql="select T, Serie, Autorizacion, Factura, Fecha, SubTotal, Con_IVA, Sin_IVA, IVA, 
+		//$filtro = str_replace("BETWEEN", " BETWEEN", $filtro);
+		$sql="select T, Serie, Autorizacion, Factura, Fecha, SubTotal, Con_IVA, Sin_IVA, IVA, 
 				Descuento, Descuento2, Total_MN, RUC_CI, Razon_Social, Email, Direccion, Telefono, m.numero from 
 				(SELECT  Facturas.T, 
 				 Serie, Autorizacion, Factura, Facturas.Fecha, SubTotal, Con_IVA, Sin_IVA, IVA, Facturas.Descuento, Descuento2, Total_MN, RUC_CI, Razon_Social,
 				 Clientes.Email,clientes.Direccion,Clientes.Telefono,ROW_NUMBER() OVER(ORDER BY Facturas.Fecha DESC ) AS numero FROM Facturas 
 				 inner join clientes on clientes.codigo=Facturas.codigoc
-				WHERE  ".$filtro." ) m 
+				WHERE ".$filtro." ) m ";
+		if($Opcb==null) //
+		{
+			if($record_per_page!=null)
+			{
+				$sql=$sql. "  
 				WHERE  numero BETWEEN ".$start_from." AND ".$record_per_page." 
 				";
-				
 			}
-			/*$sql='SELECT Item, Periodo, Clave_Acceso, Documento_Autorizado, TD, Serie, Documento, ID
-					FROM  Trans_Documentos WHERE
-					Item = '".$_SESSION['INGRESO']['item']."'  
-					AND (ID=1 
-						OR ID=2)';*/
-			//echo $sql;
-			//configuracion de campos para que tome diseño distinto
-			//titulo accion
-			
 		}
 		else
 		{
-			if($record_per_page==null)
+			if($record_per_page!=null)
 			{
-				$sql="SELECT  Facturas.T, 
-				 Serie, Autorizacion, Factura, Facturas.Fecha, SubTotal, Con_IVA, Sin_IVA, IVA, Facturas.Descuento, Descuento2, Total_MN, RUC_CI, Razon_Social,
-				 Clientes.Email,clientes.Direccion,Clientes.Telefono FROM Facturas 
-				 inner join clientes on clientes.codigo=Facturas.codigoc
-				WHERE  ".$filtro." 
-				  ";
-			}
-			else
-			{
-				$sql="select T, Serie, Autorizacion, Factura, Fecha, SubTotal, Con_IVA, Sin_IVA, IVA, 
-				Descuento, Descuento2, Total_MN, RUC_CI, Razon_Social, Email, Direccion, Telefono, m.numero from 
-				(SELECT  Facturas.T, 
-				 Serie, Autorizacion, Factura, Facturas.Fecha, SubTotal, Con_IVA, Sin_IVA, IVA, Facturas.Descuento, Descuento2, Total_MN, RUC_CI, Razon_Social,
-				 Clientes.Email,clientes.Direccion,Clientes.Telefono,ROW_NUMBER() OVER(ORDER BY Facturas.Fecha DESC ) AS numero FROM Facturas 
-				 inner join clientes on clientes.codigo=Facturas.codigoc
-				WHERE  ".$filtro." ) m 
+				$sql=$sql. "  
 				WHERE  numero BETWEEN ".$start_from." AND ".$record_per_page." 
 				";
 			}
@@ -1640,68 +1606,9 @@ class contabilidad_model{
 				   //echo "<br />";
 				}
 			}
-			if($Opcb==null)
-			{
-				if($record_per_page==null)
-				{
-					$sql="SELECT  Facturas.T, 
-					 Serie, Autorizacion, Factura, Facturas.Fecha, SubTotal, Con_IVA, Sin_IVA, IVA, Facturas.Descuento, Descuento2, 
-					 Total_MN, RUC_CI, Razon_Social,
-					 Clientes.Email,clientes.Direccion,Clientes.Telefono, Email, Direccion, Telefono FROM Facturas 
-					 inner join clientes on clientes.codigo=Facturas.codigoc
-					WHERE  ".$filtro." 
-					";
-				}
-				else
-				{
-					$sql="select T, Serie, Autorizacion, Factura, Fecha, SubTotal, Con_IVA, Sin_IVA, IVA, 
-					Descuento, Descuento2, Total_MN, RUC_CI, Razon_Social, Email, Direccion, Telefono, m.numero from 
-					(SELECT ROW_NUMBER() OVER(ORDER BY Facturas.Fecha DESC ) AS numero, Facturas.T, 
-					 Serie, Autorizacion, Factura, Facturas.Fecha, SubTotal, Con_IVA, Sin_IVA, IVA, Facturas.Descuento, Descuento2, Total_MN, RUC_CI, Razon_Social,
-					 Clientes.Email,clientes.Direccion,Clientes.Telefono FROM Facturas 
-					 inner join clientes on clientes.codigo=Facturas.codigoc
-					WHERE  ".$filtro." ) m 
-					WHERE  numero BETWEEN ".$start_from." AND ".$record_per_page." 
-					";
-					
-				}
-				/*$sql='SELECT Item, Periodo, Clave_Acceso, Documento_Autorizado, TD, Serie, Documento, ID
-						FROM  Trans_Documentos WHERE
-						Item = '".$_SESSION['INGRESO']['item']."'  
-						AND (ID=1 
-							OR ID=2)';*/
-				//echo $sql;
-				//configuracion de campos para que tome diseño distinto
-				//titulo accion
-				
-			}
-			else
-			{
-				if($record_per_page==null)
-				{
-					$sql="SELECT  Facturas.T, 
-					 Serie, Autorizacion, Factura, Facturas.Fecha, SubTotal, Con_IVA, Sin_IVA, IVA, Facturas.Descuento, Descuento2, Total_MN, RUC_CI, Razon_Social,
-					 Clientes.Email,clientes.Direccion,Clientes.Telefono FROM Facturas 
-					 inner join clientes on clientes.codigo=Facturas.codigoc
-					WHERE  ".$filtro." 
-					  ";
-				}
-				else
-				{
-					$sql="select T, Serie, Autorizacion, Factura, Fecha, SubTotal, Con_IVA, Sin_IVA, IVA, 
-					Descuento, Descuento2, Total_MN, RUC_CI, Razon_Social, Email, Direccion, Telefono, m.numero from 
-					(SELECT  Facturas.T, 
-					 Serie, Autorizacion, Factura, Facturas.Fecha, SubTotal, Con_IVA, Sin_IVA, IVA, Facturas.Descuento, Descuento2, Total_MN, RUC_CI, Razon_Social,
-					 Clientes.Email,clientes.Direccion,Clientes.Telefono,ROW_NUMBER() OVER(ORDER BY Facturas.Fecha DESC ) AS numero FROM Facturas 
-					 inner join clientes on clientes.codigo=Facturas.codigoc
-					WHERE  ".$filtro." ) m 
-					WHERE  numero BETWEEN ".$start_from." AND ".$record_per_page." 
-					";
-				}
-				//echo $sql;
-			}
 			//echo $sql;
 		}
+		//echo $sql;
 		$stmt = sqlsrv_query( $this->dbs, $sql);
 		if($ord!=null and $ord!='17_A' and $ord!='17_D' and $ord!='17')
 		{
@@ -1771,67 +1678,19 @@ class contabilidad_model{
 			//echo $orde;
 			if($Opcb==null)
 			{
-				if($record_per_page==null)
-				{
-					$sql="SELECT Facturas.T, 
-					 Serie, Autorizacion, Factura, Facturas.Fecha, SubTotal, Con_IVA, Sin_IVA, IVA, Facturas.Descuento, Descuento2, Total_MN, RUC_CI, Razon_Social,
-					 Clientes.Email,clientes.Direccion,Clientes.Telefono FROM Facturas 
-					 inner join clientes on clientes.codigo=Facturas.codigoc
-					WHERE  ".$filtro."  
-					 ORDER BY ".$orde1;
-				}
-				else
-				{
-					$sql="select T, Serie, Autorizacion, Factura, Fecha, SubTotal, Con_IVA, Sin_IVA, IVA, 
-					Descuento, Descuento2, Total_MN, RUC_CI, Razon_Social, Email, Direccion, Telefono,m.numero from 
-					(SELECT  Facturas.T, 
-					 Serie, Autorizacion, Factura, Facturas.Fecha, SubTotal, Con_IVA, Sin_IVA, IVA, Facturas.Descuento, Descuento2, Total_MN, RUC_CI, Razon_Social,
-					 Clientes.Email,clientes.Direccion,Clientes.Telefono,ROW_NUMBER() OVER(ORDER BY ".$orde." ) AS numero FROM Facturas 
-					 inner join clientes on clientes.codigo=Facturas.codigoc
-					WHERE  ".$filtro."   ) m 
-					WHERE  numero BETWEEN ".$start_from." AND ".$record_per_page." 
-					 ORDER BY ".$orde1;
-					
-				}
-				/*$sql='SELECT Item, Periodo, Clave_Acceso, Documento_Autorizado, TD, Serie, Documento, ID
-						FROM  Trans_Documentos WHERE
-						Item = '".$_SESSION['INGRESO']['item']."'  
-						AND (ID=1 
-							OR ID=2)';*/
-				//echo $sql;
-				//configuracion de campos para que tome diseño distinto
-				//titulo accion
-				
+				$sql=$sql. "  
+				 ORDER BY ".$orde1;
 			}
 			else
 			{
-				if($record_per_page==null)
-				{
-					$sql="SELECT Facturas.T, 
-					 Serie, Autorizacion, Factura, Facturas.Fecha, SubTotal, Con_IVA, Sin_IVA, IVA, Facturas.Descuento, Descuento2, Total_MN, RUC_CI, Razon_Social,
-					 Clientes.Email,clientes.Direccion,Clientes.Telefono FROM Facturas 
-					 inner join clientes on clientes.codigo=Facturas.codigoc
-					WHERE  ".$filtro." 
-					ORDER BY ".$orde1;
-				}
-				else
-				{
-					$sql="select T, Serie, Autorizacion, Factura, Fecha, SubTotal, Con_IVA, Sin_IVA, IVA, 
-					Descuento, Descuento2, Total_MN, RUC_CI, Razon_Social, Email, Direccion, Telefono,m.numero from 
-					(SELECT  Facturas.T, 
-					 Serie, Autorizacion, Factura, Facturas.Fecha, SubTotal, Con_IVA, Sin_IVA, IVA, Facturas.Descuento, Descuento2, Total_MN, RUC_CI, Razon_Social,
-					 Clientes.Email,clientes.Direccion,Clientes.Telefono,ROW_NUMBER() OVER(ORDER BY ".$orde." ) AS numero FROM Facturas 
-					 inner join clientes on clientes.codigo=Facturas.codigoc
-					WHERE  ".$filtro."   ) m 
-					WHERE  numero BETWEEN ".$start_from." AND ".$record_per_page." 
-					 ORDER BY ".$orde1;
-				}
+				$sql=$sql. "  
+				 ORDER BY ".$orde1;
 				//echo $sql;
 			}
 			//echo $sql;
 			$stmt = sqlsrv_query( $this->dbs, $sql);
 		}
-		//echo $sql;
+		echo $sql;
 		if( $stmt === false)  
 		{  
 			 echo "Error en consulta PA.\n";  
