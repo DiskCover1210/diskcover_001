@@ -16,7 +16,6 @@ require_once(dirname(__DIR__,2)."/lib/excel/plantilla.php");
 require_once(dirname(__DIR__,1)."/db/db.php");
 require_once(dirname(__DIR__,1)."/db/variables_globales.php");
 
-
 //Lutgarda6018
 //require_once("../../diskcover_lib/fpdf/reporte_de.php");
 //C:\wamp64\www\diskcover_lib\excel
@@ -52,7 +51,39 @@ function ip()
 
 }
 
+//Configuración del algoritmo de encriptación
 
+//Debes cambiar esta cadena, debe ser larga y unica
+//nadie mas debe conocerla
+$clave  = 'Una cadena, muy, muy larga para mejorar la encriptacion';
+
+//Metodo de encriptación
+$method = 'aes-256-cbc';
+
+// Puedes generar una diferente usando la funcion $getIV()
+$iv = base64_decode("C9fBxl1EWtYTL1/M8jfstw==");
+
+ /*
+ Encripta el contenido de la variable, enviada como parametro.
+  */
+ $encriptar = function ($valor) use ($method, $clave, $iv) {
+     return openssl_encrypt ($valor, $method, $clave, false, $iv);
+ };
+
+ /*
+ Desencripta el texto recibido
+ */
+ $desencriptar = function ($valor) use ($method, $clave, $iv) {
+     $encrypted_data = base64_decode($valor);
+     return openssl_decrypt($valor, $method, $clave, false, $iv);
+ };
+
+ /*
+ Genera un valor para IV
+ */
+ $getIV = function () use ($method) {
+     return base64_encode(openssl_random_pseudo_bytes(openssl_cipher_iv_length($method)));
+ };
 function control_procesos($TipoTrans,$Tarea,$opcional_proceso)
 {  
   $TMail_Credito_No = G_NINGUNO;
@@ -4150,8 +4181,8 @@ function grilla_generica($stmt,$ti=null,$camne=null,$b=null,$ch=null,$tabla=null
 								if(count($ch1)==2)
 								{
 									$cch=$ch1[0];
-									echo "<td style='text-align: left; ".$bor1."'><input type='checkbox' id='id_".$row[$cch]."' name='".$ch1[1]."' value='".$row[$cch]."'
-									onclick='validarc(\"id_".$row[$cch]."\",\"".$tabla."\")'></td>";
+									echo "<td style='text-align: left; ".$bor1."'><input type='checkbox' id='id_".$row[$cch]."[]' name='".$ch1[1]."' value='".$row[$cch]."'
+									onclick=\"validarc('id_".$row[$cch]."','".$tabla."')\"></td>";
 								}
 								else
 								{
@@ -4168,8 +4199,8 @@ function grilla_generica($stmt,$ti=null,$camne=null,$b=null,$ch=null,$tabla=null
 										}
 									}
 									$ca=$ca-1;
-									echo "<td style='text-align: left; ".$bor."'><input type='checkbox' id='id_".$camch."' name='".$ch1[$ca]."' value='".$camch."'
-									onclick='validarc(\"id_".$camch."\",\"".$tabla."\")'></td>";
+									echo "<td style='text-align: left; ".$bor."'><input type='checkbox' id='id_".$camch."' name='".$ch1[$ca]."[]' value='".$camch."'
+									onclick=\"validarc('id_".$camch."','".$tabla."')\"></td>";
 									//die();
 								}
 							}
@@ -4958,8 +4989,8 @@ function grilla_generica($stmt,$ti=null,$camne=null,$b=null,$ch=null,$tabla=null
 									if(count($ch1)==2)
 									{
 										$cch=$ch1[0];
-										echo "<td style='text-align: left;".$bor1."'><input type='checkbox' id='id_".$row[$cch]."' name='".$ch1[1]."' value='".$row[$cch]."'
-										onclick='validarc(\"id_".$row[$cch]."\",\"".$tabla."\")'></td>";
+										echo "<td style='text-align: left;".$bor1."'><input type='checkbox' id='id_".$row[$cch]."' name='".$ch1[1]."[]' value='".$row[$cch]."'
+										onclick=\"validarc('id_".$row[$cch]."','".$tabla."')\"></td>";
 									}
 									else
 									{
@@ -4976,8 +5007,8 @@ function grilla_generica($stmt,$ti=null,$camne=null,$b=null,$ch=null,$tabla=null
 											}
 										}
 										$ca=$ca-1;
-										echo "<td style='text-align: left;' ".$bor."><input type='checkbox' id='id_".$camch."' name='".$ch1[$ca]."' value='".$camch."'
-										onclick='validarc(\"id_".$camch."\",\"".$tabla."\")'></td>";
+										echo "<td style='text-align: left;' ".$bor."><input type='checkbox' id='id_".$camch."' name='".$ch1[$ca]."[]' value='".$camch."'
+										onclick=\"validarc('id_".$camch."','".$tabla."')\"></td>";
 										//die();
 									}
 								}

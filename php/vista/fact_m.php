@@ -7,7 +7,7 @@
  */
  error_reporting(E_ALL);
 ini_set('display_errors', '1');
- require_once("../controlador/contabilidad_controller.php");
+require_once("../controlador/facturacion/facturacion_controller.php");
  //verificacion titulo accion
 	$_SESSION['INGRESO']['ti']='';
 	if(isset($_GET['ti'])) 
@@ -33,7 +33,7 @@ ini_set('display_errors', '1');
 						<td>
 							<h4 class="box-title">
 						
-							<a class="btn btn-default"  data-toggle="tooltip" title="Salir del modulo" href="panel.php?sa=s">
+							<a class="btn btn-default"  title="Salir del modulo" href="panel.php?sa=s">
 								<i ><img src="../../img/png/salir.png" class="user-image" alt="User Image"
 								style='font-size:20px; display:block; height:100%; width:100%;'></i> 
 							</a>
@@ -429,10 +429,14 @@ ini_set('display_errors', '1');
 					//echo $filtros;
 
 						?>
-						<a id='l7' class="btn btn-default"  data-toggle="tooltip" title="Exportar Excel"
-							href="descarga.php?mod=contabilidad&acc=fact&acc1=Reporte Facturación&ti=<?php echo $_SESSION['INGRESO']['ti']; ?>
-							&Opcb=6&Opcen=0&b=0&ex=1&filtros=<?php echo $filtros; ?>&ord=<?php echo $ord; ?>"  target="_blank">
+							<a id='l7' class="btn btn-default"  title="Exportar Excel"
+								href="descarga.php?mod=contabilidad&acc=fact&acc1=Reporte Facturación&ti=<?php echo $_SESSION['INGRESO']['ti']; ?>
+								&Opcb=6&Opcen=0&b=0&ex=1&filtros=<?php echo $filtros; ?>&ord=<?php echo $ord; ?>"  target="_blank">
 								<i ><img src="../../img/png/table_excel.png" class="user-image" alt="User Image"
+								style='font-size:20px; display:block; height:100%; width:100%;'></i> 
+							</a>
+							<a class="btn btn-default"  title="Autorizar" href="#" onclick="autorizar()">
+								<i ><img src="../../img/png/aprobar.png" class="user-image" alt="User Image"
 								style='font-size:20px; display:block; height:100%; width:100%;'></i> 
 							</a>
 						</h4>

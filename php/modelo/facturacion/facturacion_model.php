@@ -1529,10 +1529,10 @@ class contabilidad_model{
 			$filtro=' 1=1 ';
 		}
 		//$filtro = str_replace("BETWEEN", " BETWEEN", $filtro);
-		$sql="select T, Serie, Autorizacion, Factura, Fecha Factura, SubTotal, Con_IVA, Sin_IVA, IVA, 
+		$sql="select T, Serie, Autorizacion, Factura, Fecha_Emitida, SubTotal, Con_IVA, Sin_IVA, IVA, 
 				Descuento, Descuento2, Total_MN, RUC_CI, Razon_Social, Email, Direccion, Telefono, m.numero from 
 				(SELECT  Facturas.T, 
-				 Serie, Autorizacion, Factura, Facturas.Fecha as Fecha Factura, SubTotal, Con_IVA, Sin_IVA, IVA, Facturas.Descuento, Descuento2, Total_MN, RUC_CI, Razon_Social,
+				 Serie, Autorizacion, Factura, Facturas.Fecha as Fecha_Emitida, SubTotal, Con_IVA, Sin_IVA, IVA, Facturas.Descuento, Descuento2, Total_MN, RUC_CI, Razon_Social,
 				 Clientes.Email,clientes.Direccion,Clientes.Telefono,ROW_NUMBER() OVER(ORDER BY Facturas.Fecha DESC ) AS numero FROM Facturas 
 				 inner join clientes on clientes.codigo=Facturas.codigoc
 				WHERE ".$filtro." ) m ";
@@ -1568,6 +1568,7 @@ class contabilidad_model{
 			$like=null;
 			foreach( sqlsrv_field_metadata( $stmt ) as $fieldMetadata ) 
 			{
+			    //echo $fieldMetadata['Name'].' '.$fieldMetadata['Type'].' ';
 				foreach( $fieldMetadata as $name => $value) 
 				{				
 					if(!is_numeric($value))
@@ -1690,7 +1691,7 @@ class contabilidad_model{
 			//echo $sql;
 			$stmt = sqlsrv_query( $this->dbs, $sql);
 		}
-		///echo $sql;
+		//echo $sql;
 		if( $stmt === false)  
 		{  
 			 echo "Error en consulta PA.\n";  
