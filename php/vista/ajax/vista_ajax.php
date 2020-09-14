@@ -1440,6 +1440,7 @@ function ingresar()
 		$dconcepto1 = $_POST['dconcepto1'];
 		$codigo = $_POST['codigo'];
 		$cuenta = $_POST['cuenta'];
+		$t_no = $_POST['t_no'];
 		if(isset($_POST['efectivo_as']))
 		{
 			$efectivo_as = $_POST['efectivo_as'];
@@ -1562,25 +1563,14 @@ function ingresar()
 		//si no existe guardamos
 		if($i==0)
 		{
-			//para saber si es debe o haber
-			if($tipo_cue==1)
-			{
+			
 				$sql="INSERT INTO Asiento
 				(CODIGO,CUENTA,PARCIAL_ME,DEBE,HABER,CHEQ_DEP,DETALLE,EFECTIVIZAR,CODIGO_C,CODIGO_CC
 				,ME,T_No,Item,CodigoU,A_No)
 				VALUES
 				('".$codigo."','".$cuenta."',".$parcial.",".$debe.",".$haber.",'".$chq_as."','".$dconcepto1."',
-				'".$efectivo_as."','.','.',0,1,'".$_SESSION['INGRESO']['item']."','".$_SESSION['INGRESO']['CodigoU']."',".$A_No.")";
-			}
-			if($tipo_cue==2)
-			{
-				$sql="INSERT INTO Asiento
-				(CODIGO,CUENTA,PARCIAL_ME,DEBE,HABER,CHEQ_DEP,DETALLE,EFECTIVIZAR,CODIGO_C,CODIGO_CC
-				,ME,T_No,Item,CodigoU,A_No)
-				VALUES
-				('".$codigo."','".$cuenta."',".$parcial.",".$debe.",".$haber.",'".$chq_as."','".$dconcepto1."',
-				'".$efectivo_as."','.','.',0,1,'".$_SESSION['INGRESO']['item']."','".$_SESSION['INGRESO']['CodigoU']."',".$A_No.")";
-			}
+				'".$efectivo_as."','.','.',0,".$t_no.",'".$_SESSION['INGRESO']['item']."','".$_SESSION['INGRESO']['CodigoU']."',".$A_No.")";
+			
 			
 		   $stmt = sqlsrv_query( $cid, $sql);
 			if( $stmt === false)  
@@ -1882,7 +1872,7 @@ function ingresar()
            ,'".$_SESSION['INGRESO']['item']."'
            ,'".$_SESSION['INGRESO']['CodigoU']."')";
 		   $stmt = sqlsrv_query( $cid, $sql);
-		   //echo $sql;
+		   // echo $sql;
 			if( $stmt === false)  
 			{  
 				 echo "Error en consulta PA.\n";  

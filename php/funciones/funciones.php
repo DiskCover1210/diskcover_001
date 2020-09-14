@@ -5380,7 +5380,7 @@ function update_generico($datos,$tabla,$campoWhere)
    		{
    		   $wherelist.= $value['campo'].'='.$value['valor'].' AND ';
    		}else{
-   		  $wherelist.= $value['campo'].'="'.$value['valor'].'" AND ';
+   		  $wherelist.= $value['campo']."='".$value['valor']."' AND ";
    	    }
    	}
    	$wherelist = substr($wherelist,0,-5);
