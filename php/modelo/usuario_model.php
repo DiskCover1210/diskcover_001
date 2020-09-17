@@ -593,6 +593,9 @@ class usuario_model{
 				$empresa[$i]['Signo_Dec']=$obj->Signo_Dec;
 				$empresa[$i]['Signo_Mil']=$obj->Signo_Mil;
 				$empresa[$i]['Ciudad']=$obj->Ciudad;
+				$empresa[$i]['Ruta_Certificado'] = $obj->Ruta_Certificado;
+				$empresa[$i]['Clave_Certificado'] = $obj->Clave_Certificado;
+				$empresa[$i]['Ambiente'] = $obj->Ambiente;		
 				//$empresa[$i]['Sucursal']=$obj->Sucursal;
 				//consultar sucursal
 				$empresa[$i]['Sucursal']=false;

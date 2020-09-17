@@ -15,7 +15,7 @@ class inventario_onlineM
 	function listar_articulos($query='')
 	{
 			$cid = $this->conn;
-     $sql2="SELECT  Codigo_Inv,Producto,Unidad  from Catalogo_Productos WHERE Item = '".$_SESSION['INGRESO']['item']."' AND TC = 'I' AND Periodo='".$_SESSION['INGRESO']['periodo']."'";
+     $sql2="SELECT  Codigo_Inv,Producto,Unidad from Catalogo_Productos WHERE Item = '".$_SESSION['INGRESO']['item']."' AND TC = 'I' AND Periodo='".$_SESSION['INGRESO']['periodo']."'";
      // print_r($sql);die();
         $stmt = sqlsrv_query($cid, $sql2);
         $datos =  array();
@@ -38,7 +38,7 @@ class inventario_onlineM
 	{
 			$cid = $this->conn;
     // 'LISTA DE CODIGO DE ANEXOS
-     $sql = "SELECT Codigo_Inv,Producto,Unidad FROM Catalogo_Productos WHERE INV = 1 AND Periodo = '".$_SESSION['INGRESO']['periodo']."' AND Item = '".$_SESSION['INGRESO']['item']."' AND LEN(Cta_Inventario)>3 AND LEN(Cta_Costo_Venta)>3 AND Codigo_Inv LIKE '".$codigo."%' ";
+     $sql = "SELECT Codigo_Inv,Producto,TC,Valor_Total,Unidad,Stock_Actual,Cta_Inventario FROM Catalogo_Productos WHERE INV = 1 AND Periodo = '".$_SESSION['INGRESO']['periodo']."' AND Item = '".$_SESSION['INGRESO']['item']."' AND LEN(Cta_Inventario)>3 AND LEN(Cta_Costo_Venta)>3 AND Codigo_Inv LIKE '".$codigo."%' AND Stock_Actual <> 0 ";
      if($query !='')
      {
      	$sql .=" AND Producto LIKE '%".$query."%'"; 
@@ -55,7 +55,32 @@ class inventario_onlineM
 	   }
 	    while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_ASSOC) ) 
 	   {
-	   	array_push($datos, ['id'=>$row['Codigo_Inv'].'/'.$row['Unidad'],'text'=>utf8_encode($row['Producto'])]);
+	   	array_push($datos, ['id'=>$row['Codigo_Inv'].','.$row['Unidad'].','.$row['Stock_Actual'].','.$row['TC'].','.$row['Valor_Total'].','.$row['Cta_Inventario'],'text'=>utf8_encode($row['Producto'])]);
+	   	// array_push($datos, ['id'=>$row['Codigo_Inv'].'/'.$row['Unidad'],'text'=>$row['Producto']]);
+	   }
+       return $datos;
+
+	}
+
+		function lista_hijos_id($query)
+	{
+			$cid = $this->conn;
+    // 'LISTA DE CODIGO DE ANEXOS
+     $sql = "SELECT Codigo_Inv,Producto,Unidad,Stock_Actual FROM Catalogo_Productos WHERE INV = 1 AND Periodo = '".$_SESSION['INGRESO']['periodo']."' AND Item = '".$_SESSION['INGRESO']['item']."' AND LEN(Cta_Inventario)>3 AND LEN(Cta_Costo_Venta)>3 AND Codigo_Inv ='".$query."' AND Stock_Actual <> 0 ";
+   
+
+     // print_r($sql);die();
+        $stmt = sqlsrv_query($cid, $sql);
+        $datos =  array();
+	   if( $stmt === false)  
+	   {  
+		 echo "Error en consulta PA.\n";  
+		 return '';
+		 die( print_r( sqlsrv_errors(), true));  
+	   }
+	    while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_ASSOC) ) 
+	   {
+	   	array_push($datos, ['id'=>$row['Codigo_Inv'].','.$row['Unidad'].','.$row['Stock_Actual'],'text'=>utf8_encode($row['Producto'])]);
 	   	// array_push($datos, ['id'=>$row['Codigo_Inv'].'/'.$row['Unidad'],'text'=>$row['Producto']]);
 	   }
        return $datos;
@@ -95,10 +120,10 @@ class inventario_onlineM
 	
 	$cid = $this->conn;
     // 'LISTA DE CODIGO DE ANEXOS
-     $sql = "SELECT Codigo,Detalle FROM Catalogo_SubCtas WHERE TC='G' AND Periodo = '".$_SESSION['INGRESO']['periodo']."' AND Item = '".$_SESSION['INGRESO']['item']."' ";
+     $sql = "SELECT Codigo+','+TC as 'Codigo',Detalle FROM Catalogo_SubCtas WHERE TC='G' AND Nivel='00' AND Periodo = '".$_SESSION['INGRESO']['periodo']."' AND Item = '".$_SESSION['INGRESO']['item']."' ";
      if($query !='')
      {
-     	$sql .=" AND Detalle+' '+Codigo LIKE '%".$query."%'"; 
+     	$sql .=" AND Detalle+' '+Codigo LIKE '%[".$query."]%'"; 
      }
 
      // print_r($sql);die();
@@ -120,6 +145,36 @@ class inventario_onlineM
        return $datos;
 	}
 
+	function listar_rubro_bajas($query='')
+	{
+	
+	$cid = $this->conn;
+    // 'LISTA DE CODIGO DE ANEXOS
+     $sql = "SELECT Codigo+','+TC as 'Codigo',Detalle FROM Catalogo_SubCtas WHERE TC='G' AND Nivel='01' AND Periodo = '".$_SESSION['INGRESO']['periodo']."' AND Item = '".$_SESSION['INGRESO']['item']."' ";
+     if($query !='')
+     {
+     	$sql .=" AND Detalle+' '+Codigo LIKE '%[".$query."]%'"; 
+     }
+
+     // print_r($sql);die();
+     $sql.= "  ORDER BY Codigo ASC";
+          // print_r($sql);die();
+        $stmt = sqlsrv_query($cid, $sql);
+        $datos =  array();
+	   if( $stmt === false)  
+	   {  
+		 echo "Error en consulta PA.\n";  
+		 return '';
+		 die( print_r( sqlsrv_errors(), true));  
+	   }
+	    while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_ASSOC) ) 
+	   {
+		$datos[]=['id'=>$row['Codigo'],'text'=>utf8_encode($row['Detalle'])];
+		// $datos[]=['id'=>$row['Codigo'],'text'=>$row['Detalle']];		
+	   }
+       return $datos;
+	}
+	
 	function lista_entrega()
 	{
      $cid = $this->conn;
@@ -202,6 +257,118 @@ LEFT JOIN Catalogo_Cuentas C ON A.CTA_INVENTARIO = C.Codigo LEFT JOIN Catalogo_S
 	   }
 
 
+	}
+
+	function datos_asiento_SC()
+	{
+     $cid = $this->conn;
+    // 'LISTA DE CODIGO DE ANEXOS
+     $sql = "SELECT SUM(VALOR_TOTAL) as 'total',CONTRA_CTA,SUBCTA,Fecha_Fab,TC FROM Asiento_K  WHERE Item = '".$_SESSION['INGRESO']['item']."' AND CodigoU = '".$_SESSION['INGRESO']['Id']."' GROUP BY CONTRA_CTA,Fecha_Fab,TC,SUBCTA";
+          // print_r($sql);die();
+        $stmt = sqlsrv_query($cid, $sql);
+        $datos =  array();
+	   if( $stmt === false)  
+	   {  
+		 echo "Error en consulta PA.\n";  
+		 return '';
+		 die( print_r( sqlsrv_errors(), true));  
+	   }
+	    while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_ASSOC) ) 
+	   {
+		$datos[]=$row;	
+	   }
+       return $datos;
+	}
+
+	function cuenta_existente()
+	{
+		 $cid = $this->conn;
+		 $sql="SELECT CP.Codigo as 'Codigo'  FROM Ctas_Proceso CP WHERE CP.Item = '".$_SESSION['INGRESO']['item']."' AND CP.Periodo = '".$_SESSION['INGRESO']['periodo']."' AND CP.Detalle = 'Cta_Desperdicio'";
+		 // print_r($sql);die();
+        $stmt = sqlsrv_query($cid, $sql);
+        $datos =  array();
+	   if( $stmt === false)  
+	   {  
+		 echo "Error en consulta PA.\n";  
+		 return '';
+		 die( print_r( sqlsrv_errors(), true));  
+	   }
+	    while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_ASSOC) ) 
+	   {
+		$datos[]=$row;	
+	   }
+	   if (count($datos)>0) {
+	   	   $sql1="SELECT Codigo FROM Catalogo_Cuentas WHERE Codigo = '".$datos[0]['Codigo']."' AND  Item = '".$_SESSION['INGRESO']['item']."' AND Periodo = '".$_SESSION['INGRESO']['periodo']."' AND DG = 'D' ";
+
+        // print_r($sql1);die();
+        $stmt1 = sqlsrv_query($cid, $sql1);
+        $datos1 =  array();
+	   if( $stmt1 === false)  
+	   {  
+		 echo "Error en consulta PA.\n";  
+		 return '';
+		 die( print_r( sqlsrv_errors(), true));  
+	   }
+	    while( $row1 = sqlsrv_fetch_array( $stmt1, SQLSRV_FETCH_ASSOC) ) 
+	   {
+		$datos1[]=$row1;	
+	   }
+	   if(count($datos1)>0)	   {
+
+	     	$_SESSION['INGRESO']['CTA_DESPERDICIO'] = $datos1[0]['Codigo'];
+	   }else
+	   {
+	   	 return -2;
+	   }
+
+	   }else
+	   {
+	   	 return -1;
+	   }
+
+	}
+
+	function catalogo_cuentas($cuenta)
+	{
+
+		 $cid = $this->conn;
+    // 'LISTA DE CODIGO DE ANEXOS
+     $sql = "SELECT * FROM Catalogo_Cuentas  WHERE Item = '".$_SESSION['INGRESO']['item']."' AND Periodo = '".$_SESSION['INGRESO']['periodo']."' AND Codigo = '".$cuenta."'";
+          // print_r($sql);die();
+        $stmt = sqlsrv_query($cid, $sql);
+        $datos =  array();
+	   if( $stmt === false)  
+	   {  
+		 echo "Error en consulta PA.\n";  
+		 return '';
+		 die( print_r( sqlsrv_errors(), true));  
+	   }
+	    while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_ASSOC) ) 
+	   {
+		$datos[]=$row;	
+	   }
+       return $datos;
+	}
+	function catalogo_subcuentas($cuenta)
+	{
+
+		 $cid = $this->conn;
+    // 'LISTA DE CODIGO DE ANEXOS
+     $sql = "SELECT * FROM Catalogo_SubCtas   WHERE Item = '".$_SESSION['INGRESO']['item']."' AND Periodo = '".$_SESSION['INGRESO']['periodo']."' AND Codigo = '".$cuenta."'";
+          // print_r($sql);die();
+        $stmt = sqlsrv_query($cid, $sql);
+        $datos =  array();
+	   if( $stmt === false)  
+	   {  
+		 echo "Error en consulta PA.\n";  
+		 return '';
+		 die( print_r( sqlsrv_errors(), true));  
+	   }
+	    while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_ASSOC) ) 
+	   {
+		$datos[]=$row;	
+	   }
+       return $datos;
 	}
 
 }

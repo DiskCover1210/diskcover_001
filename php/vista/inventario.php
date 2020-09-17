@@ -12,6 +12,17 @@ require_once("chequear_seguridad_e.php");
 //require_once("../funciones/numeros_en_letras.php");
 $_SESSION['INGRESO']['modulo_']='03';
 //verificamos sesion sql
+if(isset($_GET['cuenta']))
+{
+	if($_GET['cuenta']=='-1')
+	{
+		echo '<script type="text/javascript">$(document).ready(function(){ Swal.fire("","Cuenta Cta_Desperdicio no encontrada","info"); });</script>';
+
+	}else if($_GET['cuenta']== '-2')
+	{
+		echo '<script type="text/javascript">$(document).ready(function(){ Swal.fire("","Asegurese que la cuenta sea de detalle","info"); });</script>';
+	}
+}
 if(isset($_SESSION['INGRESO']['IP_VPN_RUTA'])) 
 {
 	$database=$_SESSION['INGRESO']['Base_Datos'];

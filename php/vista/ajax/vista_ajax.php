@@ -1872,7 +1872,7 @@ function ingresar()
            ,'".$_SESSION['INGRESO']['item']."'
            ,'".$_SESSION['INGRESO']['CodigoU']."')";
 		   $stmt = sqlsrv_query( $cid, $sql);
-		   // echo $sql;
+		   echo $sql;
 			if( $stmt === false)  
 			{  
 				 echo "Error en consulta PA.\n";  

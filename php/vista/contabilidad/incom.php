@@ -1610,6 +1610,7 @@
 												"tipo_cue" : tipo_cue,
 												"cotizacion" : cotizacion,
 												"con" : con,
+												"t_no" : '1',
 												"ajax_page": 'ing1',
 												"cl": 'as_i'
 												
