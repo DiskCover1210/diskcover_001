@@ -49,8 +49,7 @@ if(isset($_SESSION['INGRESO']['IP_VPN_RUTA']))
 	<!-- <h3 class="box-title">Entidad </h3>-->
 		<div class="row">
 			<div class="col-xs-12">
-			 <div class="box">
-				</div>
+			
 				<!-- /.box-header -->
 				
 				<!-- /.box-body -->
@@ -62,6 +61,10 @@ if(isset($_SESSION['INGRESO']['IP_VPN_RUTA']))
 						if ($_SESSION['INGRESO']['accion']=='inventario_online') 
 						{
 							require_once("inventario/inventario_online.php");
+						}
+						if ($_SESSION['INGRESO']['accion']=='kardex_ing') 
+						{
+							require_once("inventario/kardex_ing.php");
 						}
 						
 					}else

@@ -156,19 +156,25 @@ function contruir_modulos($modulos)
             <div class="inner"><a href="'.$value['link'].'" style="color: #ffffff;">';
             if(strlen($value['apli'])<9)
             {
-            	$mod.= '<h3>'.$value['apli'].'</h3>';
+            	$mod.= '<h4><b>'.$value['apli'].'</b></h4>';
             }else
             {
-            	$mod.= '<h4>'.$value['apli'].'</h4>';
+            	$mod.= '<h4><b>'.$value['apli'].'</b></h4>';
 
             }
-              $mod.='<p>New Orders</p>
+              $mod.='<p>Modulo</p>
               </a>
             </div>
-            <div class="icon">
-              <i class="ion ion-bag"></i>
-            </div>
-            <a href="#" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>
+            <div class="icon">';
+            if($value['icono']!='.'){
+              $mod.='<i class="ion ion-plus" style="padding-right: 15px;"><img src="'.$value['icono'].'" class="icon" style="display:block;width:85%;margin-top: 35%;"></i>';
+            }else
+            {
+            	$mod.='<i class="ion ion-plus"></i>';
+            }
+
+            $mod.='</div>
+            <a href="#" class="small-box-footer">Click para ingresar <i class="fa fa-arrow-circle-right"></i></a>
           </div>
         </div>';        
         $pos+=1;
@@ -202,14 +208,18 @@ function contruir_todos_modulos()
                $mod.= '<h4 style="font-size: 30px;"><b>'.$value['Aplicacion'].'</b></h4>';
             }
 
-           $mod.='<p>New Orders</p>
+           $mod.='<p>Modulo</p>
            <a>
             </div>
-            <div class="icon">
-              <i class="ion ion-bag"></i>
-            </div>
-            <a href="#" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>
-          </div>
+            <div class="icon">';
+            if($value['icono']!='.'){
+              $mod.='<i class="ion ion-plus" style="padding-right: 15px;"><img src="'.$value['icono'].'" class="icon" style="display:block;width:85%;margin-top: 35%;"></i>';
+            }else
+            {
+            	$mod.='<i class="ion ion-plus"></i>';
+            }
+
+            $mod.='</div>
           </a>
         </div>';        
         $pos= $pos+1;
@@ -220,6 +230,8 @@ function contruir_todos_modulos()
         
 	}
 	return $mod;
+
+	//style="display:block; height:80%; width:100%;"
 
 }
 ?>

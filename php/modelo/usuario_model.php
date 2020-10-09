@@ -934,6 +934,7 @@ class usuario_model{
             $usuario[]=$filas;
 			//echo ' vvv '.$filas['IP_VPN_RUTA'];
         }
+        // print_r($usuario);die();
         return $usuario;
 
 	}

@@ -393,15 +393,21 @@ class anexos_transC
 			}
 		}
 		
-   $ruta = dirname(__DIR__,3).'/php/vista/TEMP/';
+   $ruta = '../../../php/vista/TEMP/';
+   $ruta1 = '../vista/TEMP/';
    $carpeta = "AT".$_SESSION['INGRESO']['item'];
+    if(!file_exists($ruta.$carpeta))
+     {
+       mkdir($ruta.''.$carpeta, 0777, true);
+     }
    $archivo = 'AT'.date('m',strtotime($FechaInicial)).''.date('Y',strtotime($FechaInicial)).'.xml';
    fopen($ruta.$carpeta.'/'.$archivo, 'w');
-   $url = $ruta.$carpeta.'/'.$archivo;
+   $url = $ruta1.$carpeta.'/'.$archivo;
+   // print_r($url);die();
 $xml = new XMLWriter();
 $xml->openMemory();
 // print_r(dirname(__DIR__,2));die();
-$xml->openUri(dirname(__DIR__,2).'/php/vista/TEMP/'.$carpeta.'/'.$archivo);
+$xml->openUri(dirname(__DIR__,3).'/php/vista/TEMP/'.$carpeta.'/'.$archivo);
 $xml->setIndent(true);
 $xml->setIndentString('	'); 
 $xml->startDocument('1.0', 'UTF-8');
@@ -1663,17 +1669,20 @@ return 1;
                   $this->pdf->Row($arr,4,'','',null,true); 
               }  
 
-          $ruta = '../../php/vista/TEMP/';
+          $ruta = '../../../php/vista/TEMP/';
+          $ruta1 = '../vista/TEMP/';
           $carpeta = "AT".$_SESSION['INGRESO']['item'];
           if(!file_exists($ruta.$carpeta))
           {
            mkdir($ruta.''.$carpeta, 0777, true);
           }
           $archivo ='AT'.date('m',strtotime($FechaIni)).''.date('Y',strtotime($FechaIni)).'.pdf';
+
+          // print_r($ruta."".$carpeta.'/'.$archivo);
           $this->pdf->Output('F',$ruta."".$carpeta.'/'.$archivo);
          // $this->pdf->Output();
           //print_r($ruta.$carpeta.'/'.$archivo);die();
-          $url = $ruta.$carpeta.'/'.$archivo;
+          $url = $ruta1.$carpeta.'/'.$archivo;
           return $url;
             
   }
