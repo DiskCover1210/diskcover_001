@@ -1440,7 +1440,14 @@ function ingresar()
 		$dconcepto1 = $_POST['dconcepto1'];
 		$codigo = $_POST['codigo'];
 		$cuenta = $_POST['cuenta'];
-		$t_no = $_POST['t_no'];
+		if(isset($_POST['t_no']))
+		{
+			$t_no = $_POST['t_no'];
+		}
+		else
+		{
+			$t_no = 1;
+		}
 		if(isset($_POST['efectivo_as']))
 		{
 			$efectivo_as = $_POST['efectivo_as'];
@@ -1571,7 +1578,7 @@ function ingresar()
 				('".$codigo."','".$cuenta."',".$parcial.",".$debe.",".$haber.",'".$chq_as."','".$dconcepto1."',
 				'".$efectivo_as."','.','.',0,".$t_no.",'".$_SESSION['INGRESO']['item']."','".$_SESSION['INGRESO']['CodigoU']."',".$A_No.")";
 			
-			
+			// print_r($sql);die();
 		   $stmt = sqlsrv_query( $cid, $sql);
 			if( $stmt === false)  
 			{  
@@ -2136,6 +2143,7 @@ function ingresar()
 		{
 			$_POST['cotizacion']=0;
 		}
+		$codigo_b='';
 		//echo $_POST['ru'].'<br>';
 		if($_POST['ru']=='000000000')
 		{
@@ -2146,7 +2154,8 @@ function ingresar()
 			//buscamos codigo
 			$sql=" 	SELECT Codigo
 					FROM Clientes
-					WHERE (CI_RUC = '".$_POST['ru']."') ";
+					WHERE((CI_RUC = '".$_POST['ru']."')) ";
+					// print_r($sql);die();
 			$stmt = sqlsrv_query( $cid, $sql);
 			if( $stmt === false)  
 			{  
@@ -2159,6 +2168,11 @@ function ingresar()
 				{
 					$codigo_b=$row[0];
 				}
+			}
+			//caso en donde se necesite guardar el codigo de usuario como codigo beneficiario de comprobante
+			if($codigo_b =='' or $codigo_b==null)
+			{
+				$codigo_b =$_POST['ru'];
 			}
 			//$codigo_b=$_POST['ru'];
 		}
@@ -2234,7 +2248,7 @@ function ingresar()
            ,'".date('h:i:s')."'
            ,'.'
            ,'.')";
-		    //echo $sql.'<br>';
+		    // echo $sql.'<br>';
 		    $stmt = sqlsrv_query( $cid, $sql);
 			if( $stmt === false)  
 			{  
@@ -2251,6 +2265,7 @@ function ingresar()
 					AND CodigoU = '".$_SESSION['INGRESO']['Id']."' ";
 			
 			$sql=$sql." ORDER BY A_No ";
+			// print_r($sql);
 			$stmt = sqlsrv_query( $cid, $sql);
 			if( $stmt === false)  
 			{  
@@ -2313,6 +2328,8 @@ function ingresar()
 				WHERE 
 					Item = '".$_SESSION['INGRESO']['item']."' 
 					AND CodigoU = '".$_SESSION['INGRESO']['Id']."' ";
+
+				//echo $sql;
 				$stmt = sqlsrv_query(   $cid, $sql);
 				if( $stmt === false)  
 				{  
@@ -2373,8 +2390,8 @@ function ingresar()
 							   ,'.'
 							   ,0)";
 						//echo $sql.'<br>';
-						$stmt = sqlsrv_query( $cid, $sql);
-						if( $stmt === false)  
+						$stmt1 = sqlsrv_query( $cid, $sql);
+						if( $stmt1 === false)  
 						{  
 							 echo "Error en consulta PA.\n";  
 							 die( print_r( sqlsrv_errors(), true));  
@@ -3936,7 +3953,7 @@ function reporte_com($com=null)
 			$sql=$sql."AND T.Periodo = Ca.Periodo ";
 			$sql=$sql."AND T.Cta = Ca.Codigo ";
 			$sql=$sql."ORDER BY T.ID,Debe DESC,T.Cta ";
-			//echo $sql;
+			// echo $sql;
 			$stmt2 = sqlsrv_query( $cid, $sql);
 			if( $stmt2 === false)  
 			{  

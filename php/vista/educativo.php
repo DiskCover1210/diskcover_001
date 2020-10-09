@@ -33,7 +33,6 @@ if(isset($_SESSION['INGRESO']['IP_VPN_RUTA']))
 			<div class="col-xs-12">
 			 <div class="box">
 				<div class="box-header">					
-				 
 				 </div>
 				</div>
 				<!-- /.box-header -->

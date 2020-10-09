@@ -60,6 +60,10 @@ if(isset($_SESSION['INGRESO']['IP_VPN_RUTA']))
 						{
 							require_once("empresa/niveles_seguri.php");
 						}
+						if ($_SESSION['INGRESO']['accion']=='mostrar_venci') 
+						{
+							require_once("empresa/mostrar_venci.php");
+						}
 						
 					}else
 					{

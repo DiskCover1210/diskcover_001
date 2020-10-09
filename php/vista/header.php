@@ -252,7 +252,7 @@ $("#datos").fadeIn();
         <?php } ?>
           <ul class="nav navbar-nav">
 
-
+s
         <!---------inicio de pestañas de empresa------------>
         <?php
      if(isset($_GET['mod'])){
@@ -263,7 +263,24 @@ $("#datos").fadeIn();
                 <a class="nav-link dropdown-toggle" id="archivo" data-toggle="dropdown" aria-haspopup="true" 
                 aria-expanded="false" style='padding-top: 5px;padding-bottom: 5px;'>Archivo</a>
                 <ul class="dropdown-menu" aria-labelledby="archivo">
-                  <li class="dropdown-submenu" style='width:100%;height=100%'>
+
+                    <li class="dropdown-submenu">
+                   <!--  <a id="de_operacion" class="dropdown-item dropdown-toggle" data-toggle="dropdown">De operación   <span class="glyphicon glyphicon-circle-arrow-right" aria-hidden="true"></span> -->
+                    <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" id="de_operacion" role="button" aria-haspopup="true" aria-expanded="false">De sistema  &nbsp;&nbsp;&nbsp;&nbsp;<span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></a>
+                    <!-- </a> -->
+                    <ul class="dropdown-menu" aria-labelledby="de_operacion">
+                      <li class="dropdown-item"><a href="contabilidad.php?mod=contabilidad&acc=ctaOperaciones&acc1=Ingresar Comprobantes&b=1">Ingreso catalogo de Cuentas <i  style=' float: right;' align="right">(CRTL+F6)</i></a></li>
+                      <li class="dropdown-item"><a href="empresa.php?mod=empresa&acc=cambioe&acc1=Modificar empresa&b=1">Modificar empresa</a></li>
+                      <li class="dropdown-item"><a href="empresa.php?mod=empresa&acc=niveles_seguri&acc1=Niveles de seguridad&b=1">Niveles de seguridad</a></li>
+                      <li class="dropdown-item"><a href="empresa.php?mod=empresa&acc=mostrar_venci&acc1=Resumen de periodo&b=1">Resumen de periodo</a></li>
+                      <li class="dropdown-item"><a href="contabilidad.php?mod=contabilidad&acc=campe&acc1=Cambio de periodo&b=1">Cambio de periodo</a></li>
+                    </ul>
+                  </li>
+
+
+
+
+                  <!-- <li class="dropdown-submenu" style='width:100%;height=100%'>
                     <a class="dropdown-toggle" id="del_sistema" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style='width:100%;'>
                     Del sistema 
                     <div style=' float: right;'><i class="fa fa-fw fa-chevron-circle-right" style=' float: right;' align="right"></i></div></a>
@@ -272,12 +289,13 @@ $("#datos").fadeIn();
                         <a href="#">
                           <div style=' float: left;'>Account Settings</div> 
                           <div style=' float: right;'><span class="glyphicon glyphicon-cog pull-right"></span></div>
-                        </a></li>
+                        </a>
+                      </li>
                       <li class="dropdown-item"><a href="empresa.php?mod=empresa&acc=cambioe&acc1=Modificar empresa&b=1">Modificar empresa</a></li>
                       <li class="dropdown-item"><a href="contabilidad.php?mod=contabilidad&acc=campe&acc1=Cambio de periodo&b=1">Cambio de periodo</a></li>
                        <li class="dropdown-item"><a href="empresa.php?mod=empresa&acc=niveles_seguri&acc1=Niveles de seguridad&b=1">Niveles de seguridad</a></li>
                     </ul>
-                  </li>
+                  </li> -->
                   <li class="dropdown-item"><a href="panel.php?sa=s"><span class="glyphicon glyphicon-chevron-left" aria-hidden="true">  Volver
                   </a></li>
                 </ul>
@@ -600,6 +618,8 @@ $("#datos").fadeIn();
                   <ul class="dropdown-menu" aria-labelledby="de_operacion">
                     <li class="dropdown-item"><a href="inventario.php?mod=Inventario&acc=inventario_online&acc1=Inventario online&b=1&po=subcu">
                     Ingreso online <i  style=' float: right;' align="right"></i></a></li>
+                    <li class="dropdown-item"><a href="inventario.php?mod=Inventario&acc=kardex_ing&acc1=Control de inventario&b=1&po=subcu">
+                    Control de Inventario(E/S) <i  style=' float: right;' align="right"></i></a></li>
                   </ul>
                 </li>
                 
