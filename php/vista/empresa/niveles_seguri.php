@@ -65,7 +65,8 @@ require_once("panel.php");
     			if(response)
     			 {
     			 	// console.log(response);
-    			 	$('#modu').html(response);
+    			 	$('#modu').html(response.body);
+            $('#tabs_titulo').html(response.header);
     			 	cargar_modulos_otros(empresas);
     					// $('#myModal_espera').modal('hide'); 
     			 }
@@ -94,11 +95,13 @@ require_once("panel.php");
     			 	$.each(response, function(i, item){
     			 		
     			 		$('#modulos_'+item.item+'_'+item.Modulo).prop('checked',true);
+              //  $('.nav-tabs a[href="#modulos_' + item.item+'_'+item.Modulo + '"]').tab('show'); 
+
+              //$('#panel_mo').load(' #panel_mo');
     			 		// console.log(item.Modulo);
     			 		// console.log(i);
     			 	}); 
 
-    			 	
     			 }
     		}
     	});
@@ -236,6 +239,7 @@ require_once("panel.php");
 
         		var res = cont.split(num_em[0]).join(num_em[num_em.length-1]);
         		var res = res.split('checked').join('');
+            var res = res.split('in active').join('');
         		$('#tab-content').html(cont+res); 
         		cargar_modulos_otros(num_em[num_em.length-1]);
         		// console.log(res);
@@ -364,13 +368,100 @@ function guardar()
     	});
 
  }
+ function guardarN()
+ {
+  var usu=$('#txt_usu').val();
+  var cla=$('#txt_cla').val();
+  var nom=$('#txt_nom').val();
+  var ced=$('#txt_ced').val();
+  var ent=$('#ddl_entidad').val();
+  var parametros = 
+  {
+    'usu':usu,
+    'cla':cla,
+    'nom':nom,
+    'ced':ced,
+    'ent':ent,
+  }
+  if(ent != "")
+  {
+   if(usu=='' || cla == '' || nom== '' || ced == '' )
+   {
+    Swal.fire({
+      type: 'info',
+      title: 'Llene todo los campos!',
+      showConfirmButton: true});
+   }else
+   {
+      $.ajax({
+        data:  {parametros:parametros},
+        url:   '../controlador/niveles_seguriC.php?nuevo_usuario=true',
+        type:  'post',
+        dataType: 'json',
+        beforeSend: function () { 
+          $('#myModal_espera').modal('show'); 
+        },
+        success:  function (response) { 
+          if (response == 1)
+           {
+
+          $('#myModal_espera').modal('hide'); 
+             Swal.fire({
+                 type: 'success',
+                 title: 'Usuario Creado!',
+                 showConfirmButton: true});
+          $('#myModal').modal('hide'); 
+           }else if(response == -2)
+           {
+
+          $('#myModal_espera').modal('hide'); 
+            Swal.fire({
+              type: 'info',
+              title: 'Usuario y Clave existente!',
+              showConfirmButton: true});
+
+           }
+           else if(response == -3)
+           {
+
+          $('#myModal_espera').modal('hide'); 
+            Swal.fire({
+              type: 'info',
+              title: 'Nuevo Usuario no registrar en base de datos de la entidad!',
+              showConfirmButton: true});
+
+           }else
+           {
+
+          $('#myModal_espera').modal('hide'); 
+             Swal.fire({
+              type: 'error',
+              title: 'Surgio un problema intente mas tarde!',
+              showConfirmButton: true});
+
+           }
+          
+        }
+      });
+
+
+   }
+ }else
+ {
+  Swal.fire({
+              type: 'error',
+              title: 'Selecione una entidad!',
+              showConfirmButton: true});
+ }
+
+ }
 </script>
 
 <div class="container">
   <div class="row">
     <div class="col-lg-7 col-sm-10 col-md-8 col-xs-12"> 
     <div class="col-xs-2 col-md-1 col-sm-1 col-lg-1">
-      <a  href="./contabilidad.php?mod=contabilidad#" title="Salir de modulo" class="btn btn-default">
+      <a  href="./empresa.php?mod=empresa#" title="Salir de modulo" class="btn btn-default">
         <img src="../../img/png/salire.png">
      </a>
     </div>    
@@ -425,11 +516,16 @@ function guardar()
  <div class="row">
 	<div class="col-sm-4">
 		<b>Entidad</b> <br>
-		<select class="form-control" id="ddl_entidad" onchange="cargar_empresas();"></select>
+		<select class="form-control" id="ddl_entidad" onchange="cargar_empresas();"><option value="">Seleccione entidad</option></select>
 	</div>
-	<div class="col-sm-4">
-		<b>Usuario</b> <br>
-		<select class="form-control" id="ddl_usuarios" onchange="buscar_permisos();"></select>
+	<div class="col-sm-4">    
+   <b>Usuario</b> <br>
+    <div class="input-group">
+        <select class="form-control input" id="ddl_usuarios" onchange="buscar_permisos();"  style="width:50%"></select>
+        <div class="input-group-btn">
+          <button type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#myModal"><span class="fa fa-plus"></span> Nuevo</button>
+        </div>
+      </div>
 	</div>
 	<div class="col-sm-4">
 		<div class="col-sm-6">
@@ -484,17 +580,47 @@ function guardar()
  			      <label class="checkbox-inline"><input type="checkbox" name="modulos[]" value="03"><b>Activo</b></label> -->
  				</form>
 			 </div>
-	    </div> 		
+	    </div> 
+      <ul class="nav nav-tabs" id="tabs_titulo">
+    </ul> 		
  	</div>
  	<div class="col-sm-6">
  		<div class="panel panel-default">
 			 <div class="panel-heading" style="padding: 5px"><b>Modulos</b></div>
 			 <div class="panel-body" id="modu">
 			 	<div>No a seleccionado ninguna empresa</div>
-			 	<ul class="nav nav-tabs" id="tabs_titulo">
-			 	</ul>
+			 	<!-- <ul class="nav nav-tabs" id="tabs_titulo">
+			 	</ul> -->
  		    </div>
  		</div>
  	</div>
  </div>  
 </div><br>
+
+<div id="myModal" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+
+    <!-- Modal content-->
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h4 class="modal-title">Nuevo usuario</h4>
+      </div>
+      <div class="modal-body">
+        <b>Usuario</b><br>
+        <input type="text" name="" id="txt_usu" class="form-control">
+        <b>Clave</b><br>
+        <input type="text" name="" id="txt_cla" class="form-control">
+        <b>Nombre completo</b><br>
+        <input type="text" name="" id="txt_nom" class="form-control">
+        <b>Cedula</b><br>
+        <input type="text" name="" id="txt_ced" class="form-control">
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-success" onclick="guardarN()">Guardar</button>
+      </div>
+    </div>
+
+  </div>
+</div>

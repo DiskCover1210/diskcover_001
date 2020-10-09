@@ -42,8 +42,8 @@ class niveles_seguriM
 		 	$consulta=$cid->query($sql) or die($cid->error);
 		 	while($filas=$consulta->fetch_assoc())
 			{
-				$datos[]=['id'=>$filas['ID_Empresa'],'text'=>utf8_encode($filas['Nombre_Entidad'])];	
-				// $datos[]=['id'=>$filas['ID_Empresa'],'text'=>$filas['Nombre_Entidad']];				
+				// $datos[]=['id'=>$filas['ID_Empresa'],'text'=>utf8_encode($filas['Nombre_Entidad'])];	
+				$datos[]=['id'=>$filas['ID_Empresa'],'text'=>$filas['Nombre_Entidad']];				
 			}
 		 }
 
@@ -79,7 +79,8 @@ class niveles_seguriM
 		 	$consulta=$cid->query($sql) or die($cid->error);
 		 	while($filas=$consulta->fetch_assoc())
 			{
-				$datos[]=['id'=>$filas['ID'],'text'=>utf8_encode($filas['Empresa']),'host'=>$filas['IP_VPN_RUTA'],'usu'=>$filas['Usuario_DB'],'base'=>$filas['Base_Datos'],'Puerto'=>$filas['Puerto'],'Item'=>$filas['Item']];				
+				// $datos[]=['id'=>$filas['ID'],'text'=>utf8_encode($filas['Empresa']),'host'=>$filas['IP_VPN_RUTA'],'usu'=>$filas['Usuario_DB'],'base'=>$filas['Base_Datos'],'Puerto'=>$filas['Puerto'],'Item'=>$filas['Item']];	
+				$datos[]=['id'=>$filas['ID'],'text'=>$filas['Empresa'],'host'=>$filas['IP_VPN_RUTA'],'usu'=>$filas['Usuario_DB'],'base'=>$filas['Base_Datos'],'Puerto'=>$filas['Puerto'],'Item'=>$filas['Item']];				
 			}
 		 }
 
@@ -96,7 +97,8 @@ class niveles_seguriM
 		 	$consulta=$cid->query($sql) or die($cid->error);
 		 	while($filas=$consulta->fetch_assoc())
 			{
-				$datos[]=['id'=>$filas['CI_NIC'],'text'=>utf8_encode($filas['Nombre_Usuario']),'CI'=>$filas['CI_NIC'],'usuario'=>$filas['Usuario'],'clave'=>$filas['Clave']];				
+				// $datos[]=['id'=>$filas['CI_NIC'],'text'=>utf8_encode($filas['Nombre_Usuario']),'CI'=>$filas['CI_NIC'],'usuario'=>$filas['Usuario'],'clave'=>$filas['Clave']];
+				$datos[]=['id'=>$filas['CI_NIC'],'text'=>$filas['Nombre_Usuario'],'CI'=>$filas['CI_NIC'],'usuario'=>$filas['Usuario'],'clave'=>$filas['Clave']];					
 			}
 		 }
 
@@ -262,6 +264,86 @@ class niveles_seguriM
 	  	   mysqli_close($cid);
 	  	   return 1;
 	   }
+	}
+
+	function nuevo_usuario($parametros)
+	{
+		  $cid = Conectar::conexion('MYSQL');
+	   $sql = "INSERT INTO acceso_usuarios (TODOS,Clave,Usuario,CI_NIC,ID_Empresa,Nombre_Usuario) VALUES (1,'".$parametros['cla']."','".$parametros['usu']."','".$parametros['ced']."','".$parametros['ent']."','".$parametros['nom']."')";
+	   if($cid)
+	   {
+	   	 $resultado = mysqli_query($cid, $sql);
+	  	   if(!$resultado)
+	  		{
+	  			echo "Error: " . $sql . "<br>" . mysqli_error($cid);
+	  			return -1;
+	  		}
+
+	  	    mysqli_close($cid);
+	  		if($this->crear_como_cliente_SQLSERVER($parametros)==1)
+	  		{
+	  			return 1;
+	  		}else
+	  		{
+	  			return -3;
+	  		}
+	   }
+	}
+
+	function crear_como_cliente_SQLSERVER($parametros)
+	{
+		$registrado = true;
+		$cid = Conectar::conexion('MYSQL');
+		$sql= "SELECT DISTINCT Base_Datos,Usuario_DB,Contrasena_DB,IP_VPN_RUTA,Tipo_Base,Puerto  FROM lista_empresas WHERE ID_Empresa = '".$parametros['ent']."' AND Base_Datos <>'.'";
+		 if($cid)
+		 {
+		 	$consulta=$cid->query($sql) or die($cid->error);
+		 	while($filas=$consulta->fetch_assoc())
+			{
+				$datos[] =$filas;			
+			}
+		 }
+		 foreach ($datos as $key => $value) {
+		 	//print_r($value);die();
+		 	$cid2 = Conectar:: modulos_sql_server($value['IP_VPN_RUTA'],$value['Usuario_DB'],$value['Contrasena_DB'],$value['Base_Datos'],$value['Puerto']);
+		 	$sql = "INSERT INTO Clientes(T,FA,Codigo,Fecha,Cliente,TD,CI_RUC,FactM,Descuento,RISE,Especial)VALUES('N',0,'".$parametros['ced']."','".date('Y-m-d')."','".$parametros['nom']."','C','".$parametros['ced']."',0,0,0,0)";
+		 	$stmt = sqlsrv_query($cid2, $sql);
+	        if($stmt === false)  
+	        	{  
+	        		echo "Error en consulta PA.\n";
+	        		return -1;
+		           die( print_r( sqlsrv_errors(), true));  
+	            }else
+	            {
+	            	cerrarSQLSERVERFUN($cid2);
+	            	//return 1;
+	            }      
+		 }
+	     return 1;
+
+	}
+
+	function usuario_existente($usuario,$clave,$entidad)
+	{
+	   $cid = Conectar::conexion('MYSQL');
+	   $sql = "SELECT * FROM acceso_usuarios WHERE Usuario = '".$usuario."' AND Clave = '".$clave."' AND ID_Empresa = '".$entidad."'";
+	   $datos=array();
+		 if($cid)
+		 {
+		 	$consulta=$cid->query($sql) or die($cid->error);
+		 	while($filas=$consulta->fetch_assoc())
+			{
+				$datos[] =$filas;			
+			}
+		 }
+	  
+		 if(count($datos)>0)
+		 {
+		 	return 1;
+		 }else
+		 {
+		 	return -1;
+		 }
 	}
 	
 }

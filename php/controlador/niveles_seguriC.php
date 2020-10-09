@@ -45,6 +45,11 @@ if(isset($_GET['bloqueado']))
 	$parametros=$_POST['parametros'];
 	echo json_encode($controlador->bloqueado_usurio($parametros));
 }
+if(isset($_GET['nuevo_usuario']))
+{
+	$parametros=$_POST['parametros'];
+	echo json_encode($controlador->nuevo_usurio($parametros));
+}
 class niveles_seguriC
 {
 	private $modelo;
@@ -144,7 +149,7 @@ class niveles_seguriC
 
 			}			
 		}
-		$contenido = '<ul class="nav nav-tabs" id="tabs_titulo">'.$tabs.' </ul><div class="tab-content" id="tab-content">'.$items.'</div>';
+		$contenido = array('header'=>$tabs,'body'=>'<div class="tab-content" id="tab-content">'.$items.'</div>');
 		// print_r($contenido);die();		
 		return $contenido;
 
@@ -188,6 +193,32 @@ class niveles_seguriC
 	{
 		$rest = $this->modelo->bloquear_usuario($parametros['entidad'],$parametros['usuario']);
 		return $rest;
+
+	}
+	function nuevo_usurio($parametros)
+	{
+		// print_r($parametros);die();
+		$existe = $this->modelo->usuario_existente($parametros['usu'],$parametros['cla'],$parametros['ent']);
+		if($existe == 1)
+		{
+			return -2;
+		}else
+		{
+			$op = $this->modelo->nuevo_usuario($parametros);
+			if($op==1)
+			{
+				return 1;
+			}else if($op == -3)
+			{
+				return -3;
+			}
+			else
+			{
+				return -1;
+			}			
+		}
+		// $rest = $this->modelo->nuevo_usuario();
+		// return $rest;
 
 	}
 
