@@ -292,27 +292,28 @@ require_once("panel.php");
             	 <a href="#" class="btn btn-default" id='descargar_pdf' title="Descargar PDF">
             		<img src="../../img/png/impresora.png">
             	</a>
+            	<a href="#"  class="btn btn-default" title="Descargar excel" id='descargar_excel'>
+            		<img src="../../img/png/table_excel.png">
+            	</a>
             	<button title="Consultar SubModulo"  class="btn btn-default" onclick="consultar_datos();">
             		<img src="../../img/png/archivero1.png" >
             	</button>
             	<a href="" title="Presenta Resumen de costos"  class="btn btn-default">
             		<img src="../../img/png/resumen.png">
             	</a>
-            	<a href="#"  class="btn btn-default" title="Descargar excel" id='descargar_excel'>
-            		<img src="../../img/png/table_excel.png">
-            	</a>
+            	
 	  	     </div>
 	  	<div class="col-sm-5">
 	  		<div class="row">
 	  			<div class="col-xs-4">
              		<b>Desde:</b>
              		<br>
-             	   <input type="date" style="width:125px" name="txt_desde" id="txt_desde" value="<?php echo date("Y-m-d");?>" onblur="consultar_datos();">
+             	   <input type="date" style="width:125px" name="txt_desde" id="txt_desde" value="<?php echo date("Y-m-d");?>" onkeyup="validar_year_mayor(this.id)" onblur="validar_year_menor(this.id);consultar_datos();">
              	</div>
                 <div class="col-xs-4">
              	   <b>Hasta:</b>
              	<br>
-             	   <input type="date" style="width:125px" name="txt_hasta" id="txt_hasta" value="<?php echo date("Y-m-d");?>" onblur="consultar_datos();"> 
+             	   <input type="date" style="width:125px" name="txt_hasta" id="txt_hasta" value="<?php echo date("Y-m-d");?>" onkeyup="validar_year_mayor(this.id)" onblur="validar_year_menor(this.id);consultar_datos();"> 
              	</div>             	
              	<div class="col-xs-3">
              	<br>

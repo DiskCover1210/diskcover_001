@@ -28,25 +28,25 @@
     	partes = $fecha.split('-');
     	var fecha = new Date();
         var ano = fecha.getFullYear();
-    	if(partes[0] <= (ano+10))
+    	if(partes[0] <= (ano+30) && partes[0]>1999)
     	{
     		console.log(ano+10);
-    	  var date = new Date($fecha);
-    	  var primerDia = new Date(date.getFullYear(), date.getMonth(), 1);
-    	  var ultimoDia = new Date(partes[0],partes[1],0);
-    	  var mes= date.getMonth()+1;
-    	  console.log(ultimoDia);
+    	    var date = new Date($fecha);
+    	    var primerDia = new Date(date.getFullYear(), date.getMonth(), 1);
+    	    var ultimoDia = new Date(partes[0],partes[1],0);
+    	    var mes= date.getMonth()+1;
+    	    console.log(ultimoDia);
 
-    	  if(mes <10)
-    	  {
-    		  mes = '0'+mes;
-    	  }
-    	  $('#hasta').val(partes[0]+"-"+partes[1]+"-"+ultimoDia.getDate());
-    	  consultar_datos();
-       }else
-       {
-       	alert('La fecha no puede ser mayor a '+(ano+10));
-       }
+    	    if(mes <10)
+    	    {
+    		    mes = '0'+mes;
+    	    }
+    	    $('#hasta').val(partes[0]+"-"+partes[1]+"-"+ultimoDia.getDate());
+    	    consultar_datos();
+        }else
+        {
+       	 alert('Procure que la fecha no sea mayor a '+(ano+30)+' y menor a 2000');
+        }
  
 
     }
@@ -251,15 +251,13 @@
    		</div>
    		
    	</div>
-	<div class="row">          
-              
-	  	
+	<div class="row">   	  	
 	  	<div class="col-sm-3"><br>
 	  		<b>Desde:</b>
-            <input type="date" name="desde" id="desde" class="input-sm"  value="<?php echo date("Y-m-d");?>" onblur="fecha_fin()">
+            <input type="date" name="desde" id="desde" class="input-sm"  value="<?php echo date("Y-m-d");?>" onblur="validar_year_menor(this.id);fecha_fin()" onkeyup="validar_year_mayor(this.id)">
 			<br>
             <b>Hasta:&nbsp;</b>
-            <input type="date" name="hasta" id="hasta"  class="input-sm"  value="<?php echo date("Y-m-d");?>" onblur="consultar_datos(true,Individual);">  	              	
+            <input type="date" name="hasta" id="hasta"  class="input-sm"  value="<?php echo date("Y-m-d");?>" onblur="validar_year_menor(this.id);consultar_datos(true,Individual);" onkeyup="validar_year_mayor(this.id)">  	              	
 	  	</div>
 
 	  	<div class="col-sm-3">

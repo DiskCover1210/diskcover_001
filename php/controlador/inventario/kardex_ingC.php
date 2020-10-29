@@ -59,6 +59,74 @@ if(isset($_GET['marca']))
 {
   echo  json_encode($controlador->marca());
 }
+if(isset($_GET['detalle_articulos']))
+{
+  $parametros = $_POST['parametros'];
+  echo  json_encode($controlador->producto_detalle($parametros));
+}
+if(isset($_GET['DCRetIBienes']))
+{
+  // $parametros = $_POST['DCRetIBienes'];
+  echo  json_encode($controlador->DCRetIBienes());
+}
+if(isset($_GET['DCRetISer']))
+{
+  // $parametros = $_POST['DCRetIBienes'];
+  echo  json_encode($controlador->DCRetISer());
+}
+if(isset($_GET['DCSustento']))
+{
+   $parametros = $_POST['parametros'];
+  echo  json_encode($controlador->DCSustento($parametros));
+}
+if(isset($_GET['DCDctoModif']))
+{
+  // $parametros = $_POST['DCRetIBienes'];
+  echo  json_encode($controlador->DCDctoModif());
+}
+if(isset($_GET['DCPorcenIva']))
+{
+   $parametros = $_POST['parametros'];
+  echo  json_encode($controlador->DCPorcenIva($parametros));
+}
+if(isset($_GET['DCPorcenIce']))
+{
+   $parametros = $_POST['parametros'];
+  echo  json_encode($controlador->DCPorcenIce($parametros));
+}
+if(isset($_GET['DCTipoPago']))
+{
+  // $parametros = $_POST['DCRetIBienes'];
+  echo  json_encode($controlador->DCTipoPago());
+}
+
+if(isset($_GET['DCRetFuente']))
+{
+  // $parametros = $_POST['DCRetIBienes'];
+  echo  json_encode($controlador->DCRetFuente());
+}
+if(isset($_GET['DCConceptoRet']))
+{
+   $parametros = $_POST['parametros'];
+  echo  json_encode($controlador->DCConceptoRet($parametros));
+}
+if(isset($_GET['DCPais']))
+{
+  // $parametros = $_POST['DCRetIBienes'];
+  echo  json_encode($controlador->DCPais());
+}
+if(isset($_GET['DCTipoComprobante']))
+{
+   $parametros = $_POST['parametros'];
+  echo  json_encode($controlador->DCTipoComprobante($parametros));
+}
+
+if(isset($_GET['DCBenef_Data']))
+{
+   $parametros = $_POST['parametros'];
+  echo  json_encode($controlador->DCBenef_Data($parametros));
+}
+
 class kardex_ingC
 {
 	private $modelo;
@@ -78,6 +146,62 @@ class kardex_ingC
 		$datos = $this->modelo->Producto($fami,$query,$opciones);
 		return $datos;
 	}
+  function producto_detalle($parametros)
+  {
+    $opciones = $this->ReadSetDataNum("PorCodigo", True, False); 
+    $CodigoInv ='';
+    $porc_iva=0;
+    $fami = $parametros['fami'];
+    $evaluar = False;
+    if($opciones==1) {
+      $CodigoInv=$parametros['nom'];
+    }else
+    {
+      $CodigoInv=$parametros['arti'];
+    }
+
+    $datos = $this->modelo->producto_detalle($fami,$CodigoInv,'','','',$opciones);
+    if(count($datos)>0)
+    {
+       $CodigoInv = $datos[0]["Codigo_Inv"];
+       $evaluar = True;
+    }else
+    {
+      $datos = $this->modelo->producto_detalle($fami,'',$CodigoInv,'','',$opciones);
+      if (count($datos)>0) 
+      {
+         $CodigoInv = $datos[0]["Codigo_Inv"];
+         $evaluar = True;        
+      }else
+      {
+         $datos = $this->modelo->producto_detalle($fami,'','',$CodigoInv,'',$opciones);
+         //print_r($datos);die();
+         if (count($datos)>0) 
+         {
+
+          $CodigoInv = $datos["Codigo_Inv"];
+          $evaluar = True;
+          
+         }else
+         {
+           $evaluar = False;
+         }
+
+      }
+    }
+     $datos1 = $this->modelo->producto_detalle($fami,'','','',$CodigoInv,$opciones);
+     $iva = $this->modelo->Tabla_Por_ICE_IVA();
+     if(count($iva)>0)
+     {
+      $porc_iva = ($iva[0]['Porc']/100);
+     }
+     $datos_art = array();
+     if (count($datos1)>0) {
+      // print_r($datos1);die();
+       $datos_art = array('si_no' =>$datos1['IVA'] ,'unidad'=>$datos1['Unidad'],'producto'=>$datos1['Producto'],'cta_inventario'=>$datos1['Cta_Inventario'],'contra_cta1'=>$datos1['Cta_Costo_Venta'],'registrosani'=>$datos1['Reg_Sanitario'],'codigo'=>$datos['Codigo_Inv']);
+     }
+    return $datos_art;
+  }
   function contracuenta($query)
   {
     $datos = $this->modelo->contracuenta($query);
@@ -220,5 +344,109 @@ class kardex_ingC
     // print_r($NumCodigo);die();
     return $NumCodigo;
 	}
+  function DCRetIBienes()
+  {
+    $datos = $this->modelo->DCRetIBienes();
+    // print_r($datos);die();
+    return $datos;
+  }
+  function DCRetISer()
+  {
+    $datos = $this->modelo->DCRetISer();
+     // print_r($datos);die();
+    return $datos;
+  }
+   function DCSustento($parametros)
+  {
+    $fecha = $parametros['fecha'];
+    $datos = $this->modelo->DCSustento($fecha);
+     // print_r($datos);die();
+    return $datos;
+  }
+   function DCDctoModif()
+  {
+    $datos = $this->modelo->DCDctoModif();
+     // print_r($datos);die();
+    return $datos;
+  }
+   function DCPorcenIva($parametros)
+  {
+    $fecha = $parametros['fecha'];
+    $datos = $this->modelo->DCPorcenIva($fecha);
+     // print_r($datos);die();
+    return $datos;
+  }
+  function DCPorcenIce($parametros)
+  {
+    $fecha = $parametros['fecha'];
+    $datos = $this->modelo->DCPorcenIce($fecha);
+     // print_r($datos);die();
+    return $datos;
+  }
+   function DCTipoPago()
+  {
+    $datos = $this->modelo->DCTipoPago();
+     // print_r($datos);die();
+    return $datos;
+  }
+     function DCRetFuente()
+  {
+    $datos = $this->modelo->DCRetFuente();
+     // print_r($datos);die();
+    return $datos;
+  }
+  function DCConceptoRet($parametros)
+  {
+    $fecha = $parametros['fecha'];
+    $datos = $this->modelo->DCConceptoRet($fecha);
+     // print_r($datos);die();
+    return $datos;
+  }
+  function DCPais()
+  {
+    $datos = $this->modelo->DCPais();
+     // print_r($datos);die();
+    return $datos;
+  }
+   function DCTipoComprobante($parametros)
+  {
+    // print_r($parametros);die();
+    $cadena = '';
+    $datos = $this->modelo->DCSustento($parametros['fecha']);
+    if(count($datos)>0)
+    {
+      $datos = $this->modelo->DCSustento($parametros['fecha'],$parametros['DCSustento']);
+      if(count($datos)>0)
+      {
+         $cadena = $datos[0]['Codigo_Tipo_Comprobante'];
+         $cadena = str_replace(' ',',',$cadena);
+      }
+    }
+    // print_r($cadena);die();
+    $datos = $this->modelo->DCTipoComprobante($cadena,$parametros['TipoBenef']);
+     // print_r($datos);die();
+    return $datos;
+  }
+     
+  function DCBenef_Data($parametros)
+  {
+    // print_r($parametros);
+    $datos = $this->modelo->ListarProveedorUsuario($parametros['cta'],$parametros['contra'],$parametros['DCBenef']);
+    if(count($datos)>0)
+    {
+    if($datos[0]['tipodoc']=='R')
+    {
+       $datos = array_merge($datos[0], array('si_no'=>FALSE));
+     // array_push($datos, array('si_no'=>FALSE ));
+    }
+  }else
+  {
+     $datos = array_merge($datos[0], array('si_no'=>FALSE));
+     // array_push($datos,array('si_no' =>FALSE));
+  }
+  
+   // print_r($datos);die();
+    return $datos;
+  }
 }
 ?>

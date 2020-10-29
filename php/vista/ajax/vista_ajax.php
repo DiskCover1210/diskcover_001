@@ -8,7 +8,11 @@ require_once("../../funciones/funciones_ajax.php");
 require_once("../../../lib/excel/plantilla.php");
 require_once("../../../lib/fpdf/reporte_comp.php");
 require_once("../../funciones/numeros_en_letras.php");
+
+
+
 //caso comprobantes aprobados codigo para buscar los comprobantes
+
 if(isset($_POST['ajax_page']) ) 
 {
 	//buscar comprobante
@@ -24,6 +28,7 @@ if(isset($_POST['ajax_page']) )
 	//verificar ciudad
 	if($_REQUEST['ajax_page']=='ciudad')
 	{
+		// print_r('expression');die();
 		validarCiu();
 	}
 	//verificar entidad
@@ -1528,6 +1533,7 @@ function ingresar()
 		AND (CodigoU = '".$_SESSION['INGRESO']['CodigoU']."') AND (DEBE = '".$va."') 
 		AND T_No=".$_SESSION['INGRESO']['modulo_']." 
 		ORDER BY A_No ASC ";
+		//print_r($sql);die();
 		$stmt = sqlsrv_query( $cid, $sql);
 		if( $stmt === false)  
 		{  
@@ -1879,7 +1885,7 @@ function ingresar()
            ,'".$_SESSION['INGRESO']['item']."'
            ,'".$_SESSION['INGRESO']['CodigoU']."')";
 		   $stmt = sqlsrv_query( $cid, $sql);
-		   echo $sql;
+		   //echo $sql;
 			if( $stmt === false)  
 			{  
 				 echo "Error en consulta PA.\n";  
@@ -4140,7 +4146,7 @@ function contar_reg($stmt,$detalle=null)
 }
 //validar usuario en login
 function validarUser(){
-	 
+	$respuesta = '';	 
 	//$cid=cone_ajaxMYSQL();
 	$cid = Conectar::conexion('MYSQL');
 	if($cid!=null)
@@ -4156,28 +4162,32 @@ function validarUser(){
 		{
 			//$_POST['MesNo']=0;
 			$sql="SELECT * FROM acceso_usuarios 
-			WHERE Usuario='".$_POST['user']."' AND ID_Empresa='".$_SESSION['INGRESO']['ID_Empresa']."'
+			WHERE Usuario='".$_POST['user']."' AND ID_Empresa='".$_SESSION['INGRESO']['ID_Empresa']." AND ID_Empresa<>0'
 			";
 			//echo $sql;
-			//die();
+			// die();
 			$consulta=$cid->query($sql) or die($cid->error);
 			//Realizamos un bucle para ir obteniendo los resultados
-			
+			//echo count($consulta->fetch_assoc());
+			//die();
 			while($filas=$consulta->fetch_assoc())
 			{
+				if($_SESSION['INGRESO']['Nombre_Entidad'] !='')
+				{
 				if(isset($_SESSION['TIPOCON']))
 				{
 					if($_SESSION['TIPOCON']==3)
 					{
-						echo '<div id="alerta" class="alert alert-success visible" align="center">"'.$_SESSION['INGRESO']['Nombre_Entidad'].'"</div>';
+						$respuesta =  '<div id="alerta" class="alert alert-success visible" align="center">"'.$_SESSION['INGRESO']['Nombre_Entidad'].'"</div>';
 					}
 					if($_SESSION['TIPOCON']==0)
 					{
-						echo '<div id="alerta" class="alert alert-success visible" align="center">'.$_SESSION['INGRESO']['Nombre_Entidad'].'</div>';
+						$respuesta =  '<div id="alerta" class="alert alert-success visible" align="center">'.$_SESSION['INGRESO']['Nombre_Entidad'].'</div>';
 					}
 				}
 				//echo '<div id="alerta" class="alert alert-success visible" align="center">ENTIDAD: '.$_SESSION['INGRESO']['Nombre_Entidad'].'</div>';
 				$i++;
+			  }
 			}
 		}
 		if($i==0)
@@ -4185,8 +4195,10 @@ function validarUser(){
 			//echo '<div id="alerta" class="alert alert-warning visible" align="center">Entidad no encontrada</div>';
 			if(isset($_SESSION['INGRESO']['Nombre_Entidad']))
 			{
-				echo "<script> 
-					document.getElementById('Correo').focus();
+				if($_SESSION['INGRESO']['Nombre_Entidad']!='')
+				{
+				$respuesta =  "<script> 
+					
 					Swal.fire({
 					  type: 'error',
 					  title: 'este usuario no pertenece a: ".$_SESSION['INGRESO']['Nombre_Entidad']."',
@@ -4194,11 +4206,12 @@ function validarUser(){
 					});
 					
 					</script>";
+				}
 			}
 			else
 			{
-				echo "<script> 
-					document.getElementById('Correo').focus();
+				$respuesta =  "<script> 
+					
 					Swal.fire({
 					  type: 'error',
 					  title: 'este usuario no pertenece a esta entidad',
@@ -4212,13 +4225,17 @@ function validarUser(){
 	}
 	else
 	{
-		 echo "<script> Swal.fire({
+		 $respuesta =  "<script> 
+
+		 Swal.fire({
 			  type: 'error',
 			  title: 'No se pudo realizar sesion, verifique conexion (2)',
 			  text: 'Error de conexion.'
 			});
+
 			</script>";
 	}
+	echo $respuesta;
 	
 }
 //verificar ciudad
@@ -4264,6 +4281,9 @@ function validarCiu()
 }
 //verificar entidad
 function validarEnt(){
+	 $respuesta ='';
+	 $_SESSION['INGRESO']['Nombre_Entidad']='';
+	 $_SESSION['INGRESO']['ID_Empresa']='';
 	 $retornar=false;
 	 $entidadfilter =preg_match("/^[0-9]{13}$/", $_POST['com']);
 	 $entidadfilter1 =preg_match("/^[0-9]{10}$/", $_POST['com']);
@@ -4273,6 +4293,7 @@ function validarEnt(){
 		 $cid = Conectar::conexion('MYSQL');
 		if($cid!=null)
 		{	
+
 			/* if ($cid>connect_errno) 
 			 {
 				 echo '<div id="alerta" class="alert alert-warning visible">Entidad no encontrada</div>';
@@ -4283,24 +4304,28 @@ function validarEnt(){
 			$sql = "SELECT *
 					  FROM entidad
 					  WHERE RUC_CI_NIC = '".$_POST['com']."';";
-			//echo $sql;
+			// echo $sql;
 			//die();
 			$consulta=$cid->query($sql) or die($cid->error);
 			//Realizamos un bucle para ir obteniendo los resultados
 			$i=0;
 			while($filas=$consulta->fetch_assoc())
 			{
+
+
 				$_SESSION['INGRESO']['Nombre_Entidad']=$filas['Nombre_Entidad'];
 				$_SESSION['INGRESO']['ID_Empresa']=$filas['ID_Empresa'];
+				$_SESSION['TIPOCON']='';
+				// print_r($_SESSION['INGRESO']['Nombre_Entidad']);
 				if(isset($_SESSION['TIPOCON']))
 				{
 					if($_SESSION['TIPOCON']==3)
 					{
-						echo '<div id="alerta" class="alert alert-success visible" align="center">"'.$_SESSION['INGRESO']['Nombre_Entidad'].'"</div>';
+						$respuesta= array('resp'=>'1','enti'=>$filas['Nombre_Entidad']);
 					}
 					if($_SESSION['TIPOCON']==0)
 					{
-						echo '<div id="alerta" class="alert alert-success visible" align="center">'.$_SESSION['INGRESO']['Nombre_Entidad'].'</div>';
+						$respuesta= array('resp'=>'1','enti'=>$filas['Nombre_Entidad']);
 					}
 				}
 				
@@ -4309,36 +4334,26 @@ function validarEnt(){
 			if($i==0)
 			{
 				//echo '<div id="alerta" class="alert alert-warning visible" align="center">Entidad no encontrada</div>';
-				echo "<script> Swal.fire({
-					  type: 'error',
-					  title: 'No se pudo realizar sesion(1)',
-					  text: 'Entidad no encontrada'
-					});
-					</script>";
+				$respuesta= array('resp'=>'2','enti'=>'');
 			}
 			$cid->close();
 		}
 		else
 		{
-			 echo "<script> Swal.fire({
-				  type: 'error',
-				  title: 'No se pudo realizar sesion, verifique conexion (2)',
-				  text: 'Error de conexion.'
-				});
-				</script>";
+			 // $respuesta="3";
+			 $respuesta= array('resp'=>'2','enti'=>'');
 		}
 	 }
 	 else
 	 {
 		 
 	  // echo '<div id="alerta" class="alert alert-danger visible" align="center">La entidad que ingresaste no tiene el formato correcto.</div>';
-	    echo "<script> Swal.fire({
-				  type: 'error',
-				  title: 'No se pudo realizar sesion',
-				  text: 'La entidad que ingresaste no tiene el formato correcto.(3)'
-				});
-				</script>";
+	    // $respuesta="-1";
+	    $respuesta= array('resp'=>'-1','enti'=>'');
 	 }
+	 // print_r($respuesta);die();
+	 echo json_encode($respuesta);
+	 // print_r($respuesta);
 }
 
 //cambiar periodo

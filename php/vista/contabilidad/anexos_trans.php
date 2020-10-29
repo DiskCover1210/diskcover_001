@@ -104,7 +104,7 @@ require_once("panel.php");
       { 
         // $('#home').html("<iframe style='width:100%; height:50vw; src='"+response+"' frameborder='0' allowfullscreen></iframe>");
         // $('#myModal_espera').modal('hide');  
-        $('#home').html("<iframe src="+response+" width='100%' height='500px' frameborder='0' allowfullscreen></iframe>");
+        $('#home').html("<iframe src="+response+'#zoom=150'+" width='100%' height='500px' frameborder='0' allowfullscreen></iframe>");
         $('#myModal_espera').modal('hide');
         var ar = response.split('\/');
         var co = ar.length;
@@ -126,7 +126,12 @@ require_once("panel.php");
 
 <div class="container-lg">
   <div class="row">
-    <div class="col-lg-6 col-sm-10 col-md-6 col-xs-12">     
+    <div class="col-lg-6 col-sm-10 col-md-6 col-xs-12"> 
+     <div class="col-xs-1 col-md-1 col-sm-1 col-lg-1">
+      <a  href="./contabilidad.php?mod=contabilidad#" title="Salir de modulo" class="btn btn-default">
+        <img src="../../img/png/salire.png">
+     </a>
+    </div>    
      <div class="col-xs-1 col-md-1 col-sm-1 col-lg-1">
        <button type="button" class="btn btn-default dropdown-toggle" title="Año" data-toggle="dropdown">
         <img src="../../img/png/year.png">
@@ -165,12 +170,7 @@ require_once("panel.php");
      <button title="RDEP"  class="btn btn-default" onclick="grabar_cuenta()">
        <img src="../../img/png/bc.png" >
      </button>
-   </div>
-   <div class="col-xs-1 col-md-1 col-sm-1 col-lg-1">
-      <a  href="./contabilidad.php?mod=contabilidad#" title="Salir de modulo" class="btn btn-default">
-        <img src="../../img/png/salire.png">
-     </a>
-    </div>
+   </div>  
  </div>
 </div>
 <div class="row">

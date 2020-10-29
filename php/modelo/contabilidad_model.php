@@ -684,7 +684,7 @@ class contabilidad_model{
 			$sql=$sql." AND Codigo <> '.' ";
 		}
 		$sql=$sql." ORDER BY Codigo ";
-		//echo $sql.' '.$_SESSION['INGRESO']['IP_VPN_RUTA'];
+		echo $sql;
 		$stmt = sqlsrv_query( $this->dbs, $sql);
 		if( $stmt === false)  
 		{  
@@ -695,6 +695,7 @@ class contabilidad_model{
 		if($opcr==null or $opcr==1)
 		{
 			grilla_generica($stmt,$ti,$camne,$b,null,null,null,true);
+			
 		}
 		if($opcr==2)
 		{
@@ -2122,6 +2123,7 @@ class contabilidad_model{
 	
 	function sp_Procesar_BalanceSQL($opc,$sucursal,$item,$periodo,$fechai,$fechaf,$bm,$cc)
 	{
+
 		//echo $filtro.' gg ';
 		/*
 			$server = "...the server address..."; 
@@ -2147,6 +2149,9 @@ class contabilidad_model{
 		//die();
 		//EXEC dbo.sp_Procesar_Balance  '003','.','20190101','20191231',0,0,0
 		//echo $fechai.' '.$fechaf;
+
+			// print_r('expression');die();
+			// print_r($cc);die();
 		$tsql_callSP = "{call sp_Procesar_Balance(?,?,?,?,?,?,?,?)}";
 		/*$params = array(
         array($opc, SQLSRV_PARAM_IN),
@@ -2227,6 +2232,7 @@ class contabilidad_model{
 			echo "Statement could not be prepared.\n";  
 			die(print_r(sqlsrv_errors(), true));  
 		} */
+		// print_r('expression');die();
 		if ($stmt = sqlsrv_prepare($this->dbs, $tsql_callSP, $params)) {
 			//echo "Statement prepared.<br><br>\n";  
 
@@ -2242,7 +2248,7 @@ class contabilidad_model{
 		}else{
 
 			//print_r(sqlsrv_fetch_array($stmt));
-			//print_r("ejecuto");
+			// print_r("ejecutos");
 		}
 		/*$stmt3 = sqlsrv_query( $this->dbs, $sql);
 		if( $stmt3 === false )
@@ -2453,6 +2459,86 @@ class contabilidad_model{
 	{
 		sqlsrv_close( $this->dbs );
 	}
+	function tipo_balance_()
+	{
+
+  		 $cid = Conectar::conexion();
+ 	$sql= "SELECT Codigo,Detalle from Catalogo_SubCtas 
+ 	       where (TC = 'CC')
+          AND Item = '".$_SESSION['INGRESO']['item']."' 
+          AND Periodo = '".$_SESSION['INGRESO']['periodo']."'
+          AND LEN(Codigo)=2 order by Detalle "; 
+          // print_r($sql);die();     
+
+        $stmt = sqlsrv_query($cid, $sql);
+	    $result = array();	
+	   while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_ASSOC) ) 
+	   {
+		$result[] = $row;
+	   }
+
+	   // print_r($result);die();
+
+  cerrarSQLSERVERFUN($cid);
+	   return $result;
+	}function sp_Reporte_Analitico_Mensual($tipo,$desde,$hasta)
+    {
+      $cid=cone_ajax();
+      $parametros = array(
+      array(&$tipo, SQLSRV_PARAM_IN),
+      array(&$_SESSION['INGRESO']['item'], SQLSRV_PARAM_IN),
+      array(&$_SESSION['INGRESO']['periodo'], SQLSRV_PARAM_IN),
+      array(&$_SESSION['INGRESO']['CodigoU'], SQLSRV_PARAM_IN),
+      array(&$desde, SQLSRV_PARAM_IN),
+      array(&$hasta, SQLSRV_PARAM_IN),
+      array(&$select,  SQLSRV_PARAM_OUT,SQLSRV_PHPTYPE_STRING(SQLSRV_ENC_CHAR), SQLSRV_SQLTYPE_VARCHAR)
+      );
+      //compos del SP de la base 
+      $sql="EXEC sp_Procesar_Balance_Analitico_Mensual @TipoBalance=?, @Item=?,@Periodo=?, @CodigoUsuario=?, @FechaDesde=?, @FechaHasta=?,@ListaMeses=? ";
+      // print_r($sql);die();
+      $stmt = sqlsrv_prepare($cid, $sql, $parametros);
+      if (!sqlsrv_execute($stmt)) {
+   
+         echo "Error en consulta PA.\n";         
+         $respuesta = array('respuesta' => -1,'query'=>'');
+         die( print_r( sqlsrv_errors(), true));
+         return $respuesta;  
+       die;
+      }
+      $respuesta = array('respuesta' => 1,'query'=>$select );
+        return $respuesta;
+      }
+
+     function Reporte_Analitico_Mensual_gilla($tipo,$query)
+     {
+         
+         // $conn = new Conectar();
+         $cid=cone_ajax();
+         $sql=$query." FROM Reporte_Analitico_Mensual
+         WHERE Item = '".$_SESSION['INGRESO']['item']."'
+         AND Periodo = '".$_SESSION['INGRESO']['periodo']."'
+         AND CodigoU ='".$_SESSION['INGRESO']['CodigoU']."'
+         AND TB = '".$tipo."'
+         ORDER BY Codigo_Aux;";
+
+         // print_r($sql);die();
+          $stmt = sqlsrv_query($cid, $sql);
+	   if( $stmt === false)  
+	   {  
+		 echo "Error en consulta PA.\n";  
+		 return '';
+		 die( print_r( sqlsrv_errors(), true));  
+	   }
+
+	  //guardamos la tabla en una variable y la retoernamos
+        $dato = grilla_generica($stmt,null,NULL,'1',null,null,null,true);
+      //  print_r($dato);die();
+
+  cerrarSQLSERVERFUN($cid);
+        return $dato;
+
+     }
+
 }
 
 ?>

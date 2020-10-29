@@ -192,9 +192,12 @@
 											<option value='0'>Seleccione Entidad</option>
 											<?php //select_option_mysql('entidad','ID_Empresa','Nombre_Entidad',' 1=1 ORDER BY Nombre_Entidad '); ?>
 										</select>-->
-										<select class="form-control" name="entidad" id='entidad' onChange="return buscar('ciudad');">
+										<!-- <select class="form-control" name="entidad" id='entidad' onChange="return buscar('ciudad');">
 											<option value='0'>Seleccione Entidad</option>
 											<?php select_option_mysql('entidad','ID_Empresa','Nombre_Entidad',' 1=1 ORDER BY Nombre_Entidad '); ?>
+										</select> -->
+										<select class="form-control" name="entidad" id='entidad' onChange="return buscar('ciudad');">
+											<option value='0'>Seleccione Entidad</option>
 										</select>
 									</div>
 								</div>
@@ -277,6 +280,12 @@
 								</div>
 								
 								<script>
+									 $(document).ready(function()
+                                       {
+                                        // cargar_modulos();
+                                        autocmpletar();
+                                       });
+
 								$('#myList a').on('click', function (e) {
 								  e.preventDefault()
 								  $(this).tab('show');
@@ -288,6 +297,23 @@
 										$("#myModal").modal();
 										//$("#dialog").dialog(); 
 									});
+
+									 function autocmpletar(){
+                                        $('#entidad').select2({
+                                          placeholder: 'Seleccione una Empresa',
+                                          ajax: {
+                                            url: '../controlador/niveles_seguriC.php?entidades=true',
+                                            dataType: 'json',
+                                            delay: 250,
+                                            processResults: function (data) {
+                                              return {
+                                                results: data
+                                              };
+                                            },
+                                            cache: true
+                                          }
+                                        });
+                                    }
 								
 									function consultar_datos()
 									{

@@ -2946,7 +2946,7 @@ function select_option($tabla,$value,$mostrar,$filtro=null,$click=null,$id_html=
 	{
 		$cam1=1;
 	}
-	//echo $sql;
+	// echo $sql;
 	$stmt = sqlsrv_query( $cid, $sql);
 	if( $stmt === false)  
 	{  
@@ -2964,23 +2964,24 @@ function select_option($tabla,$value,$mostrar,$filtro=null,$click=null,$id_html=
 			//onclick=" echo $click1; "
 		}
 	}
+  $op='';
 	while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_NUMERIC) ) 
-	{
-		?>	
-		<option value='<?php echo $row[0]; ?>' >
-			<?php
+	{	
+		$op = "<option value='".$row[0]."'>";
+			
 				if($cam1==0)
 				{
-					echo $row[1]; 
+					$op.=$row[1]; 
 				}
 				else
 				{
-					echo $row[1].'-'.$row[2]; 
+					 $op.=$row[1].'-'.$row[2]; 
 				}
-			?></option>
-		<?php
+		$op.="</option>";
+
 	}
 	sqlsrv_close( $cid );
+  return $op;
 }
 //crear select option para mysql
 function select_option_mysql($tabla,$value,$mostrar,$filtro=null)
@@ -3673,6 +3674,7 @@ function grilla_generica($stmt,$ti=null,$camne=null,$b=null,$ch=null,$tabla=null
  { echo  ' <style type="text/css">
       #datos_t table {
   border-collapse: collapse;
+ 
 }
 
 #datos_t table, th, td {
@@ -3696,6 +3698,7 @@ function grilla_generica($stmt,$ti=null,$camne=null,$b=null,$ch=null,$tabla=null
   background: #DDA;
 }
 
+
 .sombra {
   width: 99%;
   box-shadow: 10px 10px 6px rgba(0, 0, 0, 0.6);
@@ -3716,7 +3719,8 @@ function grilla_generica($stmt,$ti=null,$camne=null,$b=null,$ch=null,$tabla=null
 			<?php
 				}
 			?>
-                <tr>
+                <!-- <tr> -->
+                  <thead>
 					<?php
 					//cantidad campos
 					$cant=0;
@@ -3856,8 +3860,8 @@ function grilla_generica($stmt,$ti=null,$camne=null,$b=null,$ch=null,$tabla=null
 						echo $i.' gfggf '.$tipo_campo[$i];
 					}*/
 					?>
-				</tr>
-				
+				<!-- </tr> -->
+				</thead>
                  
 					<?php
 					//echo $cant.' fffff ';
@@ -4657,7 +4661,7 @@ function grilla_generica($stmt,$ti=null,$camne=null,$b=null,$ch=null,$tabla=null
 						<tr>
 							<th colspan='<?php echo $cant; ?>' style='text-align: center;background-color: #0086c7;color: #FFFFFF;' ><?php echo $ti; ?></th>
 						</tr>
-						<tr>
+						<thead>
 							<?php
 							//cantidad campos
 							$cant=0;
@@ -4723,7 +4727,7 @@ function grilla_generica($stmt,$ti=null,$camne=null,$b=null,$ch=null,$tabla=null
 											$cant++;
 							}
 							?>
-						</tr>
+						</thead>
 						<?php
 						//echo $cant.' fffff ';
 							//obtener la configuracion para celdas personalizadas

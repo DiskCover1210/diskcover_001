@@ -783,9 +783,9 @@ function datos_comprobante(codigo)
           }
           else
           {
-            document.cookie = "intentos=; max-age=0";
-            ingresar_trans_kardex(response.num_com,f);
+            
             generar_comprobante(response);
+            ingresar_trans_kardex(response.num_com,f);
 
           }
       }

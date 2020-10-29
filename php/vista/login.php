@@ -90,7 +90,16 @@ if (isset($_SESSION['autentificado']) != "VERDADERO")
 						//Contraseña: test12345
 						if(!empty($_GET['men']) ){
 						 $men=$_GET['men'];
-						  echo $men;
+						//   echo $men;
+						  echo "<script> 
+					
+					Swal.fire({
+					  type: 'error',
+					  title: '".$men."',
+					  text: ''
+					});
+					
+					</script>";
 						}
 					  
 					?>
@@ -100,29 +109,26 @@ if (isset($_SESSION['autentificado']) != "VERDADERO")
                   <span class="input-group-addon" id="sizing-addon1"><i class="glyphicon glyphicon-home"></i></span>
                   <!-- 1792164710001 -->
 				 
-				  <input type="text" class="form-control" name="entidad" placeholder="Entidad a la que perteneces" 
-				  id="Entidad" aria-describedby="sizing-addon1" required>
+				  <input type="text" class="form-control" name="entidad" placeholder="Entidad a la que perteneces" id="Entidad" onblur="entidad_b()" required="">
+				  <input type="hidden" name="" id="res">
                 </div>
                 <br>
                 <div class="input-group input-group-lg" >
                   <span class="input-group-addon" id="sizing-addon1"><i class="glyphicon glyphicon-envelope"></i></span>
                 <!--  <input type="email" class="form-control" name="correo" placeholder="Correo Electrónico/Usuario" id="Correo" aria-describedby="sizing-addon1" required> -->
-                  <input type="text" class="form-control" name="correo" placeholder="Correo Electrónico/Usuario" 
-				  id="Correo" aria-describedby="sizing-addon1" required onclick='verifient(event,"Entidad");' 
-				  onkeyup='verifient(event,"Entidad");'>                    
+                  <input type="text" class="form-control" name="correo" placeholder="Correo Electrónico/Usuario" id="Correo" onblur="verifiuser_('','Correo')" required="">                    
                 </div>                
                 <br>
                 <div class="input-group input-group-lg" >
                   <span class="input-group-addon" id="sizing-addon1"><i class="glyphicon glyphicon-lock"></i></span>
-                  <input type="password" name="contra" class="form-control" onclick='verifiuser(event,"Entidad","Correo");' 
-				  onkeyup='verifiuser(event,"Entidad","Correo");' placeholder="******" aria-describedby="sizing-addon1" required>
+                  <input type="password" name="contra" class="form-control" placeholder="******" aria-describedby="sizing-addon1" required>
                 </div>
                 <br>
 				<input type="submit" name="submitlog" id='enviar' value="Entrar" class="btn btn-lg btn-primary btn-block btn-signin" id="IngresoLog" />
                 <div class="opcioncontra"><a href="">Olvidaste tu contraseña?</a></div>
-				<a class="btn btn-lg btn-primary btn-block btn-signin" href="descarga_a.php" style='colo:ffffff;'>
+				<!-- <a class="btn btn-lg btn-primary btn-block btn-signin" href="descarga_a.php" style='colo:ffffff;'>
 					Descargas Importantes
-				</a>
+				</a> -->
 				<!-- <a class="btn btn-lg btn-primary btn-block btn-signin" href="https://erp.diskcoversystem.com/download" style='colo:ffffff;'>
 					Descargas Importantes
 				</a>
@@ -136,8 +142,8 @@ if (isset($_SESSION['autentificado']) != "VERDADERO")
 <!-- Bootstrap 3.3.7 -->
 <script src="../../lib/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
 <!-- iCheck -->
-<script src="../../lib/plugins/iCheck/icheck.min.js"></script>
-<script>
+<!-- <script src="../../lib/plugins/iCheck/icheck.min.js"></script> -->
+<!-- <script>
 	var divAlerta = document.getElementById('alerta');
 	function verifient(event,idMensaje)
 	{
@@ -171,6 +177,7 @@ if (isset($_SESSION['autentificado']) != "VERDADERO")
 	}
 	function verifiuser(event,idMensaje,user_msj)
 	{		
+		alert('entra');
 		var codigo = event.which || event.keyCode;
 		var select = document.getElementById(idMensaje); //El <select>
 		var s_user_msj = document.getElementById(user_msj).value; 
@@ -189,6 +196,7 @@ if (isset($_SESSION['autentificado']) != "VERDADERO")
 				},
 				success:  function (response) 
 				{
+					console.log(response);
 					//$('div.pdfcom').load(data);
 					$('#resul').html(''); 
 					$('#resul').html(response); 
@@ -220,26 +228,112 @@ if (isset($_SESSION['autentificado']) != "VERDADERO")
       increaseArea: '20%' /* optional */
     });
   });
-	$("#Entidad").keydown(function(e) {
-		 var vae = $("#Entidad").val();
-		 //tecla tab
-		 var code = e.keyCode || e.which;
-		 //eliminamos cookies
-		 document.cookie = "nombre=; max-age=0";
-		 //alert(code);
-		if (code == '9') {
-			var select = document.getElementById("Entidad"); //El <select>
-			value1 = select.value;
-			//alert(value1);
-			$.post('ajax/vista_ajax.php'
-				, {ajax_page: 'Entidad', com: value1 }, function(data){
-					//$('div.pdfcom').load(data);
-					$('#resul').html(data); 
-					//alert('entrooo '+idMensaje);
-				});
+	// $("#Entidad").keydown(function(e) {
+	// 	 var vae = $("#Entidad").val();
+	// 	 //tecla tab
+	// 	 var code = e.keyCode || e.which;
+	// 	 //eliminamos cookies
+	// 	 document.cookie = "nombre=; max-age=0";
+	// 	 //alert(code);
+	// 	if (code == '9') {
+	// 		var select = document.getElementById("Entidad"); //El <select>
+	// 		value1 = select.value;
+	// 		//alert(value1);
+	// 		$.post('ajax/vista_ajax.php'
+	// 			, {ajax_page: 'Entidad', com: value1 }, function(data){
+	// 				console.log(data);
+	// 				//$('div.pdfcom').load(data);
+	// 				$('#resul').html(data); 
+	// 				//alert('entrooo '+idMensaje);
+	// 			});
 			
+	// 	}
+	// });
+</script> -->
+<script type="text/javascript">
+	function entidad_b()
+	{
+		 var vae = $("#Entidad").val();
+		  if(vae!='')
+		  {
+		 document.cookie = "nombre=; max-age=0";
+		
+			// var select = document.getElementById("Entidad"); //El <select>
+			// value1 = select.value;
+			//alert(value1);
+			 $.ajax({
+             data:  {ajax_page:'ajax_page',ajax_page:'Entidad',com: vae},
+             url:   'ajax/vista_ajax.php?ajax_page=Entidad',
+             type:  'post',
+             dataType: 'json',
+               success:  function (response) { 
+               console.log(response);
+               if(response.resp == 1)
+               {
+               	 $('#resul').html('<div id="alerta" class="alert alert-success visible" align="center">'+response.enti+'</div>');
+               	 $('#res').val(response);
+               }else if(response.resp == -1)
+               {
+               	 $('#resul').html('');
+               	 $('#res').val(response);
+               	 Swal.fire({
+				  type: 'error',
+				  title: 'No se pudo realizar sesion',
+				  text: 'La entidad que ingresaste no tiene el formato correcto.(3)'
+				});
+               	}else if(response.resp== 2)
+               	{
+               		 $('#res').val(response);
+               		Swal.fire({
+					  type: 'error',
+					  title: 'No se pudo realizar sesion(1)',
+					  text: 'Entidad no encontrada'
+					});
+
+               	}else
+               	{
+               		 $('#res').val(response);
+               		 Swal.fire({
+				  type: 'error',
+				  title: 'No se pudo realizar sesion, verifique conexion (2)',
+				  text: 'Error de conexion.'
+				});
+               	}
+             }
+           });	
 		}
-	});
+
+	}
+
+
+	function verifiuser_(idMensaje,user_msj)
+	{
+		if($('#Entidad').val()!='')
+		{
+		// var select = document.getElementById(idMensaje); //El <select>
+		var s_user_msj = document.getElementById(user_msj).value; 
+		// value1 = select.value;
+		//alert(value1+' '+s_user_msj+' '+codigo);
+		
+			$.ajax({
+				data:  {ajax_page:'ajax_page',ajax_page: 'USER', user:  s_user_msj},
+				url:   'ajax/vista_ajax.php?ajax_page=User',
+				type:  'post',
+				success:  function (response) 
+				{
+					console.log(response);
+					//$('div.pdfcom').load(data);
+					$('#resul').html(''); 
+					$('#resul').html(response); 
+					$("#enviar").show();
+					//alert('entrooo '+idMensaje);
+				}
+			});
+		}
+		
+	}
+	 
+
 </script>
 <script type="text/javascript">
 	$(document).ready(function()

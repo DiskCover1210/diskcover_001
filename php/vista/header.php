@@ -251,8 +251,6 @@ $("#datos").fadeIn();
 
         <?php } ?>
           <ul class="nav navbar-nav">
-
-s
         <!---------inicio de pestañas de empresa------------>
         <?php
      if(isset($_GET['mod'])){
@@ -269,11 +267,11 @@ s
                     <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" id="de_operacion" role="button" aria-haspopup="true" aria-expanded="false">De sistema  &nbsp;&nbsp;&nbsp;&nbsp;<span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></a>
                     <!-- </a> -->
                     <ul class="dropdown-menu" aria-labelledby="de_operacion">
-                      <li class="dropdown-item"><a href="contabilidad.php?mod=contabilidad&acc=ctaOperaciones&acc1=Ingresar Comprobantes&b=1">Ingreso catalogo de Cuentas <i  style=' float: right;' align="right">(CRTL+F6)</i></a></li>
-                      <li class="dropdown-item"><a href="empresa.php?mod=empresa&acc=cambioe&acc1=Modificar empresa&b=1">Modificar empresa</a></li>
-                      <li class="dropdown-item"><a href="empresa.php?mod=empresa&acc=niveles_seguri&acc1=Niveles de seguridad&b=1">Niveles de seguridad</a></li>
-                      <li class="dropdown-item"><a href="empresa.php?mod=empresa&acc=mostrar_venci&acc1=Resumen de periodo&b=1">Resumen de periodo</a></li>
-                      <li class="dropdown-item"><a href="contabilidad.php?mod=contabilidad&acc=campe&acc1=Cambio de periodo&b=1">Cambio de periodo</a></li>
+                      <li class="dropdown-item col-6 col-md"><a href="contabilidad.php?mod=contabilidad&acc=ctaOperaciones&acc1=Ingresar Comprobantes&b=1">Ingreso catalogo de Cuentas <i  style=' float: right;' align="right">(CRTL+F6)</i></a></li>
+                      <li class="dropdown-item col-6 col-md"><a href="empresa.php?mod=empresa&acc=cambioe&acc1=Modificar empresa&b=1">Modificar empresa</a></li>
+                      <li class="dropdown-item col-6 col-md"><a href="empresa.php?mod=empresa&acc=niveles_seguri&acc1=Niveles de seguridad&b=1">Niveles de seguridad</a></li>
+                      <li class="dropdown-item col-6 col-md"><a href="empresa.php?mod=empresa&acc=mostrar_venci&acc1=Resumen de periodo&b=1">Resumen de periodo</a></li>
+                      <li class="dropdown-item col-6 col-md"><a href="contabilidad.php?mod=contabilidad&acc=campe&acc1=Cambio de periodo&b=1">Cambio de periodo</a></li>
                     </ul>
                   </li>
 
@@ -380,22 +378,25 @@ s
                 <a class="nav-link dropdown-toggle" id="reporte" data-toggle="dropdown" aria-haspopup="true" 
                 aria-expanded="false" style='padding-top: 5px;padding-bottom: 5px;'>Reportes</a>
                 <ul class="dropdown-menu" aria-labelledby="reporte">
-                  <li class="dropdown-item"><a href="contabilidad.php?mod=contabilidad&acc=catalogo_cuentas&acc1=catalogo cuentas&b=1">Catalogo de cuentas</a></li>
+                  <li class="dropdown-item  col-6 col-md"><a href="contabilidad.php?mod=contabilidad&acc=catalogo_cuentas&acc1=catalogo cuentas&b=1">Catalogo de cuentas</a></li>
                   <!--<li class="dropdown-item"><a href="#" >Catalogo de SubCtas bloque</a></li>
                   <li class="dropdown-item"><a href="#" >Cuotas Pendientes de prestamos</a></li>
                   <li class="dropdown-item"><a href="#" >Catalogo de rol de pagos</a></li>
                   <li class="dropdown-item"><a href="#" >Catalogo de retención</a></li>-->
-                  <li class="dropdown-item"><a href="contabilidad.php?mod=contabilidad&acc=diario_general&acc1=diario general&b=1" >Diario general 
+                  <li class="dropdown-item  col-6 col-md"><a href="contabilidad.php?mod=contabilidad&acc=diario_general&acc1=diario general&b=1" >Diario general 
                   <i  style=' float: right;' align="right">(CRTL+D)</i></a></li>
-                  <li class="dropdown-item"><a href="contabilidad.php?mod=contabilidad&acc=libro_banco&acc1=Libro Banco&b=1" >Libro banco 
+                  <li class="dropdown-item  col-6 col-md"><a href="contabilidad.php?mod=contabilidad&acc=libro_banco&acc1=Libro Banco&b=1" >Libro banco 
                   <i  style=' float: right;' align="right">(CRTL+F)</i></a></li>
-                  <li class="dropdown-item"><a href="contabilidad.php?mod=contabilidad&acc=mayor_auxiliar&acc1=Mayor auxiliar&b=1" >Mayores auxiliares 
+                  <li class="dropdown-item  col-6 col-md"><a href="contabilidad.php?mod=contabilidad&acc=mayor_auxiliar&acc1=Mayor auxiliar&b=1" >Mayores auxiliares 
                   <i  style=' float: right;' align="right">(CRTL+M)</i></a></li>
                  <!-- <li class="dropdown-item"><a href="#" >Mayores auxiliares por concepto</a></li>
                   <li class="dropdown-item"><a href="#" >Mayores de SubCtas 
                   <i  style=' float: right;' align="right">(CRTL+S)</i></a></li>-->
-                  <li class="dropdown-item"><a href="contabilidad.php?mod=contabilidad&acc=compro&acc1=Comprobantes Procesados&b=1" >
-                  Comprobantes procesados <i  style=' float: right;' align="right">(CRTL+L)</i></a></li>
+                  <li class="dropdown-item  col-6 col-md"><a href="contabilidad.php?mod=contabilidad&acc=compro&acc1=Comprobantes Procesados&b=1"><i>Comprobantes procesados</i>
+                   <i  style=' float: right;' align="right">(CRTL+L)</i></a></li>
+                  </a>
+                  </li>
+                 
                   <!--<li class="dropdown-item"><a href="#" >Comprobantes de retención (CRTL+R)</a></li>
                   <li class="dropdown-item"><a href="#" >Cheques procesados</a></li>
                   <li class="dropdown-item"><a href="#" >Conciliación bancaria</a></li>
@@ -403,7 +404,7 @@ s
                      
                   <li class="dropdown-item"><a href="#" >Saldo de Caja/Bancos/Especiales</a></li>
                   -->
-                  <li class="dropdown-item"><a href="contabilidad.php?mod=contabilidad&acc=saldo_fac_submodulo&acc1=Saldo de factura submodulo&b=1" >Saldo de facturas en SubModulos</a></li>
+                  <li class="dropdown-item  col-6 col-md"><a href="contabilidad.php?mod=contabilidad&acc=saldo_fac_submodulo&acc1=Saldo de factura submodulo&b=1" >Saldo de facturas en SubModulos</a><i  style=' float: right;' align="right">&nbsp;&nbsp;</i></a></li>
                   
                   <!--
                   <li class="dropdown-item"><a href="#" >Flujo de caja chica</a></li>
@@ -425,7 +426,8 @@ s
                 <a class="nav-link dropdown-toggle" id="anexos" data-toggle="dropdown" aria-haspopup="true" 
                 aria-expanded="false" style='padding-top: 5px;padding-bottom: 5px;'>Anexos transaccionales</a>
                 <ul class="dropdown-menu" aria-labelledby="anexos">
-                  <li class="dropdown-item"><a href="contabilidad.php?mod=contabilidad&acc=anexos_trans&acc1=Generar Anexos transaccioneales&b=1" >Generar anexos transaccionales (F12)</a></li>
+                  <li class="dropdown-item col-6 col-md"><a href="contabilidad.php?mod=contabilidad&acc=anexos_trans&acc1=Generar Anexos transaccioneales&b=1">
+                     Generar anexos transaccionales         (F12)</a></li>
                  <!--  <li class="dropdown-item"><a href="#" >Codigo de retención (AIR) 
                   <i  style=' float: right;' align="right">(F11)</i></a></li>
                   <li class="dropdown-item"><a href="#" >Resumen de retensiones 
@@ -453,13 +455,12 @@ s
                 <a class="nav-link dropdown-toggle" id="efinan" data-toggle="dropdown" aria-haspopup="true" 
                 aria-expanded="false" style='padding-top: 5px;padding-bottom: 5px;'>Estados financieros</a>
                 <ul class="dropdown-menu" aria-labelledby="efinan">
-                  <li class="dropdown-item"><a href="contabilidad.php?mod=contabilidad&acc=macom&acc1=Mayorización&b=1" >Mayorizar Comprobantes procesados 
+                  <li class="dropdown-item  col-6 col-md"><a href="contabilidad.php?mod=contabilidad&acc=macom&acc1=Mayorización&b=1" >Mayorizar Comprobantes procesados 
                   <i  style=' float: right;' align="right">(CRTL+T)</i></a></li>
-                  <li class="dropdown-item"><a href="contabilidad.php?mod=contabilidad&acc=bacsg&acc1=Balance de Comprobacion/Situación/General&b=1" >
+                  <li class="dropdown-item  col-6 col-md"><a href="contabilidad.php?mod=contabilidad&acc=bacsg&acc1=Balance de Comprobacion/Situación/General&b=1" >
                   Balance de Comprobacion/Situación/General (CRTL+G)</a></li>
-                  <!--<li class="dropdown-item"><a href="#" >Resumen analitico de Utilidad/Perdida 
-                  <i  style=' float: right;' align="right">(CRTL+U)</i></a></li>
-                  <li class="dropdown-item"><a href="#" >Balance de SubModulos</a></li>-->
+                  <li class="dropdown-item"><a href="contabilidad.php?mod=contabilidad&acc=bamup&acc1=Resumen Analitico Mensual de Utilidades/Perdidas&b=1" > Resumen Analitico Mensual de Utilidades/Perdidas</a></li>
+                  <!-- <li class="dropdown-item"><a href="#" >Balance de SubModulos</a></li> -->
                   
                   
                 </ul>
@@ -523,17 +524,18 @@ s
                 <li class="dropdown-submenu">
                   <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" id="de_operacion" role="button" aria-haspopup="true" aria-expanded="false">De operación  &nbsp;&nbsp;&nbsp;&nbsp;<span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></a>
                   <ul class="dropdown-menu" aria-labelledby="de_operacion">
-                    <li class="dropdown-item"><a href="educativo.php?mod=educativo&acc=detalle_estudiante&acc1=Detalle Estudiante&b=1&po=subcu">
+                    <li class="dropdown-item  col-6 col-md"><a href="educativo.php?mod=educativo&acc=detalle_estudiante&acc1=Detalle Estudiante&b=1&po=subcu">
                     Detalle estudiante <i  style=' float: right;' align="right"></i></a></li>
                   </ul>
                 </li>
                 
-                <li class="dropdown-item"><a href="panel.php"><span class="glyphicon glyphicon-chevron-left" aria-hidden="true">  Volver</a></li>
+                <li class="dropdown-item  col-6 col-md"><a href="panel.php"><span class="glyphicon glyphicon-chevron-left" aria-hidden="true">  Volver</a></li>
               </ul>
             </li>    
       <?php
        }}
        $f =date('Y-m-d');
+       // print_r($_SESSION);die();
        if(isset($_SESSION['INGRESO']['Fecha']))
        {
           $f =$_SESSION['INGRESO']['Fecha'];
@@ -616,14 +618,14 @@ s
                 <li class="dropdown-submenu">
                   <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" id="de_operacion" role="button" aria-haspopup="true" aria-expanded="false">De operación  &nbsp;&nbsp;&nbsp;&nbsp;<span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></a>
                   <ul class="dropdown-menu" aria-labelledby="de_operacion">
-                    <li class="dropdown-item"><a href="inventario.php?mod=Inventario&acc=inventario_online&acc1=Inventario online&b=1&po=subcu">
+                    <li class="dropdown-item  col-6 col-md"><a href="inventario.php?mod=Inventario&acc=inventario_online&acc1=Inventario online&b=1&po=subcu">
                     Ingreso online <i  style=' float: right;' align="right"></i></a></li>
-                    <li class="dropdown-item"><a href="inventario.php?mod=Inventario&acc=kardex_ing&acc1=Control de inventario&b=1&po=subcu">
+                    <li class="dropdown-item  col-6 col-md"><a href="inventario.php?mod=Inventario&acc=kardex_ing&acc1=Control de inventario&b=1&po=subcu">
                     Control de Inventario(E/S) <i  style=' float: right;' align="right"></i></a></li>
                   </ul>
                 </li>
                 
-                <li class="dropdown-item"><a href="panel.php"><span class="glyphicon glyphicon-chevron-left" aria-hidden="true">  Volver</a></li>
+                <li class="dropdown-item  col-6 col-md"><a href="panel.php"><span class="glyphicon glyphicon-chevron-left" aria-hidden="true">  Volver</a></li>
               </ul>
             </li>              
 <!-- ------------------------------------------------------ -->

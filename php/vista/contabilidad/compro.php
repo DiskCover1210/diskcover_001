@@ -28,8 +28,14 @@
 						<tr>
 							<td width="35%">
 								<h4 class="box-title">
-									<a class="btn btn-default"  data-toggle="tooltip" title="Salir del modulo" href="panel.php?sa=s">
-										<i ><img src="../../img/png/salir.png" class="user-image" alt="User Image"
+									<a class="btn btn-default" title="Salir del modulo" href="./contabilidad.php?mod=contabilidad#">
+										<i ><img src="../../img/png/salire.png" class="user-image" alt="User Image"
+										style='font-size:20px; display:block; height:100%; width:100%;'></i> 
+									</a>
+									<a id='l7' class="btn btn-default"  data-toggle="tooltip" title="Exportar Excel"
+									href="descarga.php?mod=contabilidad&acc=bacsg&acc1=Balance de Comprobacion/Situación/General&ti=<?php echo $_SESSION['INGRESO']['ti']; ?>
+									&Opcb=6&Opcen=0&b=0&ex=1" onclick='modificar1();' target="_blank">
+										<i ><img src="../../img/png/table_excel.png" class="user-image" alt="User Image"
 										style='font-size:20px; display:block; height:100%; width:100%;'></i> 
 									</a>
 									<a id='l1' class="btn btn-default"  data-toggle="tooltip" title="Modificar el comprobante"
@@ -57,12 +63,7 @@
 										<i ><img src="../../img/png/copiare.png" class="user-image" alt="User Image"
 										style='font-size:20px; display:block; height:100%; width:100%;'></i> 
 									</a>
-									<a id='l7' class="btn btn-default"  data-toggle="tooltip" title="Exportar Excel"
-									href="descarga.php?mod=contabilidad&acc=bacsg&acc1=Balance de Comprobacion/Situación/General&ti=<?php echo $_SESSION['INGRESO']['ti']; ?>
-									&Opcb=6&Opcen=0&b=0&ex=1" onclick='modificar1();' target="_blank">
-										<i ><img src="../../img/png/table_excel.png" class="user-image" alt="User Image"
-										style='font-size:20px; display:block; height:100%; width:100%;'></i> 
-									</a>
+									
 								</h4>
 							</td>
 							<td>

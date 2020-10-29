@@ -7,6 +7,58 @@ if(isset($_POST['submitlog']))
 {
 	login('', '', '');
 }
+if(isset($_GET['tipo_balance']))
+{
+	echo json_encode(tipo_balance());
+}
+
+if(isset($_GET['consultar']))
+{
+	//$controlador = new libro_bancoC();
+	//echo json_decode($controlador->consultar_banco($_POST['parametros']));
+	$parametros=$_POST['parametros'];
+	$desde =$parametros['desde'];
+    $hasta = $parametros['hasta'];
+	$balance=ListarEmpresasSQL('Analisis de vencimiento',null,null,null,null,null,null,$desde,$hasta);
+}
+
+//==========================
+//comprobamos si la variable enviada por get llega al controlador 
+if(isset($_GET['balance']))
+{
+	//recuperamos los parametros enviados por post en una variable 
+	// $parametros sera un array el nombre de $_POST['parametros'] sera en mismo de la vista
+	// del jquery    data:  {parametros:parametros}
+	$parametros = $_POST['parametros'];
+	//llamamops a la funcion a ejecutar
+     $tabla = reporte_analitico_mensual($parametros);
+     //para devolverla a la vista la retornaremos como json
+     echo json_decode($tabla);
+     //este proseso se puede simplificar colocando  "echo json_decode(reporte_analitico_mensual($parametros());"
+}
+
+//===============================
+
+//funcion que recive los parametros
+function reporte_analitico_mensual($parametros)
+{
+	//print_r($parametros);die();
+	//creamos el objeto 
+	$modelo = new contabilidad_model();
+	//enviamos los datos al modelo
+	$respuesta = $modelo->sp_Reporte_Analitico_Mensual($parametros['Tipo'],$parametros['desde'],$parametros['hasta']);
+	//verificamos si todo salio bien  1 ejecutado -1 fallo al ejecutar (respuestas que personalmente las coloco)
+	if($respuesta['respuesta'] == 1)
+	{
+		$tabla = $modelo->Reporte_Analitico_Mensual_gilla($parametros['Tipo'],$respuesta['query']);
+		//retoprnamos la tabla este retorno se realizara a la primera duncion donde se llamar "don de esta isset($_GET['balance']"
+		return $tabla;
+	}else
+	{
+		return -1;
+	}
+}
+
 
 //lista balance funcion sql server
 function ListarTipoDeBalanceSQL($ti=null,$Opcb=null,$Opcem=null,$OpcDG=null,$b=null,$OpcCE=null)
@@ -341,6 +393,7 @@ function sp_errores($item,$modulo,$id)
 //ejecutar proceso de balance
 function sp_Procesar_Balance($opc,$sucursal,$item,$periodo,$fechai,$fechaf,$bm,$cc=null)
 {
+
 	$per=new contabilidad_model();
 	//echo "ListarAsientoSQL";
 	//formateamos fechas
@@ -420,5 +473,14 @@ function sp_Procesar_Balance($opc,$sucursal,$item,$periodo,$fechai,$fechaf,$bm,$
 		
 	}
 	return $balance;
+}
+
+function tipo_balance()
+{
+	$modal = new contabilidad_model();
+	// print_r('expression');
+	$datos = $modal->tipo_balance_();
+	// print_r($datos);die();
+	return $datos;
 }
 ?>

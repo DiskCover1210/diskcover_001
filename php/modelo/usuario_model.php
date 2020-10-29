@@ -240,7 +240,7 @@ class usuario_model{
 				$this->accesos = $filas['TODOS'];
 				//Recuperando la hora en el que ingreso
 				$this->Hora = date('H:i:s', time());
-				$this->Fecha = date("m.d.y");
+				$this->Fecha = date("Y-m-d");
 
 				//$Clave=Conectar::encryption($this->Contrasena);
 				//echo $filas['CI_NIC'].'  '.$this->IP_Usuario;
@@ -366,6 +366,7 @@ class usuario_model{
             $empresa[]=$filas;
             }
 	  }
+	  // print_r($empresa);die();
         return $empresa;
 	}
 	//devuelve empresa seleccionada por id 
@@ -379,6 +380,7 @@ class usuario_model{
 									 AND Tipo_Base<>'.' 
 									 AND Puerto<>'0' 
 									 AND`ID`=".$id_empresa.";";
+									 // print_r($sql);die();
 			$consulta=$this->db->query($sql);
 		
 		//echo "SELECT * FROM `Lista_Empresas` 
@@ -398,11 +400,16 @@ class usuario_model{
 				$i++;
 			}
 		}
+		// $empresa = array();
         while($filas=$consulta->fetch_assoc()){
             $empresa[]=$filas;
-			$_SESSION['INGRESO']['Contraseña_DB']=$filas[$contra];
+
+			//$_SESSION['INGRESO']['Contraseña_DB']=$filas[$contra];
+			// print_r($_SESSION['INGRESO']['Contraseña_DB']);die();
 			//echo ' vvv '.$filas['IP_VPN_RUTA'];
         }
+        // print_r('expression');
+        // print_r($empresa);die();
         return $empresa;
 	}
 	//consultar periodo mysql

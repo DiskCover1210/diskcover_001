@@ -11,6 +11,7 @@ function getEmpresas($id_entidad)
 {
 	$per=new usuario_model();
 	$empresa=$per->getEmpresas($id_entidad);
+	// print_r($empresa);die();
 	return $empresa;
 }
 //devuelve empresas seleccionada por el usuario
@@ -19,6 +20,8 @@ function getEmpresasId($id_empresa)
 	//echo ' dd '.$id_empresa;
 	$per=new usuario_model();
 	$empresa=$per->getEmpresasId($id_empresa);
+	// print_r($empresa);die();
+	// print_r($_SESSION); die();
 	return $empresa;
 }
 //devuelve inf del detalle de la empresa seleccionada por el usuario
@@ -167,14 +170,14 @@ function contruir_modulos($modulos)
             </div>
             <div class="icon">';
             if($value['icono']!='.'){
-              $mod.='<i class="ion ion-plus" style="padding-right: 15px;"><img src="'.$value['icono'].'" class="icon" style="display:block;width:85%;margin-top: 35%;"></i>';
+              $mod.='<i class="ion ion" style="padding-right: 15px;"><img  class="style_prevu_kit" src="'.$value['icono'].'" class="icon" style="display:block;width:100%;margin-top: 35%;"></i>';
             }else
             {
-            	$mod.='<i class="ion ion-plus"></i>';
+            	$mod.='<i class="ion ion" style="padding-right: 15px;width: 80px;"></i>';
             }
 
             $mod.='</div>
-            <a href="#" class="small-box-footer">Click para ingresar <i class="fa fa-arrow-circle-right"></i></a>
+            <a href="'.$value['link'].'" class="small-box-footer">Click para ingresar <i class="fa fa-arrow-circle-right"></i></a>
           </div>
         </div>';        
         $pos+=1;

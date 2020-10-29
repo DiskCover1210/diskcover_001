@@ -391,20 +391,26 @@ return $resp;
 			$debe+=$value['DEBE'];
 			$haber+=$value['HABER'];
 		}
- // print_r($debe."-".$haber); die();
-		if($debe==$haber)
+		if(strval($debe) == strval($haber))
 		{
 			if($debe != 0 && $haber != 0)
 			{
+
+			//print_r($debe."-".$haber.'---'); die();
 			  $datosCom = array('ru'=>$_SESSION['INGRESO']['CodigoU'],'tip'=>'CD','fecha1'=>date('Y-m-d'),'concepto'=>'Salida de inventario por centro de costos '.date('Y-m-d'),'totalh'=>round($haber,2),'num_com'=>$codigo);
 		    }else
 		    {
+   // print_r($debe."-".$haber); die();
 		    	$this->modelo->delete_SC_ASientos();
+		    	sleep(3);
 		    	return -2;
 		    }
 		}else
 		{
+
+    //print_r($debe."-".$haber.'*'); die();
 			$this->modelo->delete_SC_ASientos();
+			sleep(3);
 			return -1;
 		}
 

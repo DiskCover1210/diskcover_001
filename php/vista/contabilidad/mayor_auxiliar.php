@@ -230,12 +230,7 @@
    				<a href="./contabilidad.php?mod=contabilidad#" title="Salir de modulo" class="btn btn-default">
             		<img src="../../img/png/salire.png">
             	</a>
-            </div>
-            <div class="col-xs-2 col-md-2 col-sm-2">
-            	<button title="Totos los mayores"  class="btn btn-default" onclick="consultar_datos(false,Individual);">
-            		<img src="../../img/png/es.png" >
-            	</button>
-            </div>
+            </div>           
             	<div class="col-xs-2 col-md-2 col-sm-2">
             	   <button type="button" class="btn btn-default" data-toggle="dropdown" title="Descargar PDF">
             	      <img src="../../img/png/impresora.png">
@@ -254,6 +249,11 @@
       		       	 <li><a href="#" id="imprimir_excel">Impresion normal</a></li>
       		       	  <li><a href="#" id="imprimir_excel_2">Por Sub Modulo / Centro de costos</a></li>
       		       	</ul>            	
+            </div>
+             <div class="col-xs-2 col-md-2 col-sm-2">
+            	<button title="Totos los mayores"  class="btn btn-default" onclick="consultar_datos(false,Individual);">
+            		<img src="../../img/png/es.png" >
+            	</button>
             </div>
             <div class="col-xs-2 col-md-2 col-sm-2">
             	<button title="Consultar Mayores auxiliares"  class="btn btn-default" onclick="consultar_datos(true,Individual);">
@@ -274,10 +274,10 @@
         </div>
 	  	<div class="col-sm-3"><br>
 	  		<b>Desde:</b>
-            <input type="date" name="desde" id="desde" class="input-sm"  value="<?php echo date("Y-m-d");?>" onblur="consultar_datos(true,Individual);">
+            <input type="date" name="desde" id="desde" class="input-sm"  value="<?php echo date("Y-m-d");?>" onkeyup="validar_year_mayor(this.id)" onblur="validar_year_menor(this.id);consultar_datos(true,Individual);">
 			<br>
             <b>Hasta:&nbsp;</b>
-            <input type="date" name="hasta" id="hasta"  class="input-sm"  value="<?php echo date("Y-m-d");?>" onblur="consultar_datos(true,Individual);">  	              	
+            <input type="date" name="hasta" id="hasta"  class="input-sm"  value="<?php echo date("Y-m-d");?>" onkeyup="validar_year_mayor(this.id)" onblur="validar_year_menor(this.id);consultar_datos(true,Individual);">  	              	
 	  	</div>
 
 	  	<div class="col-sm-3">

@@ -25,9 +25,17 @@ require_once("../funciones/funciones.php");
 	//echo ' jjj '.$_SESSION['autentificado'];
 	//die();
 	//asignamos la empresa
+// if (isset($_GET['mos'])) {
+// 	print_r('expressiossn');die();
+// }
+if(isset($_GET['mos']))
+{
+	// print_r($_SESSION);die();
+}
 
-	if(isset($_GET['mos']) and !isset($_SESSION['INGRESO']['IP_VPN_RUTA'])) 
+	if(isset($_GET['mos']) && !isset($_SESSION['INGRESO']['IP_VPN_RUTA'])) 
 	{
+
 		$_SESSION['INGRESO']['empresa']=$_GET['mos'];
 		//nombre empresa
 		$_SESSION['INGRESO']['noempr']=$_GET['mos1'];
@@ -41,13 +49,11 @@ require_once("../funciones/funciones.php");
 			//echo $cod[0].' -- ';
 			//die();
 			//$('#selector').css('cursor', 'wait');
-			
 			$empresa=getEmpresasId($cod[0]);
-
-
-			//print_r($empresa);
+			// print_r($empresa); die();
 			foreach ($empresa as &$valor) 
 			{
+				// print_r($valor['Fecha']);die();
 				$_SESSION['INGRESO']['IP_VPN_RUTA']=$valor['IP_VPN_RUTA'];
 				$_SESSION['INGRESO']['Base_Datos']=$valor['Base_Datos'];
 				$_SESSION['INGRESO']['Usuario_DB']=$valor['Usuario_DB'];
@@ -242,7 +248,8 @@ require_once("../funciones/funciones.php");
 		{
 			$tam_m=5;
 		}
-	}	
+	}
+
 ?>
 <!DOCTYPE html>
 <html>
@@ -330,6 +337,43 @@ require_once("../funciones/funciones.php");
   <script type="text/javascript" src="../../lib/dist/js/typeahead.js"></script>
   <link rel="stylesheet" href="../../lib/dist/css/sweetalert2.min.css">
   <link rel="shortcut icon" href="../../img/jpg/logo.jpg" />
+
+  
+  <style type="text/css">
+    .fond{position:absolute;padding-top:85px;top:0;left:0; right:0;bottom:0;
+ background-color:#00506b;}
+
+.style_prevu_kit
+{
+    display:inline-block;
+    border:0;
+    /*width:110px;*/
+    /*height:80px;*/
+    position: relative;
+    -webkit-transition: all 200ms ease-in;
+    -webkit-transform: scale(1); 
+    -ms-transition: all 200ms ease-in;
+    -ms-transform: scale(1); 
+    -moz-transition: all 200ms ease-in;
+    -moz-transform: scale(1);
+    transition: all 200ms ease-in;
+    transform: scale(1);   
+
+}
+.style_prevu_kit:hover
+{
+    /*box-shadow: 0px 0px 150px #000000;*/
+    z-index: 2;
+    -webkit-transition: all 200ms ease-in;
+    -webkit-transform: scale(1.2);
+    -ms-transition: all 200ms ease-in;
+    -ms-transform: scale(1.2);   
+    -moz-transition: all 200ms ease-in;
+    -moz-transform: scale(1);
+    transition: all 200ms ease-in;
+    transform: scale(1.2);
+}
+</style>
   <style>
 .courier {
 	font-family: "courier new";
@@ -628,6 +672,35 @@ require_once("../funciones/funciones.php");
 			//redireccionamos
 			window.location="panel.php?mos="+value+"&mos1="+text+"&mos3="+arregloDeSubCadenas[1]+"";
 		}
+
+		function validar_year_mayor(nombre)
+		{
+
+			var fecha = $('#'+nombre+'').val();
+			var partes = fecha.split('-');
+			console.log(partes);
+			if(partes[0].length > 4 || partes[0] > 2050)
+			{
+				$('#'+nombre+'').val('2050-'+partes[1]+'-'+partes[2]);
+			}
+			
+
+		}
+		function validar_year_menor(nombre)
+		{
+
+			var fecha = $('#'+nombre+'').val();
+			var partes = fecha.split('-');
+			console.log(partes);
+			if(partes[0] < 2000)
+			{
+				alert('Año seleccionado menor a 2000');
+				$('#'+nombre+'').val('2000-'+partes[1]+'-'+partes[2]);
+			}
+			
+
+		}
+	
 	
 		function getParameterByName(name) {
 			name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");

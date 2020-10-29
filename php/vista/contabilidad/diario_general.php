@@ -324,15 +324,13 @@ require_once("panel.php");
        
     });
 
-
-
   </script>
 
    <div style="padding-left: 20px;padding-right: 20px">
     <div class="row">
       <div class="col-lg-3 col-sm-4 col-md-8 col-xs-12">
         <div class="col-xs-2 col-md-2 col-sm-2 col-lg-2">
-            <a  href="panel.php?sa=s" title="Salir de modulo" class="btn btn-default">
+            <a  href="./contabilidad.php?mod=contabilidad#"  title="Salir de modulo" class="btn btn-default">
               <img src="../../img/png/salire.png">
             </a>
         </div>
@@ -368,11 +366,11 @@ require_once("panel.php");
       <div class="col-sm-8 col-lg-8 col-md-4 col-xs-12">
         <div class="col-xs-6 col-md-3 col-sm-3 col-lg-3">
           <b>Desde:</b><br>
-            <input type="date" min="01-01-1900" max="01-01-2030"  name="txt_desde" id="txt_desde" value="<?php echo date("Y-m-d");?>" onblur="consultar_datos();">  
+            <input type="date" min="01-01-2000" max="31-12-2050"  name="txt_desde" id="txt_desde" value="<?php echo date("Y-m-d");?>" onkeyup="validar_year_mayor(this.id)" onblur="validar_year_menor(this.id);consultar_datos();">  
         </div>   
         <div class="col-xs-6 col-md-3 col-sm-3 col-lg-3">
           <b>Hasta:</b><br>
-            <input type="date"  min="01-01-1900" max="01-01-2030" name="txt_hasta" id="txt_hasta" value="<?php echo date("Y-m-d");?>" onblur="consultar_datos();"> 
+            <input type="date"  min="01-01-2000" max="31-12-2050" name="txt_hasta" id="txt_hasta" value="<?php echo date("Y-m-d");?>" onkeyup="validar_year_mayor(this.id)" onblur="validar_year_menor(this.id);consultar_datos();"> 
         </div>   
       </div>
     </div>
@@ -462,7 +460,7 @@ require_once("panel.php");
           <div class="table-responsive">
             <table>
               <tr>
-                <td><b>Total Debe</b></td>
+                <td he><b>Total Debe</b></td>
                 <td id="debe"></td>
                 <td><b>Total Haber</b></td>
                 <td id="haber"></td>
@@ -480,4 +478,5 @@ require_once("panel.php");
             </table>
           </div>          
         </div>        
-    </div>  
+    </div> 
+
