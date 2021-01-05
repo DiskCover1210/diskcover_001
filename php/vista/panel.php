@@ -672,6 +672,13 @@ if(isset($_GET['mos']))
 			//redireccionamos
 			window.location="panel.php?mos="+value+"&mos1="+text+"&mos3="+arregloDeSubCadenas[1]+"";
 		}
+		function descargar_archivos(url,archivo)
+		{
+            var link = document.createElement("a");
+            link.download = archivo;
+            link.href = url;
+            link.click();
+        }
 
 		function validar_year_mayor(nombre)
 		{
@@ -694,8 +701,8 @@ if(isset($_GET['mos']))
 			console.log(partes);
 			if(partes[0] < 2000)
 			{
-				alert('Año seleccionado menor a 2000');
-				$('#'+nombre+'').val('2000-'+partes[1]+'-'+partes[2]);
+				alert('Año seleccionado menor a 1999');
+				$('#'+nombre+'').val('1999-'+partes[1]+'-'+partes[2]);
 			}
 			
 

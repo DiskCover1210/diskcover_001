@@ -10,6 +10,40 @@ include('controlador/controladormesa.php');
 //require('modelo/modelomesa.php');
 //facturacion
 
+//variables para autorizar
+$IP_VPN_RUTA = $_SESSION['INGRESO']['IP_VPN_RUTA'];
+$Base_Datos = $_SESSION['INGRESO']['Base_Datos'];
+$Usuario_DB = $_SESSION['INGRESO']['Usuario_DB'];
+$Contraseña_DB = $_SESSION['INGRESO']['Contraseña_DB'];
+$Tipo_Base = $_SESSION['INGRESO']['Tipo_Base'];
+$Puerto = $_SESSION['INGRESO']['Puerto'];
+$ruta_cer=$_SESSION['INGRESO']['Ruta_Certificado'];
+$clave_cer=$_SESSION['INGRESO']['Clave_Certificado'];
+$ambiente=$_SESSION['INGRESO']['Ambiente'];
+$nom_com=$_SESSION['INGRESO']['Nombre_Comercial'];
+$raz_soc=$_SESSION['INGRESO']['Razon_Social'];
+$ruc = $_SESSION['INGRESO']['RUC'];
+$dir = $_SESSION['INGRESO']['Direccion'];
+
+//Encripta información:
+$IP_VPN_RUTA = $encriptar($IP_VPN_RUTA);
+$Base_Datos = $encriptar($Base_Datos);
+$Usuario_DB = $encriptar($Usuario_DB);
+$Contraseña_DB = $encriptar($Contraseña_DB);
+$Tipo_Base = $encriptar($Tipo_Base);
+$Puerto = $encriptar($Puerto);
+$ruta_cer = $encriptar($ruta_cer);
+$clave_cer = $encriptar($clave_cer);
+$ambiente = $encriptar($ambiente);
+$nom_com = $encriptar($nom_com);
+$raz_soc = $encriptar($raz_soc);
+$ruc = $encriptar($ruc);
+$dir = $encriptar($dir);
+$item = $encriptar($_SESSION['INGRESO']['item']);
+$periodo = $encriptar($_SESSION['INGRESO']['periodo']);
+//tipo documkento
+$cod_doc = $encriptar('01');
+$tc=$encriptar('FA');
 $_SESSION['INGRESO']['modulo_']='02';
 
 ?>
@@ -77,6 +111,9 @@ $_SESSION['INGRESO']['modulo_']='02';
   <script src="lib/dist/js/sweetalert2.min.js"></script>
   <script type="text/javascript" src="lib/dist/js/typeahead.js"></script>
   <link rel="stylesheet" href="lib/dist/css/sweetalert2.min.css">
+
+<script src="../../../lib/dist/js/select2.min.js"></script>
+  <link rel="stylesheet" href="../../../lib/dist/css/select2.min.css">
  
 
   <!-- Google Font -->
@@ -121,6 +158,25 @@ $_SESSION['INGRESO']['modulo_']='02';
 
 	}
 	</script>
+	<!-- <script type="text/javascript">
+		$(document).ready(function () {
+			$('#nombrec').select2({
+             placeholder: 'Digite Clinete',
+             ajax: {
+               url: 'controlador/controladormesa.php?buscarcli=true',
+               dataType: 'json',
+               delay: 250,
+               processResults: function (data) {
+                 return {
+                   results: data
+                 };
+               },
+               cache: true
+             }
+           });
+		});
+		
+	</script> -->
 </head>
 <!-- class="hold-transition skin-blue sidebar-mini" -->
 <body class="skin-blue sidebar-mini sidebar-collapse" id='cargar'>
@@ -359,7 +415,7 @@ $_SESSION['INGRESO']['modulo_']='02';
 	}
 	function prefact2(me,nom)
 	{
-		var nombrec=document.getElementById('nombrec').value;
+		var nombrec=document.getElementById('nombrec2').value;
 		var ruc=document.getElementById('ruc').value;
 		var email=document.getElementById('email').value;
 		if(nombrec !='')
@@ -424,6 +480,19 @@ $_SESSION['INGRESO']['modulo_']='02';
 		//$('#pdfcom').html(''+id+''); 	
 	}
 
+	function imprimir_ticket(mesa)
+	{
+		var html='<iframe style="width:100%; height:50vw;" src="../appr/controlador/imprimir_ticket.php?mesa='+mesa+'&tipo=PF" frameborder="0" allowfullscreen></iframe>';
+		$('#contenido').html(html); 
+			$("#myModal").modal();
+	}
+	function imprimir_ticket_fac(mesa,ci,fac,serie)
+	{
+		var html='<iframe style="width:100%; height:50vw;" src="../appr/controlador/imprimir_ticket.php?mesa='+mesa+'&tipo=FA&CI='+ci+'&fac='+fac+'&serie='+serie+'" frameborder="0" allowfullscreen></iframe>';
+		$('#contenido').html(html); 
+			$("#myModal").modal();
+	}
+
 	function prefact221(me,nom)
 	{   var botones = "<button class='btn btn-primary' onclick='agregar_n(\""+me+"\",\""+nom+"\",\"\");'> Regresar</button>";
 		var html= "<div class='row'><div class='col-sm-12'><iframe style='width:100%; height:50vw;'' src='../../controlador/imprimir_factura.php?tipo=PF' frameborder='0' allowfullscreen></iframe></div></div>"
@@ -461,10 +530,12 @@ $_SESSION['INGRESO']['modulo_']='02';
 	{
 		var cli=document.getElementById('ruc').value;
 		var me=document.getElementById('me').value;
-		var nombrec=document.getElementById('nombrec').value;
+		var nombrec=document.getElementById('nombrec2').value;
 		var email=document.getElementById('email').value;
 		var nom=document.getElementById('nom').value;
 		var monto=monto;
+		var dir = $('#dir').val();
+		var tel = $('#tel').val();
 		var comprob=comprob;
 		var cta=cta;
 		
@@ -477,7 +548,9 @@ $_SESSION['INGRESO']['modulo_']='02';
 			"email": email,
 			"monto": monto,
 			"comprob": comprob,
-			"cta": cta
+			"cta": cta,
+			'dir':dir,
+			'tel':tel,
 		};
 		$.ajax({
 			data:  {parametros:parametros},
@@ -495,7 +568,9 @@ $_SESSION['INGRESO']['modulo_']='02';
 					"nom" : nom,
 					"nombrec": nombrec,
 					"ruc": cli,
-					"email": email
+					"email": email,
+					'dir':dir,
+					'tel':tel,
 				};
 				$.ajax({
 					data:  parametros,
@@ -522,7 +597,7 @@ $_SESSION['INGRESO']['modulo_']='02';
 			var cli=document.getElementById('ruc').value;
 			var telefono=document.getElementById('telefono').value;
 			var codigoc=document.getElementById('codigoc').value;
-			var nombrec=document.getElementById('nombrec').value.toUpperCase();
+			var nombrec=document.getElementById('nombrec2').value.toUpperCase();
 			var email=document.getElementById('email').value.toLowerCase();
 			var direccion=document.getElementById('direccion').value;
 			var nv=document.getElementById('nv').value;
@@ -642,10 +717,137 @@ $_SESSION['INGRESO']['modulo_']='02';
 			document.getElementById(""+id).style.display = "none";
 		}
 	}
+
+//programacion realizada por javier Farinango 
+	function facturar1(me,nom)
+	{
+		var cli= $('#ruc').val(); 
+		var nombrec=$('#nombrec2').val();
+		var email=$('#email').val();
+		var ser=$('#ser').val();
+		var n_fac=$('#n_fac').val();
+		var total_total_=$('#total_total_').val();
+		var total_abono=$('#total_abono').val();
+		var propina_a=$('#propina_a').val();
+		//alert(propina_a);
+		if(total_total_>total_abono)
+		{
+			Swal.fire({
+				type: 'error',
+				title: 'debe abonar mas del monto total: $'+total_total_+'  para generar Factura',
+				text: ''
+			});
+		}			
+		else
+		{
+			
+		$('#myModal_espera').modal('show');
+			var parametros =
+			{
+				"me" : me,
+				"nom" : nom,
+				"nombrec": nombrec,
+				"ruc": cli,
+				"email": email,
+				"ser" : ser,
+				"n_fac" : n_fac,
+				"total_total_" : total_total_,
+				"total_abono" : total_abono,
+				"propina_a" : propina_a
+			};
+			$.ajax({
+				data:  parametros,
+				url:   'controlador/controladormesa.php?facturar=true',
+				type:  'post',
+				// beforeSend: function () {
+				// 		$("#contenido").html("");
+				// },
+				success:  function (response) {
+						//001003--507--,true;
+						//FA_SERIE_001003
+						ser1 = ser.split("_"); 
+						autorizar(ser1[2],n_fac,me,cli);
+					}
+
+			});	
+		}		
+	}
+
+	function autorizar(serie,factura,mesa,ci)
+	{
+
+		var parametros = 
+		{
+			"serie" : serie,
+			"num_fac" :factura,
+			"tc" :'FA' ,
+			"cod_doc" : '01',			
+		};
+		$.ajax({
+			data:  {parametros:parametros},
+			url:   '../../comprobantes/SRI/autorizar_sri.php?autorizar=true',
+			type:  'post',
+			dataType: 'json',
+			success:  function (response) {
+		    $('#myModal_espera').modal('hide');
+				console.log(response);
+				if(response.respuesta == '3')
+				{
+					Swal.fire({
+				       type: 'error',
+				       title: 'Este documento electronico ya esta autorizado',
+				       text: ''
+			       });
+
+			    }else if(response.respuesta == '1')
+			    {
+			    	Swal.fire({
+				       type: 'success',
+				       title: 'Este documento electronico autorizado',
+				       text: ''
+			       });
+			    	imprimir_ticket_fac(mesa,ci,factura,serie);
+			    	liberar(mesa);
+			    }else if(response.respuesta == '2')
+			    {
+			    	Swal.fire({
+				       type: 'info',
+				       title: 'XML devuelto',
+				       text: ''
+			       });
+			    	descargar_archivos(response.url,response.ar);
+
+			    }
+			    else
+			    {
+			    	Swal.fire({
+				       type: 'info',
+				       title: 'Error por: '+response,
+				       text: ''
+			       });
+
+			    }
+
+			}
+		});
+
+	}
+	function descargar_archivos(url,archivo)
+		{
+			var url1 = url+archivo;
+			console.log(url1);
+            var link = document.createElement("a");
+            link.download = archivo;
+            link.href = url1;
+            link.click();
+        }
+
+
+// fin programacion 
 	function facturar(me,nom)
 	{
 		var cli=document.getElementById('ruc').value;
-		var nombrec=document.getElementById('nombrec').value;
+		var nombrec=document.getElementById('nombrec2').value;
 		var email=document.getElementById('email').value;
 		var ser=document.getElementById('ser').value;
 		var n_fac=document.getElementById('n_fac').value;
@@ -684,21 +886,230 @@ $_SESSION['INGRESO']['modulo_']='02';
 						$("#contenido").html("");
 				},
 				success:  function (response) {
-						ventana = window.open("ajax/TEMP/"+me+".pdf", "nuevo", "width=400,height=400");
+						//001003--507--,true;
+						//FA_SERIE_001003
+						ser1 = ser.split("_"); 
+						var mapForm = document.createElement("form");
+						mapForm.target = "_blank";    
+						mapForm.method = "POST";
+						mapForm.action = "../../entidades/autorizar.php";
+						//mapForm.onclick=window.open('../../entidades/autorizar.php','','scrollbars=no,menubar=no,height=600,width=800,resizable=yes,toolbar=no,status=no');
+						
+						// Create an input
+						var mapInput = document.createElement("input");
+						mapInput.type = "text";
+						mapInput.name = "ajax_page";
+						mapInput.value = "autorizar";
+
+						// Add the input to the form
+						mapForm.appendChild(mapInput);
+						
+						var mapInput = document.createElement("input");
+						mapInput.type = "text";
+						mapInput.name = "datos";
+						mapInput.value = ser1[2]+'--'+n_fac;
+
+						// Add the input to the form
+						mapForm.appendChild(mapInput);
+						
+						var mapInput = document.createElement("input");
+						mapInput.type = "text";
+						mapInput.name = "IP";
+						mapInput.value = "<?php echo $IP_VPN_RUTA; ?>";
+														
+						// Add the input to the form
+						mapForm.appendChild(mapInput);
+						
+						var mapInput = document.createElement("input");
+						mapInput.type = "text";
+						mapInput.name = "Ba";
+						mapInput.value = "<?php echo $Base_Datos; ?>";
+														
+						// Add the input to the form
+						mapForm.appendChild(mapInput);
+						
+						var mapInput = document.createElement("input");
+						mapInput.type = "text";
+						mapInput.name = "Us";
+						mapInput.value = "<?php echo $Usuario_DB; ?>";
+														
+						// Add the input to the form
+						mapForm.appendChild(mapInput);
+						
+						var mapInput = document.createElement("input");
+						mapInput.type = "text";
+						mapInput.name = "Co";
+						mapInput.value = "<?php echo $Contraseña_DB; ?>";
+														
+						// Add the input to the form
+						mapForm.appendChild(mapInput);
+						
+						var mapInput = document.createElement("input");
+						mapInput.type = "text";
+						mapInput.name = "Ti";
+						mapInput.value = "<?php echo $Tipo_Base; ?>";
+														
+						// Add the input to the form
+						mapForm.appendChild(mapInput);
+						
+						var mapInput = document.createElement("input");
+						mapInput.type = "text";
+						mapInput.name = "Pu";
+						mapInput.value = "<?php echo $Puerto; ?>";
+														
+						// Add the input to the form
+						mapForm.appendChild(mapInput);
+						
+						var mapInput = document.createElement("input");
+						mapInput.type = "text";
+						mapInput.name = "ru_ce";
+						mapInput.value = "<?php echo $ruta_cer; ?>";
+														
+						// Add the input to the form
+						mapForm.appendChild(mapInput);
+						
+						var mapInput = document.createElement("input");
+						mapInput.type = "text";
+						mapInput.name = "cl_ce";
+						mapInput.value = "<?php echo $clave_cer; ?>";
+														
+						// Add the input to the form
+						mapForm.appendChild(mapInput);
+						
+						var mapInput = document.createElement("input");
+						mapInput.type = "text";
+						mapInput.name = "amb";
+						mapInput.value = "<?php echo $ambiente; ?>";
+														
+						// Add the input to the form
+						mapForm.appendChild(mapInput);
+						
+						var mapInput = document.createElement("input");
+						mapInput.type = "text";
+						mapInput.name = "nom_com";
+						mapInput.value = "<?php echo $nom_com; ?>";
+														
+						// Add the input to the form
+						mapForm.appendChild(mapInput);
+						
+						var mapInput = document.createElement("input");
+						mapInput.type = "text";
+						mapInput.name = "raz_soc";
+						mapInput.value = "<?php echo $raz_soc; ?>";
+														
+						// Add the input to the form
+						mapForm.appendChild(mapInput);
+						
+						var mapInput = document.createElement("input");
+						mapInput.type = "text";
+						mapInput.name = "ruc";
+						mapInput.value = "<?php echo $ruc; ?>";
+														
+						// Add the input to the form
+						mapForm.appendChild(mapInput);
+						
+						var mapInput = document.createElement("input");
+						mapInput.type = "text";
+						mapInput.name = "dir";
+						mapInput.value = "<?php echo $dir; ?>";
+														
+						// Add the input to the form
+						mapForm.appendChild(mapInput);
+						
+						var mapInput = document.createElement("input");
+						mapInput.type = "text";
+						mapInput.name = "cod_doc";
+						mapInput.value = "<?php echo $cod_doc; ?>";
+														
+						// Add the input to the form
+						mapForm.appendChild(mapInput);
+						
+						var mapInput = document.createElement("input");
+						mapInput.type = "text";
+						mapInput.name = "tc";
+						mapInput.value = "<?php echo $tc; ?>";
+														
+						// Add the input to the form
+						mapForm.appendChild(mapInput);
+						
+						var mapInput = document.createElement("input");
+						mapInput.type = "text";
+						mapInput.name = "item";
+						mapInput.value = "<?php echo $item; ?>";
+														
+						// Add the input to the form
+						mapForm.appendChild(mapInput);
+						
+						var mapInput = document.createElement("input");
+						mapInput.type = "text";
+						mapInput.name = "peri";
+						mapInput.value = "<?php echo $periodo; ?>";
+														
+						// Add the input to the form
+						mapForm.appendChild(mapInput);
+						
+						// Add the form to dom
+						document.body.appendChild(mapForm);
+						
+						// Just submit
+						mapForm.submit();
+						document.body.removeChild(mapForm);
+						//var waitUntil = new Date().getTime() + 10*1000;
+						//while(new Date().getTime() < waitUntil) true;
+						var parametros =
+						{
+							"me" : me,
+							"nom" : nom,
+							"nombrec": nombrec,
+							"ruc": cli,
+							"email": email,
+							"ser" : ser,
+							"n_fac" : n_fac,
+							"total_total_" : total_total_,
+							"total_abono" : total_abono,
+							"propina_a" : propina_a,
+							"imprimir" : '1'
+						};
+						$.ajax({
+							data:  parametros,
+							url:   'controlador/controladormesa.php?facturar=true',
+							type:  'post',
+							beforeSend: function () {
+									$("#contenido").html("");
+							},
+							success:  function (response) {
+								 
+
+									// ventana = window.open("ajax/TEMP/"+me+".pdf", "nuevo", "width=400,height=400");
+									// ventana.close();
+									
+									// var html='<iframe style="width:100%; height:50vw;" src="ajax/TEMP/'+me+'.pdf" frameborder="0" allowfullscreen></iframe>';
+									// //$("#contenido").html(response);
+									// $('#contenido').html(html); 
+									$("#myModal").modal();					
+							}
+						});
+						/*ventana = window.open("ajax/TEMP/"+me+".pdf", "nuevo", "width=400,height=400");
 						ventana.close();
+						var waitUntil = new Date().getTime() + 2*1000;
+						while(new Date().getTime() < waitUntil) true;
 						var html='<iframe style="width:100%; height:50vw;" src="ajax/TEMP/'+me+'.pdf" frameborder="0" allowfullscreen></iframe>';
 						//$("#contenido").html(response);
 						$('#contenido').html(html); 
-						$("#myModal").modal();					
+						$("#myModal").modal();	*/		
+
+				 var serie = ser.split('_'); 
+		         setTimeout(imprimir_ticket_fac(me,ruc,n_fac,serie[2]),5000);		
 				}
 			});	
 		}
+
 		
 	}
 	function agregar_abono(me,nom)
 	{
 		var cli=document.getElementById('ruc').value;
-		var nombrec=document.getElementById('nombrec').value;
+		var nombrec=document.getElementById('nombrec2').value;
 		var email=document.getElementById('email').value;
 		var ser=document.getElementById('ser').value;
 		var n_fac=document.getElementById('n_fac').value;
@@ -708,6 +1119,8 @@ $_SESSION['INGRESO']['modulo_']='02';
 		var propina_a=document.getElementById('propina_a').value;
 		document.getElementById("e_abo").style.display = "none";
 		document.getElementById("e_monto_a").style.display = "none";
+		var dir = $('#dir').val();
+		var tel = $('#tel').val();
 		
 		var total_total_=document.getElementById('total_total_').value;
 		var total_abono=document.getElementById('total_abono').value;
@@ -758,7 +1171,9 @@ $_SESSION['INGRESO']['modulo_']='02';
 							"n_fac" : n_fac,
 							"abo": abo,
 							"compro_a": compro_a,
-							"monto_a": monto_a
+							"monto_a": monto_a,
+							'dir':dir,
+							'tel':tel,
 						};
 						$.ajax({
 							data:  parametros,
@@ -777,11 +1192,91 @@ $_SESSION['INGRESO']['modulo_']='02';
 			}
 		}
 	}
+
+	function validarEmail() {
+		valor = $('#email').val();
+		emailRegex = /^[-\w.%+]{1,64}@(?:[A-Z0-9-]{1,63}\.){1,125}[A-Z]{2,63}$/i;
+       if (emailRegex.test(valor)){
+         return 1;
+       } else {
+        Swal.fire({
+				type: 'error',
+				title: 'Email no debe tener caracteres especiales',
+				text: ''
+			});
+
+        $('#update_cli').show();
+        $('#add_datos').hide();
+        return -1;
+       }
+    }
+
+    function validarDir() {
+		valor = $('#Direccion').val();
+		emailRegex =/^[A-Za-z\d\.\ \-]+$/; 
+       if (emailRegex.test(valor)){
+         return 1;
+       } else {
+        Swal.fire({
+				type: 'error',
+				title: 'Direccion no bebe tener caracteres especiales',
+				text: ''
+			});
+        $('#update_cli').show();
+        $('#add_datos').hide();
+        return -1;
+       }
+    }
+
+    function update_cliente()
+    {
+    	var dir =$('#Direccion').val();
+    	var ema =$('#email').val();
+    	var tel =$('#Telefono').val();
+    	var sel =$('#nombrec').val();
+    	var id = sel.split(',');
+    	var parametros = 
+			{
+				"id" :id[0],
+				"tel" : tel,
+				"dir": dir,
+				"ema": ema,
+			};
+			// console.log(parametros);
+			$.ajax({
+				data:  {parametros:parametros},
+				url:   'controlador/controladormesa.php?update_cli=true',
+				type:  'post',			
+				dataType: 'json',	
+				success:  function (response) {
+					if(response=='1')
+					{
+						Swal.fire({
+				           type: 'success',
+				           title: 'Datos de cliente guardados!',
+				           text: ''
+			           });
+						$('#update_cli').hide();
+						$('#add_datos').show();
+					}
+				}
+			});	
+    }
+
+
 	function agregar_cli(me,nom)
 	{ 
+		var ema = validarEmail();
+		var di = validarDir();
+
+		if(ema==1 && di==1)
+		{
+		var data = $('#nombrec').select2('data');       
 		var cli=document.getElementById('ruc').value;
-		var nombrec=document.getElementById('nombrec').value;
+		var nombrec= data[0].text;
 		var email=document.getElementById('email').value;
+		var tel = $('#Telefono').val(); 
+		var dir = $('#Direccion').val(); 
 		
 		if( (cli!='.' && nombrec=='') || (cli!='.' && nombrec!='') || (cli=='9999999999999' && nombrec==''))
 		{
@@ -792,6 +1287,8 @@ $_SESSION['INGRESO']['modulo_']='02';
 				"nombrec": nombrec,
 				"ruc": cli,
 				"email": email,
+				'tel':tel,
+				'dir':dir,
 			};
 			$.ajax({
 				data:  parametros,
@@ -814,12 +1311,17 @@ $_SESSION['INGRESO']['modulo_']='02';
 				text: ''
 			});
 		}
+	  }else
+	  {
+	  	 $('#update_cli').show();	  	 
+	  	 $('#add_datos').hide();
+	  }
 	}
 	function prefact1(event,me,cli,nom)
 	{
 		var codigo = event.which || event.keyCode;
 		var cl=document.getElementById(cli).value;
-		var nombrec=document.getElementById('nombrec').value;
+		var nombrec=document.getElementById('nombrec2').value;
 		var ruc=document.getElementById('ruc').value;
 		var email=document.getElementById('email').value;
 		if(codigo === 13 || codigo === 1)
@@ -927,6 +1429,32 @@ $_SESSION['INGRESO']['modulo_']='02';
 		
     }
 
+    function nuevo_cliente()
+    {
+	     var me=document.getElementById('me').value;
+	     var nom=document.getElementById('nom').value;
+	     var parametros = 
+	     {
+		     "me" : me,
+		     "nom" : nom,
+		     "ajax_page": 'cli1',
+		     cl: 'cli1'
+	     };
+	     $.ajax({
+		     data:  parametros,
+		     url:   'ajax/vista_ajax.php',
+		     type:  'post',
+		     beforeSend: function () {
+		     	//$("#contenido").html("");
+		     },
+		     success:  function (response) {
+			     $("#contenido").html(response);
+			     $("#myModal").modal();								
+		     }
+	     });
+
+    }
+
 
 	function vcliente(event,me,ru)
 	{
@@ -977,35 +1505,42 @@ $_SESSION['INGRESO']['modulo_']='02';
 			});
 		}
 	}
-	function seleccionado(id,me)
+	function seleccionado(me)
 	{		
-		var valor = $("#beneficiario1").val();
-		if(valor!='')
-		{
-			arregloDeSubCadenas = valor.split("-"); 
-			 $("#nombrec").val(arregloDeSubCadenas[2]);
-			 $("#ruc").val(arregloDeSubCadenas[0]);
-		   if(arregloDeSubCadenas[1].length>2)
-			{
-				//alert('1 '+arregloDeSubCadenas[1].length);
-				$('#email').val(arregloDeSubCadenas[1]);
-				//document.getElementById("email").value='<?php echo $_SESSION['INGRESO']['Email_Conexion_CE']; ?>';
-			}
-			else
-			{
-				//alert('2');
-				document.getElementById("email").value='<?php echo $_SESSION['INGRESO']['Email_Conexion_CE']; ?>';
-			}
-			 $("#beneficiario1").css('display','none');
-		}
-		else
-		{
-			 Swal.fire({
-				type: 'error',
-				title: 'debe seleccionar un registro!',
-				text: ''
-			});
-		}
+		$('#update_cli').hide();
+		$('#add_datos').show();
+		var valor = $("#nombrec").val();
+		var partes = valor.split(',');
+		$('#ruc').val(partes[0]);
+		$('#email').val(partes[1]);
+		$('#Direccion').val(partes[2]);
+		$('#Telefono').val(partes[3]);
+		// if(valor!='')
+		// {
+		// 	arregloDeSubCadenas = valor.split("-"); 
+		// 	 $("#nombrec").val(arregloDeSubCadenas[2]);
+		// 	 $("#ruc").val(arregloDeSubCadenas[0]);
+		//    if(arregloDeSubCadenas[1].length>2)
+		// 	{
+		// 		//alert('1 '+arregloDeSubCadenas[1].length);
+		// 		$('#email').val(arregloDeSubCadenas[1]);
+		// 		//document.getElementById("email").value='<?php echo $_SESSION['INGRESO']['Email_Conexion_CE']; ?>';
+		// 	}
+		// 	else
+		// 	{
+		// 		//alert('2');
+		// 		document.getElementById("email").value='<?php echo $_SESSION['INGRESO']['Email_Conexion_CE']; ?>';
+		// 	}
+		// 	 $("#beneficiario1").css('display','none');
+		// }
+		// else
+		// {
+		// 	 Swal.fire({
+		// 		type: 'error',
+		// 		title: 'debe seleccionar un registro!',
+		// 		text: ''
+		// 	});
+		// }
 	}
 	
 	function seleFo(id,me)
@@ -1151,7 +1686,14 @@ $_SESSION['INGRESO']['modulo_']='02';
 		var buscar= '';
 		if(fil!='')
 		{
-			var vari=document.getElementById(fil).value;
+			if(fil=='f_pro')
+			{
+				var vari=document.getElementById(fil).value;
+			}
+			else
+			{
+				var vari=fil;
+			}
 		}
 		$('#botones').html(''); 
 		if ($("#buscar").length) 
@@ -1176,7 +1718,6 @@ $_SESSION['INGRESO']['modulo_']='02';
 			}
 		});
 		//$('#pdfcom').html(''+id+''); 
-		
 	}
 
 	function agregar(id,nom)
@@ -1263,18 +1804,21 @@ $_SESSION['INGRESO']['modulo_']='02';
 				document.getElementById("obs_"+$(this).val()).style.display = "none";
 				document.getElementById("lobs_"+$(this).val()).style.display = "none";
 				document.getElementById("lcanti_"+$(this).val()).style.display = "none";
+				document.getElementById("lcop_"+$(this).val()).style.display = "none";
+				document.getElementById("cop_"+$(this).val()).style.display = "none";
 				//document.getElementById("total_"+id_).style.display = "none";
 				//alert("total_"+id_);
             }
 			else
 			{
-
-		      console.log($(this).val());
+				console.log($(this).val());
 				selected += $(this).val()+', ';
 				document.getElementById("canti_"+$(this).val()).style.display = "block";
 				document.getElementById("obs_"+$(this).val()).style.display = "block";
 				document.getElementById("lcanti_"+$(this).val()).style.display = "block";
 				document.getElementById("lobs_"+$(this).val()).style.display = "block";
+				document.getElementById("lcop_"+$(this).val()).style.display = "block";
+				document.getElementById("cop_"+$(this).val()).style.display = "block";
 				//alert("total_"+id_);
 				//document.getElementById("total_"+id_).style.display = "block";
 			}
@@ -1290,7 +1834,7 @@ $_SESSION['INGRESO']['modulo_']='02';
 		//return todos.join(".");
 	}
 
-	function c_total(id,pre,id_) 
+	function c_total(id,pre,pre_c,id_) 
 	{
 		if(isNaN(document.getElementById('canti_'+id).value))
 		{
@@ -1302,8 +1846,17 @@ $_SESSION['INGRESO']['modulo_']='02';
 		}
 		else
 		{
-			var cant=document.getElementById('canti_'+id).value;
-			var tot=cant*pre;
+			if(document.getElementById('cop_'+id).value=='1')
+			{
+				var cant=document.getElementById('canti_'+id).value;
+				var tot=cant*pre_c;
+			}
+			else
+			{
+				var cant=document.getElementById('canti_'+id).value;
+				var tot=cant*pre;
+			}
+			
 			//alert(tot+"#total_"+id);
 			$("#total_"+id_).html('TOTAL $ '+tot);
 		}
@@ -1315,12 +1868,14 @@ $_SESSION['INGRESO']['modulo_']='02';
 		var selected = '';
 		var selected_c='';
 		var selected_o='';
+		var selected_co='';
 		$('#formu1 input[type=checkbox]').each(function(){
             if (this.checked) 
 			{
 				selected += $(this).val()+', ';
 				selected_c += document.getElementById('canti_'+$(this).val()).value+', '; 
 				selected_o += document.getElementById('obs_'+$(this).val()).value+', '; 
+				selected_co += document.getElementById('cop_'+$(this).val()).value+', '; 
 			}
 		}); 
 		//alert('productos: '+selected+' Cantidad: '+selected_c);  
@@ -1334,6 +1889,7 @@ $_SESSION['INGRESO']['modulo_']='02';
 				prod : selected,
 				cant : selected_c,
 				obs : selected_o,
+				cop : selected_co,
 				bus : bus,
 				
 			};
@@ -1409,7 +1965,7 @@ $_SESSION['INGRESO']['modulo_']='02';
       			
       		</div>
       		<div class="col-sm-12 text-right" id='pie_p'>
-      			 <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>      			
+      			 <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>         			
       		</div>      		
       	</div>
       	
@@ -1424,3 +1980,12 @@ $_SESSION['INGRESO']['modulo_']='02';
 
 </body>
 </html>
+ <div class="modal fade" id="myModal_espera" role="dialog" data-keyboard="false" data-backdrop="static">
+    <div class="modal-dialog modal-sm">
+      <div class="modal-content">
+        <div class="modal-body text-center">
+        	<img src="../../../img/gif/loader4.1.gif" width="80%"> 	
+        </div>
+      </div>
+    </div>
+  </div>

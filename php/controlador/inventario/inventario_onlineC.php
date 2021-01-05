@@ -387,6 +387,7 @@ return $resp;
 		$datos_Asi = $this->modelo->datos_comprobante($_POST['fechaC']);
 		$debe = 0;
 		$haber = 0;
+		
 		foreach ($datos_Asi as $key => $value) {
 			$debe+=$value['DEBE'];
 			$haber+=$value['HABER'];
@@ -396,7 +397,7 @@ return $resp;
 			if($debe != 0 && $haber != 0)
 			{
 
-			//print_r($debe."-".$haber.'---'); die();
+			// print_r($debe."-".$haber.'---'); die();
 			  $datosCom = array('ru'=>$_SESSION['INGRESO']['CodigoU'],'tip'=>'CD','fecha1'=>date('Y-m-d'),'concepto'=>'Salida de inventario por centro de costos '.date('Y-m-d'),'totalh'=>round($haber,2),'num_com'=>$codigo);
 		    }else
 		    {
@@ -408,7 +409,7 @@ return $resp;
 		}else
 		{
 
-    //print_r($debe."-".$haber.'*'); die();
+    print_r($debe."-".$haber); die();
 			$this->modelo->delete_SC_ASientos();
 			sleep(3);
 			return -1;
@@ -464,6 +465,8 @@ function ingresar_trans_kardex_salidas($comprobante,$fechaC)
 		    $datos[16]['dato'] =$_SESSION['INGRESO']['item'];
 		    $datos[17]['campo'] ='CodBodega';
 		    $datos[17]['dato'] ='01';
+		    $datos[18]['campo'] ='CodigoL';
+		    $datos[18]['dato'] =$value['SUBCTA'];
 		    $this->modelo->insertar_trans_kardex($datos);
 		    if($value['Consumos']<>0)
 			{
@@ -503,6 +506,8 @@ function ingresar_trans_kardex_salidas($comprobante,$fechaC)
 		        $datos1[16]['dato'] =$_SESSION['INGRESO']['item'];
 		        $datos1[17]['campo'] ='CodBodega';
 		        $datos1[17]['dato'] ='01';
+		        $datos[18]['campo'] ='CodigoL';
+		        $datos[18]['dato'] =$value['SUBCTA'];
 				 $this->modelo->insertar_trans_kardex($datos1);
 			}  
 		}

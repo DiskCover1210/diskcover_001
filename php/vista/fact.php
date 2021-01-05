@@ -11,18 +11,39 @@ require_once("panel.php");
 require_once("chequear_seguridad_e.php");
 
 
- $dato = "Esta es información importante";
+$IP_VPN_RUTA = $_SESSION['INGRESO']['IP_VPN_RUTA'];
+$Base_Datos = $_SESSION['INGRESO']['Base_Datos'];
+$Usuario_DB = $_SESSION['INGRESO']['Usuario_DB'];
+$Contraseña_DB = $_SESSION['INGRESO']['Contraseña_DB'];
+$Tipo_Base = $_SESSION['INGRESO']['Tipo_Base'];
+$Puerto = $_SESSION['INGRESO']['Puerto'];
+$ruta_cer=$_SESSION['INGRESO']['Ruta_Certificado'];
+$clave_cer=$_SESSION['INGRESO']['Clave_Certificado'];
+$ambiente=$_SESSION['INGRESO']['Ambiente'];
+$nom_com=$_SESSION['INGRESO']['Nombre_Comercial'];
+$raz_soc=$_SESSION['INGRESO']['Razon_Social'];
+$ruc = $_SESSION['INGRESO']['RUC'];
+$dir = $_SESSION['INGRESO']['Direccion'];
 
 //Encripta información:
-$dato_encriptado = $encriptar($dato);
-
-//Desencripta información:
-$dato_desencriptado = $desencriptar($dato_encriptado);
-
-echo 'Dato encriptado: '. $dato_encriptado . '<br>';
-echo 'Dato desencriptado: '. $dato_desencriptado . '<br>';
-
-echo "IV generado: " . $getIV();
+$IP_VPN_RUTA = $encriptar($IP_VPN_RUTA);
+$Base_Datos = $encriptar($Base_Datos);
+$Usuario_DB = $encriptar($Usuario_DB);
+$Contraseña_DB = $encriptar($Contraseña_DB);
+$Tipo_Base = $encriptar($Tipo_Base);
+$Puerto = $encriptar($Puerto);
+$ruta_cer = $encriptar($ruta_cer);
+$clave_cer = $encriptar($clave_cer);
+$ambiente = $encriptar($ambiente);
+$nom_com = $encriptar($nom_com);
+$raz_soc = $encriptar($raz_soc);
+$ruc = $encriptar($ruc);
+$dir = $encriptar($dir);
+$item = $encriptar($_SESSION['INGRESO']['item']);
+$periodo = $encriptar($_SESSION['INGRESO']['periodo']);
+//tipo documkento
+$cod_doc = $encriptar('01');
+$tc=$encriptar('FA');
 	//echo ' jjj '.$_SESSION['autentificado'];
 	//die();
 	//cuerpo
@@ -132,40 +153,191 @@ echo "IV generado: " . $getIV();
 								var datos=document.getElementsByName("clave[]");
 								var auto='1';
 								var datos1='';
+								var ii=0;
 								for(var i=0; i<datos.length; i++) 
 								{
 									if(datos[i].checked==true)
 									{
 										datos1=datos1+''+datos[i].value+','+datos[i].checked+';';
-										alert(" Elemento: " + datos[i].value + "\n Seleccionado: " + datos[i].checked);
+										//alert(" Elemento: " + datos[i].value + "\n Seleccionado: " + datos[i].checked);
+										ii++;
 									}
 								}
-								var mapForm = document.createElement("form");
-								mapForm.target = "_blank";    
-								mapForm.method = "POST";
-								mapForm.action = "../entidades/autorizar.php";
+								if(ii==0)
+								{
+									Swal.fire({
+										type: 'error',
+										title: 'Debe seleccionar un registro',
+										text: ''
+									});
+								}
+								else
+								{
+									var mapForm = document.createElement("form");
+									mapForm.target = "_blank";    
+									mapForm.method = "POST";
+									mapForm.action = "../entidades/autorizar.php";
+									
+									// Create an input
+									var mapInput = document.createElement("input");
+									mapInput.type = "text";
+									mapInput.name = "ajax_page";
+									mapInput.value = "autorizar";
 
-								// Create an input
-								var mapInput = document.createElement("input");
-								mapInput.type = "text";
-								mapInput.name = "ajax_page";
-								mapInput.value = "autorizar";
+									// Add the input to the form
+									mapForm.appendChild(mapInput);
+									
+									var mapInput = document.createElement("input");
+									mapInput.type = "text";
+									mapInput.name = "datos";
+									mapInput.value = datos1;
 
-								// Add the input to the form
-								mapForm.appendChild(mapInput);
-								
-								var mapInput = document.createElement("input");
-								mapInput.type = "text";
-								mapInput.name = "datos";
-								mapInput.value = datos1;
-
-								// Add the input to the form
-								mapForm.appendChild(mapInput);
-								// Add the form to dom
-								document.body.appendChild(mapForm);
-
-								// Just submit
-								mapForm.submit();
+									// Add the input to the form
+									mapForm.appendChild(mapInput);
+									
+									var mapInput = document.createElement("input");
+									mapInput.type = "text";
+									mapInput.name = "IP";
+									mapInput.value = "<?php echo $IP_VPN_RUTA; ?>";
+																	
+									// Add the input to the form
+									mapForm.appendChild(mapInput);
+									
+									var mapInput = document.createElement("input");
+									mapInput.type = "text";
+									mapInput.name = "Ba";
+									mapInput.value = "<?php echo $Base_Datos; ?>";
+																	
+									// Add the input to the form
+									mapForm.appendChild(mapInput);
+									
+									var mapInput = document.createElement("input");
+									mapInput.type = "text";
+									mapInput.name = "Us";
+									mapInput.value = "<?php echo $Usuario_DB; ?>";
+																	
+									// Add the input to the form
+									mapForm.appendChild(mapInput);
+									
+									var mapInput = document.createElement("input");
+									mapInput.type = "text";
+									mapInput.name = "Co";
+									mapInput.value = "<?php echo $Contraseña_DB; ?>";
+																	
+									// Add the input to the form
+									mapForm.appendChild(mapInput);
+									
+									var mapInput = document.createElement("input");
+									mapInput.type = "text";
+									mapInput.name = "Ti";
+									mapInput.value = "<?php echo $Tipo_Base; ?>";
+																	
+									// Add the input to the form
+									mapForm.appendChild(mapInput);
+									
+									var mapInput = document.createElement("input");
+									mapInput.type = "text";
+									mapInput.name = "Pu";
+									mapInput.value = "<?php echo $Puerto; ?>";
+																	
+									// Add the input to the form
+									mapForm.appendChild(mapInput);
+									
+									var mapInput = document.createElement("input");
+									mapInput.type = "text";
+									mapInput.name = "ru_ce";
+									mapInput.value = "<?php echo $ruta_cer; ?>";
+																	
+									// Add the input to the form
+									mapForm.appendChild(mapInput);
+									
+									var mapInput = document.createElement("input");
+									mapInput.type = "text";
+									mapInput.name = "cl_ce";
+									mapInput.value = "<?php echo $clave_cer; ?>";
+																	
+									// Add the input to the form
+									mapForm.appendChild(mapInput);
+									
+									var mapInput = document.createElement("input");
+									mapInput.type = "text";
+									mapInput.name = "amb";
+									mapInput.value = "<?php echo $ambiente; ?>";
+																	
+									// Add the input to the form
+									mapForm.appendChild(mapInput);
+									
+									var mapInput = document.createElement("input");
+									mapInput.type = "text";
+									mapInput.name = "nom_com";
+									mapInput.value = "<?php echo $nom_com; ?>";
+																	
+									// Add the input to the form
+									mapForm.appendChild(mapInput);
+									
+									var mapInput = document.createElement("input");
+									mapInput.type = "text";
+									mapInput.name = "raz_soc";
+									mapInput.value = "<?php echo $raz_soc; ?>";
+																	
+									// Add the input to the form
+									mapForm.appendChild(mapInput);
+									
+									var mapInput = document.createElement("input");
+									mapInput.type = "text";
+									mapInput.name = "ruc";
+									mapInput.value = "<?php echo $ruc; ?>";
+																	
+									// Add the input to the form
+									mapForm.appendChild(mapInput);
+									
+									var mapInput = document.createElement("input");
+									mapInput.type = "text";
+									mapInput.name = "dir";
+									mapInput.value = "<?php echo $dir; ?>";
+																	
+									// Add the input to the form
+									mapForm.appendChild(mapInput);
+									
+									var mapInput = document.createElement("input");
+									mapInput.type = "text";
+									mapInput.name = "cod_doc";
+									mapInput.value = "<?php echo $cod_doc; ?>";
+																	
+									// Add the input to the form
+									mapForm.appendChild(mapInput);
+									
+									var mapInput = document.createElement("input");
+									mapInput.type = "text";
+									mapInput.name = "tc";
+									mapInput.value = "<?php echo $tc; ?>";
+																	
+									// Add the input to the form
+									mapForm.appendChild(mapInput);
+									
+									var mapInput = document.createElement("input");
+									mapInput.type = "text";
+									mapInput.name = "item";
+									mapInput.value = "<?php echo $item; ?>";
+																	
+									// Add the input to the form
+									mapForm.appendChild(mapInput);
+									
+									var mapInput = document.createElement("input");
+									mapInput.type = "text";
+									mapInput.name = "peri";
+									mapInput.value = "<?php echo $periodo; ?>";
+																	
+									// Add the input to the form
+									mapForm.appendChild(mapInput);
+									
+									// Add the form to dom
+									document.body.appendChild(mapForm);
+									
+									// Just submit
+									mapForm.submit();
+									document.body.removeChild(mapForm);
+								}
 								/*$.ajax({
 									data:  {
 										'datos':datos1,

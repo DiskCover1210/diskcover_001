@@ -64,7 +64,7 @@ if(isset($_SESSION['INGRESO']['IP_VPN_RUTA']))
 						//Balance de Comprobacion/Situación/General
 						if ($_SESSION['INGRESO']['accion']=='bacsg') 
 						{
-							require_once("contabilidad/bacsg.php");
+							require_once("contabilidad/bacsg1.php");
 						}
 						//herramientas conexion oracle
 						if ($_SESSION['INGRESO']['accion']=='hco') 

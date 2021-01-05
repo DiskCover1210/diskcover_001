@@ -1,5 +1,6 @@
 <?php
 require_once("../db/db.php");
+require_once('../db/variables_globales.php');
 require_once("../funciones/funciones.php");
 class contabilidad_model{
     private $db;
@@ -401,7 +402,10 @@ class contabilidad_model{
 	//consulta listar balance sql server
 	function ListarTipoDeBalanceSQL($ti=null,$Opcb=null,$Opcem=null,$OpcDG=null,$b=null,$opcr=null,$OpcCE=null){
 		//opciones para generar consultas
-		if($Opcb==null)
+		 $conn = new Conectar();
+         $cid=$conn->conexion();
+
+		if($Opcb==null || $Opcb == '')
 		{
 			if($OpcCE=='1')
 			{
@@ -685,22 +689,24 @@ class contabilidad_model{
 		}
 		$sql=$sql." ORDER BY Codigo ";
 		echo $sql;
-		$stmt = sqlsrv_query( $this->dbs, $sql);
+		// print_r($_SESSION);
+		$stmt = sqlsrv_query($cid, $sql);
 		if( $stmt === false)  
 		{  
 			 echo "Error en consulta PA.\n";  
 			 die( print_r( sqlsrv_errors(), true));  
 		}
 		//para saber si es excel o grilla
+		$tabla='';
 		if($opcr==null or $opcr==1)
 		{
-			grilla_generica($stmt,$ti,$camne,$b,null,null,null,true);
+			$tabla= grilla_generica($stmt,$ti,$camne,$b,null,null,null,true);
 			
 		}
 		if($opcr==2)
 		{
 			//die();
-			exportar_excel_generico($stmt,$ti,$camne,$b);
+			$tabla= exportar_excel_generico($stmt,$ti,$camne,$b);
 		}
 		/*while( $obj = sqlsrv_fetch_object( $stmt)) 
 		{
@@ -712,8 +718,530 @@ class contabilidad_model{
 			$i++;
 		}*/
 		//sqlsrv_close( $this->dbs );
-        //return $empresa;
+       return  $tabla;
 	}
+
+
+	function listar_tipo_balanceSQl($mes,$tipo_ba,$tipo_p,$imprimir=False)
+	{
+		 $conn = new Conectar();
+      $cid=$conn->conexion();
+		$sql = "SELECT * 
+               FROM Fechas_Balance 
+               WHERE Item = '".$_SESSION['INGRESO']['item']."' 
+               AND Periodo = '".$_SESSION['INGRESO']['periodo']."' ";
+               $SQLMsg1='';
+        if($mes)
+        {
+        	$sql.="AND Detalle = 'Balance Mes' ";
+        }else{
+            $sql.="AND Detalle = 'Balance' ";
+        }
+
+        $stmt = sqlsrv_query($cid, $sql);
+	    $result = array();	
+	   while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_ASSOC) ) 
+	   {
+		 $result[] = $row;
+	   }
+
+	   if(count($result))
+	   {
+	   	 $MBFechaI = $result[0]["Fecha_Inicial"];
+         $MBFechaF = $result[0]["Fecha_Final"];
+	   }else
+	   {
+	   	 $MBFechaI = date('Y-m-d');
+         $MBFechaF =  date('Y-m-d');
+	   }
+	   switch ($tipo_ba) {
+	   	case ($tipo_ba==1 || $tipo_ba==2 || $tipo_ba==4):
+	   	$SQLMsg1 = "BALANCE DE COMPROBACION ";
+	   	  $sql = "SELECT DG,Codigo,Cuenta,Saldo_Anterior,Debitos,Creditos,Saldo_Total,TC 
+              FROM Catalogo_Cuentas 
+              WHERE (Debitos<>0 OR Creditos<>0 OR Saldo_Total<>0) ";
+	   		break;
+	   	case ($tipo_ba==5):
+	   	  $sql = "SELECT Codigo,Cuenta,Total_N6,Total_N5,Total_N4,Total_N3,Total_N2,Total_N1,DG,TC
+                  FROM Catalogo_Cuentas
+                  WHERE (Total_N6+Total_N5+Total_N4+Total_N3+Total_N2+Total_N1)<>0
+                  AND TB = 'ES' ";
+	   		break;
+	   	case ($tipo_ba==6):
+	   	  $sql = "SELECT Codigo,Cuenta,Total_N6,Total_N5,Total_N4,Total_N3,Total_N2,Total_N1,DG,TC 
+                 FROM Catalogo_Cuentas 
+                 WHERE (Total_N6+Total_N5+Total_N4+Total_N3+Total_N2+Total_N1)<>0 
+                 AND TB = 'ER' ";
+	   		break;
+	   	case ($tipo_ba==11) :
+	   	$SQLMsg1 = "BALANCE DE PROMEDIOS ";
+         if($Opcion ==1 ){ $SQLMsg1 = "BALANCE CONSOLIDADO ";}
+         // TextoValido TextCotiza, True
+         //Dolar = Round(CSng(TextCotiza.Text), 2)
+         if($Dolar > 0 ){
+            $sql = "UPDATE Catalogo_Cuentas
+                   SET Saldo_Total_ME = Saldo_Total / ".$Dolar."
+                   WHERE Item = '".$_SESSION['INGRESO']['item']."'
+                   AND Periodo = '".$_SESSION['INGRESO']['periodo']."' ";
+           $stmt = sqlsrv_query($cid, $sql);
+         }else{
+            $sql = "UPDATE Catalogo_Cuentas 
+                  SET Saldo_Total_ME = 0 
+                  WHERE Item = '".$_SESSION['INGRESO']['item']."' 
+                  AND Periodo = '".$_SESSION['INGRESO']['periodo']."' ";
+           $stmt = sqlsrv_query($cid, $sql);
+         }
+         $sql = "SELECT DG,Codigo,Cuenta,Saldo_Total_ME,Saldo_Total,TC 
+                 FROM Catalogo_Cuentas 
+                 WHERE DG = 'G' 
+                 AND Saldo_Total <> 0 ";
+              break;
+    case ($tipo_ba == 12) :
+    $SQLMsg1 = "BALANCE DE COMPROBACION SBS B11 ";
+          $sql = "SELECT DG,Codigo,Cuenta,Saldo_Anterior,Debitos,Creditos,Saldo_Total,TC
+              FROM Catalogo_Cuentas
+              WHERE LEN(Codigo) <= 9
+              AND ISNUMERIC(MidStrg(Codigo,1,1)) <> False ";
+	   }
+	    if($tipo_p=='G'){ $sql.="AND DG = 'G' ";}
+	    if($tipo_p=='D'){$sql.="AND DG = 'D' ";}
+	    $sql.= "AND Codigo <> '".G_NINGUNO."'
+              AND Item = '".$_SESSION['INGRESO']['item']."'
+              AND Periodo = '".$_SESSION['INGRESO']['periodo']."'
+              ORDER BY Codigo ";
+// print_r($sql);die();
+
+	  $stmt = sqlsrv_query($cid, $sql);
+		if( $stmt === false)  
+		{  
+			 echo "Error en consulta PA.\n";  
+			 die( print_r( sqlsrv_errors(), true));  
+		}
+		//para saber si es excel o grilla
+		$tabla='';
+		
+		if($imprimir==False)
+		{
+			$tabla= grilla_generica($stmt,$SQLMsg1,null,'1',null,null,null,true);
+			return $tabla;
+		}else{
+			exportar_excel_generico($stmt,$SQLMsg1,NULL,'1');
+		}
+	}
+
+		function listar_tipo_balanceSQl_pdf($mes,$tipo_ba,$tipo_p,$imprimir=False)
+	{
+		 $conn = new Conectar();
+      $cid=$conn->conexion();
+		$sql = "SELECT * 
+               FROM Fechas_Balance 
+               WHERE Item = '".$_SESSION['INGRESO']['item']."' 
+               AND Periodo = '".$_SESSION['INGRESO']['periodo']."' ";
+               $SQLMsg1='';
+        if($mes)
+        {
+        	$sql.="AND Detalle = 'Balance Mes' ";
+        }else{
+            $sql.="AND Detalle = 'Balance' ";
+        }
+
+        $stmt = sqlsrv_query($cid, $sql);
+	    $result = array();	
+	   while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_ASSOC) ) 
+	   {
+		 $result[] = $row;
+	   }
+
+	   if(count($result))
+	   {
+	   	 $MBFechaI = $result[0]["Fecha_Inicial"];
+         $MBFechaF = $result[0]["Fecha_Final"];
+	   }else
+	   {
+	   	 $MBFechaI = date('Y-m-d');
+         $MBFechaF =  date('Y-m-d');
+	   }
+	   switch ($tipo_ba) {
+	   	case ($tipo_ba==1 || $tipo_ba==2 || $tipo_ba==4):
+	   	$SQLMsg1 = "BALANCE DE COMPROBACION ";
+	   	  $sql = "SELECT DG,Codigo,Cuenta,Saldo_Anterior,Debitos,Creditos,Saldo_Total,TC 
+              FROM Catalogo_Cuentas 
+              WHERE (Debitos<>0 OR Creditos<>0 OR Saldo_Total<>0) ";
+	   		break;
+	   	case ($tipo_ba==5):
+	   	  $sql = "SELECT Codigo,Cuenta,Total_N6,Total_N5,Total_N4,Total_N3,Total_N2,Total_N1,DG,TC
+                  FROM Catalogo_Cuentas
+                  WHERE (Total_N6+Total_N5+Total_N4+Total_N3+Total_N2+Total_N1)<>0
+                  AND TB = 'ES' ";
+	   		break;
+	   	case ($tipo_ba==6):
+	   	  $sql = "SELECT Codigo,Cuenta,Total_N6,Total_N5,Total_N4,Total_N3,Total_N2,Total_N1,DG,TC 
+                 FROM Catalogo_Cuentas 
+                 WHERE (Total_N6+Total_N5+Total_N4+Total_N3+Total_N2+Total_N1)<>0 
+                 AND TB = 'ER' ";
+	   		break;
+	   	case ($tipo_ba==11) :
+	   	$SQLMsg1 = "BALANCE DE PROMEDIOS ";
+         if($Opcion ==1 ){ $SQLMsg1 = "BALANCE CONSOLIDADO ";}
+         // TextoValido TextCotiza, True
+         //Dolar = Round(CSng(TextCotiza.Text), 2)
+         if($Dolar > 0 ){
+            $sql = "UPDATE Catalogo_Cuentas
+                   SET Saldo_Total_ME = Saldo_Total / ".$Dolar."
+                   WHERE Item = '".$_SESSION['INGRESO']['item']."'
+                   AND Periodo = '".$_SESSION['INGRESO']['periodo']."' ";
+           $stmt = sqlsrv_query($cid, $sql);
+         }else{
+            $sql = "UPDATE Catalogo_Cuentas 
+                  SET Saldo_Total_ME = 0 
+                  WHERE Item = '".$_SESSION['INGRESO']['item']."' 
+                  AND Periodo = '".$_SESSION['INGRESO']['periodo']."' ";
+           $stmt = sqlsrv_query($cid, $sql);
+         }
+         $sql = "SELECT DG,Codigo,Cuenta,Saldo_Total_ME,Saldo_Total,TC 
+                 FROM Catalogo_Cuentas 
+                 WHERE DG = 'G' 
+                 AND Saldo_Total <> 0 ";
+              break;
+    case ($tipo_ba == 12) :
+    $SQLMsg1 = "BALANCE DE COMPROBACION SBS B11 ";
+          $sql = "SELECT DG,Codigo,Cuenta,Saldo_Anterior,Debitos,Creditos,Saldo_Total,TC
+              FROM Catalogo_Cuentas
+              WHERE LEN(Codigo) <= 9
+              AND ISNUMERIC(MidStrg(Codigo,1,1)) <> False ";
+	   }
+	    if($tipo_p=='G'){ $sql.="AND DG = 'G' ";}
+	    if($tipo_p=='D'){$sql.="AND DG = 'D' ";}
+	    $sql.= "AND Codigo <> '".G_NINGUNO."'
+              AND Item = '".$_SESSION['INGRESO']['item']."'
+              AND Periodo = '".$_SESSION['INGRESO']['periodo']."'
+              ORDER BY Codigo ";
+// print_r($sql);die();
+
+	  $stmt = sqlsrv_query($cid, $sql);
+		if( $stmt === false)  
+		{  
+			 echo "Error en consulta PA.\n";  
+			 die( print_r( sqlsrv_errors(), true));  
+		}
+		//para saber si es excel o grilla
+	   $result = array();	
+	   while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_ASSOC) ) 
+	   {
+		$result[] = $row;
+	   }
+	   $cadena = '';
+	   $pos = strpos($sql, 'FROM');
+	   if ( $pos!== false) 
+	   {
+	   	 $cadena = substr($sql,0,$pos);
+	   }
+	   $cadena = str_replace('SELECT ','',$cadena);
+	   $datos = array('datos' => $result,'campos'=>$cadena);
+	   return $datos;
+	}
+
+
+    function  ListarTipoDeBalance_Ext($EsBalanceMes,$TipoBalance,$TipoPyGCC,$excel=false)
+    {
+    // DGBalance.Visible = False
+    // TextCotiza = Format(Dolar, "#,##0.00")
+
+	  $conn = new Conectar();
+      $cid=$conn->conexion();
+    $sql ="SELECT * 
+         FROM Fechas_Balance
+         WHERE Item = '".$_SESSION['INGRESO']['item']."'
+         AND Periodo = '".$_SESSION['INGRESO']['periodo']."' ";
+         
+        if($EsBalanceMes)
+        {
+        	$sql.= " AND Detalle = 'Balance Mes' ";
+        }else
+        {
+        	$sql.=" AND Detalle = 'Balance' ";
+        }
+
+        $stmt = sqlsrv_query($cid, $sql);
+	    $result = array();	
+	   while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_ASSOC) ) 
+	   {
+		 $result[] = $row;
+	   }
+
+	   if(count($result))
+	   {
+	   	 $MBFechaI = $result[0]["Fecha_Inicial"];
+         $MBFechaF = $result[0]["Fecha_Final"];
+	   }else
+	   {
+	   	 $MBFechaI = date('Y-m-d');
+         $MBFechaF =  date('Y-m-d');
+	   }
+
+       $FechaValida =  $MBFechaI;
+       $FechaValida =  $MBFechaF;
+
+    $sql_array = $this->SQL_Tipo_Balance($TipoBalance,$TipoPyGCC);
+    $sql1 = $sql_array['sql'];
+    $sql2 = $sql_array['totales'];
+
+    // print($sql1);print_r($sql2);die();
+
+     $stmt1 = sqlsrv_query($cid, $sql1);
+     $stmt2 = sqlsrv_query($cid, $sql2);
+	  $totales = array();	
+	   while( $row = sqlsrv_fetch_array( $stmt2, SQLSRV_FETCH_ASSOC) ) 
+	   {
+		 $totales[] = $row;
+	   }
+
+	   switch ($TipoBalance) {
+	   	case 'BC':
+	   		$MensajeEncabData = "BALANCE DE COMPROBACION";
+	   		break;
+	   	case 'BS':
+	   		$MensajeEncabData = "BALANCE GENERAL";
+	   		break;
+	   	case 'BR':
+	   		$MensajeEncabData = "ESTADO DE RESULTADO";
+	   		// $Codigo = SinEspaciosIzq(DCCC)
+            // $Codigo = MidStrg(DCCC, Len(Codigo) + 1, Len(DCCC))
+            // $Codigo = TrimStrg(Replace(Codigo, "-", ""))
+            // $MensajeEncabData = $Codigo
+	   		break;
+	   	
+	   	default:
+	   		 $MensajeEncabData = "BALANCE NO DEFINIDO";
+	   		break;
+	   }
+	    $SQLMsg1 = "D E L  ".$MBFechaI->format('Y-m-d')."  A L  ".$MBFechaI->format('Y-m-d');
+	        // print($sql);die();
+	    if($EsBalanceMes)
+	    {
+	    	 $SQLMsg1 .= "MENSUAL ";
+	    }
+	    $SumaDebe = 0; $SumaHaber = 0;$Saldo=0;
+	    foreach ($totales as $key => $value) {
+
+	    // print_r($value);die();
+	    	$SumaDebe += $value["TDebitos"];
+            $SumaHaber += $value["TCreditos"];
+	    }
+	    $Saldo = ($SumaDebe-$SumaHaber);
+
+	    if($excel == false)
+	    {
+	    	$tabla= grilla_generica($stmt1,$MensajeEncabData,null,1,null,null,null,true);
+	    }else
+	    {
+	    	exportar_excel_generico($stmt1,$MensajeEncabData,NULL,'1');
+	    }
+
+
+
+	    // return 
+	    // print_r($tabla);die();
+
+}
+
+  function  ListarTipoDeBalance_Ext_pdf($EsBalanceMes,$TipoBalance,$TipoPyGCC)
+    {
+    // DGBalance.Visible = False
+    // TextCotiza = Format(Dolar, "#,##0.00")
+
+	  $conn = new Conectar();
+      $cid=$conn->conexion();
+    $sql ="SELECT * 
+         FROM Fechas_Balance
+         WHERE Item = '".$_SESSION['INGRESO']['item']."'
+         AND Periodo = '".$_SESSION['INGRESO']['periodo']."' ";
+         
+        if($EsBalanceMes)
+        {
+        	$sql.= " AND Detalle = 'Balance Mes' ";
+        }else
+        {
+        	$sql.=" AND Detalle = 'Balance' ";
+        }
+
+        $stmt = sqlsrv_query($cid, $sql);
+	    $result = array();	
+	   while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_ASSOC) ) 
+	   {
+		 $result[] = $row;
+	   }
+
+	   if(count($result))
+	   {
+	   	 $MBFechaI = $result[0]["Fecha_Inicial"];
+         $MBFechaF = $result[0]["Fecha_Final"];
+	   }else
+	   {
+	   	 $MBFechaI = date('Y-m-d');
+         $MBFechaF =  date('Y-m-d');
+	   }
+
+       $FechaValida =  $MBFechaI;
+       $FechaValida =  $MBFechaF;
+
+    $sql_array = $this->SQL_Tipo_Balance($TipoBalance,$TipoPyGCC);
+    $sql1 = $sql_array['sql'];
+    $sql2 = $sql_array['totales'];
+
+    // print($sql1);print_r($sql2);die();
+
+     $stmt1 = sqlsrv_query($cid, $sql1);
+     $stmt2 = sqlsrv_query($cid, $sql2);
+	  $totales = array();	
+	   while( $row = sqlsrv_fetch_array( $stmt2, SQLSRV_FETCH_ASSOC) ) 
+	   {
+		 $totales[] = $row;
+	   }
+
+	   switch ($TipoBalance) {
+	   	case 'BC':
+	   		$MensajeEncabData = "BALANCE DE COMPROBACION";
+	   		break;
+	   	case 'BS':
+	   		$MensajeEncabData = "BALANCE GENERAL";
+	   		break;
+	   	case 'BR':
+	   		$MensajeEncabData = "ESTADO DE RESULTADO";
+	   		// $Codigo = SinEspaciosIzq(DCCC)
+            // $Codigo = MidStrg(DCCC, Len(Codigo) + 1, Len(DCCC))
+            // $Codigo = TrimStrg(Replace(Codigo, "-", ""))
+            // $MensajeEncabData = $Codigo
+	   		break;
+	   	
+	   	default:
+	   		 $MensajeEncabData = "BALANCE NO DEFINIDO";
+	   		break;
+	   }
+	    $SQLMsg1 = "D E L  ".$MBFechaI->format('Y-m-d')."  A L  ".$MBFechaI->format('Y-m-d');
+	        // print($sql);die();
+	    if($EsBalanceMes)
+	    {
+	    	 $SQLMsg1 .= "MENSUAL ";
+	    }
+	    $SumaDebe = 0; $SumaHaber = 0;$Saldo=0;
+	    foreach ($totales as $key => $value) {
+
+	    // print_r($value);die();
+	    	$SumaDebe += $value["TDebitos"];
+            $SumaHaber += $value["TCreditos"];
+	    }
+	    $Saldo = ($SumaDebe-$SumaHaber);
+
+	    $result = array();	
+	   while( $row = sqlsrv_fetch_array( $stmt1, SQLSRV_FETCH_ASSOC) ) 
+	   {
+		$result[] = $row;
+	   }
+	   $cadena = '';
+	   $pos = strpos($sql1, 'FROM');
+	   if ( $pos!== false) 
+	   {
+	   	 $cadena = substr($sql1,0,$pos);
+	   }
+	   $cadena = str_replace('SELECT ','',$cadena);
+	   $datos = array('datos' => $result,'campos'=>$cadena);
+	   // print_r($datos);die();
+	   return $datos;
+
+
+
+	    // return 
+	    // print_r($tabla);die();
+
+}
+
+
+
+function SQL_Tipo_Balance($TipoBalance,$TipoPyGCC)
+{
+
+	  $conn = new Conectar();
+      $cid=$conn->conexion();
+   $CantCtas = 0;
+   $sql='';
+   switch ($TipoBalance) {
+   	case 'BR':
+   		if($TipoPyGCC=='01' || $TipoPyGCC=='04')
+   		{
+   			$sql.="SELECT Codigo
+                 FROM Catalogo_SubCtas
+                 WHERE Item = '".$_SESSION['INGRESO']['item']."'
+                 AND Periodo = '".$_SESSION['INGRESO']['periodo']."'
+                 AND Nivel = '".$TipoPyGCC."'
+                 AND Agrupacion = 0
+                 AND TC = 'CC'
+                 ORDER BY Codigo ";
+                  $stmt = sqlsrv_query($cid, $sql);
+                  $result = array();
+                  while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_ASSOC) ) 
+                  	{
+                  		$result[] = $row;
+                  	}
+                  	if(count($result)>0)
+                  	{
+                  		$sql= "SELECT Item, Codigo, Cuenta, ";
+                  		foreach ($result as $key => $value) {
+                  			$sql.= "Total_".$value["Codigo"].", ";                  			
+                  		}
+                  	}
+   		}else
+   		{
+   			 $sql = "SELECT Item, Codigo, Cuenta, Saldo_Anterior, Debitos, Creditos, Saldo_Mes, Saldo_Total, DG ";
+   		}
+   	default:
+   		$sql = "SELECT Item, Codigo, Cuenta, Saldo_Anterior, Debitos, Creditos, Saldo_Mes, Saldo_Total, DG ";
+   		break;
+   }
+
+   $sql.="FROM Catalogo_Cuentas_Exterior
+        WHERE Item = '".$_SESSION['INGRESO']['item']."'
+        AND Periodo = '".$_SESSION['INGRESO']['periodo']."'
+        AND ABS(Saldo_Anterior) + ABS(Debitos) + ABS(Creditos) + ABS(Saldo_Mes) + ABS(Saldo_Total) <> 0 ";
+    switch ($TipoBalance) {
+    	case 'BS':
+    		$sql.="AND SUBSTRING(Codigo,1,1) BETWEEN '1' and '3' ";
+    		break;
+    	
+    	case 'BR':
+    		$sql.="AND SUBSTRING(Codigo,1,1) BETWEEN '4' and '9' ";
+    		break;
+    	
+    }
+
+    $sql.="ORDER BY Codigo ";
+
+    $sql_totales = "SELECT DG, SUM(Debitos) As TDebitos, SUM(Creditos) As TCreditos
+                FROM Catalogo_Cuentas_Exterior
+                WHERE Item = '".$_SESSION['INGRESO']['item']."'
+                AND Periodo = '".$_SESSION['INGRESO']['periodo']."'
+                AND (Debitos + Creditos) <> 0
+                AND DG = 'D' ";
+
+   switch ($TipoBalance) {
+    	case 'BS':
+    		$sql.="AND SUBSTRING(Codigo,1,1) BETWEEN '1' and '3' ";
+    		break;
+    	
+    	case 'BR':
+    		$sql.="AND SUBSTRING(Codigo,1,1) BETWEEN '4' and '9' ";
+    		break;
+    	
+    }
+    $sql_totales.="GROUP BY DG ";
+
+    // print_r($sql);die();
+    $sqls = array('sql'=>$sql,'totales'=>$sql_totales);
+    return $sqls;
+  
+}
+
+
 	//consulta listar balance mysql
 	function ListarTipoDeBalanceMYSQL($ti=null,$Opcb=null,$Opcem=null,$OpcDG=null,$b=null,$opcr=null,$OpcCE=null){
 		//opciones para generar consultas
@@ -2232,7 +2760,6 @@ class contabilidad_model{
 			echo "Statement could not be prepared.\n";  
 			die(print_r(sqlsrv_errors(), true));  
 		} */
-		// print_r('expression');die();
 		if ($stmt = sqlsrv_prepare($this->dbs, $tsql_callSP, $params)) {
 			//echo "Statement prepared.<br><br>\n";  
 
@@ -2248,7 +2775,7 @@ class contabilidad_model{
 		}else{
 
 			//print_r(sqlsrv_fetch_array($stmt));
-			// print_r("ejecutos");
+			//print_r("ejecuto");
 		}
 		/*$stmt3 = sqlsrv_query( $this->dbs, $sql);
 		if( $stmt3 === false )
@@ -2268,6 +2795,82 @@ class contabilidad_model{
 		//echo $stmt;
 		
 	}
+
+	function sp_procesar_balance_SQL($desde,$hasta,$EsCoop,$sucursal,$balanceMes,$cc)
+	{
+		// set_time_limit(1024);
+		// ini_set("memory_limit", "-1");
+		// $desde = '2019/10/28';
+		// $hasta = '2019/11/29';
+	  $conn = new Conectar();
+      $cid=$conn->conexion();
+      $parametros = array(
+      array(&$_SESSION['INGRESO']['item'], SQLSRV_PARAM_IN),
+      array(&$_SESSION['INGRESO']['periodo'], SQLSRV_PARAM_IN),
+      array(&$desde, SQLSRV_PARAM_IN),
+      array(&$hasta, SQLSRV_PARAM_IN),
+      array(&$EsCoop, SQLSRV_PARAM_IN),
+      array(&$sucursal, SQLSRV_PARAM_IN),
+      array(&$balanceMes, SQLSRV_PARAM_IN),
+      array(&$cc, SQLSRV_PARAM_IN)
+      );
+      //compos del SP de la base 
+
+      // print_r($parametros);die();
+
+      // $sql = "{call sp_Procesar_Balance('003','.','20191028','20191124',0,0,0,'00') }";
+      // $stmt = sqlsrv_prepare($cid, $sql);
+     $sql="EXEC sp_Procesar_Balance @Item=?, @Periodo=?, @FechaDesde=?, @FechaHasta=?, @EsCoop=?, @ConSucursal=?, @EsBalanceMes=?, @CentroCostos=? ";
+
+      $stmt = sqlsrv_prepare($cid, $sql,$parametros);
+      if(!$stmt)
+      {
+      	die( print_r( sqlsrv_errors(), true));
+      }
+      if (!sqlsrv_execute($stmt)) {
+   
+         echo "Error en consulta PA.\n";         
+         $respuesta = -1;
+         die( print_r( sqlsrv_errors(), true));
+         return $respuesta;  
+       die;
+      }
+     $respuesta =  1;
+       return $respuesta;		
+	}
+
+	function sp_procesar_balance_ext()
+	{
+		// set_time_limit(1024);
+		// ini_set("memory_limit", "-1");
+		// $desde = '2019/01/01';
+		// $hasta = '2019/01/31';
+	  $conn = new Conectar();
+      $cid=$conn->conexion();
+      $parametros = array(
+      array(&$_SESSION['INGRESO']['item'], SQLSRV_PARAM_IN),
+      array(&$_SESSION['INGRESO']['periodo'], SQLSRV_PARAM_IN)
+      );
+      //compos del SP de la base 
+      // $sql = "{call sp_Procesar_Balance(?,?,?,?,?,?,?,?)}";
+
+     $sql="EXEC sp_Procesar_Balance_Ext @Item=?, @Periodo=?";
+
+      $stmt = sqlsrv_prepare($cid, $sql,$parametros);
+      if (!sqlsrv_execute($stmt)) {
+   
+         echo "Error en consulta PA.\n";         
+         $respuesta = -1;
+         die( print_r( sqlsrv_errors(), true));
+         return $respuesta;  
+       die;
+      }
+      $respuesta =  1;
+        return $respuesta;		
+	}
+
+
+
 	//procesar balance mysql
 	function sp_Procesar_BalanceMYSQL($opc,$sucursal,$item,$periodo,$fechai,$fechaf,$bm,$cc)
 	{
@@ -2467,7 +3070,7 @@ class contabilidad_model{
  	       where (TC = 'CC')
           AND Item = '".$_SESSION['INGRESO']['item']."' 
           AND Periodo = '".$_SESSION['INGRESO']['periodo']."'
-          AND LEN(Codigo)=2 order by Detalle "; 
+          AND LEN(Codigo)=2 order by Codigo "; 
           // print_r($sql);die();     
 
         $stmt = sqlsrv_query($cid, $sql);
@@ -2481,9 +3084,17 @@ class contabilidad_model{
 
   cerrarSQLSERVERFUN($cid);
 	   return $result;
-	}function sp_Reporte_Analitico_Mensual($tipo,$desde,$hasta)
+	}
+
+function sp_Reporte_Analitico_Mensual($tipo,$desde,$hasta)
     {
-      $cid=cone_ajax();
+      $fini = explode('-',$desde);
+      $ffin =  explode('-',$hasta);
+      $desde = $fini[0].''.$fini[1].''.$fini[2]; 
+      $hasta = $ffin[0].''.$ffin[1].''.$ffin[2]; 
+
+      $conn = new Conectar();
+      $cid=$conn->conexion();
       $parametros = array(
       array(&$tipo, SQLSRV_PARAM_IN),
       array(&$_SESSION['INGRESO']['item'], SQLSRV_PARAM_IN),
@@ -2496,6 +3107,7 @@ class contabilidad_model{
       //compos del SP de la base 
       $sql="EXEC sp_Procesar_Balance_Analitico_Mensual @TipoBalance=?, @Item=?,@Periodo=?, @CodigoUsuario=?, @FechaDesde=?, @FechaHasta=?,@ListaMeses=? ";
       // print_r($sql);die();
+      // print_r($parametros);die();
       $stmt = sqlsrv_prepare($cid, $sql, $parametros);
       if (!sqlsrv_execute($stmt)) {
    
@@ -2509,11 +3121,11 @@ class contabilidad_model{
         return $respuesta;
       }
 
-     function Reporte_Analitico_Mensual_gilla($tipo,$query)
+     function Reporte_Analitico_Mensual_gilla($tipo,$query,$excel=false)
      {
          
-         // $conn = new Conectar();
-         $cid=cone_ajax();
+         $conn = new Conectar();
+         $cid=$conn->conexion();
          $sql=$query." FROM Reporte_Analitico_Mensual
          WHERE Item = '".$_SESSION['INGRESO']['item']."'
          AND Periodo = '".$_SESSION['INGRESO']['periodo']."'
@@ -2530,13 +3142,37 @@ class contabilidad_model{
 		 die( print_r( sqlsrv_errors(), true));  
 	   }
 
-	  //guardamos la tabla en una variable y la retoernamos
+	   if($excel==false)
+	   {
+
+	     //guardamos la tabla en una variable y la retoernamos
         $dato = grilla_generica($stmt,null,NULL,'1',null,null,null,true);
-      //  print_r($dato);die();
-
-  cerrarSQLSERVERFUN($cid);
+         //  print_r($dato);die();
+        // cerrarSQLSERVERFUN($cid);
         return $dato;
+       }else
+       {
+    	// print_r($sql);
+        // exportar_excel_generico($stmt,'Resumen Analitico Mensual De Utilidades/Perdidas ',null,'1');  
+        exportar_excel_generico($stmt,'Resumen Analitico Mensual De Utilidades',NULL,'1');
 
+       // cerrarSQLSERVERFUN($cid);   
+
+       }
+
+     }
+     function pdf_reporte($tipo)
+     {
+     	 $cid = Conectar::conexion();
+     	$sql = "SELECT Cta, Detalle_Cuenta, Enero, Febrero, Marzo, Abril, Mayo, Junio, Julio, Agosto, Septiembre, Octubre, Noviembre, Diciembre, Total, Presupuesto, Diferencia, DG, TC FROM Reporte_Analitico_Mensual WHERE Item = '".$_SESSION['INGRESO']['item']."' AND Periodo = '".$_SESSION['INGRESO']['periodo']."' AND CodigoU ='".$_SESSION['INGRESO']['CodigoU']."' AND TB = '".$tipo."' ORDER BY Codigo_Aux;";
+
+        $stmt = sqlsrv_query($cid, $sql);
+	    $result = array();	
+	   while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_ASSOC) ) 
+	   {
+		$result[] = $row;
+	   }
+	   return $result;
      }
 
 }

@@ -714,7 +714,8 @@ function generar_comprobante(parametros)
             title: 'Comprobante '+com[1]+' ingresado con exito!',
             showConfirmButton: true
             //timer: 2500
-          });                                   
+          }); 
+      $('#myModal_espera').modal('hide');                                  
       generar_uno_uno();
       }
 
@@ -815,6 +816,7 @@ function ingresar_trans_kardex(comprobante,fechaC)
 }
 function datos_asiento_SC()
 {
+   $('#myModal_espera').modal('show');
 
   var fc = new Array();
   var num = $('#num_filas').val();
@@ -1055,7 +1057,7 @@ $('#txt_'+id+'_').val(nu);
           </button>         
         </div>
         <div class="col-xs-2 col-md-2 col-sm-2">
-          <button title="Consultar Catalogo de cuentas"  class="btn btn-default" onclick="datos_asiento_SC();/*datos_asientos();*//*numero_com();*/">
+          <button title="Guardar y generar Comprobante"  class="btn btn-default" onclick="datos_asiento_SC();/*datos_asientos();*//*numero_com();*/">
             <img src="../../img/png/grabar.png" >
           </button>
         </div>

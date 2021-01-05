@@ -345,6 +345,29 @@ class niveles_seguriM
 		 	return -1;
 		 }
 	}
+
+
+	function buscar_ruc($ruc)
+	{
+	   $cid = Conectar::conexion('MYSQL');
+	   $sql = "SELECT Item,Empresa as 'emp',L.RUC_CI_NIC as 'ruc',Estado,L.ID_Empresa,Nombre_Entidad as 'Entidad',E.RUC_CI_NIC as 'Ruc_en' FROM lista_empresas L
+	          LEFT JOIN entidad E ON  L.ID_Empresa = E.ID_Empresa
+	          WHERE L.RUC_CI_NIC = '".$ruc."'";
+       // $sql2 = "SELECT Item,Empresa as 'emp',RUC_CI_NIC as 'ruc',Estado FROM lista_empresas WHERE RUC_CI_NIC = '".$ruc."'";
+	   $empresa = array();
+
+		 if($cid)
+		 {
+		 	$consulta=$cid->query($sql) or die($cid->error);
+		 	while($filas=$consulta->fetch_assoc())
+			{
+				$entidad[] =$filas;			
+			}
+			
+		 }
+		 return $entidad;
+
+	}
 	
 }
 ?>

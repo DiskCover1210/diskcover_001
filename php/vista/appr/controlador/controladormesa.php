@@ -1,6 +1,7 @@
 <?php 
 require_once(dirname(__DIR__)."/modelo/modelomesa.php");
 require_once(dirname(__DIR__,3)."/funciones/funciones.php");
+date_default_timezone_set('America/Guayaquil');
 /**
  * 
  */
@@ -61,17 +62,23 @@ if(isset($_REQUEST['abono']))
 if(isset($_REQUEST['facturar']))
 {
 	$mesa = new MesaCon();
-	$mesa->agregar_factura();
 	$me= $_POST['me'];
 	$nom= $_POST['nom'];
-	echo json_encode($mesa->modal_facturas($me,$nom));
+	if($mesa->cambiar_detalle_fac($me)==1)
+	{
+	  $mesa->agregar_factura();
+	  echo json_encode($mesa->modal_facturas($me,$nom));
+	}else
+	{
+		print_r('expression');die();
+	}
 }
-if(isset($_REQUEST['buscarcli']))
-{   
-	$mesa = new MesaCon();
-	$query = $_GET['buscarcli'];
-	echo json_encode($mesa->buscar_cliente($query));
-}
+// if(isset($_REQUEST['buscarcli']))
+// {   
+// 	$mesa = new MesaCon();
+// 	$query = $_GET['buscarcli'];
+// 	echo json_encode($mesa->buscar_cliente($query));
+// }
 if(isset($_REQUEST['liberar']))
 {
 	$mesa = new MesaCon();
@@ -91,6 +98,22 @@ if(isset($_REQUEST['pdf']))
 	$param[0]['PFA']='PF';
 	$me = $_GET['me'];
 	$mesa->pdf_imprimir($me,$param);
+}
+
+if (isset($_GET['buscarcli'])) {
+	$mesa = new MesaCon();
+	if(!isset($_GET['q']))
+	{
+		$_GET['q'] =''; 
+	}
+	echo json_encode($mesa->lista_clientes($_GET['q']));
+}
+
+if(isset($_REQUEST['update_cli']))
+{
+	$mesa = new MesaCon();
+	$parametros = $_POST['parametros'];
+	echo json_encode($mesa->update_cliente($parametros));
 }
 
 class MesaCon 
@@ -115,7 +138,13 @@ class MesaCon
 					type: 'error',
 					title: 'debe configurar serie a cual facturar',
 					text: ''
+				}).then((result) => {
+					if (result.value) {
+						window.location='../panel.php?sa=s';
+						//location.href="panel.php?mos2=e";
+					} 
 				});
+				
 			</script>
 			<?php
 		}
@@ -155,6 +184,7 @@ class MesaCon
 							<i class='ion ion-stats-bars'></i>
 						</div>
 						<a onclick='agregar_n(\"".$value['Codigo_Inv']."\",\"".$value['Producto']."\",\"\");' class='small-box-footer'>ver <i class='fa fa-arrow-circle-right'></i></a>
+
 					</div>
 				</div>";
 			}
@@ -176,7 +206,8 @@ class MesaCon
 		{
 			$bot=' <div class="col-sm-6 text-right">
 						<button type="button" class="btn btn-default btn-sm" onclick="prefact(\''.$id.'\',\''.$nom.'\')"><span class="glyphicon glyphicon-floppy-disk"></span> Factura</button>
-						 <button type="button" class="btn btn-default btn-sm" onclick="prefact22(\''.$id.'\',\''.$nom.'\')"><i class="fa fa-file"></i> Pre-factura</button>
+						 
+						 <button type="button" class="btn btn-default btn-sm" onclick="imprimir_ticket(\''.$id.'\')"><i class="fa fa-file"></i> Pre-factura</button>
 						</div>';
 		}
 		else
@@ -226,7 +257,9 @@ class MesaCon
 										"  (TC = 'I')
 										AND Item = '".$_SESSION['INGRESO']['item']."' 
 										AND Periodo = '".$_SESSION['INGRESO']['periodo']."'
-										AND len(Codigo_Inv)=5 order by Producto "); 
+										AND LEN(Codigo_Inv)>=4
+										AND SUBSTRING(Codigo_Inv,1,2)='01' 
+										 order by Producto "); 
 								echo $html ='</select>
 							</div>
 							<div class="panel-body">
@@ -275,7 +308,8 @@ class MesaCon
 										"  (TC = 'I')
 										AND Item = '".$_SESSION['INGRESO']['item']."' 
 										AND Periodo = '".$_SESSION['INGRESO']['periodo']."'
-										AND len(Codigo_Inv)=5 order by Producto "); 
+										AND LEN(Codigo_Inv)>=4
+										AND SUBSTRING(Codigo_Inv,1,2)='01'  order by Producto "); 
 								echo $html ='</select>
 							</div>
 							<div class="panel-body">
@@ -380,17 +414,47 @@ class MesaCon
 					  <div class="row">
 					  <div class="col-sm-6">
 					  <label id="lcanti_'.$value['Codigo_Inv'].'" style="display:none;">Cantidad</label>
-						<input type="text" class="xs" id="canti_'.$value['Codigo_Inv'].'" name="canti_'.$value['Codigo_Inv'].'"	placeholder="Cant" value="1" maxlength="30"  size="5" style="display:none;" onkeyup="c_total(\''.$value["Codigo_Inv"].'\',\''.$value["PVP"].'\',\''.$key.'\')">
+						<input type="text" class="xs" id="canti_'.$value['Codigo_Inv'].'" name="canti_'.$value['Codigo_Inv'].'"	
+						placeholder="Cant" value="1" maxlength="30"  size="5" style="display:none;" 
+						onkeyup="c_total(\''.$value["Codigo_Inv"].'\',\''.$value["PVP"].'\',\''.$value["PVP_2"].'\',\''.$key.'\')">
 					  </div>
 					  <div class="col-sm-6">
 					  <label id="lobs_'.$value['Codigo_Inv'].'" style="display:none;">Observacion</label>
 						<input type="text" class="xs" id="obs_'.$value['Codigo_Inv'].'"	name="obs_'.$value['Codigo_Inv'].'"	placeholder="Observacion" value="." maxlength="50" size="15" style="display:none;">
-					  </div>
-					  </div>
+					  </div>';
+					  if($value['PVP_2']<>0)
+					  {
+							$html.=' <div class="col-sm-6">
+								<label id="lcop_'.$value['Codigo_Inv'].'" style="display:none;">Medida</label>
+								<select class="xs" id="cop_'.$value['Codigo_Inv'].'"	name="cop_'.$value['Codigo_Inv'].'" style="display:none;" 
+								onChange="c_total(\''.$value["Codigo_Inv"].'\',\''.$value["PVP"].'\',\''.$value["PVP_2"].'\',\''.$key.'\')">
+									<option value="0">Producto Completo</option>
+									<option value="1">Por Fraccion (Copa)</option>
+								</select>
+							</div>';
+					  }
+					  else
+					  {
+							$html.=' <div class="col-sm-6">
+								<label id="lcop_'.$value['Codigo_Inv'].'" style="display:none;"></label>
+								<select class="xs" id="cop_'.$value['Codigo_Inv'].'"	name="cop_'.$value['Codigo_Inv'].'" style="display:none;">
+									<option value="0">Producto Completo</option>
+								</select>
+							</div>';
+					  }
+					 $html.=' </div>
 					</td>
-					<td width="50px">
-					 $ '.number_format($value['PVP'],2, $_SESSION['INGRESO']['Signo_Dec'], $_SESSION['INGRESO']['Signo_Mil']).'
-					 </td>
+					';
+					if($value['PVP_2']==0)
+					{
+						$html.='<td width="50px"> $ '.number_format($value['PVP'],2, $_SESSION['INGRESO']['Signo_Dec'], $_SESSION['INGRESO']['Signo_Mil']).'';
+					}
+					else
+					{
+						$html.='<td width="90px"> $ '.number_format($value['PVP'],2, $_SESSION['INGRESO']['Signo_Dec'], $_SESSION['INGRESO']['Signo_Mil']).' Copa:';
+						$html.=' $ '.number_format($value['PVP_2'],2, $_SESSION['INGRESO']['Signo_Dec'], $_SESSION['INGRESO']['Signo_Mil']).'';
+					}
+					$html.=' </td>
 					<td width="30px">
 					 <small class="label label-success"><i class="fa fa-clock-o"></i> Disponible</small>
 					</td>
@@ -451,7 +515,7 @@ class MesaCon
 				var total_abono=document.getElementById(\'total_abono\').value;
 				var devo=(total_abono-'.($total+$iva).').toFixed(2);
 				$( "#total_abono1" ).html(\'<b>TOTAL ABONO: \'+total_abono+\'</b>\');
-				$( "#operacion" ).html(\'<input type="hidden" id="total_total_" name="total_total_" value="'.($total+$iva).'"><b>TOTAL: $'.number_format(($total+$iva),2, $_SESSION['INGRESO']['Signo_Dec'], $_SESSION['INGRESO']['Signo_Mil']).'</b>\');
+				$( "#operacion" ).html(\'<input type="hidden" id="total_total_" name="total_total_" value="'.number_format(($total+$iva),2).'"><b>TOTAL: $'.number_format(($total+$iva),2,$_SESSION['INGRESO']['Signo_Dec'], $_SESSION['INGRESO']['Signo_Mil']).'</b>\');
 				$( "#devolucion" ).html(\'<b>DIFERENCIA: $\'+devo+\'</b>\');
 			</script>';
 		return $html;
@@ -571,7 +635,6 @@ class MesaCon
 	}
 	function  modal_facturas($me,$nom)
 	{
-		
 		if(isset($_POST['nombrec']) and isset( $_POST['ruc']))
 		{
 			$ser = $this->modelo->factura_serie();
@@ -583,6 +646,11 @@ class MesaCon
 						type: 'error',
 						title: 'debe configurar serie a cual facturar',
 						text: ''
+					}).then((result) => {
+						if (result.value) {
+							window.location='../panel.php?sa=s';
+							//location.href="panel.php?mos2=e";
+						} 
 					});
 				</script>
 				<?php
@@ -591,49 +659,68 @@ class MesaCon
 			$numero = $this->modelo->factura_numero($ser);
 			$abono=0;
 		?>
-			<input type="hidden" id='nombrec' name='nombrec' value='<?php echo $_POST['nombrec'];?>'>
+			<input type="hidden" id='nombrec2' name='nombrec2' value='<?php echo $_POST['nombrec'];?>'>
 			<input type="hidden" id='ruc' name='ruc' value='<?php echo $_POST['ruc'];?>'>
 			<input type="hidden" id='email' name='email' value='<?php echo $_POST['email'];?>'>
 			<input type="hidden" id='ser' name='ser' value='<?php echo 'FA_SERIE_'.$ser.'';?>'>
 			<input type="hidden" id='n_fac' name='n_fac' value='<?php echo $numero;?>'>
+			<input type="hidden" id='dir' name='dir' value='<?php echo $_POST["dir"];?>'>
+			<input type="hidden" id='tel' name='tel' value='<?php echo $_POST['tel'];?>'>
 			
-			<ul class="todo-list">
-				<li>
-				<table>
-					<tr>
-						<td >
-							<b>Datos del cliente</b>
-						</td>
-					</tr>
-					<tr>
-						<td>
-							<b>Razon social: </b><?php echo $_POST['nombrec']; ?>
-						</td>
-					</tr>
-					<tr>
-						<td>
-							<b>Ruc: </b><?php echo $_POST['ruc']; ?>
-						</td>
-					</tr>
-					<tr>
-						<td>
-							<b>Email: </b><?php echo $_POST['email']; ?>
-						</td>
-					</tr>
-					<tr>
-						<td>
-							<b>Serie: </b><?php echo "FA_SERIE_".$ser.""; ?> <b> Numero: </b><?php echo $numero; ?>
-						</td>
-					</tr>
-					<tr>
-						<td>
-							<table class="table table-responsive">
-								<tr>
-									<td colspan='2'>
-										<div class=""><h4>ABONOS</h4></div>
-									</td>
-								</tr>
-					<?php
+
+		<div class="box box-info">
+            <div class="box-header with-border" style="padding-bottom: 0px;">
+              <h3 class="box-title"><b>Datos de cliente</b></h3>
+            </div>
+            <div class="box-body" style="padding-top: 0px;padding-bottom: 0px;">
+            	<div class="row">
+            		<div class="col-sm-9 col-md-10">
+            			<div class="row">
+            				<div class="col-md-9 col-sm-12">
+              	               <b>Razon Social: </b><?php echo $_POST['nombrec']; ?>
+                             </div>
+                             <div class="col-sm-9 col-md-3">
+              	               <b>Ruc: </b><?php echo $_POST['ruc']; ?>
+                             </div>            				
+            			</div>
+            			<div class="row">
+            				 <div class="col-sm-6 col-md-4">
+              	               <b>Email: </b><?php echo $_POST['email']; ?>
+                             </div>
+                             <div class="col-sm-6 col-md-3">
+              	                <b>Telefono: </b><?php echo $_POST['tel']; ?>
+                             </div>
+                              <div class="col-sm-12 col-md-5">
+              	               <b>Direccion: </b><?php echo $_POST['dir']; ?>
+                             </div>            				
+            			</div>
+            		</div>
+            		<div class="col-sm-3 col-md-2" style="padding: 0px;">
+            			<h3 style="margin-top: 0px;"><b> Fact. No: </b><?php echo $numero; ?></h3> 
+            			<b>Serie: </b><?php echo "FA_SERIE_".$ser.""; ?>      			
+            		</div>     		
+            	</div>
+            	   
+            </div>
+            <!-- /.box-body -->
+          </div>
+
+		<div class="box box-info">
+            <div class="box-body">
+            	<div class="row">
+            		<div class="col-md-6">
+            			<div class="box-header with-border">
+            				<h3 class="box-title"><b>ABONOS</b></h3>
+            			</div>
+            			<table class="table table-hover">
+            				<thead>
+            					<th>Forma de pago</th>            					
+            					<th>Monto</th>         					
+            					<th>Adicional</th>
+            					<th></th>
+            				</thead>
+            				<tbody>
+            			<?php
 						//consultar los abonos
 						$resul=$this->mostrar_abono($me);
 						for($i=0;$i<count($resul);$i++)
@@ -641,140 +728,174 @@ class MesaCon
 							?>
 								<tr>
 									<td>
+										<?php echo $resul[$i]['Forma']; ?> 
+									</td>
+									<td>
 										<input type="hidden" id='abono' name='abono' value='<?php echo $resul[$i]['Abono'];?>'>
 										<input type="hidden" id='comp' name='comp' value='<?php echo $resul[$i]['Comprobante'];?>'>
 										<input type="hidden" id='cta' name='cta' value='<?php echo $resul[$i]['Cta'];?>'>
-										<b>Monto: </b><?php echo number_format($resul[$i]['Abono'],2, $_SESSION['INGRESO']['Signo_Dec'], $_SESSION['INGRESO']['Signo_Mil']); ?> 
+										<?php echo number_format($resul[$i]['Abono'],2, $_SESSION['INGRESO']['Signo_Dec'], $_SESSION['INGRESO']['Signo_Mil']); ?> 
 									</td>
 									<td>
-										<b> Adicional: </b><?php echo $resul[$i]['Comprobante']; ?>
+										<?php echo $resul[$i]['Comprobante']; ?>
+										
+									</td>
+									<td>
 										<a onclick="eliminarabo('<?php echo $resul[$i]['Abono'];?>','<?php echo $resul[$i]['Comprobante'];?>','<?php echo $resul[$i]['Cta'];?>');" tittle="Eliminar">
 											<i class="fa fa-trash-o"></i>
-										</a>
+										</a>										
 									</td>
 								</tr>
 							<?php
 							$abono=$abono+$resul[$i]['Abono'];
 						}
-					?>
-							</table>
-						</td>
-					</tr>
-					<tr>
-						<td>
-							<div class=""><b>Tipo Pago (*): &nbsp;</b>
-								<select class="xs" name="abo" id='abo' onChange="mos_ocu('texto_a','abo')">
+					?> 
+					</tbody>
+				    </table>
+            		</div>
+            		<div class="col-md-6">            			
+            			<div><b>Tipo Pago (*):</b>
+							<select class="xs form-control" name="abo" id='abo' onChange="mos_ocu('texto_a','abo')">
 									<option value='0'>Seleccionar</option>
-									<?php
-										/*select_option_aj('Catalogo_Cuentas','Codigo,TC',"Cuenta",
-										" TC IN ('BA','CJ','CP','C','P','TJ','CF','CI','CB') 
-										AND DG = 'D' AND Item = '".$_SESSION['INGRESO']['item']."' 
-										AND Periodo = '".$_SESSION['INGRESO']['periodo']."'  ");*/
+									<?php										
 										select_option_aj('Catalogo_Cuentas','Codigo,TC',"Cuenta",
 										" TC IN ('TJ','EF') 
 										AND DG = 'D' AND Item = '".$_SESSION['INGRESO']['item']."' 
 										AND Periodo = '".$_SESSION['INGRESO']['periodo']."' order by TC ,Codigo ",'1.1.01.01.09-CJ'); ?>
-								</select>
-								<div id='e_abo' class="form-group has-error" style='display:none'>
-									<span class="help-block">debe Seleccionar un tipo de pago</span>
-								</div>
+							</select>
+							<div id='e_abo' class="form-group has-error" style='display:none'>
+								<span class="help-block">debe Seleccionar un tipo de pago</span>
 							</div>
-						</td>
-						<td>
-							
-						</td>
-					</tr>
-					<tr id='texto_a' style='display:none;'>
-						<td>
-							<div class=""><b>Comprobante:</b>
-								<input type="text" class="xs" id="compro_a" name='compro_a' 
-								placeholder="Numero compro o cheque" value='.' maxlength='45' size='5' >
+						</div>
+						<div>
+							<b>Monto (*):</b>
+							<input type="text" class="xs form-control" id="monto_a" name='monto_a' 
+								placeholder="Monto" value='1' maxlength='30' size='5'>
+							<div id='e_monto_a' class="form-group has-error" style='display:none'>
+								<span class="help-block">debe agregar monto</span>
 							</div>
-						</td>
-					</tr>
-					<tr>
-						<td>
-							<div class=""><b>Monto (*):&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</b>
-								<input type="text" class="xs" id="monto_a" name='monto_a' 
-								placeholder="Monto" value='1' maxlength='30' size='5' >
-								<div id='e_monto_a' class="form-group has-error" style='display:none'>
-									<span class="help-block">debe agregar monto</span>
-								</div>
-							</div>
-						</td>
-					</tr>
-					<tr>
-						<td>
-						
-							<div class=""><b>Propina:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</b>
-								<input type="text" class="xs" id="propina_a" name='propina_a' 
+						</div>
+						<div>
+							<b>Propina:</b>
+							<input type="text" class="xs form-control" id="propina_a" name='propina_a' 
 								placeholder="Propina" value='0' maxlength='30' size='5' >
-							</div>	
-						</td>
-					</tr>
-					<tr>
-						<td colspan='2' >
-							<input type="hidden" id='total_abono' name='total_abono' value='<?php echo $abono;?>'>
-							<p id='total_abono1'>Abono Total: $<?php echo $abono; ?></p> <p id="operacion"></p> <p id="devolucion"></p>
-							<!--<p id="propina"></p>-->
-						</td>
-					</tr>
-					<tr>
-						<td colspan='2'>
+						</div> 
+						<div id='texto_a' style='display:none;' ><b>Comprobante:</b>
+							<input type="text" class="xs form-control" id="compro_a" name='compro_a' 
+								placeholder="Numero compro o cheque" value='.' maxlength='45' size='5' >
+						</div>									
+            		</div>
+
+            	</div>
+            	<div class="row">
+            		<div class="col-md-6">
+            			<table class="table table-hober">
+            				<tr>
+            					<td>
+            						 <p id="operacion"></p>
+            					</td>
+            					<td>
+            						<p id='total_abono1'>Abono Total: $<?php echo $abono; ?></p>
+            					</td>
+            					<td>
+            						 <p id="devolucion"></p>
+            					</td>
+            				</tr>
+            				
+            			</table>
+            			<input type="hidden" id='total_abono' name='total_abono' value='<?php echo number_format($abono,2);?>'>
+            		</div>
+            		<div class="col-md-6">            			
 							<button type="button" class="btn btn-info btn-flat btn-sm" 
 							onclick="agregar_abono('<?php echo $_POST['me']; ?>','<?php echo $_POST['nom'];?>','<?php //echo $_POST['bus'];?>');">Agregar Abono</button>
 							<?php
 								if($i>0)
 								{
-									?>
+									?>									
 									<button type="button" class="btn btn-info btn-flat btn-sm" 
-									onclick="facturar('<?php echo $_POST['me']; ?>','<?php echo $_POST['nom'];?>','<?php //echo $_POST['bus'];?>');">
+									onclick="facturar1('<?php echo $_POST['me']; ?>','<?php echo $_POST['nom'];?>','<?php //echo $_POST['bus'];?>');">
 										<span class="glyphicon glyphicon-floppy-disk"></span>
 										Facturar
-									</button>
+									</button>									
 									<?php
 								}
-							?>
-						</td>
-					</tr>
-				</table>
-				</li>
-			</ul>
+							?>            			
+            		</div>
+            	</div>            	   
+            </div>
+        </div>
+
+
+		
 		<?php
 		}
 		$html = '
+		
 		<form>
 		   <div class="row">
 			 <div class="col-sm-6">
 				<div class="panel panel-info">
-					<div class="panel-heading"><h3>Datos de cliente</h3></div>
+					<div class="panel-heading"><h4>Datos de cliente</h4></div>
 				   <div class="panel-body">
-					 <div class="form-group">
-						<label for="nombrec" class="col-sm-2 control-label">Clientes</label>
-						<input type="hidden" name="me" id="me" value="'.$me.'" />
-						<input type="hidden" name="nom" id="nom" value="'.$nom.'" />
-						<input type="text" class="form-control" id="nombrec" name="nombrec" placeholder="Razon social" onkeyup="buscarCli(event,this,\''.$me.'\',\''.$nom.'\')" tabindex="0" required autocomplete="off">                				
-					</div>
-					<div class="form-group" id="cbeneficiario1" style="display:none;">
-						<label for="nombrec" id="lbeneficiario1" style="display:none;" class="col-sm-2 control-label"></label>
-							<select id="beneficiario1" name="beneficiario1" class="form-control" style="display:none;"  onchange="seleccionado('."beneficiario1".',\''.$me.'\');">
-								<option value="">Seleccione Empresa</option>
-							</select>
-						<input type="hidden" name="beneficiario2" id="beneficiario2" value="" />
-					</div>
-					<div class="form-group">
-						<label for="ruc" class="col-sm-2 control-label">RUC</label>
-						<input type="text" class="form-control" id="ruc" name="ruc" placeholder="ruc"  value="." tabindex="0" required>
-					</div>
-					<div class="form-group">
-						<label for="email" class="col-sm-2 control-label">Email</label>
-						<input type="email" class="form-control" id="email" name="email" placeholder="Email" tabindex="0" required="">
-					</div>
-					<div class="form-group">
-						<button type="button" class="btn btn-info btn-flat btn-sm" 
-						onclick="agregar_cli(\''.$me.'\',\''.$nom.'\');">Agregar</button>
-					</div>
-			   </div>
+				        <div class="row">
+				            <div class="col-sm-12 text-right">
+						    <button type="button" class="btn btn-info btn-flat btn-sm" 						    onclick="nuevo_cliente();">Nuevo Cliente</button>				    
+				            </div>
+				        </div>
+				        <br>
+					    <div class="row">
+					        <div class="col-sm-3">
+						        <label for="nombrec" class="col-sm-2 control-label">Clientes</label>
+						        <input type="hidden" name="me" id="me" value="'.$me.'" />
+						        <input type="hidden" name="nom" id="nom" value="'.$nom.'" />
+					        </div>
+					        <div class="col-sm-9">
+					            <select class="form-control" id="nombrec" name="nombrec" onchange="seleccionado(\''.$me.'\');">
+                                     <option value="">Buscar cliente</option>
+                                </select>  
+					        </div>
+					    </div>
+					     <div class="row">
+					        <div class="col-sm-3">
+						        <label for="ruc" class="col-sm-2 control-label">RUC</label>
+					        </div>
+					        <div class="col-sm-9">
+					            <input type="text" class="form-control" id="ruc" name="ruc" placeholder="ruc"  value="." tabindex="0" required>
+					        </div>
+					    </div>					    
+					    <div class="row">
+					        <div class="col-sm-3">
+						        <label for="ruc" class="col-sm-2 control-label">Telefono</label>
+					        </div>
+					        <div class="col-sm-9">
+					            <input type="text" class="form-control" id="Telefono" name="Telefono" placeholder="Telefono"  value="." tabindex="0" required>
+					        </div>
+					    </div>
+					    <div class="row">
+					        <div class="col-sm-3">
+						        <label for="email" class="col-sm-2 control-label">Email</label>
+					        </div>
+					        <div class="col-sm-9">
+					           <input type="email" class="form-control" id="email" name="email" placeholder="Email" tabindex="0" required="" onblur="validarEmail()">
+					        </div>
+					    </div>
+					    <div class="row">
+					        <div class="col-sm-3">
+						        <label for="ruc" class="col-sm-2 control-label">Direccion</label>
+					        </div>
+					        <div class="col-sm-9">
+					            <textarea class="form-control" id="Direccion" required onblur="validarDir()"></textarea>
+					        </div>
+					    </div>		
+					   						
+					    <div class="form-group">
+						    <button type="button" class="btn btn-info btn-flat btn-sm" 
+						    onclick="agregar_cli(\''.$me.'\',\''.$nom.'\');" id="add_datos">Agregar</button>
+						    <button type="button" class="btn btn-info btn-flat btn-sm" 
+						    onclick="update_cliente()" id="update_cli" style="display:none">Editar Cliente</button>
+					    </div>
+					    
+			     </div>
 			</div>
 		 </div>
 		 <div class="col-sm-6">
@@ -783,11 +904,11 @@ class MesaCon
 				  <div class="text-center">';
 					if(isset($_POST['nombrec']) and isset( $_POST['ruc']))
 					{
-						$html=$html.'<h3> Datos Pedido </h3>'; 
+						$html=$html.'<h4> Datos Pedido </h4>'; 
 					}
 					else
 					{
-						$html=$html.'<h3> Datos Pedido </h3>'; 
+						$html=$html.'<h4> Datos Pedido </h4>'; 
 						/*$html=$html.'<button type="button" class="btn btn-default btn-sm" onclick="prefact(\''.$me.'\',\''.$nom.'\')"><span class="glyphicon glyphicon-floppy-disk"></span> Factura</button>
 						<button type="button" class="btn btn-default btn-sm" onclick="prefact22(\''.$me.'\',\''.$nom.'\')"><i class="fa fa-file"></i> Pre-factura</button>';*/
 					}
@@ -827,7 +948,25 @@ class MesaCon
 						}
 						
 					});
-				</script>  
+				</script> 
+				<script type="text/javascript">
+
+			$("#nombrec").select2({
+             placeholder: "Digite Cliente",
+             ajax: {
+               url: "controlador/controladormesa.php?buscarcli=true",
+               dataType: "json",
+               delay: 250,
+               processResults: function (data) {
+                 return {
+                   results: data
+                 };
+               },
+               cache: true
+             }
+           });
+	    </script>
+ 
 			
 				  ';
 				  echo $html;
@@ -857,6 +996,218 @@ class MesaCon
 	{
 		$this->modelo->pdf_imprimir($me,$param );
 		//imprimirDocElPF(null,$me,null,null,null,0,null,'PF');
+	}
+
+	function datos_fac_pre($parametros)
+	{
+		date_default_timezone_set('America/Guayaquil');
+		$datos_pre  ="";
+		if($parametros['tipo'] =='PF')
+		{
+		 $datos_pre =  $this->modelo->datos_pre_factura($parametros['mesa']);
+		 $cabe ='<div style="font-size: 12px;"><b>PREFACTURA No:</b> <br>
+        	<b>NUMERO DE AUTORIZACION: </b> 0 <br>
+        	<b>FECHA: </b>'.date('Y-m-d').' <b>HORA: </b>'.date('H:m:s').' <br>
+        	<b>AMBIENTE: </b>Produccion  <b>EMISION: </b>Normal <br>
+        	<b>CLAVE DE ACCESO</b><br></div><hr>';
+        $cliente = "<b>Razon social/Nombres y Apellidos: </b>. <br>
+                    <b>Identificacion: </b>0 <b>Telefono: </b>022920133<br>
+                    <b>Email: </b>diskcover.system@gmail.com<br>";
+
+        $lineas = "<hr><pre>";
+           foreach ($datos_pre['lineas'] as $key => $value) {
+    $lineas.='
+ <tr>Cant: <td>'.$value['CANT'].'</td></br>';
+                   if($value['Total_IVA']==0)
+                   {
+                   	 $lineas.= '<td>PROD:'.$value['PRODUCTO'].' (E) </td><br>';
+                   }else
+                   {
+                   	$lineas.= '<td>PROD:'.$value['PRODUCTO'].'</td><br>';
+                   }
+                   $lineas.='<td style="text-align: right;">PRE:'.number_format($value['PRECIO'],2).'</td><br><td style="text-align: right;">TOT'.number_format($value['TOTAL'],2).'</td>
+               </tr>';
+           }              
+           $lineas.="</pre>";
+
+
+		}else{
+		 $datos_pre =  $this->modelo->datos_factura($parametros);
+		 // print_r($datos_pre['lineas']);die();
+			$cabe ='<b>FACTURA No:</b>'.$datos_pre['lineas'][0]['Factura'].' <br>
+        	<b>NUMERO DE AUTORIZACION: </b><br>  
+        	<table style="font-size:12px;"><tr><td>'.$datos_pre['lineas'][0]['Autorizacion'].'</td></tr></table>
+        	<b>FECHA: </b>'.date('Y-m-d').' <b>HORA: </b>'.date('H:m:s').' <br>
+        	<b>AMBIENTE: </b>Produccion  <b>EMISION: </b>Normal <br>
+        	<b>CLAVE DE ACCESO</b><br><hr>';
+          $cliente = "<b>Razon social/Nombres y Apellidos: </b>. <br>".$datos_pre['cliente']['Cliente']."<br>
+                    <b>Identificacion: </b>".$datos_pre['cliente']['CI_RUC']." <b> 
+                    Telefono: </b>".$datos_pre['cliente']['Telefono']."<br>
+                    <b>Email: </b>".$datos_pre['cliente']['Email']."<br>";
+
+
+
+
+        $lineas = "<hr><pre>";
+           foreach ($datos_pre['lineas'] as $key => $value) {
+    $lineas.='
+ <tr>Cant: <td>'.$value['Cantidad'].'</td></br>';
+                   if($value['Total_IVA']==0)
+                   {
+                   	 $lineas.= '<td>PROD:'.$value['Producto'].' (E) </td><br>';
+                   }else
+                   {
+                   	$lineas.= '<td>PROD:'.$value['Producto'].'</td><br>';
+                   }
+                   $lineas.='<td style="text-align: right;">PRE:'.number_format($value['Precio'],2).'</td><br><td style="text-align: right;">TOT'.number_format($value['Total'],2).'</td>
+               </tr>';
+           }              
+           $lineas.="</pre>";
+
+     }
+
+         $totales = "<hr>
+         <table style='font-size: 10px;'>
+           <tr>
+             <td style='width: 250px;'><b>Cajero:</b><br></td>
+             <td><b>SUBTOTAL:</b></td>
+             <td style='text-align: right;'>".number_format($datos_pre['preciot'],2) ."</td>
+           </tr>
+           <tr>
+             <td>".$_SESSION['INGRESO']['Nombre']."</td>
+             <td><b>DESCUENTO:</b></td>
+             <td style='text-align: right;'>0.00</td>
+           </tr>
+           <tr>
+             <td rowspan='3'>Su factura sera enviada al correo electronico registrado</td>
+             <td><b>I.V.A 12%:</b> </td>
+             <td style='text-align: right;'>".number_format($datos_pre['iva'],2) ."</td>
+           </tr>
+           <tr>
+             <td><b>TOTAL:</b></td>
+             <td style='text-align: right;'>".number_format($datos_pre['tota'],2)."</td>
+           </tr>
+           <tr>
+             <td><b>Propina:</b></td>
+             <td style='text-align: right;'>0.00</td>
+           </tr>
+
+         </table>
+         ";
+
+         $datos_extra = "<hr><pre>
+         <table style='width:100%'>
+           <tr style='text-align:center'>
+            <td><b>Datos de factura</b></td>
+           </tr>
+            <tr>
+            <td><b>Nombre</b> <br><hr> </td>
+           </tr>
+            <tr>
+            <td><b>CI/RUC</b> <br><hr> </td>
+           </tr>
+            <tr>
+            <td><b>Correo</b> <br><hr> </td>
+           </tr>
+            <tr>
+            <td><b>Telefono</b> <br><hr> </td>
+           </tr>
+            <tr>
+            <td><b>Direccion</b> <br><hr> </td>
+           </tr>
+            <tr>
+            <td style='text-align:center'>Fue un placer atenderle <br>www.cofradiadelvino.com <br>
+                </td>
+           </tr>
+         </table>
+
+
+
+
+
+
+
+
+
+
+
+</pre>
+         ";
+
+        return $cabe.$cliente.$lineas.$totales.$datos_extra;
+		
+
+	}
+
+
+	function lista_clientes($query)
+	{
+		$resp = $this->modelo->listar_clientes($query);
+		return $resp;
+	}
+
+	function update_cliente($parametros)
+	{
+		$resp = $this->modelo->update_cliente($parametros['ema'],$parametros['dir'],$parametros['tel'],$parametros['id']);
+		// print_r($resp);die();
+		return $resp;
+	}
+	function cambiar_detalle_fac($mesa)
+	{
+		   $pedido = $this->modelo->pedido_realizado($mesa);
+		   $datos[0]['campo']='CODIGO_INV';		   
+		   $datos[1]['campo']='PRODUCTO';
+		   $datos[2]['campo']='CANT_ES';
+		   $datos[3]['campo']='CTA_INVENTARIO';
+		   $datos[4]['campo']='CodigoU';
+		   $datos[4]['dato']=$_SESSION['INGRESO']['Id'];   
+		   $datos[5]['campo']='Item';
+		   $datos[5]['dato']=$_SESSION['INGRESO']['item'];
+		   $datos[6]['campo']='A_No';
+		   $datos[7]['campo']='Fecha_Fab';
+		   $datos[8]['campo']='TC';
+		   $datos[9]['campo']='VALOR_TOTAL';
+		   $datos[10]['campo']='CANTIDAD';
+		   $datos[11]['campo']='VALOR_UNIT';
+		   $datos[12]['campo']='CONTRA_CTA';
+		   $datos[13]['campo']='IVA';
+		   $datos[14]['campo']='ORDEN';
+		   $valor_total = 0;
+		   $iva = 0;
+		   $total = 0;
+
+		foreach ($pedido as $key => $value) {
+
+		   $datos[0]['dato']=$value['CODIGO'];
+		   $datos[1]['dato']=$value['PRODUCTO'];
+		   $datos[2]['dato']=$value['CANT'];
+		   $datos[3]['dato']=$value['Cta_Inv'];
+		   $datos[6]['dato']=$value['A_No'];
+		   $datos[7]['dato']=$value['FECHA']->format('Y-m-d');
+		   $datos[8]['dato']='FA';
+		   $datos[9]['dato']=round($value['TOTAL'],2);
+		   $datos[10]['dato']=$value['CANT'];
+		   $datos[11]['dato']=round($value['PRECIO'],2);
+		   $datos[12]['dato']=$value['Cta_Costo'];
+		   $datos[13]['dato']=$value['Total_IVA'];
+		   $datos[14]['dato']=$value['HABIT'];
+		   $resp = $this->modelo->ingresar_asiento_K($datos);
+		   $valor_total +=$datos[9]['dato'];
+		   $total+=$datos[9]['dato'];
+		   $iva+=$datos[13]['dato'];
+		   $par = array('cod_p'=>'','cant'=>$value['CANT'],'cod'=>$value['A_No'],'me'=>$value['HABIT']);
+		   $this->modelo->eliminar_de_pedido($par);		
+		}
+		 $producto = array("me"=>$mesa,"iva"=>$iva,'prod'=>'99.99','total'=>$total,'obs'=>'','valor_total'=>$total,'Precio'=>$total);
+		 // print_r($producto);
+		 // die();
+		   if($this->modelo->agregar_a_pedido_EXPER($producto)==1)
+		   {
+		   	 return 1;
+		   }else
+		   {
+		   	return -1;
+		   }
 	}
 }
 

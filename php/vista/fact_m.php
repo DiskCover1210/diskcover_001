@@ -24,6 +24,7 @@ require_once("../controlador/facturacion/facturacion_controller.php");
 <link rel="stylesheet" href="../../lib/bower_components/bootstrap-daterangepicker/daterangepicker.css">
 <link rel="stylesheet" href="../../lib/bower_components/bootstrap-datepicker/dist/css/bootstrap-datepicker.min.css">
 <link rel="stylesheet" href="../../lib/bower_components/bootstrap-colorpicker/dist/css/bootstrap-colorpicker.min.css"> 
+<br>
  <div class="row">
 		 <div class="col-xs-12">
 			 <div class="box">
@@ -127,7 +128,7 @@ require_once("../controlador/facturacion/facturacion_controller.php");
 						{
 							if($_POST['tipo']!='seleccione')
 							{
-								$filtros=$filtros." AND TD='".$_POST['tipo']."' ";
+								$filtros=$filtros." AND TC='".$_POST['tipo']."' ";
 								$_SESSION['FILTRO']['cam1']=$_POST['tipo'];
 							}
 							else
@@ -140,7 +141,7 @@ require_once("../controlador/facturacion/facturacion_controller.php");
 							//si ya existe un filtro caso paginador
 							if(isset($_SESSION['FILTRO']['cam1']))
 							{
-								$filtros=$filtros." AND TD='".$_SESSION['FILTRO']['cam1']."' ";
+								$filtros=$filtros." AND TC='".$_SESSION['FILTRO']['cam1']."' ";
 							}
 						}
 						if(isset($_POST['fechai']) and isset($_POST['fechaf']))

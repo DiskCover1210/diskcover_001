@@ -455,7 +455,6 @@ class PDF_MC extends PDF_MC_Table
 	public $fechafin;
 	public $titulo;
 	public $salto_header_cuerpo;
-	public $orientacion;
 
     function Header()
     {

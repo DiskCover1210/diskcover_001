@@ -18,20 +18,43 @@
 	}
 ?>
 <script>
-$('#myModal_espera').modal('show');
+$(document).ready(function()
+	{
+
+		$('#imprimir_excel').click(function(){
+			$tipo =$('#txt_tipo').val();
+            var url = '../controlador/contabilidad_controller.php?balance_excel=true&desde='+$('#desde').val()+'&hasta='+$('#hasta').val()+'&TipoBa='+$('#TipoBenef').val()+'&TipoPre='+$('input:radio[name=optionsRadios]:checked').val()+'&Tipo='+$tipo+'&Imp=true&pdf=false';                 
+      	   window.open(url, '_blank');
+
+
+       });
+
+		$('#imprimir_pdf').click(function(){
+			$tipo =$('#txt_tipo').val();
+			var url = '../controlador/contabilidad_controller.php?reporte_pdf=true&desde='+$('#desde').val()+'&hasta='+$('#hasta').val()+'&Tipo='+$tipo;
+			window.open(url, '_blank');
+
+
+       });
+
+    });
+
+// $('#myModal_espera').modal('show');
 
 
 
 
-function bamup($tipo)
+function bamup(tipo)
 {
+	$('#txt_tipo').val(tipo);
 	var parametros = 
  	{
  		'desde':$('#desde').val(),
  		'hasta':$('#hasta').val(),
  		'TipoBa':$('#TipoBenef').val(),
  		'TipoPre':$('input:radio[name=optionsRadios]:checked').val(),
- 		'Tipo':$tipo,
+ 		'Tipo':tipo,
+ 		'Imp':false,
  		//'ES' o 'ER',
  	}
 //parametros que se van a enviar al controlado  tanto para SP como para reporte
@@ -76,16 +99,14 @@ function bamup($tipo)
 							<i ><img src="../../img/png/salire.png" class="user-image" alt="User Image"
 							style='font-size:20px; display:block; height:100%; width:100%;'></i>
 						</a>
-						<a class="btn btn-default" title="Imprimir resultados">
+						<a class="btn btn-default" title="Imprimir resultados" id="imprimir_pdf">
 							<i ><img src="../../img/png/impresora.png" class="user-image" alt="User Image"
 							style='font-size:20px; display:block; height:100%; width:100%;'></i>
 						</a>
 
-						<a id='l7' class="btn btn-default" title="Exportar Excel"
-						href="descarga.php?mod=contabilidad&acc=bacsg&acc1=Balance de Comprobacion/Situación/General&ti=<?php echo $_SESSION['INGRESO']['ti']; ?>
-						&Opcb=6&Opcen=0&b=0&ex=1" onclick='modificar1();' target="_blank">
+						<a id='imprimir_excel' class="btn btn-default" title="Exportar Excel" href="#">
 							<i ><img src="../../img/png/table_excel.png" class="user-image" alt="User Image"
-							style='font-size:20px; display:block; height:100%; width:100%;'></i>
+							style='font-size:20px; display:block; height:100%; width:100%;'></i> 
 						</a>
 						<button class="btn btn-default" id="bamup" onclick="bamup('ES')" title="Balance Analitio mensual de situacion">
 							<img src="../../img/png/bc.png" class="user-image" alt="User Image"
@@ -151,7 +172,7 @@ function bamup($tipo)
 		<div class="box table-responsive">
             <div class="box-header">
               <!--<h3 class="box-title">Striped Full Width Table</h3>-->
-				
+              <input type="hidden" name="" id="txt_tipo">				
 				<div class="form-group">
 					<label for="fechai" class="col-sm-1 control-label">Desde: </label>
 					<div class="col-md-2">

@@ -1543,6 +1543,10 @@ function ingresar()
 		//para contar registro
 		$i=0;
 		$i=contar_registros($stmt);
+		if($t_no == '60')
+		{
+			$i=0;
+		}
 		//echo $i.' -- '.$sql;
 		//seleccionamos el valor siguiente
 		$sql="SELECT TOP 1 A_No FROM Asiento
@@ -3587,7 +3591,7 @@ function buscarEmpresa(){
 					   
 					  <input type="date" class="form-control" id="FechaR" placeholder="FechaR" 
 					  value='<?php echo date('Y-m-d',strtotime($filas['Fecha'])) ?>' 
-					  onKeyPress="return soloNumeros(event)"  maxlength="10" >
+					  onKeyPress="return soloNumeros(event)"  maxlength="10" onkeyup="validar_year_mayor(this.id)" onblur="validar_year_menor(this.id)">
 					</div>
 				</div>
 				<div class="col-md-3">
@@ -3596,7 +3600,7 @@ function buscarEmpresa(){
 					   
 					  <input type="date" class="form-control" id="Fecha" placeholder="Fecha" 
 					  value='<?php echo date('Y-m-d',strtotime($filas['Fecha_CE'])) ?>' onKeyPress="return soloNumeros(event)" 
-					  maxlength="10" >
+					  maxlength="10" onkeyup="validar_year_mayor(this.id)" onblur="validar_year_menor(this.id)">
 					</div>
 				</div>
 				<div class="col-md-3">
@@ -3604,7 +3608,7 @@ function buscarEmpresa(){
 					  <label for="Fecha">Fecha VPN(dia-mes-año)</label>
 					   
 					  <input type="date" class="form-control" id="FechaV" placeholder="FechaV" 
-					  value='<?php echo date('Y-m-d',strtotime($filas['Fecha_VPN'])) ?>'   onKeyPress="return soloNumeros(event)" maxlength="10">
+					  value='<?php echo date('Y-m-d',strtotime($filas['Fecha_VPN'])) ?>'   onKeyPress="return soloNumeros(event)" maxlength="10"onkeyup="validar_year_mayor(this.id)" onblur="validar_year_menor(this.id)">
 					</div>
 				</div>
 				<div class="col-md-3">

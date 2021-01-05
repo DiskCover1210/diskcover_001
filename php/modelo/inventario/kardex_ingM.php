@@ -946,7 +946,7 @@ function dtaAsiento_sc($Trans_No){
 	   }
 	    while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_ASSOC) ) 
 	   {
-		$datos[]=['Codigo'=>$row['Codigo'],'Detalle_Conceptos'=>utf8_encode($row['Detalle_Conceptos'])];	
+		$datos[]=['Codigo'=>$row['Codigo'],'Detalle_Conceptos'=>utf8_encode($row['Detalle_Conceptos']),'Porc'=>$row['Porcentaje']];	
 		 // $datos[] = $row;
 	   }
        return $datos;
@@ -1068,6 +1068,184 @@ function dtaAsiento_sc($Trans_No){
 	   }
        return $datos;
    }
+
+   function Maximo_De($Tabla,$Campo)
+   {
+
+   	 $cid=$this->conn;
+   	 $RegMaximo = 0;
+   	 if($Campo <> "ID")
+   	 {
+   	 	$RegMaximo = 1;
+   	 	$sql = "SELECT MAX(".$Campo.") As Maximo 
+        FROM ".$Tabla." 
+        WHERE ".$Campo." <> 0 ";
+        $stmt = sqlsrv_query($cid, $sql);
+        $datos =  array();
+	   if( $stmt === false)  
+	   {  
+		 echo "Error en consulta PA.\n";  
+		 return '';
+		 die( print_r( sqlsrv_errors(), true));  
+	   }
+	    while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_ASSOC) ) 
+	   {
+		//$datos[]=['Codigo'=>$row['Codigo'],'Detalle_Conceptos'=>utf8_encode($row['Detalle_Conceptos'])];	
+		  $datos[] = $row;
+	   }
+	   if(count($datos)>0)
+	   {
+	   	if($datos[0]['Maximo']!= null)
+	   	{
+	   		$RegMaximo= $datos[0]['Maximo']+1;
+	   	}
+	   }
+     }
+
+       return $RegMaximo;
+   }
+
+   function Cargar_DataGrid($Trans_No)
+   {
+   	 $cid=$this->conn;
+   	 $sql = "SELECT *
+            FROM Asiento_Air
+            WHERE CodRet <> '.'
+            AND Item = '".$_SESSION['INGRESO']['item']."'
+            AND CodigoU = '".$_SESSION['INGRESO']['CodigoU']."'
+            AND T_No = ".$Trans_No."
+            AND Tipo_Trans = 'C'
+            ORDER BY CodRet ";
+            // print_r($sql);die();
+       $stmt = sqlsrv_query($cid, $sql);
+        $datos =  array();
+	   if( $stmt === false)  
+	   {  
+		 echo "Error en consulta PA.\n";  
+		 return '';
+		 die( print_r( sqlsrv_errors(), true));  
+	   }
+	    while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_ASSOC) ) 
+	   {
+		//$datos[]=['Codigo'=>$row['Codigo'],'Detalle_Conceptos'=>utf8_encode($row['Detalle_Conceptos'])];	
+		  $datos[] = $row;
+	   }
+	   return $datos;
+   }
+
+
+   function Carga_RetencionIvaBienes_Servicios()
+   {
+   	 $cid=$this->conn;
+   	 $sql = "SELECT * FROM Tabla_Por_IVA  WHERE Bienes <> 0  ORDER BY Porc ";
+   	 $sql2 = "SELECT * FROM Tabla_Por_IVA WHERE Servicios <> 0 ORDER BY Porc ";
+            // print_r($sql);die();
+       $stmt = sqlsrv_query($cid, $sql);
+       $stmt2 = sqlsrv_query($cid, $sql2);
+       $datos =  array();
+	   if( $stmt === false)  
+	   {  
+		 echo "Error en consulta PA.\n";  
+		 return '';
+		 die( print_r( sqlsrv_errors(), true));  
+	   }
+	    while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_ASSOC) ) 
+	   {
+		//$datos[]=['Codigo'=>$row['Codigo'],'Detalle_Conceptos'=>utf8_encode($row['Detalle_Conceptos'])];	
+		  $datos[] = $row;
+	   }
+
+       $datos2 =  array();
+	   if( $stmt2 === false)  
+	   {  
+		 echo "Error en consulta PA.\n";  
+		 return '';
+		 die( print_r( sqlsrv_errors(), true));  
+	   }
+	    while( $row2 = sqlsrv_fetch_array( $stmt2, SQLSRV_FETCH_ASSOC) ) 
+	   {
+		//$datos[]=['Codigo'=>$row['Codigo'],'Detalle_Conceptos'=>utf8_encode($row['Detalle_Conceptos'])];	
+		  $datos2[] = $row2;
+	   }
+
+	   $resultado = array('bienes'=>$datos,'servicios'=>$datos2);
+	   // print_r($resultado);die();
+	   return $resultado;
+
+   }
+
+   function Ult_fact_Prove($codCli)
+   {
+   	 $cid=$this->conn;
+   	 $sql = "SELECT TOP 1 * 
+          FROM Trans_Compras 
+          WHERE IdProv = '".$codCli."' 
+          AND Item = '".$_SESSION['INGRESO']['item']."' 
+          ORDER BY Fecha DESC,Secuencial DESC ";
+            // print_r($sql);die();
+       $stmt = sqlsrv_query($cid, $sql);
+       $datos =  array();
+	   if( $stmt === false)  
+	   {  
+		 echo "Error en consulta PA.\n";  
+		 return '';
+		 die( print_r( sqlsrv_errors(), true));  
+	   }
+	    while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_ASSOC) ) 
+	   {
+		//$datos[]=['Codigo'=>$row['Codigo'],'Detalle_Conceptos'=>utf8_encode($row['Detalle_Conceptos'])];	
+		  $datos[] = $row;
+	   }
+	   return $datos;
+
+   }
+
+   function cancelar($Trans_No)
+   {
+
+   	//bora asientos de compra
+		 $cid=$this->conn;
+		$sql = "DELETE FROM Asiento_Compras WHERE Item = '".$_SESSION['INGRESO']['item']."' AND CodigoU = '".$_SESSION['INGRESO']['CodigoU']."' AND T_No = ".$Trans_No."; ";
+		$sql.= "DELETE FROM Asiento_Air WHERE Item = '".$_SESSION['INGRESO']['item']."' AND CodigoU = '".$_SESSION['INGRESO']['CodigoU']."'
+         AND Tipo_Trans = 'C' AND T_No = ".$Trans_No." ";
+		// print_r($sql);die();
+		$stmt = sqlsrv_query($cid, $sql);
+	    if( $stmt === false)  
+	      {  
+		     echo "Error en consulta PA.\n";  
+		     // return -1;
+		     die( print_r( sqlsrv_errors(), true));  
+	      }
+	      else{
+	      	return 1;
+	      }      
+   }
+
+
+function Documento_Modificado($codUsuario)
+{
+	 $cid=$this->conn;
+	 $sql = "SELECT *
+            FROM Trans_Compras
+            WHERE Item = '".$_SESSION['INGRESO']['item']."'
+            AND Periodo = '".$_SESSION['INGRESO']['periodo']."'
+            AND IdProv = '".$codUsuario."'
+            ORDER BY Secuencial ";
+             $stmt = sqlsrv_query($cid, $sql);
+       $datos =  array();
+	   if( $stmt === false)  
+	   {  
+		 echo "Error en consulta PA.\n";  
+		 return '';
+		 die( print_r( sqlsrv_errors(), true));  
+	   }
+	    while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_ASSOC) ) 
+	   {
+		//$datos[]=['Codigo'=>$row['Codigo'],'Detalle_Conceptos'=>utf8_encode($row['Detalle_Conceptos'])];	
+		  $datos[] = $row;
+	   }
+	   return $datos;
+}
 
 }
 ?>

@@ -1,6 +1,6 @@
 <?php
 //Llamada al modelo
-require_once("../modelo/contabilidad_model.php");
+require_once("../modelo/facturacion/facturacion_model.php");
 require_once("../modelo/usuario_model.php");
 
 if(isset($_POST['submitlog'])) 
@@ -8,6 +8,16 @@ if(isset($_POST['submitlog']))
 	login('', '', '');
 }
 
+if(isset($_GET['autorizar'])==true) 
+{
+	autorizar();
+}
+
+//para autorizar facturas
+function autorizar()
+{
+	echo " Entro ";
+}
 //lista balance funcion sql server
 function ListarTipoDeBalanceSQL($ti=null,$Opcb=null,$Opcem=null,$OpcDG=null,$b=null,$OpcCE=null)
 {

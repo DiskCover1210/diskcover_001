@@ -50,6 +50,11 @@ if(isset($_GET['nuevo_usuario']))
 	$parametros=$_POST['parametros'];
 	echo json_encode($controlador->nuevo_usurio($parametros));
 }
+if(isset($_GET['buscar_ruc']))
+{
+	$parametros=$_POST['ruc'];
+	echo json_encode($controlador->buscar_ruc($parametros));
+}
 class niveles_seguriC
 {
 	private $modelo;
@@ -219,6 +224,20 @@ class niveles_seguriC
 		}
 		// $rest = $this->modelo->nuevo_usuario();
 		// return $rest;
+
+	}
+
+	function buscar_ruc($parametros)
+	{
+		// print_r($parametros);die();
+		$existe = $this->modelo->buscar_ruc($parametros);
+		if(count($existe)>0)
+		{
+			return $existe;
+		}else
+		{
+			return -1;
+		}
 
 	}
 

@@ -260,6 +260,7 @@ require_once("panel.php");
   	$('#txt_empresas').val('');
   	autocmpletar_usuario();
   	let entidad = $('#ddl_entidad').val();
+    // alert(entidad);
   	$.ajax({
     		 data:  {entidad:entidad},
     		url:   '../controlador/niveles_seguriC.php?empresas=true',
@@ -455,6 +456,70 @@ function guardar()
  }
 
  }
+
+ function buscar_empresa_ruc()
+ {
+  var ruc = $('#ruc_empresa').val();
+      $.ajax({
+        data:  {ruc:ruc},
+        url:   '../controlador/niveles_seguriC.php?buscar_ruc=true',
+        type:  'post',
+        dataType: 'json',
+        beforeSend: function () { 
+          $('#myModal_espera').modal('show'); 
+          $('#list_empre').html('<tr class="text-center"><td colspan="6"> No encontrado... </td></tr>');
+          $('#txt_enti').val('');
+        },
+        success:  function (response) { 
+          if(response == -1)
+           {
+            Swal.fire({
+                //position: 'top-end',
+                type: 'info',
+                title: 'RUC no encontrado!',
+                showConfirmButton: true
+                //timer: 2500
+                });
+              $('#myModal_espera').modal('hide'); 
+            
+           }else
+           {
+
+            // $('#txt_enti').val(response.entidad[0]['Nombre_Entidad']);
+            var empresa = '';
+            console.log(response);
+            $.each(response, function(i,item){
+              if(i==0)
+              {
+             empresa+="<tr><td><input type='radio' name='radio_usar' value='"+item.ID_Empresa+"-"+item.Entidad+"-"+item.Item+"' checked></td><td>"+item.emp+"</td><td>"+item.Item+"</td><td>"+item.ruc+"</td><td>"+item.Estado+"</td><td><i><b><u>"+item.Entidad+"</u></b></i></td><td><i><b><u>"+item.Ruc_en+"</u></b></i></td></tr>";
+              }else
+              {
+                 empresa+="<tr><td><input type='radio' name='radio_usar' value='"+item.ID_Empresa+"-"+item.Entidad+"-"+item.Item+"'></td><td>"+item.emp+"</td><td>"+item.Item+"</td><td>"+item.ruc+"</td><td>"+item.Estado+"</td><td><i><b><u>"+item.Entidad+"</u></b></i></td><td><i><b><u>"+item.Ruc_en+"</u></b></i></td></tr>";
+
+              }
+            });
+
+           $('#list_empre').html(empresa);
+             $('#myModal_espera').modal('hide'); 
+           }
+        }
+      });
+
+}
+function usar_busqueda()
+{
+  var entidad =  $("input[name=radio_usar]").val();
+ 
+       var datos = entidad.split('-');
+       $('#ddl_entidad').append($('<option>',{value: datos[0], text:datos[1],selected: true }));      
+       cargar_empresas();
+       $('#myModal_ruc').modal('hide');
+       setTimeout(function(){
+       $('#emp_'+datos[2]).attr('checked',true); 
+       empresa_select(datos[2]);   
+       }, 1500);
+ 
+}
 </script>
 
 <div class="container">
@@ -515,8 +580,14 @@ function guardar()
 </div>
  <div class="row">
 	<div class="col-sm-4">
-		<b>Entidad</b> <br>
-		<select class="form-control" id="ddl_entidad" onchange="cargar_empresas();"><option value="">Seleccione entidad</option></select>
+   	<b>Entidad</b> <br>
+      <div class="input-group">
+         <select class="form-control" id="ddl_entidad" onchange="cargar_empresas();"><option value="">Seleccione entidad</option></select>
+       <div class="input-group-btn">
+          <button type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#myModal_ruc"><span class="fa fa-search"></span> RUC</button>
+       </div>
+
+      </div>
 	</div>
 	<div class="col-sm-4">    
    <b>Usuario</b> <br>
@@ -599,7 +670,6 @@ function guardar()
 
 <div id="myModal" class="modal fade" role="dialog">
   <div class="modal-dialog">
-
     <!-- Modal content-->
     <div class="modal-content">
       <div class="modal-header">
@@ -619,6 +689,47 @@ function guardar()
       <div class="modal-footer">
         <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
         <button type="button" class="btn btn-success" onclick="guardarN()">Guardar</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div id="myModal_ruc" class="modal fade" role="dialog" data-keyboard="false" data-backdrop="static">
+  <div class="modal-dialog">
+    <!-- Modal content-->
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h4 class="modal-title">Buscar empresa por ruc</h4>
+      </div>
+      <div class="modal-body">
+        <div class="input-group">
+          <input type="text" name="" id="ruc_empresa" class="form-control" placeholder="Ingrese RUC de empresa">
+          <div class="input-group-btn">
+            <button type="button" class="btn btn-primary" onclick="buscar_empresa_ruc()">Buscar</button>
+          </div>          
+        </div>
+        <table class="table table-hover">
+          <thead>
+            <th></th>
+            <th>Empresa</th>
+            <th>Item</th>
+            <th>Ruc asociado</th>
+            <th>Estado</th>
+            <th>Entidad</th>
+            <th>Ruc Entidad</th>
+          </thead>
+          <tbody id="list_empre">
+            <tr class="text-center">
+              <td colspan="6"> No encontrado... </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+        <button type="button" class="btn btn-success" onclick="usar_busqueda()">Usar</button>
       </div>
     </div>
 

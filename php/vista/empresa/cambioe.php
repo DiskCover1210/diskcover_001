@@ -120,13 +120,13 @@
 					</td>
 					<td>
 					   <!--<input type="date" id="desde" class="form-control"  value="<?php //echo date("d-m-Y");?>" >-->
-					   <input type="date" class="form-control input-sm" id="desde" value="<?php echo date("d-m-Y");?>">
+					   <input type="date" class="form-control input-sm" id="desde" value="<?php echo date("Y-m-d");?>"  onkeyup="validar_year_mayor(this.id)" onblur="validar_year_menor(this.id)">
 					</td>
 					<td>
 						<b>Hasta:&nbsp;</b>
 					</td>
 					<td>
-						<input type="date" id="hasta"  class="form-control"  value="<?php echo date("d-m-Y");?>" onblur="consultar_datos();">
+						<input type="date" id="hasta"  class="form-control"  value="<?php echo date("Y-m-d");?>"  onkeyup="validar_year_mayor(this.id)" onblur="validar_year_menor(this.id);consultar_datos();">
 					</td>
 			  </table>
 			<?php

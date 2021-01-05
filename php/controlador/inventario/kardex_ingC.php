@@ -115,6 +115,12 @@ if(isset($_GET['DCPais']))
   // $parametros = $_POST['DCRetIBienes'];
   echo  json_encode($controlador->DCPais());
 }
+if(isset($_GET['Carga_RetencionIvaBienes_Servicios']))
+{
+  // $parametros = $_POST['DCRetIBienes'];
+  echo  json_encode($controlador->Carga_RetencionIvaBienes_Servicios());
+}
+
 if(isset($_GET['DCTipoComprobante']))
 {
    $parametros = $_POST['parametros'];
@@ -126,6 +132,40 @@ if(isset($_GET['DCBenef_Data']))
    $parametros = $_POST['parametros'];
   echo  json_encode($controlador->DCBenef_Data($parametros));
 }
+if(isset($_GET['grabacion']))
+{
+   $parametros = $_POST['parametros'];
+  echo  json_encode($controlador->grabacion($parametros));
+}
+if(isset($_GET['Insertar_DataGrid']))
+{
+   $parametros = $_POST['parametros'];
+  echo  json_encode($controlador->Insertar_DataGrid($parametros));
+}
+if(isset($_GET['Cargar_DataGrid']))
+{
+   $parametros = $_POST['parametros'];
+  echo  json_encode($controlador->Cargar_DataGrid($parametros['Trans_No']));
+}
+
+if(isset($_GET['Ult_fact_Prove']))
+{
+   $parametros = $_POST['parametros'];
+  echo  json_encode($controlador->Ult_fact_Prove($parametros));
+}
+
+if(isset($_GET['cancelar']))
+{
+   $parametros = $_POST['Trans_No'];
+  echo  json_encode($controlador->cancelar($parametros));
+}
+
+if(isset($_GET['Documento_Modificado']))
+{
+   $parametros = $_POST['parametros'];
+  echo  json_encode($controlador->Documento_Modificado($parametros));
+}
+
 
 class kardex_ingC
 {
@@ -447,6 +487,284 @@ class kardex_ingC
   
    // print_r($datos);die();
     return $datos;
+  }
+
+  function Carga_RetencionIvaBienes_Servicios()
+  {
+    $datos = $this->modelo->Carga_RetencionIvaBienes_Servicios();
+    // print_r($datos);die();
+    return $datos;
+  }
+  function grabacion($parametros)
+  {
+    $datos[0]['campo']="IdProv";
+    $datos[1]['campo']="DevIva";
+    $datos[2]['campo']="CodSustento"; 
+    $datos[3]['campo']="TipoComprobante" ;
+    $datos[4]['campo']="Establecimiento"; 
+    $datos[5]['campo']="PuntoEmision"; 
+    $datos[6]['campo']="Secuencial"; //CTNumero
+    $datos[7]['campo']="Autorizacion"; 
+    $datos[8]['campo']="FechaEmision"; 
+    $datos[9]['campo']="FechaRegistro"; 
+    $datos[10]['campo']="FechaCaducidad"; 
+    $datos[11]['campo']="BaseNoObjIVA"; //CTNumero 2 decimales
+    $datos[12]['campo']="BaseImponible"; //CTNumero 2 decimales
+    $datos[13]['campo']="BaseImpGrav"; //CTNumero 2 decimales
+    $datos[14]['campo']="PorcentajeIva"; 
+    $datos[15]['campo']="MontoIva"; //CTNumero 2 decimales
+    $datos[16]['campo']="BaseImpIce"; //CTNumero 2 decimales
+    $datos[17]['campo']="PorcentajeIce";
+    $datos[18]['campo']="MontoIce"; //CTNumero 2 decimales
+    $datos[19]['campo']="Porc_Bienes";
+    $datos[20]['campo']="MontoIvaBienes"; //CTNumero 2 decimales
+    $datos[21]['campo']="PorRetBienes";                  //ojo la varable puedee cambiar
+    $datos[22]['campo']="ValorRetBienes"; //CTNumero 2 decimales
+    $datos[23]['campo']="Porc_Servicios";
+    $datos[24]['campo']="MontoIvaServicios"; //CTNumero 2 decimales
+    $datos[25]['campo']="PorRetServicios";                //ojo la varable puedee cambiar
+    $datos[26]['campo']="ValorRetServicios";
+
+    $datos[0]['dato']=$parametros["IdProv"];
+    $datos[1]['dato']=$parametros["DevIva"];
+    $datos[2]['dato']=$parametros["CodSustento"]; 
+    $datos[3]['dato']=$parametros["TipoComprobante"]; 
+    $datos[4]['dato']=$parametros["Establecimiento"]; 
+    $datos[5]['dato']=$parametros["PuntoEmision"]; 
+    $datos[6]['dato']=$parametros["Secuencial"]; //CTNumero
+    $datos[7]['dato']=$parametros["Autorizacion"]; 
+    $datos[8]['dato']=$parametros["FechaEmision"]; 
+    $datos[9]['dato']=$parametros["FechaRegistro" ];
+    $datos[10]['dato']=$parametros["FechaCaducidad"]; 
+    $datos[11]['dato']=  round($parametros["BaseNoObjIVA"],2, PHP_ROUND_HALF_ODD);
+    $datos[12]['dato']=  round($parametros["BaseImponible"],2, PHP_ROUND_HALF_ODD); //CTNumero 2 decimales
+    $datos[13]['dato']=  round($parametros["BaseImpGrav"],2, PHP_ROUND_HALF_ODD); //CTNumero 2 decimales
+    $datos[14]['dato']=$parametros["PorcentajeIva"]; 
+    $datos[15]['dato']=  round($parametros["MontoIva"],2, PHP_ROUND_HALF_ODD); //CTNumero 2 decimales
+    $datos[16]['dato']=  round($parametros["BaseImpIce"],2, PHP_ROUND_HALF_ODD); //CTNumero 2 decimales
+    $datos[17]['dato']=$parametros["PorcentajeIce"];
+    $datos[18]['dato']=  round($parametros["MontoIce"],2, PHP_ROUND_HALF_ODD); //CTNumero 2 decimales
+    $datos[19]['dato']=$parametros["Porc_Bienes"];
+    $datos[20]['dato']=  round($parametros["MontoIvaBienes"] ,2, PHP_ROUND_HALF_ODD);//CTNumero 2 decimales
+    $datos[21]['dato']=$parametros["PorRetBienes"];                  //ojo la varable puedee cambiar
+    $datos[22]['dato']=  round($parametros["ValorRetBienes"],2, PHP_ROUND_HALF_ODD); //CTNumero 2 decimales
+    $datos[23]['dato']=$parametros["Porc_Servicios"];
+    $datos[24]['dato']=  round($parametros["MontoIvaServicios"],2, PHP_ROUND_HALF_ODD); //CTNumero 2 decimales
+    $datos[25]['dato']=$parametros["PorRetServicios"];                //ojo la varable puedee cambiar
+    $datos[26]['dato']=$parametros["ValorRetServicios"];
+
+     $datos[27]['campo']= "DocModificado";
+     $datos[28]['campo']= "FechaEmiModificado";
+     $datos[29]['campo']= "EstabModificado"; 
+     $datos[30]['campo']= "PtoEmiModificado"; 
+     $datos[31]['campo']= "SecModificado";
+     $datos[32]['campo']= "AutModificado";
+
+
+     $datos[33]['campo']= "ContratoPartidoPolitico";
+     $datos[34]['campo']= "MontoTituloOneroso";
+     $datos[35]['campo']= "MontoTituloGratuito";
+
+    $datos[36]['campo']= "PagoLocExt";
+    $datos[37]['campo']="PaisEfecPago";
+    $datos[38]['campo']= "AplicConvDobTrib";
+    $datos[39]['campo']= "PagExtSujRetNorLeg";
+    $datos[40]['campo']= "FormaPago";
+    $datos[41]['campo']= "A_No";
+    $datos[42]['campo']= "T_No";
+    $datos[43]['campo']= "CodigoU";
+
+
+     if($parametros['TipoComprobante']=='5' || $parametros['TipoComprobante']==4)
+     {
+       $datos[27]['dato']=$parametros['DocModificado'];
+       $datos[28]['dato']=$parametros['FechaEmiModificado'];
+       $datos[29]['dato']=$parametros['EstabModificado'];
+       $datos[30]['dato']=$parametros['PtoEmiModificado'];
+       $datos[31]['dato']=$parametros['SecModificado'];
+       $datos[32]['dato']=$parametros['AutModificado'];
+
+     }else
+     {
+       $datos[27]['dato']= "0";
+       $datos[28]['dato']= date('Y-m-d');
+       $datos[29]['dato']= "000";
+       $datos[30]['dato']= "000";
+       $datos[31]['dato']= "0000000";
+       $datos[32]['dato']= "0000000000";
+
+     }
+     if($parametros['ContratoPartidoPolitico']=="")
+     {
+        $datos[33]['dato']="0000000000";
+     }else
+     {
+       $datos[33]['dato']=$parametros['ContratoPartidoPolitico'];
+     }
+      $datos[34]['dato']=round($parametros["MontoTituloOneroso"],2, PHP_ROUND_HALF_ODD);
+      $datos[35]['dato']=round($parametros["MontoTituloGratuito"],2, PHP_ROUND_HALF_ODD);
+
+      if($parametros['CFormaPago']==2)
+      {
+        $datos[36]['dato']= "02";
+        $datos[37]['dato']=$parametros['DCPais'];
+        $datos[38]['dato']= $parametros['OpcSiAplicaDoble'];
+        $datos[39]['dato']= $parametros['OpcSiFormaLegal'];
+
+      }else
+      {
+        $datos[36]['dato']= "01";
+        $datos[37]['dato']="NA";
+        $datos[38]['dato']= "NA";
+        $datos[39]['dato']= "NA";
+
+      }
+    
+   
+    $datos[40]['dato']= $parametros["FormaPago"];
+    $datos[41]['dato']= "1";
+    $datos[42]['dato']= 1; // verificar
+    $datos[43]['dato']= $_SESSION['INGRESO']['CodigoU'];
+
+
+    if(insert_generico("Asiento_Compras",$datos)==null)
+    {
+      print_r('expression');die();
+
+    }
+  }
+
+  function Insertar_DataGrid($parametros)
+  {
+    // print_r($parametros);die();
+     if($parametros['BaseImp']=='')
+     {
+       $parametros['BaseImp'] = 0;
+     }
+     if($parametros['BaseImp']>0)
+     {
+       $datos[0]['campo']= "CodRet";
+       $datos[1]['campo']= "Detalle";
+       $datos[2]['campo']= "BaseImp";
+       $datos[3]['campo']= "Porcentaje";
+       $datos[4]['campo']= "ValRet";
+       $datos[5]['campo']= "EstabRetencion";
+       $datos[6]['campo']= "PtoEmiRetencion";
+       $datos[7]['campo']= "SecRetencion";
+       $datos[8]['campo']= "AutRetencion";
+       $datos[9]['campo']= "FechaEmiRet";
+       $datos[10]['campo']= "Cta_Retencion";
+       $datos[11]['campo']= "EstabFactura";
+       $datos[12]['campo']= "PuntoEmiFactura";
+       $datos[13]['campo']= "Factura_No";
+       $datos[14]['campo']= "IdProv";
+       $datos[15]['campo']= "A_No";
+       $datos[16]['campo']= "T_No";
+       $datos[17]['campo']="Tipo_Trans";
+       $datos[18]['campo']="CodigoU";
+       $datos[19]['campo']="Item";
+
+       $datos[0]['dato']= $parametros["CodRet"];
+       $datos[1]['dato']= $parametros["Detalle"];
+       $datos[2]['dato']=round($parametros["BaseImp"],2, PHP_ROUND_HALF_ODD);
+       $datos[3]['dato']=round( $parametros["Porcentaje"],2, PHP_ROUND_HALF_ODD) / 100;
+       $datos[4]['dato']= round($parametros["ValRet"],2, PHP_ROUND_HALF_ODD);
+       $datos[5]['dato']= $parametros["EstabRetencion"];
+       $datos[6]['dato']= $parametros["PtoEmiRetencion"];
+       $datos[7]['dato']= $parametros["SecRetencion"];
+       $datos[8]['dato']= $parametros["AutRetencion"];
+       $datos[9]['dato']= $parametros["FechaEmiRet"];
+       $datos[10]['dato']= $parametros["Cta_Retencion"];
+       $datos[11]['dato']= $parametros["EstabFactura"];
+       $datos[12]['dato']= $parametros["PuntoEmiFactura"];
+       $datos[13]['dato']= $parametros["Factura_No"];
+       $datos[14]['dato']= $parametros["IdProv"];
+       $datos[15]['dato']= $this->modelo->Maximo_De("Asiento_Air", "A_No");    
+       $datos[16]['dato']= "1"; //ojo cambia
+       $datos[17]['dato']= "C";
+       $datos[18]['dato']=$_SESSION['INGRESO']['CodigoU'];
+       $datos[19]['dato']=$_SESSION['INGRESO']['item'];
+        if(insert_generico("Asiento_Air",$datos)==null)
+          {
+           return 1;
+          }
+
+     }else
+     {
+      return -1;
+     } 
+     
+   
+  }
+
+  function Cargar_DataGrid($Trans_No)
+  {
+    $datos = $this->modelo->Cargar_DataGrid($Trans_No);
+    $html = '';
+    foreach ($datos as $key => $value) {
+      $html.='<tr>
+                <td>'.$value["CodRet"].'</td>
+                <td>'.$value["Detalle"].'</td>
+                <td>'.round($value["BaseImp"],2, PHP_ROUND_HALF_ODD).'</td>
+                <td>'.round($value["Porcentaje"],2, PHP_ROUND_HALF_ODD).'</td>
+                <td>'.round($value["ValRet"],2, PHP_ROUND_HALF_ODD).'</td>
+                <td>'.$value["EstabRetencion"].'</td>
+                <td>'.$value["PtoEmiRetencion"].'</td>
+                <td>'.$value["SecRetencion"].'</td>
+                <td>'.$value["AutRetencion"].'</td>
+                <td>'.$value["FechaEmiRet"]->format('Y-m-d').'</td>
+                <td>'.$value["Cta_Retencion"].'</td>
+                <td>'.$value["EstabFactura"].'</td>
+                <td>'.$value["PuntoEmiFactura"].'</td>
+                <td>'.$value["Factura_No"].'</td>
+                <td>'.$value["IdProv"].'</td>
+                <td>'.$value["Item"].'</td>
+                <td>'.$value["CodigoU"].'</td>
+                <td>'.$value["A_No"].'</td>
+                <td>'.$value["T_No"].'</td>
+                <td>'.$value["Tipo_Trans"].'</td>              
+              </tr>';
+    }
+    return $html;
+  }
+
+  function Ult_fact_Prove($parametros)
+  {
+    $datos = $this->modelo->Ult_fact_Prove($parametros['proveedor']);
+    // print_r($datos);die();
+    if(count($datos)>0)
+    {
+      $fact = array('secu'=>$datos[0]['Secuencial']+1,'fech_cad'=>$datos[0]['FechaCaducidad']->format('Y-m-d'),'esta'=>$datos[0]['Establecimiento'],'punto'=>$datos[0]['PuntoEmision'],'auto'=>$datos[0]['Autorizacion']);
+      return $fact;
+       // TxtNumSerietres = AdoAux.Recordset.Fields("Secuencial") + 1
+      // MBFechaCad = AdoAux.Recordset.Fields("FechaCaducidad")
+      // TxtNumSerieUno = AdoAux.Recordset.Fields("Establecimiento")
+      // TxtNumSerieDos = AdoAux.Recordset.Fields("PuntoEmision")
+      // TxtNumAutor = AdoAux.Recordset.Fields("Autorizacion")
+    }else
+    {
+       $fact = array('secu'=>'0000001','fech_cad'=>date('Y-m-d'),'esta'=>'001','punto'=>'001','auto'=>'00000001');
+      return $fact;
+
+    }
+  }
+
+  function cancelar($Trans_No)
+  {
+    $res = $this->modelo->cancelar($Trans_No);
+    return $res;
+  }
+
+  function Documento_Modificado($parametros)
+  {
+    $datos = $this->modelo->Documento_Modificado($parametros['proveedor']);
+    if(count($datos)>0)
+    {
+      return $datos[0]['Secuencial'];
+    }else
+    {
+      return '';
+    }
   }
 }
 ?>

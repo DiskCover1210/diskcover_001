@@ -5685,4 +5685,36 @@ function dimenciones_tabla($tabla)
 		return $campos;
 	}
 }
+
+function dimenciones_tabl($len)
+{
+  $px = 8;
+  if($len > 60)
+  {
+    $val = 60*8;
+    return $val.'px';
+  }elseif ($len==1) {
+     $val = ($len+2)*8;
+    return $val.'px';
+  }elseif ($len >= 10 And $len<=13){
+     $val = ($len+2)*8;
+    return $val.'px';
+  }elseif ($len==10){
+     $val = ($len+2)*8;
+    return $val.'px';
+  }elseif ($len>3 And $len <6) {
+     $val = ($len+2)*8;
+    return $val.'px';
+  }elseif ($len==3){
+     $val = ($len+2)*8;
+    return $val.'px';
+  }elseif ($len>13 And $len<60) {
+     $val = ($len+2)*8;
+    return $val.'px';
+  }else
+  {
+     $val = ($len+2)*8;
+    return $val.'px';
+  }
+}
 ?>
