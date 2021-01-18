@@ -25,6 +25,11 @@ if(isset($_GET['nuevo']))
 	$respuesta = $controlador->insertar_paciente($_POST['parametros']);
 	echo json_encode($respuesta);
 }
+if(isset($_GET['eliminar']))
+{
+	$respuesta = $controlador->eliminar_paciente($_POST['cli'],$_POST['ruc']);
+	echo json_encode($respuesta);
+}
 class pacienteC
 {
 	private $modelo;
@@ -46,14 +51,14 @@ class pacienteC
 			$d5 =  dimenciones_tabl(strlen($value['Telefono']));
 			$tr.='<tr>
   					<td width="'.$d.'">'.$value['ID'].'</td>
-  					<td width="'.$d2.'">'.$value['Codigo'].'</td>
+  					<td width="'.$d2.'">'.$value['Matricula'].'</td>
   					<td width="'.$d3.'">'.$value['Cliente'].'</td>
   					<td width="'.$d4.'">'.$value['CI_RUC'].'</td>
   					<td width="'.$d5.'">'.$value['Telefono'].'</td>
   					<td width="90px">
-  					    <button class="btn btn-sm btn-default" title="Ver Historial"><span class="glyphicon glyphicon-th-large"></span></button>
+  					    <a href="../vista/farmacia.php?mod=Farmacia&acc=vis_descargos&acc1=Visualizar%20descargos&b=1&po=subcu&cod='.$value['Matricula'].'&ci='.$value['CI_RUC'].'#" class="btn btn-sm btn-default" title="Ver Historial"><span class="glyphicon glyphicon-th-large"></span></a>
   						<button class="btn btn-sm btn-primary" onclick="buscar_cod(\'E\',\''.$value['Codigo'].'\')" title="Editar paciente"><span class="glyphicon glyphicon-pencil"></span></button>  						
-  						<a href="http://localhost/diskcover_001/php/vista/farmacia.php?mod=Farmacia&acc=vis_descargos&acc1=Visualizar%20descargos&b=1&po=subcu#" class="btn btn-sm btn-danger" title="Editar paciente"><span class="glyphicon glyphicon-trash"></span></a>
+  						<button class="btn btn-sm btn-danger" title="Eliminar paciente"  onclick="eliminar(\''.$value['ID'].'\',\''.$value['CI_RUC'].'\')" ><span class="glyphicon glyphicon-trash"></span></button>
   					</td>
   				</tr>';
 			
@@ -128,8 +133,34 @@ class pacienteC
 		}
 
 	}
-	function eliminar_paciente()
+	function eliminar_paciente($cli,$ruc)
 	{
+		$num_c = strlen($ruc);
+		if($num_c>10)
+		{
+			$ruc = substr($ruc,0,-3);
+			$resp = $this->modelo->existe_transacciones_subcuenta_abonos_air_compras($ruc);
+			if($resp ==1)
+			{
+				return -1;
+			}else
+			{
+				return 1;//funcion eliminar falta
+			}
+		}else
+		{
+			$ruc = substr($ruc,0,-3);
+			$resp = $this->modelo->existe_transacciones_subcuenta_abonos_air_compras($ruc);
+			if($resp ==1)
+			{
+				return -1;
+			}else
+			{
+				return 1;//funcion eliminar falta
+			}
+
+		}
+		
 
 	}
 	function imprimir_paciente()

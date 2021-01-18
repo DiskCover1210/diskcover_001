@@ -409,7 +409,7 @@ return $resp;
 		}else
 		{
 
-    print_r($debe."-".$haber); die();
+            print_r($debe."-".$haber); die();
 			$this->modelo->delete_SC_ASientos();
 			sleep(3);
 			return -1;
@@ -512,7 +512,7 @@ function ingresar_trans_kardex_salidas($comprobante,$fechaC)
 			}  
 		}
 
-	}
+}
 function eliminar_asientos_k()
  {
  	$resp = $this->modelo->eliminar_aiseto_K();

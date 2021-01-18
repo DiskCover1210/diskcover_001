@@ -179,6 +179,40 @@
       }
     });
   }
+
+  function eliminar(cli,ruc)
+  {
+    Swal.fire({
+      title: 'Quiere eliminar este registro?',
+      text: "Esta seguro de eliminar este registro!",
+      type: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Si'
+    }).then((result) => {
+        if (result.value) {
+              $.ajax({
+                data:  {cli:cli,ruc:ruc},
+                url:   '../controlador/farmacia/pacienteC.php?eliminar=true',
+                type:  'post',
+                dataType: 'json',
+                success:  function (response) 
+                      {
+                        if(response ==1)
+                          {
+                            Swal.fire('','Agregado en entregas.','success');
+                          }else
+                          {
+                            Swal.fire('','Este usuario tiene Datos ligados.','error');
+                          }
+                      }
+                });
+        }
+      });
+
+  }
+
 </script>
 <div class="container-lg">
   <div class="row">
@@ -216,7 +250,7 @@
             <input type="hidden" class="form-control" id="txt_tip" value="N">
             <input type="hidden" class="form-control" id="txt_id">   
             <div class="input-group">
-                <input type="text" class="form-control" id="txt_codigo">                
+                <input type="text" class="form-control input-sm" id="txt_codigo">                
                 <span class="input-group-addon" title="Buscar" onclick="buscar_cod('C1','txt_codigo')"><i class="fa fa-search"></i></span>
                 <!-- <span class="input-group-addon" title="Buscar"><i class="fa fa-search"></i></span> -->
             </div>

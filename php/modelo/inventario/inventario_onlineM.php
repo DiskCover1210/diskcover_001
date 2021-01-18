@@ -507,7 +507,7 @@ LEFT JOIN Catalogo_SubCtas CS2 on A.Codigo_Dr = CS2.Codigo  WHERE  CodigoU = '".
 		 $cid = $this->conn;
     // 'LISTA DE CODIGO DE ANEXOS
      $sql = "SELECT * FROM Catalogo_SubCtas   WHERE Item = '".$_SESSION['INGRESO']['item']."' AND Periodo = '".$_SESSION['INGRESO']['periodo']."' AND Codigo = '".$cuenta."'";
-          // print_r($sql);die();
+          print_r($sql);die();
         $stmt = sqlsrv_query($cid, $sql);
         $datos =  array();
 	   if( $stmt === false)  

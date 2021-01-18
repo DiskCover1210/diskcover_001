@@ -900,6 +900,7 @@ function datos_asiento_SC_(fecha)
                     t: item.tipo,                        
                   };
                   // console.log(parametros);
+                  // break;
                  asiendo_sc(parametros);
          }); 
 

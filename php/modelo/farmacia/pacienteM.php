@@ -188,6 +188,46 @@ class pacienteM
 		}
 	}
 
+	function existe_transacciones_subcuenta_abonos_air_compras($cli)
+	{
+		// print_r($cli);die();
+		$existe = false;
+		   $cid = $this->conn;
+           $sql[1] = "SELECT * FROM Transacciones WHERE Codigo_C = '".$cli."'";
+           $sql[2] = "SELECT * FROM Trans_SubCtas WHERE Codigo = '".$cli."'";
+           $sql[3] = "SELECT * FROM Trans_Abonos WHERE CodigoC = '".$cli."'";
+           $sql[4] = "SELECT * FROM Trans_Air WHERE idProv= '".$cli."'";
+           $sql[5] = "SELECT * FROM Trans_Compras WHERE idProv = '".$cli."'";
+           $i=0;
+         while ( $existe == false) {
+         	$i+=1;
+         	$sq = $sql[$i];
+         	// print_r($sq);die();
+         	$stmt = sqlsrv_query($cid,$sq);
+         	if( $stmt === false)
+         	  {
+         	     echo "Error en consulta PA.\n";  
+			     die( print_r( sqlsrv_errors(), true));
+			  }
+			  $datos = array();
+			  while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_ASSOC))
+			  		{
+			  			$datos[]=$row;
+			  		}
+			  		if(count($datos)==0)
+			  			{
+			  				if($i>=5)
+			  				{
+			  					return $existe;
+			  				}
+			  			}else
+			  			{
+			  				$existe = true;
+			  				return $existe;
+			  			}
+         }
+	}
+
 }
 
 ?>
