@@ -303,23 +303,39 @@ class niveles_seguriM
 				$datos[] =$filas;			
 			}
 		 }
+		 $insertado = false;
+		// print_r($datos);die();
 		 foreach ($datos as $key => $value) {
-		 	//print_r($value);die();
-		 	$cid2 = Conectar:: modulos_sql_server($value['IP_VPN_RUTA'],$value['Usuario_DB'],$value['Contrasena_DB'],$value['Base_Datos'],$value['Puerto']);
-		 	$sql = "INSERT INTO Clientes(T,FA,Codigo,Fecha,Cliente,TD,CI_RUC,FactM,Descuento,RISE,Especial)VALUES('N',0,'".$parametros['ced']."','".date('Y-m-d')."','".$parametros['nom']."','C','".$parametros['ced']."',0,0,0,0)";
-		 	$stmt = sqlsrv_query($cid2, $sql);
-	        if($stmt === false)  
-	        	{  
-	        		echo "Error en consulta PA.\n";
-	        		return -1;
-		           die( print_r( sqlsrv_errors(), true));  
-	            }else
-	            {
-	            	cerrarSQLSERVERFUN($cid2);
-	            	//return 1;
-	            }      
+		 	if($value['Usuario_DB']=='sa')
+		 	{
+
+		 	// print_r($value);die();
+		 	     $cid2 = Conectar:: modulos_sql_server($value['IP_VPN_RUTA'],$value['Usuario_DB'],$value['Contrasena_DB'],$value['Base_Datos'],$value['Puerto']);
+
+		 	     $sql = "INSERT INTO Clientes(T,FA,Codigo,Fecha,Cliente,TD,CI_RUC,FactM,Descuento,RISE,Especial)VALUES('N',0,'".$parametros['ced']."','".date('Y-m-d')."','".$parametros['nom']."','C','".$parametros['ced']."',0,0,0,0);";
+		 	     $sql.="INSERT INTO Accesos (TODOS,Clave,Usuario,Codigo,Nombre_Completo) VALUES (1,'".$parametros['cla']."','".$parametros['usu']."','".$parametros['ced']."','".$parametros['nom']."')";
+
+		 	     // print_r($sql);die();
+		 	    $stmt = sqlsrv_query($cid2, $sql);
+	            if($stmt === false)  
+	        	    {  
+	        		    echo "Error en consulta PA.\n";
+	        		    return -1;
+		               die( print_r( sqlsrv_errors(), true));  
+	                }else
+	                {
+	            	    cerrarSQLSERVERFUN($cid2);
+	            	    $insertado = true;
+	                }     
+	        }     
 		 }
-	     return 1;
+		 if($insertado == true)
+		 {
+		 	return 1;
+		 }else
+		 {
+		 	return -1;
+		 }
 
 	}
 

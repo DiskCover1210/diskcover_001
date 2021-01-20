@@ -54,9 +54,10 @@ $cod = ''; $ci =''; if(isset($_GET['cod'])){$cod = $_GET['cod'];} if(isset($_GET
       type:  'post',
       dataType: 'json',
       success:  function (response) { 
+        
+          console.log(response);
         if(response)
         {
-          console.log(response);
           if(cod!='0')
           {
             $('#ddl_paciente').append($('<option>',{value: response[0].CI_RUC, text:response[0].Cliente,selected: true }));
@@ -187,10 +188,10 @@ $cod = ''; $ci =''; if(isset($_GET['cod'])){$cod = $_GET['cod'];} if(isset($_GET
                 <span class="input-group-addon"><i class="fa fa-search"></i></span>
             </div>
            
-            <b>FECHA INICIO:</b>
+           <!--  <b>FECHA INICIO:</b>
             <input type="date" name="txt_localidad" id="txt_desde1" class="form-control input-sm">
             <b>FECHA FIN:</b>
-            <input type="date" name="txt_telefono" id="txt_hasta1" class="form-control input-sm">            
+            <input type="date" name="txt_telefono" id="txt_hasta1" class="form-control input-sm">       -->      
           </div>
           <div class="col-sm-6">
             <b>NUM FACTURA:</b>

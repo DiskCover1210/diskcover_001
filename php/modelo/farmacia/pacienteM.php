@@ -13,8 +13,12 @@ class pacienteM
 	   $this->conn = cone_ajax();
 	}
 
-	function cargar_paciente($parametros)
+	function cargar_paciente($parametros,$pag=false)
 	{
+		if($pag==false)
+		{
+			$pag = 0;
+		}
 		$cid = $this->conn;
 		$sql="SELECT * FROM Clientes WHERE 1=1 ";
 
@@ -45,7 +49,9 @@ class pacienteM
 				    break;		
 		   }
 	    }
-		$sql.=" ORDER BY ID OFFSET 0 ROWS FETCH NEXT 25 ROWS ONLY;";
+	    $sql_pag = $sql;
+		$sql.=" ORDER BY ID OFFSET ".$pag." ROWS FETCH NEXT 25 ROWS ONLY;";
+		$paginacion = paginancion($sql_pag,$parametros['fun'],$pag);
 		// print_r($sql);die();
 		$stmt = sqlsrv_query($cid, $sql);
 		if( $stmt === false)  
@@ -59,7 +65,8 @@ class pacienteM
 			$datos[]=$row;
 		}
 		// print_r($datos);die();
-		return $datos;
+		$tabla = array('datos'=>$datos,'pag'=>$paginacion);
+		return $tabla;
 	}
 	function insertar_paciente($datos,$campoWhere=false,$tipo=false)
 	{

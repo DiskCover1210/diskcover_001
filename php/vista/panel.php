@@ -672,6 +672,11 @@ if(isset($_GET['mos']))
 			//redireccionamos
 			window.location="panel.php?mos="+value+"&mos1="+text+"&mos3="+arregloDeSubCadenas[1]+"";
 		}
+		function paginacion(pag,campo)
+		{
+			var numreg = pag*25;
+			$('#'+campo).val(numreg);
+		}
 		function descargar_archivos(url,archivo)
 		{
             var link = document.createElement("a");

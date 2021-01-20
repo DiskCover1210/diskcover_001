@@ -40,9 +40,9 @@ class pacienteC
 
 	function cargar_paciente($parametros)
 	{
-		$datos = $this->modelo->cargar_paciente($parametros);
+		$datos = $this->modelo->cargar_paciente($parametros,$parametros['pag']);
 		$tr = '';
-		foreach ($datos as $key => $value) 
+		foreach ($datos['datos'] as $key => $value) 
 		{
 			$d =  dimenciones_tabl(strlen($value['ID']));
 			$d2 =  dimenciones_tabl(strlen($value['Codigo']));
@@ -52,7 +52,7 @@ class pacienteC
 			$tr.='<tr>
   					<td width="'.$d.'">'.$value['ID'].'</td>
   					<td width="'.$d2.'">'.$value['Matricula'].'</td>
-  					<td width="'.$d3.'">'.$value['Cliente'].'</td>
+  					<td width="'.$d3.'">'.utf8_encode($value['Cliente']).'</td>
   					<td width="'.$d4.'">'.$value['CI_RUC'].'</td>
   					<td width="'.$d5.'">'.$value['Telefono'].'</td>
   					<td width="90px">
@@ -63,13 +63,17 @@ class pacienteC
   				</tr>';
 			
 		}
-		return $tr;
+		$tabla = array('tr'=>$tr,'pag'=>$datos['pag']);
+
+		// print_r($tabla);die();
+		return $tabla;
 		
 	}
 	function buscar_ficha($parametros)
 	{
 
 		$datos = $this->modelo->cargar_paciente($parametros);
+		// print_r($datos);die();
 		if(count($datos)>0){
 		if($datos[0]['Matricula']=='')
 		{			
@@ -96,7 +100,11 @@ class pacienteC
 
 		}else
 		{
-			return $datos;
+			$dat = array();
+		   foreach ($datos as $key => $value) {
+		   	 $dat[0] = array('CI_RUC'=>$value['CI_RUC'],'Cliente'=>$value['Cliente'],'Matricula'=>$value['Matricula']);
+		   }
+			return $dat;
 		}	
 	  }else
 	  {

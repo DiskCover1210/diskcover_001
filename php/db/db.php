@@ -536,6 +536,8 @@ class Conectar{
    {
    	  	$server=''.$host.', '.$Puerto;
 		$connectionInfo = array("Database"=>$base, "UID" => $user,"PWD" => $pass);
+		// print_r($connectionInfo);
+		// print_r($server);die();
 		$cid = sqlsrv_connect($server, $connectionInfo); //returns false
 		if( $cid === false )
 			{

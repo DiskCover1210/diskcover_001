@@ -29,21 +29,28 @@ class ingreso_descargosC
 
 	function pedidos_paciente($parametros)
 	{
-		// print_r($parametros);die();
+		print_r($parametros);die();
 
 		$num_his = $parametros['cod'];
 		if($num_his==0)
 		{
 		   $parametros=array('query'=>$parametros['ci'],'tipo'=>'R1','codigo'=>'');
-		   $datos = $this->paciente->buscar_ficha($parametros);
+		    $dat = $this->paciente->buscar_ficha($parametros);
+		    // print_r($parametros);die();
+		    $datos = array();
+		    foreach ($dat as $key => $value) {
+		   	 $datos[0] = array('CI_RUC'=>$value['CI_RUC'],'Cliente'=>$value['Cliente'],'Matricula'=>$value['Matricula']);
+		   }
 		   return $datos;
 		}else
 		{
-
 			 // print_r('ssss');die();
 		   $parametros=array('query'=>$parametros['ci'],'tipo'=>'R1','codigo'=>'');
-		   $datos = $this->paciente->buscar_ficha($parametros);
-		   // print_r($datos);die();
+		   $dat = $this->paciente->buscar_ficha($parametros);
+		   $datos = array();
+		   foreach ($dat as $key => $value) {
+		   	 $datos[0] = array('CI_RUC'=>$value['CI_RUC'],'Cliente'=>$value['Cliente'],'Matricula'=>$value['Matricula']);
+		   }
 		   return $datos;
 
 		}

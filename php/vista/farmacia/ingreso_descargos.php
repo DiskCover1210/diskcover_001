@@ -2,15 +2,17 @@
 if(isset($_GET['cod'])){$cod =$_GET['cod'];} $_SESSION['INGRESO']['modulo_']='99';?>
 <script type="text/javascript">
    $( document ).ready(function() {
-    cargar_pedido();
     autocoplet_paci();
     autocoplet_ref();
     autocoplet_desc();
+    autocoplet_cc();
+     // buscar_cod();
     var c = '<?php echo $cod; ?>';
     if(c!='')
     {
       buscar_codi();
     }
+    cargar_pedido();
 
   });
 
@@ -35,7 +37,7 @@ if(isset($_GET['cod'])){$cod =$_GET['cod'];} $_SESSION['INGRESO']['modulo_']='99
    
   }
 
-  function autocoplet_paci(){
+  function autocoplet_cc(){
       $('#ddl_cc').select2({
         placeholder: 'Seleccione centro de costos',
         ajax: {
@@ -106,6 +108,7 @@ if(isset($_GET['cod'])){$cod =$_GET['cod'];} $_SESSION['INGRESO']['modulo_']='99
       type:  'post',
       dataType: 'json',
       success:  function (response) { 
+        // console.log(response);
         if(response != -1){       
            $('#txt_codigo').val(response[0].Matricula);
            $('#txt_nombre').val(response[0].Cliente);
@@ -131,7 +134,7 @@ if(isset($_GET['cod'])){$cod =$_GET['cod'];} $_SESSION['INGRESO']['modulo_']='99
       type:  'post',
       dataType: 'json',
       success:  function (response) { 
-        // console.log(response);
+        console.log(response);
        
            $('#txt_codigo').val(response[0].Matricula);
            $('#txt_nombre').val(response[0].Cliente);
@@ -172,8 +175,15 @@ if(isset($_GET['cod'])){$cod =$_GET['cod'];} $_SESSION['INGRESO']['modulo_']='99
    var cc = $('#ddl_cc').val();
    var cc1 = cc.split('-');
    var ruc = $('#txt_ruc').val();
-    if(producto !='' && ruc!='')
+   var cc = $('#ddl_cc').val();
+    if(producto !='' && ruc!='' && cc!='')
     {
+      if($('#txt_cant').val()<=0)
+      {
+        Swal.fire('','La cantidad Debe ser mayor que 0.','info');
+        $('#txt_cant').val('1');
+        return false;
+      }
       var prod = producto.split('-');
     // console.log(producto);
        var parametros = 
@@ -209,8 +219,8 @@ if(isset($_GET['cod'])){$cod =$_GET['cod'];} $_SESSION['INGRESO']['modulo_']='99
            {
             $('#txt_pedido').val(response.ped);
             Swal.fire('','Agregado a pedido.','success');
-            cargar_pedido();
             limpiar();
+            cargar_pedido();
             // location.reload();
            }else
            {
@@ -220,7 +230,7 @@ if(isset($_GET['cod'])){$cod =$_GET['cod'];} $_SESSION['INGRESO']['modulo_']='99
        });
     }else
     {
-       Swal.fire('','Producto ó Cliente no seleccionado.','error');
+       Swal.fire('','Producto,Centro de costos ó Cliente no seleccionado.','error');
     }
   }
 
@@ -241,15 +251,30 @@ if(isset($_GET['cod'])){$cod =$_GET['cod'];} $_SESSION['INGRESO']['modulo_']='99
       success:  function (response) { 
         console.log(response);
         if(response.num_lin !=0 && p!='')
-        {         
-          $('#txt_num_lin').val(response.num_lin);
-          $('#txt_num_item').val(response.item);
-          // $('#txt_ruc').val(response.ruc+'001');
-          $('#ddl_paciente').append($('<option>',{value: response.ruc+'001', text:'',selected: true }));
-          // $('#tbl_body').html(response.tabla);
+        { 
+           var c = '<?php echo $num_ped; ?>';
+          if(c!='')
+          {        
+           $('#txt_num_lin').val(response.num_lin);
+           $('#txt_num_item').val(response.item);
+           $('#txt_ruc').val(response.ruc+'001');
+           $('#ddl_paciente').append($('<option>',{value: response.ruc+'001', text:'',selected: true }));
+          $('#tbl_body').html(response.tabla);
+          }else
+          {
+            var num_p = $('#txt_pedido').val();
+            var cod = $('#txt_codigo').val();
+              var url="../vista/farmacia.php?mod=Farmacia&acc=ingresar_descargos&acc1=Ingresar%20Descargos&b=1&po=subcu&num_ped="+num_p+"&cod="+cod+"#";
+            $(location).attr('href',url);
+          }
         }
           $('#tbl_body').html(response.tabla);
-         buscar_cod();
+          var c = '<?php echo $num_ped; ?>';
+          if(c!='')
+            {
+              buscar_cod();
+            }
+         // buscar_cod();
          descuentos();
       }
     });
@@ -260,7 +285,7 @@ if(isset($_GET['cod'])){$cod =$_GET['cod'];} $_SESSION['INGRESO']['modulo_']='99
     var parametros=
     {
       'can':$('#txt_can_lin_'+num).val(),
-      'pre':$('#txt_pre_lin_'+num).val(),
+      'pre':$('#txt_uti_lin_'+num).val(),
       'des':$('#txt_des_lin_'+num).val(),
       'tot':$('#txt_tot_lin_'+num).val(),
       'lin':num,
@@ -342,7 +367,7 @@ if(isset($_GET['cod'])){$cod =$_GET['cod'];} $_SESSION['INGRESO']['modulo_']='99
          var val_des = (sin_des*des)/100;
          var impo = parseFloat(sin_des-val_des);
          var tot_iva = ((impo*1.12)-impo);
-         console.log(tot_iva);
+         // console.log(tot_iva);
           $('#txt_iva_lin_'+num).val(parseFloat(tot_iva));
           $('#txt_tot_lin_'+num).val(impo.toFixed(4));
        }else if(uti!=0 && iva==0)
@@ -472,7 +497,9 @@ if(isset($_GET['cod'])){$cod =$_GET['cod'];} $_SESSION['INGRESO']['modulo_']='99
   {
     var costo = $('#txt_pre_lin_'+i).val();
     var pvp = $('#txt_uti_lin_'+i).val();
-    if(pvp<costo)
+    console.log(costo);
+    console.log(pvp);
+    if(parseFloat(pvp)< parseFloat(costo))
     {
       Swal.fire('','Precio de PVP debe ser mayor al costo.','error'); 
       $('#txt_uti_lin_'+i).focus();
@@ -488,7 +515,7 @@ if(isset($_GET['cod'])){$cod =$_GET['cod'];} $_SESSION['INGRESO']['modulo_']='99
     $('#txt_descuento').val(0);
     $('#txt_importe').val(0);
     $('#txt_precio').val(0);
-    $('#txt_precio').val(0);
+    // $('#txt_precio').val(0);
     $("#ddl_referencia").empty();
     $("#ddl_descripcion").empty();
     $("#txt_iva").val(0);
@@ -573,34 +600,35 @@ if(isset($_GET['cod'])){$cod =$_GET['cod'];} $_SESSION['INGRESO']['modulo_']='99
       </div>
        <div class="panel-body">
         <div class="row">
-          <div class="col-sm-6"> 
+          <div class="col-sm-4"> 
             <b>Centro de costos:</b>
             <select class="form-control input-sm" id="ddl_cc" onchange="')">
               <option value="">Seleccione Centro de costos</option>
             </select>           
           </div>
-          <div class="col-sm-6">        
+          <div class="col-sm-6">    
+          <b>Numero de pedido</b>
+          <input type="text" name="" id="txt_pedido" readonly="" class="form-control input-sm" value="<?php echo $num_ped;?>">     
           </div>          
         </div>
         <div class="row">
-          <div class="col-sm-6"> 
+          <div class="col-sm-4"> 
             <b>Cod Producto:</b>
             <select class="form-control input-sm" id="ddl_referencia" onchange="producto_seleccionado('R')">
               <option value="">Escriba referencia</option>
             </select>           
           </div>
-          <div class="col-sm-6"> 
-          Numero de pedido
-          <input type="text" name="" id="txt_pedido" readonly="" class="form-control input-sm" value="<?php echo $num_ped;?>">          
-          </div>          
-        </div>
-        <div class="row">
-              <div class="col-sm-4"> 
+          <div class="col-sm-8"> 
                 <b>Descripcion:</b>
                 <select class="form-control input-sm" id="ddl_descripcion" onchange="producto_seleccionado('D')">
                   <option value="">Escriba descripcion</option>
                 </select>          
-              </div>   
+              </div>           
+        </div>
+        <div class="row">
+               <div class="col-sm-4"> 
+                  
+              </div>
               <div class="col-sm-2"> 
                 <b>Costo:</b>
                 <input type="text" name="txt_precio" id="txt_precio" class="form-control input-sm" value="0" onblur="calcular_totales();" readonly="">            
@@ -646,7 +674,7 @@ if(isset($_GET['cod'])){$cod =$_GET['cod'];} $_SESSION['INGRESO']['modulo_']='99
         </tbody>
         <tbody>
           <tr>
-            <td colspan="5" class="text-right">
+            <td colspan="6" class="text-right">
               <b>% Descuentos</b>
             </td>
             <td>

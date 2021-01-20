@@ -29,11 +29,14 @@
   {
     var query = $('#txt_query').val();
     var rbl = $('input:radio[name=rbl_buscar]:checked').val();
+    var pag =$('#txt_pag').val();
     var parametros = 
     {
       'query':query,
       'tipo':rbl,
       'codigo':'',
+      'pag':pag,  // numero de registeros que se van a visualizar
+      'fun':'cargar_clientes' // funcion que se va a a ejecutar en el paginando para recargar
     }
      $.ajax({
        data:  {parametros:parametros},
@@ -44,7 +47,8 @@
         console.log();
         if(response)
         {
-          $('#tbl_pacientes').html(response);         
+          $('#tbl_pacientes').html(response.tr);
+          $('#tbl_pag').html(response.pag);
         }
       }
     });
@@ -278,10 +282,11 @@
   </div>
   <div class="row">
      <div class="col-sm-6">
-        <label class="radio-inline"><input type="radio" name="rbl_buscar" id="rbl_nombre" checked="" value="N"> Nombre</label>
-        <label class="radio-inline"><input type="radio" name="rbl_buscar" id="rbl_codigo" value="C"> Codigo</label>
-        <label class="radio-inline"><input type="radio" name="rbl_buscar" id="rbl_ruc" value="R"> RUC / CI</label>
         <input type="text" name="" placeholder="Buscar" class="form-control" onkeyup="cargar_clientes()" id="txt_query">
+        <label class="radio-inline"><input type="radio" name="rbl_buscar" id="rbl_nombre" checked="" value="N"><b> Nombre</b></label>
+        <label class="radio-inline"><input type="radio" name="rbl_buscar" id="rbl_codigo" value="C"><b> Codigo</b></label>
+        <label class="radio-inline"><input type="radio" name="rbl_buscar" id="rbl_ruc" value="R"><b> RUC / CI</b></label>
+       
             
      </div> 
      <div class="col-sm-6">
@@ -294,12 +299,14 @@
   </div>
   <div class="row">
   	<div class="col-sm-10">
-        N de articulos encontrados: 000
+        <!-- N de articulos encontrados: 000 -->
       </div>
-      <div class="col-sm-2">
-        mostrados: 1-50
+      <input type="hidden" name="" id="txt_pag" value="0">
+      <div class="col-sm-2" id="tbl_pag">
+        <!-- mostrados: 1-50 -->
       </div>  	
   </div>
+  
   <div class="row" >
   	<div class="table-responsive">      
   		<table class="table table-hover">

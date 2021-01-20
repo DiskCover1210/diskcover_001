@@ -489,6 +489,78 @@ function ReadSetDataNum($sqls,$ParaEmpresa =false,$Incrementar = false)
  return $NumCodigo;
 }
 
+
+function paginancion($sql,$function,$pag=false)
+{
+  $lim = 6;
+  $ini=0;
+  $fin = 6;
+
+  $conn = new Conectar();
+  $cid=$conn->conexion();
+  $stmt = sqlsrv_query($cid, $sql);
+    if($stmt === false)  
+      {  
+        echo "Error en consulta PA.\n";  
+        return '';
+        die( print_r( sqlsrv_errors(), true));  
+      }   
+      $result = array();  
+      while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_ASSOC) ) 
+        {
+        $result[] =$row;
+        //echo $row[0];
+        }
+       $total = count($result);
+       $partes = $total/25;
+  $html='<div class="row text-right" id="paginacion"><ul class="pagination">';
+
+  $secc = $pag/25;
+  if(is_int($secc) && $secc != 0)
+  {
+    $parte = $secc/$lim;
+     if(is_int($parte))
+     {
+       $ini = ($parte*$lim)-1;
+       $fin = ($parte*$lim)+$lim;
+     }else
+     {
+      // print_r('expression');die();
+       
+        if($secc < 6)
+        {
+           $ini =0; 
+           $fin =6;
+        }else
+        {
+          $ini = $lim-1;
+          $fin = $lim+$lim;
+          while ($lim > $secc && $secc< $lim+6) {
+            $lim = $lim+6;
+            $ini = $lim-1;
+            $fin = $lim+$lim;
+           }
+        }
+       
+     }
+  } 
+  for($i=$ini;$i<$fin;$i++)
+  {
+    if(($pag/25)-1==$i)
+    {
+      $html.='<li class="paginate_button active" onclick="paginacion(this.value,\'txt_pag\');'.$function.'();" value="'.$i.'"><a href="#">'.($i+1).'</a></li>';
+    }else
+    {
+      $html.='<li class="paginate_button " onclick="paginacion(this.value,\'txt_pag\');'.$function.'();" value="'.$i.'"><a href="#">'.($i+1).'</a></li>';
+    }
+  }
+  $html.='</ul></div>';
+
+  // print_r($html);die();
+       return $html;       
+
+}
+
 // texto valido
 function TextoValido($texto,$numero=false,$Mayusculas=false,$NumeroDecimales=false)
 {
@@ -5716,5 +5788,526 @@ function dimenciones_tabl($len)
      $val = ($len+2)*8;
     return $val.'px';
   }
+}
+
+
+function ingresar_asientos_SC($parametros)
+{
+     
+    if($parametros['t']=='P' OR $parametros['t']=='C')
+    {
+      $sql=" SELECT codigo FROM clientes WHERE CI_RUC='".$parametros['sub']."' ";
+      $stmt = sqlsrv_query( $cid, $sql);
+      if( $stmt === false)  
+      {  
+         echo "Error en consulta PA.\n";  
+         die( print_r( sqlsrv_errors(), true));  
+      }
+      //echo $sql;
+      $row_count=0;
+      $i=0;
+      $Result = array();
+      while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_NUMERIC) ) 
+      {
+        $cod=$row[0];
+      }
+    }
+    else
+    {
+      //echo ' nnnn ';
+      $cod=$parametros['sub'];
+    }
+    //verificamos valor
+    $SC_No=0;
+    $sql=" SELECT MAX(SC_No) AS Expr1 FROM  Asiento_SC 
+    where CodigoU ='".$_SESSION['INGRESO']['CodigoU']."' 
+    AND item='".$_SESSION['INGRESO']['item']."'";
+    $stmt = sqlsrv_query( $cid, $sql);
+    if( $stmt === false)  
+    {  
+       echo "Error en consulta PA.\n";  
+       die( print_r( sqlsrv_errors(), true));  
+    }
+    //echo $sql;
+    $row_count=0;
+    $i=0;
+    $Result = array();
+    while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_NUMERIC) ) 
+    {
+      $SC_No=$row[0];
+    }
+    if($SC_No==null)
+    {
+      $SC_No=1;
+    }
+    else
+    {
+      $SC_No++;
+    }
+    $fecha_actual=$parametros['fecha_sc'];
+    if($parametros['fac2']==0)
+    {
+      $ot = explode("-",$fecha_actual);
+      $fact2=$ot[0].$ot[1].$ot[2];
+      
+    }
+    else
+    {
+      $fact2=$parametros['fac2'];
+      
+    }
+    if($parametros['mes']==0)
+    {
+      $sql="INSERT INTO Asiento_SC(Codigo ,Beneficiario,Factura ,Prima,DH,Valor,Valor_ME
+           ,Detalle_SubCta,FECHA_V,TC,Cta,TM,T_No,SC_No
+           ,Fecha_D ,Fecha_H,Bloquear,Item,CodigoU)
+      VALUES
+           ('".$cod."'
+           ,'".$parametros['sub2']."'
+           ,'".$fact2."'
+           ,0
+           ,'".$parametros['tic']."'
+           ,".$parametros['valorn']."
+           ,0
+           ,'".$parametros['Trans']."'
+           ,'".$fecha_actual."'
+           ,'".$parametros['t']."'
+           ,'".$parametros['co']."'
+           ,".$parametros['moneda']."
+           ,".$parametros['T_N']."
+           ,".$SC_No."
+           ,null
+           ,null
+           ,0
+           ,'".$_SESSION['INGRESO']['item']."'
+           ,'".$_SESSION['INGRESO']['CodigoU']."')";
+       $stmt = sqlsrv_query( $cid, $sql);
+       //echo $sql;
+      if( $stmt === false)  
+      {  
+         echo "Error en consulta PA.\n";  
+         die( print_r( sqlsrv_errors(), true));  
+      }
+    }
+    else
+    {
+      $sql="INSERT INTO Asiento_SC(Codigo ,Beneficiario,Factura ,Prima,DH,Valor,Valor_ME
+      ,Detalle_SubCta,FECHA_V,TC,Cta,TM,T_No,SC_No
+      ,Fecha_D ,Fecha_H,Bloquear,Item,CodigoU)
+      VALUES
+      ";
+      $dia=0;
+      for ($i=0;$i<$parametros['mes'];$i++)
+      {
+        $sql=$sql."('".$cod."'
+         ,'".$parametros['sub2']."'
+         ,'".$fact2."'
+         ,0
+         ,'".$parametros['tic']."'
+         ,".$parametros['valorn']."
+         ,0
+         ,'".$parametros['Trans']."'
+         ,'".$fecha_actual."'
+         ,'".$parametros['t']."'
+         ,'".$parametros['co']."'
+         ,".$parametros['moneda']."
+         ,".$parametros['T_N']."
+         ,".$SC_No."
+         ,null
+         ,null
+         ,0
+         ,'".$_SESSION['INGRESO']['item']."'
+         ,'".$_SESSION['INGRESO']['CodigoU']."'),";
+         $SC_No++;
+         $ot = explode("-",$fecha_actual);
+         if($ot[1]=='01')
+         {
+            if($ot[2]>=28)
+            {
+             $dia=$ot[2];
+              $year=esBisiesto_ajax($ot[0]);
+            if($year==1)
+            {
+              $fecha_actual = date("Y-m-d",strtotime($ot[0].'-02-29')); 
+              if($parametros['fac2']==0)
+              {
+                $fact2 = date("Ymd",strtotime($ot[0].'0229')); 
+              }
+              //$fact2 = $ot[0].'0229'; 
+            }
+            else
+            {
+              $fecha_actual = date("Y-m-d",strtotime($ot[0].'-02-28')); 
+               if($parametros['fac2']==0)
+              {
+                $fact2 = date("Ymd",strtotime($ot[0].'0228')); 
+              }
+            }
+            }
+          else
+          {
+            $fecha_actual = date("Y-m-d",strtotime($fecha_actual."+ 1 month")); 
+             if($parametros['fac2']==0)
+            {
+              $fact2 = date("Ymd",strtotime($fact2."+ 1 month")); 
+            }
+          }
+           
+         }
+         else
+         {
+          //$ot = explode("-",$fecha_actual);
+          //if($ot[1]=='03')
+          //{
+          /*if( $dia>=28)
+          {
+            $ot = explode("-",$fecha_actual);
+            $fecha_actual = date("Y-m-d",strtotime($ot[0].'-03-31')); 
+            if($_POST['fac2']==0)
+            {
+              $fact2 = date("Ymd",strtotime($ot[0].'0331')); 
+            }
+            $dia=0;
+          }*/
+          //else
+          //{
+            
+            if( $dia>=28)
+            {
+              $ot = explode("-",$fecha_actual);
+              if($ot[1]=='02')
+              {
+                $fecha_actual = date("Y-m-d",strtotime($ot[0].'-03-31')); 
+                if($parametros['fac2']==0)
+                {
+                  $fact2 = date("Ymd",strtotime($ot[0].'0331')); 
+                }
+              }
+              if($ot[1]=='03')
+              {
+                $fecha_actual = date("Y-m-d",strtotime($ot[0].'-04-30')); 
+                if($parametros['fac2']==0)
+                {
+                  $fact2 = date("Ymd",strtotime($ot[0].'0430')); 
+                }
+              }
+              if($ot[1]=='04')
+              {
+                $fecha_actual = date("Y-m-d",strtotime($ot[0].'-05-31')); 
+                if($parametros['fac2']==0)
+                {
+                  $fact2 = date("Ymd",strtotime($ot[0].'0531')); 
+                }
+              }
+              if($ot[1]=='05')
+              {
+                $fecha_actual = date("Y-m-d",strtotime($ot[0].'-06-30')); 
+                if($parametros['fac2']==0)
+                {
+                  $fact2 = date("Ymd",strtotime($ot[0].'0630')); 
+                }
+              }
+              if($ot[1]=='06')
+              {
+                $fecha_actual = date("Y-m-d",strtotime($ot[0].'-07-31')); 
+                if($parametros['fac2']==0)
+                {
+                  $fact2 = date("Ymd",strtotime($ot[0].'0731')); 
+                }
+              }
+              if($ot[1]=='07')
+              {
+                $fecha_actual = date("Y-m-d",strtotime($ot[0].'-08-31')); 
+                if($parametros['fac2']==0)
+                {
+                  $fact2 = date("Ymd",strtotime($ot[0].'0831')); 
+                }
+              }
+              if($ot[1]=='08')
+              {
+                $fecha_actual = date("Y-m-d",strtotime($ot[0].'-09-30')); 
+                if($parametros['fac2']==0)
+                {
+                  $fact2 = date("Ymd",strtotime($ot[0].'0930')); 
+                }
+              }
+              if($ot[1]=='09')
+              {
+                $fecha_actual = date("Y-m-d",strtotime($ot[0].'-10-31')); 
+                if($parametros['fac2']==0)
+                {
+                  $fact2 = date("Ymd",strtotime($ot[0].'1031')); 
+                }
+              }
+              if($ot[1]=='10')
+              {
+                $fecha_actual = date("Y-m-d",strtotime($ot[0].'-11-30')); 
+                if($parametros['fac2']==0)
+                {
+                  $fact2 = date("Ymd",strtotime($ot[0].'1130')); 
+                }
+              }
+              if($ot[1]=='11')
+              {
+                $fecha_actual = date("Y-m-d",strtotime($ot[0].'-12-31')); 
+                if($parametros['fac2']==0)
+                {
+                  $fact2 = date("Ymd",strtotime($ot[0].'1231')); 
+                }
+              }
+            }
+            else
+            {
+              $fecha_actual = date("Y-m-d",strtotime($fecha_actual."+ 1 month")); 
+              if($parametros['fac2']==0)
+              {
+                $fact2 = date("Ymd",strtotime($fact2."+ 1 month")); 
+              }
+            }
+          //}
+          //}
+          }
+        // echo $fecha_actual.' <br>';
+      }
+      //reemplazo una parte de la cadena por otra
+      $longitud_cad = strlen($sql); 
+      $cam2 = substr_replace($sql,"",$longitud_cad-1,1); 
+      $stmt = sqlsrv_query( $cid, $cam2);
+        //echo $sql;
+      if( $stmt === false)  
+      {  
+         echo "Error en consulta PA.\n";  
+         die( print_r( sqlsrv_errors(), true));  
+      }
+      //echo $cam2;
+    }
+      $sql="SELECT Codigo, Beneficiario, Factura, Prima, DH, Valor, Valor_ME, Detalle_SubCta,T_No, SC_No,Item, CodigoU
+      FROM Asiento_SC
+      WHERE 
+        Item = '".$_SESSION['INGRESO']['item']."' 
+        AND CodigoU = '".$_SESSION['INGRESO']['Id']."' ";
+      $stmt = sqlsrv_query( $cid, $sql);
+      if( $stmt === false)  
+      {  
+         echo "Error en consulta PA.\n";  
+         die( print_r( sqlsrv_errors(), true));  
+      }
+      else
+      {
+        $camne=array();
+      }
+
+}
+
+
+function ingresar_asientos($parametros)
+{
+    $va = $parametros['va'];
+    $dconcepto1 = $parametros['dconcepto1'];
+    $codigo = $parametros['codigo'];
+    $cuenta = $parametros['cuenta'];
+    if(isset($parametros['t_no']))
+    {
+      $t_no = $parametros['t_no'];
+    }
+    else
+    {
+      $t_no = 1;
+    }
+    if(isset($parametros['efectivo_as']))
+    {
+      $efectivo_as = $parametros['efectivo_as'];
+    }
+    else
+    {
+      $efectivo_as = '';
+    }
+    if(isset($parametros['chq_as']))
+    {
+      $chq_as = $parametros['chq_as'];
+    }
+    else
+    {
+      $chq_as = '';
+    }
+    
+    $moneda = $parametros['moneda'];
+    $tipo_cue = $parametros['tipo_cue'];
+    
+    if($efectivo_as=='' or $efectivo_as==null)
+    {
+      $efectivo_as=$fecha;
+    }
+    if($chq_as=='' or $chq_as==null)
+    {
+      $chq_as='.';
+    }
+    $parcial = 0;
+    if($moneda==2)
+    {
+      $cotizacion = $parametros['cotizacion'];
+      $con = $parametros['con'];
+      if($tipo_cue==1)
+      {
+        if($con=='/')
+        {
+          $debe=$va/$cotizacion;
+        }
+        else
+        {
+          $debe=$va*$cotizacion;
+        }
+        $parcial = $va;
+        $haber=0;
+      }
+      if($tipo_cue==2)
+      {
+        if($con=='/')
+        {
+          $haber=$va/$cotizacion;
+        }
+        else
+        {
+          $haber=$va*$cotizacion;
+        }
+        $parcial = $va;
+        $debe=0;
+      }
+    }
+    else
+    {
+      if($tipo_cue==1)
+      {
+        $debe=$va;
+        $haber=0;
+      }
+      if($tipo_cue==2)
+      {
+        $debe=0;
+        $haber=$va;
+      }
+    }
+    //verificar si ya existe en ese modulo ese registro
+    $sql="SELECT CODIGO, CUENTA
+    FROM Asiento
+    WHERE (CODIGO = '".$codigo."') AND (Item = '".$_SESSION['INGRESO']['item']."') 
+    AND (CodigoU = '".$_SESSION['INGRESO']['CodigoU']."') AND (DEBE = '".$va."') 
+    AND T_No=".$_SESSION['INGRESO']['modulo_']." 
+    ORDER BY A_No ASC ";
+    //print_r($sql);die();
+    $stmt = sqlsrv_query( $cid, $sql);
+    if( $stmt === false)  
+    {  
+       echo "Error en consulta PA.\n";  
+       die( print_r( sqlsrv_errors(), true));  
+    }
+    //para contar registro
+    $i=0;
+    $i=contar_registros($stmt);
+    if($t_no == '60')
+    {
+      $i=0;
+    }
+    //echo $i.' -- '.$sql;
+    //seleccionamos el valor siguiente
+    $sql="SELECT TOP 1 A_No FROM Asiento
+    WHERE (Item = '".$_SESSION['INGRESO']['item']."')
+    ORDER BY A_No DESC";
+    $A_No=0;
+    $stmt = sqlsrv_query( $cid, $sql);
+    if( $stmt === false)  
+    {  
+       echo "Error en consulta PA.\n";  
+       die( print_r( sqlsrv_errors(), true));  
+    }
+    else
+    {
+      $ii=0;
+      while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_NUMERIC) ) 
+      {
+        $A_No = $row[0];
+        $ii++;
+      }
+      
+      if($ii==0)
+      {
+        $A_No++;
+      }
+      else
+      {
+        $A_No++;
+      }
+    }
+    //si no existe guardamos
+    if($i==0)
+    {
+      
+        $sql="INSERT INTO Asiento
+        (CODIGO,CUENTA,PARCIAL_ME,DEBE,HABER,CHEQ_DEP,DETALLE,EFECTIVIZAR,CODIGO_C,CODIGO_CC
+        ,ME,T_No,Item,CodigoU,A_No)
+        VALUES
+        ('".$codigo."','".$cuenta."',".$parcial.",".$debe.",".$haber.",'".$chq_as."','".$dconcepto1."',
+        '".$efectivo_as."','.','.',0,".$t_no.",'".$_SESSION['INGRESO']['item']."','".$_SESSION['INGRESO']['CodigoU']."',".$A_No.")";
+      
+      // print_r($sql);die();
+       $stmt = sqlsrv_query( $cid, $sql);
+      if( $stmt === false)  
+      {  
+         echo "Error en consulta PA.\n";  
+         die( print_r( sqlsrv_errors(), true));  
+      }
+      else
+      {
+        $sql="SELECT A_No,CODIGO,CUENTA,PARCIAL_ME,DEBE,HABER,CHEQ_DEP,DETALLE
+        FROM Asiento
+        WHERE 
+          T_No=".$_SESSION['INGRESO']['modulo_']." AND
+          Item = '".$_SESSION['INGRESO']['item']."' 
+          AND CodigoU = '".$_SESSION['INGRESO']['Id']."' 
+          ORDER BY A_No ASC ";
+        $stmt = sqlsrv_query( $cid, $sql);
+        if( $stmt === false)  
+        {  
+           echo "Error en consulta PA.\n";  
+           die( print_r( sqlsrv_errors(), true));  
+        }
+        else
+        {
+          $camne=array();
+          grilla_generica($stmt,null,NULL,'1','0,1,clave','asi');
+          ListarTotalesTemSQL_AJAX(null,null,'1','0,1,clave');
+        }
+      }
+    }
+    else
+    {
+      //echo " ENTROOO ";
+      echo "<script>
+            Swal.fire({
+              type: 'error',
+              title: 'No se pudo guardar registro',
+              text: 'Ya existe un registro con estos datos',
+              footer: ''
+          })
+      </script>";
+      $sql="SELECT A_No,CODIGO,CUENTA,PARCIAL_ME,DEBE,HABER,CHEQ_DEP,DETALLE
+        FROM Asiento
+        WHERE 
+          T_No=".$_SESSION['INGRESO']['modulo_']." AND
+          Item = '".$_SESSION['INGRESO']['item']."' 
+          AND CodigoU = '".$_SESSION['INGRESO']['Id']."' 
+          ORDER BY A_No ASC ";
+        $stmt = sqlsrv_query( $cid, $sql);
+        if( $stmt === false)  
+        {  
+           echo "Error en consulta PA.\n";  
+           die( print_r( sqlsrv_errors(), true));  
+        }
+        else
+        {
+          return 1;
+        }
+    }
+    
 }
 ?>

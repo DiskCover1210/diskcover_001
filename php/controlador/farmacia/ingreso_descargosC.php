@@ -154,6 +154,13 @@ class ingreso_descargosC
 		foreach ($datos as $key => $value) 
 		{
 			// print_r($value);die();
+			$costo =  $this->modelo->costo_venta($value['CODIGO_INV']);
+			if(empty($costo))
+			{
+				$costo[0]['Costo'] = 0;
+			}
+
+			// print_r($costo);die();
 			$d =  dimenciones_tabl(strlen($value['A_No']));
 			$d2 =  dimenciones_tabl(strlen($value['CODIGO_INV']));
 			$d3 =  dimenciones_tabl(strlen($value['PRODUCTO']));
@@ -169,10 +176,10 @@ class ingreso_descargosC
   					     <input type="text" class="form-control input-sm" id="txt_can_lin_'.$value['A_No'].'" value="'.$value['CANTIDAD'].'" onblur="calcular_totales(\''.$value['A_No'].'\');descuentos();"/>
   					</td>
   					<td width="'.$d5.'">
-  					     <input type="text" onblur="calcular_totales(\''.$value['A_No'].'\');descuentos();" class="form-control input-sm" id="txt_pre_lin_'.$value['A_No'].'" value="'.number_format($value['VALOR_UNIT'],2).'" readonly=""/>
+  					     <input type="text" onblur="calcular_totales(\''.$value['A_No'].'\');descuentos();" class="form-control input-sm" id="txt_pre_lin_'.$value['A_No'].'" value="'.number_format($costo[0]['Costo'],2).'" readonly=""/>
   					</td>
   					<td width="'.$d6.'">
-  					     <input type="text" onblur="validar_pvp_costo(\''.$value['A_No'].'\');calcular_totales(\''.$value['A_No'].'\');descuentos();" class="form-control input-sm" id="txt_uti_lin_'.$value['A_No'].'" value="0" />
+  					     <input type="text" onblur="validar_pvp_costo(\''.$value['A_No'].'\');calcular_totales(\''.$value['A_No'].'\');descuentos();" class="form-control input-sm" id="txt_uti_lin_'.$value['A_No'].'" value="'.number_format($value['VALOR_UNIT'],2).'" />
   					</td>
   					<td width="'.$d6.'">
   					     <input type="text" onblur="calcular_totales(\''.$value['A_No'].'\');descuentos();" class="form-control input-sm" id="txt_des_lin_'.$value['A_No'].'" value="'.number_format($value['P_DESC'],2).'" readonly=""/>
