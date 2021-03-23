@@ -66,6 +66,10 @@ if(isset($_SESSION['INGRESO']['IP_VPN_RUTA']))
 						{
 							require_once("inventario/kardex_ing.php");
 						}
+						if ($_SESSION['INGRESO']['accion']=='articulos') 
+						{
+							require_once("farmacia/articulos.php");
+						}
 						
 					}else
 					{

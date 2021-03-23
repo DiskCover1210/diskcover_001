@@ -339,7 +339,8 @@ class kardex_ingM
 
                    $sql.=" ORDER BY C.Cliente ";
 				break;
-			case ($TipoSubCta=='P' or $TipoSubCta=='C'):				
+			case 'P':
+			case 'C':				
 				    $sql= "SELECT C.Cliente,C.Codigo,C.CI_RUC,C.Direccion,C.Telefono,C.TD,CP.Cta,CP.Importaciones,C.CI_RUC,C.Grupo,'P' As TipoBenef
                     FROM Clientes As C,Catalogo_CxCxP As CP
                     WHERE CP.TC = '" .$TipoSubCta."'
@@ -354,7 +355,8 @@ class kardex_ingM
                     $sql.=" GROUP BY C.Cliente,C.Codigo,C.CI_RUC,C.Direccion,C.Telefono,C.TD,CP.Cta,CP.Importaciones,C.CI_RUC,C.Grupo
                     ORDER BY C.Cliente ";
 				break;
-			case ($TipoSubCta== 'G' or $TipoSubCta== 'I'):
+			case 'G':
+			case 'I':
 				 //$OpcX.value = 1
                    $sql = "SELECT CS.Detalle As Cliente,CS.*,'O' As TD,'.' As Cta,0 As Importaciones,'9999999999999' As CI_RUC,'999999' As Grupo,'X' As TipoBenef
                    FROM Catalogo_SubCtas As CS
@@ -371,7 +373,7 @@ class kardex_ingM
 			default:
 			      $sql = "SELECT Cliente,Codigo,CI_RUC,Grupo,Direccion,Telefono,TD,'.' As Cta,0 As Importaciones,'X' As TipoBenef
                   FROM Clientes
-                  WHERE Grupo = '.' ";
+                  WHERE  1=1";
                    if($query)
                       {
                   	    $sql.=" AND Cliente LIKE '%".$query."%' ";
@@ -1246,6 +1248,33 @@ function Documento_Modificado($codUsuario)
 	   }
 	   return $datos;
 }
+
+
+function cuentas_todos($query)
+	{
+		$cid = $this->conn;
+		$sql="SELECT Codigo+Space(19-LEN(Codigo))+' -- '+TC+Space(3-LEN(TC))+' -- '+cast( Clave as varchar(5))+' '
+					+Space(5-LEN(cast( Clave as varchar(5))))+' -- '+
+					Cuenta As Nombre_Cuenta,Codigo,Cuenta,TC 
+			   FROM Catalogo_Cuentas 
+			   WHERE DG = 'D' 
+			   AND Cuenta <> '".$_SESSION['INGRESO']['ninguno']."' AND Item = '".$_SESSION['INGRESO']['item']."'
+			   AND Periodo = '".$_SESSION['INGRESO']['periodo']."'  ";
+			   if($query)
+			   	{
+			   		$sql.="AND Codigo+Space(19-LEN(Codigo))+' '+TC+Space(3-LEN(TC))+' '+cast( Clave as varchar(5))+' '
+					+Space(5-LEN(cast( Clave as varchar(5))))+' '+Cuenta LIKE '%".$query."%'";
+			   	}
+			   	$sql.="ORDER BY Codigo";
+		// print_r($sql);die();
+		 $stmt = sqlsrv_query($cid, $sql);
+		 $result = array();
+		 while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_ASSOC) ) 
+		 	{
+		 		$result[] = $row;
+		 	}
+		return $result;
+	}
 
 }
 ?>

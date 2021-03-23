@@ -91,6 +91,11 @@ if(isset($_POST['ajax_page']) )
 	{
 		mmasivo();
 	}
+	//mensaje grupo
+	if($_REQUEST['ajax_page']=='mgrupo')
+	{
+		mgrupo();
+	}
 	//eliminar registro asiento_b
 	if($_REQUEST['ajax_page']=='eli1')
 	{
@@ -3343,10 +3348,49 @@ function eliminar()
     echo json_encode($jsondata);
     exit();
 }
+function mgrupo()
+{
+	$cid = Conectar::conexion('MYSQL');
+
+	if($_POST['campo11']=='')
+		{
+			 $sql = "UPDATE lista_empresas set Mensaje='".$_POST['campo3']."' WHERE ID_Empresa='".$_POST['campo1']."' ";
+		}
+		else
+		{
+			 $sql = "UPDATE lista_empresas set Mensaje='".$_POST['campo3']."' WHERE ID_Empresa='".$_POST['campo1']."'  AND Ciudad='".$_POST['campo11']."'";
+		}
+
+	//echo $sql;
+	//die();
+	$consulta=$cid->query($sql);// or die($cid->error);
+	//$stmt = sqlsrv_query( $cid, $sql);
+
+	if( $consulta === false)  
+	{  
+		// echo "Error en consulta.\n";  
+		 $jsondata = array('success' => false);
+		 //die( print_r( sqlsrv_errors(), true));  
+	}
+	else
+	{	
+
+		$_SESSION['INGRESO']['Cambio']=1;
+		$jsondata = array('success' => true, 'name'=>$_POST['campo1']);
+	}
+	$cid->close();
+	 //Aunque el content-type no sea un problema en la mayoría de casos, es recomendable especificarlo
+    header('Content-type: application/json; charset=utf-8');
+    echo json_encode($jsondata);
+    exit();
+
+	
+}
+
 function mindividual()
 {
 	$cid = Conectar::conexion('MYSQL');
-	$sql = "UPDATE lista_empresas set Mensaje='".$_POST['campo3']."' WHERE ID_Empresa='".$_POST['campo1']."' ";
+	$sql = "UPDATE lista_empresas set Mensaje='".$_POST['campo3']."' WHERE ID_Empresa='".$_POST['campo1']."' AND ID='".$_POST['campo11']."'";
 	//echo $sql;
 	//die();
 	$consulta=$cid->query($sql);// or die($cid->error);
@@ -3373,8 +3417,9 @@ function mindividual()
 }
 function mmasivo()
 {
+	// print_r($_POST);die();
 	$cid = Conectar::conexion('MYSQL');
-	$sql = "UPDATE lista_empresas set Mensaje='".$_POST['campo3']."' ";
+	$sql = "UPDATE lista_empresas set Mensaje='".$_POST['campo3']."'; ";
 	//echo $sql;
 	//die();
 	$consulta=$cid->query($sql);// or die($cid->error);
@@ -3499,6 +3544,7 @@ function buscarEntidad(){
 		}
 		//echo $sql;
 		//die();
+		// print_r($sql);die();
 		$consulta=$cid->query($sql) or die($cid->error);
 		//Realizamos un bucle para ir obteniendo los resultados
 		$i=0;
@@ -3530,7 +3576,6 @@ function buscarEntidad(){
 }
 //Buscar empresa
 function buscarEmpresa(){
-	 
 		$cid = Conectar::conexion('MYSQL');
 		//$_POST['TP']='CD';
 		//$_POST['MesNo']=0;
@@ -3653,7 +3698,7 @@ function buscarEmpresa(){
 				<div class="col-md-12">
 					<div class="form-group">
 					  <label for="Mensaje">Mensaje</label>
-					  <input type="text" class="form-control" id="Mensaje" placeholder="Mensaje" value='<?php echo $filas['Mensaje']; ?>'>
+					  <input type="text" class="form-control" id="Mensaje" placeholder="Mensaje" value='<?php if(isset($_POST['sms'])){ echo $_POST['sms'];}else{echo $filas['Mensaje'];} ?>'>
 					</div>
 				</div>
 			<?php

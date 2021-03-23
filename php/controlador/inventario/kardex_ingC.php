@@ -1,5 +1,6 @@
 <?php 
 include('../../modelo/inventario/kardex_ingM.php');
+// include('../../modelo/contabilidad/incomM.php');
 /**
  * 
  */
@@ -130,12 +131,20 @@ if(isset($_GET['DCTipoComprobante']))
 if(isset($_GET['DCBenef_Data']))
 {
    $parametros = $_POST['parametros'];
+   // print_r($parametros);die();
   echo  json_encode($controlador->DCBenef_Data($parametros));
 }
 if(isset($_GET['grabacion']))
 {
    $parametros = $_POST['parametros'];
   echo  json_encode($controlador->grabacion($parametros));
+}
+
+if(isset($_GET['ingresar_asiento']))
+{
+   $parametros = $_POST['parametros'];
+
+  echo  json_encode($controlador->modal_ingresar_asiento($parametros));
 }
 if(isset($_GET['Insertar_DataGrid']))
 {
@@ -170,9 +179,11 @@ if(isset($_GET['Documento_Modificado']))
 class kardex_ingC
 {
 	private $modelo;
+  // private $incom ;
 	function __construct()
 	{
 		$this->modelo = new kardex_ingM();
+    // $this->incom = new  incomM();
 	}
 
 	function familias($query)
@@ -470,14 +481,18 @@ class kardex_ingC
      
   function DCBenef_Data($parametros)
   {
-    // print_r($parametros);
+    // print_r($parametros);die();
     $datos = $this->modelo->ListarProveedorUsuario($parametros['cta'],$parametros['contra'],$parametros['DCBenef']);
     if(count($datos)>0)
     {
     if($datos[0]['tipodoc']=='R')
     {
+
        $datos = array_merge($datos[0], array('si_no'=>FALSE));
      // array_push($datos, array('si_no'=>FALSE ));
+    }else
+    {      
+       $datos = array_merge($datos[0], array('si_no'=>FALSE));
     }
   }else
   {
@@ -485,7 +500,6 @@ class kardex_ingC
      // array_push($datos,array('si_no' =>FALSE));
   }
   
-   // print_r($datos);die();
     return $datos;
   }
 
@@ -573,6 +587,7 @@ class kardex_ingC
     $datos[41]['campo']= "A_No";
     $datos[42]['campo']= "T_No";
     $datos[43]['campo']= "CodigoU";
+    $datos[44]['campo']= "Item";
 
 
      if($parametros['TipoComprobante']=='5' || $parametros['TipoComprobante']==4)
@@ -625,11 +640,17 @@ class kardex_ingC
     $datos[41]['dato']= "1";
     $datos[42]['dato']= 1; // verificar
     $datos[43]['dato']= $_SESSION['INGRESO']['CodigoU'];
+    $datos[44]['dato']= $_SESSION['INGRESO']['item'];
+
+    // print_r($datos);die();
 
 
     if(insert_generico("Asiento_Compras",$datos)==null)
     {
-      print_r('expression');die();
+     // if($this->grabar_asiento_compras($parametros)==1)
+            // {
+             return 1;
+            // }
 
     }
   }
@@ -686,7 +707,9 @@ class kardex_ingC
        $datos[19]['dato']=$_SESSION['INGRESO']['item'];
         if(insert_generico("Asiento_Air",$datos)==null)
           {
-           return 1;
+           
+             return 1;
+          
           }
 
      }else
@@ -766,5 +789,108 @@ class kardex_ingC
       return '';
     }
   }
+
+
+  function grabar_asiento_compras($parametros)
+  {
+    // print_r($parametros);die();
+    $datos[0]['campo']= "IdProv";
+    $datos[0]['dato'] = $parametros['IdProv'];
+    $datos[1]['campo']= "DevIva";
+    $datos[1]['dato'] = $parametros['DevIva'];
+    $datos[2]['campo']= "CodSustento";
+    $datos[2]['dato'] = $parametros['CodSustento'];
+    $datos[3]['campo']= "TipoComprobante";
+    $datos[3]['dato'] = $parametros['TipoComprobante'];
+    $datos[4]['campo']= "Establecimiento";
+    $datos[4]['dato'] = $parametros['Establecimiento'];
+    $datos[5]['campo']= "PuntoEmision";
+    $datos[5]['dato'] = $parametros['PuntoEmision'];
+    $datos[6]['campo']= "Secuencial";
+    $datos[6]['dato'] = $parametros['Secuencial'];
+    $datos[7]['campo']= "Autorizacion";
+    $datos[7]['dato'] = $parametros['Autorizacion'];
+    $datos[8]['campo']= "FechaEmision";
+    $datos[8]['dato'] = $parametros['FechaEmision'];
+    $datos[9]['campo']= "FechaRegistro";
+    $datos[9]['dato'] = $parametros['FechaRegistro'];
+    $datos[10]['campo']= "FechaCaducidad";
+    $datos[10]['dato'] = $parametros['FechaCaducidad'];
+    $datos[11]['campo']= "BaseNoObjIVA";
+    $datos[11]['dato'] = $parametros['BaseNoObjIVA'];
+    $datos[12]['campo']= "BaseImponible";
+    $datos[12]['dato'] = $parametros['BaseImponible'];
+    $datos[13]['campo']= "BaseImpGrav";
+    $datos[13]['dato'] = $parametros['BaseImpGrav'];
+    $datos[14]['campo']= "PorcentajeIva";
+    $datos[14]['dato'] = $parametros['PorcentajeIva'];
+    $datos[15]['campo']= "MontoIva";
+    $datos[15]['dato'] = $parametros['MontoIva'];
+    $datos[16]['campo']= "BaseImpIce";
+    $datos[16]['dato'] = $parametros['BaseImpIce'];
+    $datos[17]['campo']= "PorcentajeIce";
+    $datos[17]['dato'] = $parametros['PorcentajeIce'];
+    $datos[18]['campo']= "MontoIce";
+    $datos[18]['dato'] = $parametros['MontoIce'];
+    $datos[19]['campo']= "Porc_Bienes";
+    $datos[19]['dato'] = $parametros['Porc_Bienes'];
+    $datos[20]['campo']= "MontoIvaBienes";
+    $datos[20]['dato'] = $parametros['MontoIvaBienes'];
+    $datos[21]['campo']= "PorRetBienes";
+    $datos[21]['dato'] = $parametros['PorRetBienes'];
+    $datos[22]['campo']= "ValorRetBienes";
+    $datos[22]['dato'] = $parametros['ValorRetBienes'];
+    $datos[23]['campo']= "Porc_Servicios";
+    $datos[23]['dato'] = $parametros['Porc_Servicios'];
+    $datos[24]['campo']= "MontoIvaServicios";
+    $datos[24]['dato'] = $parametros['MontoIvaServicios'];
+    $datos[25]['campo']= "PorRetServicios";
+    $datos[25]['dato'] = $parametros['PorRetServicios'];
+    $datos[26]['campo']= "ValorRetServicios";
+    $datos[26]['dato'] = $parametros['ValorRetServicios'];
+    $datos[27]['campo'] = 'CodigoU';
+    $datos[27]['dato']=$_SESSION['INGRESO']['CodigoU'];
+    $datos[28]['campo'] = 'Item';
+    $datos[28]['dato']=$_SESSION['INGRESO']['item'];
+    if(insert_generico("Asiento_Compras",$datos)==null)
+     {
+           return 1;
+
+     }else
+     {
+      return -1;
+     } 
+     
+  }
+   function modal_ingresar_asiento($parametros)
+     {
+      // print_r($parametros);die();
+        $cuenta = $this->modelo->cuentas_todos($parametros['cta']); 
+        $parametros_asiento = array(
+        "va" => round($parametros['val'],2),
+        "dconcepto1" => '.',
+        "codigo" => $parametros['cta'],
+        "cuenta" => $cuenta[0]['Cuenta'],
+        "efectivo_as" => date('Y-m-d'),
+        "chq_as" =>0,
+        "moneda" => $parametros['tm'],
+        "tipo_cue" => $parametros['dh'],
+        "cotizacion" => 0,
+        "con" => 0,
+        "t_no" => '1',
+        "tc"=>$cuenta[0]['TC'],                 
+      );
+
+        // print_r($parametros_asiento);die();
+
+         $resp = ingresar_asientos($parametros_asiento);
+         if($resp==1)
+         {
+          return 1;
+         }else
+         {
+          return -1;
+         }
+     }
 }
 ?>

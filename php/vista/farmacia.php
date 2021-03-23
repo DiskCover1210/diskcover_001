@@ -86,6 +86,10 @@ if(isset($_SESSION['INGRESO']['IP_VPN_RUTA']))
 						{
 							require_once("farmacia/descargos.php");
 						}
+						if ($_SESSION['INGRESO']['accion']=='descargos_procesados') 
+						{
+							require_once("farmacia/reporte_descargos_procesados.php");
+						}
 						
 					}else
 					{

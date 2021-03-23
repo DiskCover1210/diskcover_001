@@ -490,14 +490,17 @@ function ReadSetDataNum($sqls,$ParaEmpresa =false,$Incrementar = false)
 }
 
 
-function paginancion($sql,$function,$pag=false)
+function paginancion($tabla,$function,$pag=false,$where=false)
 {
-  $lim = 6;
+  $num_index = 6;
+
   $ini=0;
   $fin = 6;
 
+  $sql = 'SELECT count(*) as total FROM '.$tabla.' WHERE 1=1 ';
   $conn = new Conectar();
   $cid=$conn->conexion();
+  // print_r($sql);die();
   $stmt = sqlsrv_query($cid, $sql);
     if($stmt === false)  
       {  
@@ -505,56 +508,53 @@ function paginancion($sql,$function,$pag=false)
         return '';
         die( print_r( sqlsrv_errors(), true));  
       }   
-      $result = array();  
+      $result = 0;  
       while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_ASSOC) ) 
         {
-        $result[] =$row;
+        $result =$row;
         //echo $row[0];
         }
-       $total = count($result);
+       $total = $result['total'];
+       // print_r($total);die();
        $partes = $total/25;
-  $html='<div class="row text-right" id="paginacion"><ul class="pagination">';
+  $html='<div class="row text-right" id="paginacion"><ul class="pagination">
+  <li class="paginate_button" onclick="$(\'#txt_pag\').val(this.value);'.$function.'();" value="0"><a href="#">Inicio</a></li>';
 
-  $secc = $pag/25;
-  if(is_int($secc) && $secc != 0)
+  $index_actual = ($pag/25)+1;
+  if($index_actual % $num_index == 0)
   {
-    $parte = $secc/$lim;
-     if(is_int($parte))
-     {
-       $ini = ($parte*$lim)-1;
-       $fin = ($parte*$lim)+$lim;
-     }else
-     {
-      // print_r('expression');die();
-       
-        if($secc < 6)
-        {
-           $ini =0; 
-           $fin =6;
-        }else
-        {
-          $ini = $lim-1;
-          $fin = $lim+$lim;
-          while ($lim > $secc && $secc< $lim+6) {
-            $lim = $lim+6;
-            $ini = $lim-1;
-            $fin = $lim+$lim;
-           }
-        }
-       
-     }
-  } 
-  for($i=$ini;$i<$fin;$i++)
+    $ini = $index_actual-1;
+    $fin = $index_actual+6;
+  }else
   {
-    if(($pag/25)-1==$i)
-    {
-      $html.='<li class="paginate_button active" onclick="paginacion(this.value,\'txt_pag\');'.$function.'();" value="'.$i.'"><a href="#">'.($i+1).'</a></li>';
-    }else
-    {
-      $html.='<li class="paginate_button " onclick="paginacion(this.value,\'txt_pag\');'.$function.'();" value="'.$i.'"><a href="#">'.($i+1).'</a></li>';
+    $secc = intval(($pag/25)/6);
+    // print_r($secc);die();
+    $i=0;
+    while ($secc>$i) {
+      // print_r('expression');
+      $ini = $fin-1;
+      $fin = $fin+6;
+      $i++;
     }
   }
-  $html.='</ul></div>';
+
+  
+
+  for($i=$ini;$i<$fin;$i++)
+  {
+    $valor =$i*25;
+    $index = $i+1;
+
+    if($valor==$pag)
+    {
+      $html.='<li class="paginate_button active" onclick="$(\'#txt_pag\').val(this.value);'.$function.'();" value="'.$valor.'"><a href="#">'.$index.'</a></li>';
+    }else
+    {
+      $html.='<li class="paginate_button " onclick="$(\'#txt_pag\').val(this.value);'.$function.'();" value="'.$valor.'"><a href="#">'.$index.'</a></li>';
+    }
+  }
+  $final =  intval(($total-25));
+  $html.=' <li class="paginate_button" onclick="$(\'#txt_pag\').val(this.value);'.$function.'();" value="'.$final.'"><a href="#">Fin</a></li></ul></div>';
 
   // print_r($html);die();
        return $html;       
@@ -1778,7 +1778,7 @@ function grilla_generica_old($stmt,$ti=null,$camne=null,$b=null,$ch=null,$tabla=
 					//en caso de tener check
 					if($ch!=null)
 					{
-						echo "<th style='text-align: left;'>SEL</th>";
+						echo "<th style='text-align: left;' id='tit_sel'>SEL</th>";
 					}
 					foreach( sqlsrv_field_metadata( $stmt ) as $fieldMetadata ) {
 						//$camp='';
@@ -2596,9 +2596,16 @@ function grilla_generica_old($stmt,$ti=null,$camne=null,$b=null,$ch=null,$tabla=
 //excel
 function exportar_excel_generico($stmt,$ti=null,$camne=null,$b=null,$base=null)
 {
-	excel_file($stmt,$ti,$camne,$b,$base); 
+  excel_file($stmt,$ti,$camne,$b,$base); 
 }
-
+function exportar_excel_descargos($stmt,$ti=null,$camne=null,$b=null,$base=null)
+{
+	excel_file_descargos($stmt,$ti,$camne,$b,$base); 
+}
+function exportar_excel_comp($stmt,$ti=null,$camne=null,$b=null,$base=null)
+{
+  excel_file_comp($stmt,$ti,$camne,$b,$base); 
+}
 function exportar_excel_diario_g($re,$ti=null,$camne=null,$b=null,$base=null)
 {
 	excel_file_diario($re,$ti,$camne,$b,$base); 
@@ -3808,7 +3815,7 @@ function grilla_generica($stmt,$ti=null,$camne=null,$b=null,$ch=null,$tabla=null
 					//en caso de tener check
 					if($ch!=null)
 					{
-						echo "<th style='text-align: left;'>SEL</th>";
+						echo "<th style='text-align: left;' id='tit_sel'>SEL</th>";
 					}
           /*
           datetime = 93;
@@ -4237,7 +4244,13 @@ function grilla_generica($stmt,$ti=null,$camne=null,$b=null,$ch=null,$tabla=null
 										if($ca<(count($ch1)-1))
 										{
 											$cch=$ch1[$ca];
-											$camch=$camch.$row[$cch].'--';
+                      if(is_object($row[$cch]))
+                      {
+                        $camch=$camch.$row[$cch]->format('Y-m-d').'--';
+                      }else
+                      {
+                         $camch=$camch.$row[$cch].'--';
+                      }
 										}
 									}
 									$ca=$ca-1;
@@ -4271,7 +4284,13 @@ function grilla_generica($stmt,$ti=null,$camne=null,$b=null,$ch=null,$tabla=null
 										if($ca<(count($ch1)-1))
 										{
 											$cch=$ch1[$ca];
-											$camch=$camch.$row[$cch].'--';
+                      if(is_object($row[$cch]))
+                      {
+                        $camch=$camch.$row[$cch]->format('Y-m-d').'--';
+                      }else
+                      {
+                         $camch=$camch.$row[$cch].'--';
+                      }
 										}
 									}
 									$ca=$ca-1;
@@ -4553,7 +4572,14 @@ function grilla_generica($stmt,$ti=null,$camne=null,$b=null,$ch=null,$tabla=null
 								if($cam_fech[$j]==$i)
 								{
 									//$row[$i]=$row[$i]->format('Y-m-d H:i:s');
-									$row[$i]=$row[$i]->format('Y-m-d');
+                  if(is_object($row[$i]))
+                      {
+                        $row[$i]=$row[$i]->format('Y-m-d');
+                      }else
+                      {
+                         $row[$i]=$row[$i];
+                      }
+									// $row[$i]=$row[$i]->format('Y-m-d');
 								}
 								
 							}
@@ -4749,7 +4775,7 @@ function grilla_generica($stmt,$ti=null,$camne=null,$b=null,$ch=null,$tabla=null
 							//en caso de tener check
 							if($ch!=null)
 							{
-								echo "<th style='text-align: left;'>SEL</th>";
+								echo "<th style='text-align: left;' id='tit_sel'>SEL</th>";
 							}
 							foreach ($info_campo as $valor) 
 							{
@@ -5485,7 +5511,14 @@ function update_generico($datos,$tabla,$campoWhere)
    		//print_r($value['valor']);
    		if(is_numeric($value['valor']))
    		{
-   		   $wherelist.= $value['campo'].'='.$value['valor'].' AND ';
+        if(isset($value['tipo']) && $value['tipo'] =='string')
+        {
+
+          $wherelist.= $value['campo']."='".$value['valor']."' AND ";
+        }else
+        {
+          $wherelist.= $value['campo'].'='.$value['valor'].' AND ';
+        }
    		}else{
    		  $wherelist.= $value['campo']."='".$value['valor']."' AND ";
    	    }
@@ -5790,10 +5823,339 @@ function dimenciones_tabl($len)
   }
 }
 
+  function numero_comprobante1($query,$empresa,$incrementa,$FechaComp)
+  {
+    $NumCodigo = 0;
+    $NuevoNumero = False;
+    if(strlen($FechaComp)<10)
+    {
+      $FechaComp = date('Y-m-d');
+    }
+    if($FechaComp == '00/00/0000')
+    {
+      $FechaComp = date('Y-m-d');
+    }
+    $Si_MesComp = false;
+    if($empresa)
+    {
+      $NumEmpA = $_SESSION['INGRESO']['item'];
+    }else
+    {
+      $NumEmpA = '000';
+    }
+
+    if ($query<>'') {
+      $MesComp = '';
+      if(strlen($FechaComp)>=10)
+      {
+        $MesComp = date('m', strtotime($FechaComp)); 
+      }
+      if($MesComp=='')
+      {
+        $MesComp = '01';
+      }
+
+      if($_SESSION['INGRESO']['Num_CD'] and $query=='Diario')
+      {
+        $query = $MesComp.''.$query;
+      }
+       if($_SESSION['INGRESO']['Num_CI'] and $query=='Ingresos')
+      {
+        $query = $MesComp.''.$query;
+      }
+       if($_SESSION['INGRESO']['Num_CE'] and $query=='Egreso')
+      {
+        $query = $MesComp.''.$query;
+      }
+       if($_SESSION['INGRESO']['Num_ND'] and $query=='NotaDebito')
+      {
+        $query = $MesComp.''.$query;
+      }
+       if($_SESSION['INGRESO']['Num_NC'] and $query=='NotaCredito')
+      {
+        $query = $MesComp.''.$query;
+      }       
+
+    }
+
+    $conn = new Conectar();
+    $cid=$conn->conexion();
+    
+    $sql = "SELECT Numero, ID 
+           FROM Codigos 
+           WHERE Concepto = '".$query."' 
+           AND Periodo = '".$_SESSION['INGRESO']['periodo']."' 
+           AND Item = '".$_SESSION['INGRESO']['item']."' ";
+
+           // print_r($sql);die();
+            $stmt = sqlsrv_query( $cid, $sql);
+    if( $stmt === false)  
+    {  
+        echo "Error en consulta PA.\n";  
+        die( print_r( sqlsrv_errors(), true));  
+    }
+    $Result = array();
+    while( $row = sqlsrv_fetch_array($stmt,SQLSRV_FETCH_ASSOC)){
+        $Result[] = $row;
+      }
+
+      // print_r($Result);die();
+
+      if(count($Result)>0)
+      {
+        $NumCodigo = $Result[0]['Numero'];
+      }else
+      {
+        $NuevoNumero = true;
+        $NumCodigo = 1;
+        if($Num_Meses_CD && $Si_MesComp){$NumCodigo= $MesComp.'000001';}
+        if($Num_Meses_CI && $Si_MesComp){$NumCodigo= $MesComp.'000001';}
+        if($Num_Meses_CE && $Si_MesComp){$NumCodigo= $MesComp.'000001';}
+        if($Num_Meses_ND && $Si_MesComp){$NumCodigo= $MesComp.'000001';}
+        if($Num_Meses_NC && $Si_MesComp){$NumCodigo= $MesComp.'000001';}
+      }
+
+      if($NumCodigo > 0)
+      {
+        if($NuevoNumero)
+        {
+          $sql = "INSERT INTO Codigos (Periodo,Item,Concepto,Numero) 
+                VALUES ('".$_SESSION['INGRESO']['periodo']."','".$_SESSION['INGRESO']['item']."','".$query."',".$NumCodigo.") ";
+                 $stmt = sqlsrv_query( $cid, $sql);
+          if( $stmt === false)  
+          {  
+              echo "Error en consulta PA.\n";  
+              die( print_r( sqlsrv_errors(), true));  
+          }
+        }
+        if($incrementa)
+        {
+           $sql = "UPDATE Codigos
+                SET Numero = Numero + 1
+                WHERE Concepto = '".$query."'
+                AND Periodo = '".$_SESSION['INGRESO']['periodo']."'
+                AND Item = '".$_SESSION['INGRESO']['item']."' ";
+                 $stmt = sqlsrv_query( $cid, $sql);
+           if( $stmt === false)  
+             {  
+               echo "Error en consulta PA.\n";  
+               die( print_r( sqlsrv_errors(), true));  
+              }
+
+        }
+      }
+      return $NumCodigo;
+  
+  }
+
+  function numero_comprobante($parametros)
+  {
+    $conn = new Conectar();
+    $cid=$conn->conexion();
+    if(isset($parametros['fecha']))
+    {
+      if($parametros['fecha']=='')
+      {
+        $fecha_actual = date("Y-m-d"); 
+      }
+      else
+      {
+        $fecha_actual = $parametros['fecha']; 
+      }
+    }
+    else
+    {
+      $fecha_actual = date("Y-m-d"); 
+    }
+    $ot = explode("-",$fecha_actual);
+    if($parametros['tip']=='CD')
+    {
+      if($_SESSION['INGRESO']['Num_CD']==1)
+      {
+        $sql ="SELECT        Periodo, Item, Concepto, Numero, ID
+        FROM            Codigos
+        WHERE        (Item = '".$_SESSION['INGRESO']['item']."') 
+        AND (Periodo = '".$_SESSION['INGRESO']['periodo']."') 
+        AND (Concepto = '".$ot[1]."Diario')";
+        $stmt = sqlsrv_query( $cid, $sql);
+        if( $stmt === false)  
+        {  
+           echo "Error en consulta PA.\n";  
+           die( print_r( sqlsrv_errors(), true));  
+        }
+        $row_count=0;
+        $i=0;
+        $Result = array();
+        while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_NUMERIC) ) 
+        {
+          
+          $Result[$i]['Numero'] = $row[3];
+          
+          //echo $Result[$i]['nombre'];
+          $i++;
+        }
+        $codigo=$Result[0]['Numero']++;
+
+        if($i==0)
+        {
+          return -1;
+        }else
+        {
+          return "Comprobante de Ingreso No. ".$ot[0].'-'.$codigo;
+        }
+      }
+    }
+    if($parametros['tip']=='CI')
+    {
+      if($_SESSION['INGRESO']['Num_CI']==1)
+      {
+        $sql ="SELECT        Periodo, Item, Concepto, Numero, ID
+        FROM            Codigos
+        WHERE        (Item = '".$_SESSION['INGRESO']['item']."') 
+        AND (Periodo = '".$_SESSION['INGRESO']['periodo']."') 
+        AND (Concepto = '".$ot[1]."Ingresos')";
+        
+        $stmt = sqlsrv_query( $cid, $sql);
+        if( $stmt === false)  
+        {  
+           echo "Error en consulta PA.\n";  
+           die( print_r( sqlsrv_errors(), true));  
+        }
+        $row_count=0;
+        $i=0;
+        $Result = array();
+        while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_NUMERIC) ) 
+        {
+          
+          $Result[$i]['Numero'] = $row[3];
+          
+          //echo $Result[$i]['nombre'];
+          $i++;
+        }
+        $codigo=$Result[0]['Numero']++;
+        echo "Comprobante de Ingreso No. ".$ot[0].'-'.$codigo;
+        if($i==0)
+        {
+          echo 'no existe registro';
+          //echo json_encode($Result);
+        }
+      }
+    }
+    if($parametros['tip']=='CE')
+    {
+      if($_SESSION['INGRESO']['Num_CE']==1)
+      {
+        $sql ="SELECT        Periodo, Item, Concepto, Numero, ID
+        FROM            Codigos
+        WHERE        (Item = '".$_SESSION['INGRESO']['item']."') 
+        AND (Periodo = '".$_SESSION['INGRESO']['periodo']."') 
+        AND (Concepto = '".$ot[1]."Egresos')";
+        
+        $stmt = sqlsrv_query( $cid, $sql);
+        if( $stmt === false)  
+        {  
+           echo "Error en consulta PA.\n";  
+           die( print_r( sqlsrv_errors(), true));  
+        }
+        $row_count=0;
+        $i=0;
+        $Result = array();
+        while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_NUMERIC) ) 
+        {
+          
+          $Result[$i]['Numero'] = $row[3];
+          
+          //echo $Result[$i]['nombre'];
+          $i++;
+        }
+        $codigo=$Result[0]['Numero']++;
+        echo "Comprobante de Egreso No. ".$ot[0].'-'.$codigo;
+        if($i==0)
+        {
+          echo 'no existe registro';
+          //echo json_encode($Result);
+        }
+      }
+    }
+    if($parametros['tip']=='NC')
+    {
+      if($_SESSION['INGRESO']['Num_NC']==1)
+      {
+        $sql ="SELECT        Periodo, Item, Concepto, Numero, ID
+        FROM            Codigos
+        WHERE        (Item = '".$_SESSION['INGRESO']['item']."') 
+        AND (Periodo = '".$_SESSION['INGRESO']['periodo']."') 
+        AND (Concepto = '".$ot[1]."NotaCredito')";
+        
+        $stmt = sqlsrv_query( $cid, $sql);
+        if( $stmt === false)  
+        {  
+           echo "Error en consulta PA.\n";  
+           die( print_r( sqlsrv_errors(), true));  
+        }
+        $row_count=0;
+        $i=0;
+        $Result = array();
+        while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_NUMERIC) ) 
+        {
+          
+          $Result[$i]['Numero'] = $row[3];
+          
+          //echo $Result[$i]['nombre'];
+          $i++;
+        }
+        $codigo=$Result[0]['Numero']++;
+        echo "Comprobante de Nota de Credito No. ".$ot[0].'-'.$codigo;
+        if($i==0)
+        {
+          echo 'no existe registro';
+          //echo json_encode($Result);
+        }
+      }
+    }
+    if($parametros['tip']=='ND')
+    {
+      if($_SESSION['INGRESO']['Num_ND']==1)
+      {
+        $sql ="SELECT        Periodo, Item, Concepto, Numero, ID
+        FROM            Codigos
+        WHERE        (Item = '".$_SESSION['INGRESO']['item']."') 
+        AND (Periodo = '".$_SESSION['INGRESO']['periodo']."') 
+        AND (Concepto = '".$ot[1]."NotaDebito')";
+        
+        $stmt = sqlsrv_query( $cid, $sql);
+        if( $stmt === false)  
+        {  
+           echo "Error en consulta PA.\n";  
+           die( print_r( sqlsrv_errors(), true));  
+        }
+        $row_count=0;
+        $i=0;
+        $Result = array();
+        while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_NUMERIC) ) 
+        {
+          
+          $Result[$i]['Numero'] = $row[3];
+          
+          //echo $Result[$i]['nombre'];
+          $i++;
+        }
+        $codigo=$Result[0]['Numero']++;
+        echo "Comprobante de Nota de Debito No. ".$ot[0].'-'.$codigo;
+        if($i==0)
+        {
+          echo 'no existe registro';
+          //echo json_encode($Result);
+        }
+      }
+    } 
+  }
 
 function ingresar_asientos_SC($parametros)
 {
-     
+    $conn = new Conectar();
+    $cid=$conn->conexion(); 
+    $cod=$parametros['sub'];    
     if($parametros['t']=='P' OR $parametros['t']=='C')
     {
       $sql=" SELECT codigo FROM clientes WHERE CI_RUC='".$parametros['sub']."' ";
@@ -5847,8 +6209,14 @@ function ingresar_asientos_SC($parametros)
     $fecha_actual=$parametros['fecha_sc'];
     if($parametros['fac2']==0)
     {
+      if($_SESSION['INGRESO']['modulo_']!='1')
+      {
       $ot = explode("-",$fecha_actual);
       $fact2=$ot[0].$ot[1].$ot[2];
+      }else
+      {
+        $fact2=$parametros['fac2'];
+      }
       
     }
     else
@@ -6102,10 +6470,18 @@ function ingresar_asientos_SC($parametros)
 
 function ingresar_asientos($parametros)
 {
+
+    $conn = new Conectar();
+    $cid=$conn->conexion();
     $va = $parametros['va'];
     $dconcepto1 = $parametros['dconcepto1'];
     $codigo = $parametros['codigo'];
     $cuenta = $parametros['cuenta'];
+    $tc ='';
+    if(isset($parametros['tc']))
+    {
+      $tc = $parametros['tc'];
+    }
     if(isset($parametros['t_no']))
     {
       $t_no = $parametros['t_no'];
@@ -6244,12 +6620,10 @@ function ingresar_asientos($parametros)
       
         $sql="INSERT INTO Asiento
         (CODIGO,CUENTA,PARCIAL_ME,DEBE,HABER,CHEQ_DEP,DETALLE,EFECTIVIZAR,CODIGO_C,CODIGO_CC
-        ,ME,T_No,Item,CodigoU,A_No)
+        ,ME,T_No,Item,CodigoU,A_No,TC)
         VALUES
         ('".$codigo."','".$cuenta."',".$parcial.",".$debe.",".$haber.",'".$chq_as."','".$dconcepto1."',
-        '".$efectivo_as."','.','.',0,".$t_no.",'".$_SESSION['INGRESO']['item']."','".$_SESSION['INGRESO']['CodigoU']."',".$A_No.")";
-      
-      // print_r($sql);die();
+        '".$efectivo_as."','.','.',0,".$t_no.",'".$_SESSION['INGRESO']['item']."','".$_SESSION['INGRESO']['CodigoU']."',".$A_No.",'".$tc."')";
        $stmt = sqlsrv_query( $cid, $sql);
       if( $stmt === false)  
       {  
@@ -6274,8 +6648,7 @@ function ingresar_asientos($parametros)
         else
         {
           $camne=array();
-          grilla_generica($stmt,null,NULL,'1','0,1,clave','asi');
-          ListarTotalesTemSQL_AJAX(null,null,'1','0,1,clave');
+          return 1;
         }
       }
     }
@@ -6307,7 +6680,390 @@ function ingresar_asientos($parametros)
         {
           return 1;
         }
-    }
-    
+    }    
 }
+
+function generar_comprobantes($parametros)
+  {
+    $conn = new Conectar();
+    $cid=$conn->conexion();
+    if(isset($parametros['cotizacion']))
+    {
+      if($parametros['cotizacion']=='' or $parametros['cotizacion']==null)
+      {
+        $parametros['cotizacion']=0;
+      }
+    }
+    else
+    {
+      $parametros['cotizacion']=0;
+    }
+    $codigo_b='';
+    //echo $_POST['ru'].'<br>';
+    if($parametros['ru']=='000000000')
+    {
+      $codigo_b='.';
+    }
+    else
+    {
+      //buscamos codigo
+      $sql="  SELECT Codigo
+          FROM Clientes
+          WHERE((CI_RUC = '".$parametros['ru']."')) ";
+          // print_r($sql);die();
+      $stmt = sqlsrv_query( $cid, $sql);
+      if( $stmt === false)  
+      {  
+         echo "Error en consulta PA.\n";  
+         die( print_r( sqlsrv_errors(), true));  
+      }
+      else
+      {
+        while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_NUMERIC) ) 
+        {
+          $codigo_b=$row[0];
+        }
+      }
+      //caso en donde se necesite guardar el codigo de usuario como codigo beneficiario de comprobante
+      if($codigo_b =='' or $codigo_b==null)
+      {
+        $codigo_b =$parametros['ru'];
+      }
+      //$codigo_b=$_POST['ru'];
+    }
+    //buscamos total
+    if($parametros['tip']=='CE' or $parametros['tip']=='CI')
+    {
+      $sql="SELECT        SUM( DEBE) AS db, SUM(HABER) AS ha
+      FROM            Asiento
+      where T_No=".$_SESSION['INGRESO']['modulo_']." AND
+          Item = '".$_SESSION['INGRESO']['item']."' 
+          AND CodigoU = '".$_SESSION['INGRESO']['Id']."'  AND CUENTA 
+      in (select Cuenta FROM  Catalogo_Cuentas 
+      where Catalogo_Cuentas.Cuenta=Asiento.CUENTA AND (Catalogo_Cuentas.TC='CJ' OR Catalogo_Cuentas.TC='BA'))";
+      
+      $stmt = sqlsrv_query( $cid, $sql);
+      $totald=0;
+      $totalh=0;
+      if( $stmt === false)  
+      {  
+         echo "Error en consulta PA.\n";  
+         die( print_r( sqlsrv_errors(), true));  
+      }
+      else
+      {
+        while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_NUMERIC) ) 
+        {
+          $totald=$row[0];
+          $totalh=$row[1];
+        }
+      }
+      if($parametros['tip']=='CE')
+      {
+        $parametros['totalh']=$totalh;
+      }
+      if($parametros['tip']=='CI')
+      {
+        $parametros['totalh']=$totald;
+      }
+    }
+    if($parametros['concepto']=='')
+    {
+      $parametros['concepto']='.';
+    }
+    $num_com = explode("-", $parametros['num_com']);
+    //verificamos que no se coloque fecha erronea
+    $ot = explode("-",$parametros['fecha1']);
+    $num_com1 = explode(".", $num_com[0]);
+    $parametros['fecha1']=trim($num_com1[1]).'-'.$ot[1].'-'.$ot[2];
+    
+    //echo $_POST['fecha1'];
+    //die();
+    
+    $sql="INSERT INTO Comprobantes
+           (Periodo ,Item,T ,TP,Numero ,Fecha ,Codigo_B,Presupuesto,Concepto,Cotizacion,Efectivo,Monto_Total
+           ,CodigoU ,Autorizado,Si_Existe ,Hora,CEj,X)
+       VALUES
+           ('".$_SESSION['INGRESO']['periodo']."'
+           ,'".$_SESSION['INGRESO']['item']."'
+           ,'N'
+           ,'".$parametros['tip']."'
+           ,".$num_com[1]."
+           ,'".$parametros['fecha1']."'
+           ,'".$codigo_b."'
+           ,0
+           ,'".$parametros['concepto']."'
+           ,'".$parametros['cotizacion']."'
+           ,0
+           ,'".$parametros['totalh']."'
+           ,'".$_SESSION['INGRESO']['CodigoU']."'
+           ,'.'
+           ,0
+           ,'".date('h:i:s')."'
+           ,'.'
+           ,'.')";
+        // echo $sql.'<br>';
+           // print_r($sql);die();
+        $stmt = sqlsrv_query( $cid, $sql);
+      if( $stmt === false)  
+      {  
+         echo "Error en consulta PA.\n";  
+         die( print_r( sqlsrv_errors(), true));  
+      }
+
+       //consultamos transacciones
+       $sql="SELECT CODIGO,CUENTA,PARCIAL_ME  ,DEBE ,HABER ,CHEQ_DEP ,DETALLE ,EFECTIVIZAR,CODIGO_C,CODIGO_CC
+        ,ME,T_No,Item,CodigoU ,A_No,TC
+        FROM Asiento
+        WHERE 
+          T_No='".$_SESSION['INGRESO']['modulo_']."' AND
+          Item = '".$_SESSION['INGRESO']['item']."' 
+          AND CodigoU = '".$_SESSION['INGRESO']['Id']."' ";
+      
+      $sql=$sql." ORDER BY A_No ";
+      $stmt = sqlsrv_query( $cid, $sql);
+      if( $stmt === false)  
+      {  
+         echo "Error en consulta PA.\n";  
+         die( print_r( sqlsrv_errors(), true));  
+      }
+      else
+      {
+        $i=0;
+        $ii=0;
+        $Result = array();
+        $fecha_actual = date("Y-m-d"); 
+        while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_NUMERIC) ) 
+        {
+          $Result[$i]['CODIGO']=$row[0];
+          $Result[$i]['CHEQ_DEP']=$row[5];
+          $Result[$i]['DEBE']=$row[3];
+          $Result[$i]['HABER']=$row[4];
+          $Result[$i]['PARCIAL_ME']=$row[2];
+          $Result[$i]['EFECTIVIZAR']=$row[7]->format('Y-m-d');
+          $Result[$i]['CODIGO_C']=$row[8];
+          
+          $sql=" INSERT INTO Transacciones
+            (Periodo ,T,C ,Cta,Fecha,TP ,Numero,Cheq_Dep,Debe ,Haber,Saldo ,Parcial_ME ,Saldo_ME ,Fecha_Efec ,Item ,X ,Detalle
+            ,Codigo_C,Procesado,Pagar,C_Costo)
+           VALUES
+            ('".$_SESSION['INGRESO']['periodo']."'
+            ,'N'
+            ,0
+            ,'".$Result[$i]['CODIGO']."'
+            ,'".$parametros['fecha1']."'
+            ,'".$parametros['tip']."'
+            ,".$num_com[1]."
+            ,'".$Result[$i]['CHEQ_DEP']."'
+            ,".$Result[$i]['DEBE']."
+            ,".$Result[$i]['HABER']."
+            ,0
+            ,".$Result[$i]['PARCIAL_ME']."
+            ,0
+            ,'".$Result[$i]['EFECTIVIZAR']."'
+            ,'".$_SESSION['INGRESO']['item']."'
+            ,'.'
+            ,'.'
+            ,'".$Result[$i]['CODIGO_C']."'
+            ,0
+            ,0
+            ,'.');";
+           // echo $sql.'<br>';
+
+           // print_r($sql);
+          $stmt1 = sqlsrv_query( $cid, $sql);
+          if( $stmt1 === false)  
+          {  
+             echo "Error en consulta PA.\n";  
+             die( print_r( sqlsrv_errors(), true));  
+          }
+          $i++;
+        }
+        $sql="SELECT  Codigo,Beneficiario,Factura,Prima,DH,Valor ,Valor_ME,Detalle_SubCta,FECHA_V ,TC,Cta,TM
+        ,T_No,SC_No,Fecha_D,Fecha_H,Bloquear,Item,CodigoU
+        FROM Asiento_SC
+        WHERE 
+          Item = '".$_SESSION['INGRESO']['item']."' 
+          AND CodigoU = '".$_SESSION['INGRESO']['Id']."' ";
+
+        //echo $sql;
+        $stmt = sqlsrv_query(   $cid, $sql);
+        if( $stmt === false)  
+        {  
+           echo "Error en consulta PA.\n";  
+           die( print_r( sqlsrv_errors(), true));  
+        }
+        else
+        {
+          $i=0;
+          $Result = array();
+          $fecha_actual = date("Y-m-d"); 
+          while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_NUMERIC) ) 
+          {
+            $Result[$i]['TC']=$row[9];
+            $Result[$i]['Cta']=$row[10];
+            $Result[$i]['FECHA_V']=$row[8]->format('Y-m-d');
+            $Result[$i]['Codigo']=$row[0];
+            $Result[$i]['Factura']=$row[2];
+            $Result[$i]['Prima']=$row[3];
+            $Result[$i]['DH']=$row[4];
+            if($Result[$i]['DH']==1)
+            {
+              $Result[$i]['DEBITO']=$row[5];
+              $Result[$i]['HABER']=0;
+            }
+            if($Result[$i]['DH']==2)
+            {
+              $Result[$i]['DEBITO']=0;
+              $Result[$i]['HABER']=$row[5];
+            }
+            $sql="INSERT INTO Trans_SubCtas
+                 (Periodo ,T,TC,Cta,Fecha,Fecha_V,Codigo ,TP,Numero ,Factura ,Prima ,Debitos ,Creditos ,Saldo_MN,Parcial_ME
+                 ,Saldo_ME,Item,Saldo ,CodigoU,X,Comp_No,Autorizacion,Serie,Detalle_SubCta,Procesado)
+             VALUES
+                 ('".$_SESSION['INGRESO']['periodo']."'
+                 ,'N'
+                 ,'".$Result[$i]['TC']."'
+                 ,'".$Result[$i]['Cta']."'
+                 ,'".$parametros['fecha1']."'
+                 ,'".$Result[$i]['FECHA_V']."'
+                 ,'".$Result[$i]['Codigo']."'
+                 ,'".$parametros['tip']."'
+                 ,".$num_com[1]."
+                 ,".$Result[$i]['Factura']."
+                 ,".$Result[$i]['Prima']."
+                 ,".$Result[$i]['DEBITO']."
+                 ,".$Result[$i]['HABER']."
+                 ,0
+                 ,0
+                 ,0
+                 ,'".$_SESSION['INGRESO']['item']."'
+                 ,0
+                 ,'".$_SESSION['INGRESO']['CodigoU']."'
+                 ,'.'
+                 ,0
+                 ,'.'
+                 ,'.'
+                 ,'.'
+                 ,0)";
+            //echo $sql.'<br>';
+
+           // print_r($sql);die();
+            $stmt1 = sqlsrv_query( $cid, $sql);
+            if( $stmt1 === false)  
+            {  
+               echo "Error en consulta PA.\n";  
+               die( print_r( sqlsrv_errors(), true));  
+            }
+          }
+        }
+        //incrementamos el secuencial
+        if($_SESSION['INGRESO']['Num_CD']==1)
+        {
+          //para variable en html
+          $num1=$num_com[1];
+          $num_com[1]=$num_com[1]+1;
+          //echo $num_com[1].'<br>'.$_POST['tip'].'<br>';
+          if(isset($parametros['fecha1']))
+          {
+            //echo $_POST['fecha'];
+            $fecha_actual = $parametros['fecha1']; 
+          }
+          else
+          {
+            $fecha_actual = date("Y-m-d"); 
+          }
+          $ot = explode("-",$fecha_actual);
+          if($parametros['tip']=='CD')
+          {
+            $sql ="UPDATE Codigos set Numero=".$num_com[1]."
+            WHERE        (Item = '".$_SESSION['INGRESO']['item']."') 
+            AND (Periodo = '".$_SESSION['INGRESO']['periodo']."') 
+            AND (Concepto = '".$ot[1]."Diario')";
+          }
+          if($parametros['tip']=='CI')
+          {
+            $sql ="UPDATE Codigos set Numero=".$num_com[1]."
+            WHERE        (Item = '".$_SESSION['INGRESO']['item']."') 
+            AND (Periodo = '".$_SESSION['INGRESO']['periodo']."') 
+            AND (Concepto = '".$ot[1]."Ingresos')";
+          }
+          if($parametros['tip']=='CE')
+          {
+            $sql ="UPDATE Codigos set Numero=".$num_com[1]."
+            WHERE        (Item = '".$_SESSION['INGRESO']['item']."') 
+            AND (Periodo = '".$_SESSION['INGRESO']['periodo']."') 
+            AND (Concepto = '".$ot[1]."Egresos')";
+          }
+          if($parametros['tip']=='ND')
+          {
+            $sql ="UPDATE Codigos set Numero=".$num_com[1]."
+            WHERE        (Item = '".$_SESSION['INGRESO']['item']."') 
+            AND (Periodo = '".$_SESSION['INGRESO']['periodo']."') 
+            AND (Concepto = '".$ot[1]."NotaDebito')";
+          }
+          if($parametros['tip']=='NC')
+          {
+            $sql ="UPDATE Codigos set Numero=".$num_com[1]."
+            WHERE        (Item = '".$_SESSION['INGRESO']['item']."') 
+            AND (Periodo = '".$_SESSION['INGRESO']['periodo']."') 
+            AND (Concepto = '".$ot[1]."NotaCredito')";
+          }
+          $stmt = sqlsrv_query( $cid, $sql);
+          if( $stmt === false)  
+          {  
+             echo "Error en consulta PA.\n";  
+             die( print_r( sqlsrv_errors(), true));  
+          }
+          //borramos temporales asientos
+          $sql="DELETE FROM Asiento
+          WHERE 
+          T_No=".$_SESSION['INGRESO']['modulo_']." AND
+          Item = '".$_SESSION['INGRESO']['item']."' 
+          AND CodigoU = '".$_SESSION['INGRESO']['Id']."' ";
+          // echo  $sql;
+          $stmt = sqlsrv_query( $cid, $sql);
+          if( $stmt === false)  
+          {  
+             echo "Error en consulta PA.\n";  
+             die( print_r( sqlsrv_errors(), true));  
+          }
+          //borramos temporales asientos bancos
+          
+          $sql="DELETE FROM Asiento_B
+          WHERE 
+          Item = '".$_SESSION['INGRESO']['item']."' 
+          AND CodigoU = '".$_SESSION['INGRESO']['Id']."' ";
+          $stmt = sqlsrv_query( $cid, $sql);
+          if( $stmt === false)  
+          {  
+             echo "Error en consulta PA.\n";  
+             die( print_r( sqlsrv_errors(), true));  
+          }
+          //echo $sql;
+          $stmt = sqlsrv_query( $cid, $sql);
+          if( $stmt === false)  
+          {  
+             echo "Error en consulta PA.\n";  
+             die( print_r( sqlsrv_errors(), true));  
+          }
+          //borramos asiento subcuenta
+          $sql="DELETE FROM Asiento_SC
+          WHERE 
+            Item = '".$_SESSION['INGRESO']['item']."' 
+            AND CodigoU = '".$_SESSION['INGRESO']['Id']."' ";
+          $stmt = sqlsrv_query(   $cid, $sql);
+          if( $stmt === false)  
+          {  
+             echo "Error en consulta PA.\n";  
+             die( print_r( sqlsrv_errors(), true));  
+          }
+          //generamos comprobante
+          //reporte_com($num1);
+          return $num1;
+        }
+      }
+  }
+
+
 ?>

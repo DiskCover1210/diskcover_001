@@ -34,9 +34,19 @@
 					  </a> -->
 					</h4>
 					<h4 class="box-title">
-						<a class="btn btn-default"  title="Mensaje masivo" href="#" data-placement="right"
+						<a class="btn btn-default"  title="Mensaje masivo todas las empresas" href="#" data-placement="right"
 						onclick='mmasivo();'	>
 							<i ><img src="../../img/png/masivo.png" class="user-image" alt="User Image"
+							style='font-size:20px; display:block; height:100%; width:100%;'></i> 
+						</a>
+					  <!--<a data-toggle="collapse" data-parent="#accordion" href="#collapseOne">
+						Collapsible Group Item #1
+					  </a> -->
+					</h4>
+					<h4 class="box-title">
+						<a class="btn btn-default"  title="Mensaje masivo a grupo seleccionado" href="#" data-placement="right"
+						onclick='mgrupo();'	>
+							<i ><img src="../../img/png/email_grupo.png" class="user-image" alt="User Image"
 							style='font-size:20px; display:block; height:100%; width:100%;'></i> 
 						</a>
 					  <!--<a data-toggle="collapse" data-parent="#accordion" href="#collapseOne">
@@ -519,7 +529,7 @@
 										, {ajax_page: 'mindividual', campo1: entidad.value, 
 										campo2: Estado.value, campo3: Mensaje.value, campo4: Fecha.value,
 										campo5: Servidor.value, campo6: Base.value, campo7: Usuario.value,
-										campo8: Clave.value, campo9: Motor.value, campo10: Puerto.value
+										campo8: Clave.value, campo9: Motor.value, campo10: Puerto.value,campo11:empresa.value
 										})
 										.done(function( data, textStatus, jqXHR ) {
 												if ( console && console.log ) {
@@ -562,6 +572,69 @@
 												}
 										});
 									}
+
+									function mgrupo()
+									{
+										var entidad = document.getElementById('entidad');
+										var Ciudad = document.getElementById('ciudad');
+										var Estado = document.getElementById('Estado');
+										var Mensaje = document.getElementById('Mensaje');
+										var Fecha = document.getElementById('Fecha');
+										var Servidor = document.getElementById('Servidor');
+										var Base = document.getElementById('Base');
+										var Usuario = document.getElementById('Usuario');
+										var Clave = document.getElementById('Clave');
+										var Motor = document.getElementById('Motor');
+										var Puerto = document.getElementById('Puerto');
+									
+										$.post('ajax/vista_ajax.php'
+										, {ajax_page: 'mgrupo', campo1: entidad.value, 
+										campo2: Estado.value, campo3: Mensaje.value, campo4: Fecha.value,
+										campo5: Servidor.value, campo6: Base.value, campo7: Usuario.value,
+										campo8: Clave.value, campo9: Motor.value, campo10: Puerto.value,campo11:Ciudad.value,
+										})
+										.done(function( data, textStatus, jqXHR ) {
+												if ( console && console.log ) {
+													console.log( "La solicitud se ha completado correctamente." );
+													if(data.success)
+													{
+																Swal.fire({
+														  title: 'mensaje modificado!',
+														  text: 'mensaje modificado en las entidades con exito.',
+														  
+														  animation: false
+														}).then((result) => {
+																  if (
+																	result.value
+																  ) {
+																	console.log('I was closed by the timer');
+																	//location.href ="empresa.php?mod=empresa";
+																  }
+																});
+													}
+													else
+													{
+														 Swal.fire({
+														  type: 'error',
+														  title: 'Oops...',
+														  text: 'No se pudo modificar base de datos!'
+														});
+													}
+												}
+											})
+											.fail(function( jqXHR, textStatus, errorThrown ) {
+												if ( console && console.log ) {
+													console.log( "Algo ha fallado: " +  textStatus);
+													 Swal.fire({
+														  type: 'error',
+														  title: 'Oops...',
+														  text: 'No se pudo modificar base de datos!'
+														});
+													 
+												}
+										});
+									}
+
 									function mmasivo()
 									{
 										var empresa = document.getElementById('empresa');

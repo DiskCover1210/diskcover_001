@@ -119,6 +119,10 @@ if(isset($_SESSION['INGRESO']['IP_VPN_RUTA']))
 						{
 							require_once("contabilidad/bamup.php");
 						}
+						if ($_SESSION['INGRESO']['accion']=='reportes') 
+						{
+							require_once("contabilidad/resumen_retenciones.php");
+						}
 					}else
 					{
 						echo "<div class='box-body'><img src='../../img/modulo_contable.gif' width='100%'></div>";

@@ -428,6 +428,8 @@ $("#datos").fadeIn();
                 <ul class="dropdown-menu" aria-labelledby="anexos">
                   <li class="dropdown-item col-6 col-md"><a href="contabilidad.php?mod=contabilidad&acc=anexos_trans&acc1=Generar Anexos transaccioneales&b=1">
                      Generar anexos transaccionales         (F12)</a></li>
+                     <li class="dropdown-item col-6 col-md"><a href="contabilidad.php?mod=contabilidad&acc=reportes&acc1=Resumen de retenciones&b=1">Resumen de retenciones</a></li>
+
                  <!--  <li class="dropdown-item"><a href="#" >Codigo de retención (AIR) 
                   <i  style=' float: right;' align="right">(F11)</i></a></li>
                   <li class="dropdown-item"><a href="#" >Resumen de retensiones 
@@ -614,14 +616,17 @@ $("#datos").fadeIn();
             <li class="nav-item dropdown">
               <a class="nav-link dropdown-toggle" id="archivo" data-toggle="dropdown" aria-haspopup="true" 
               aria-expanded="false" style='padding-top: 5px;padding-bottom: 5px;'>Archivo</a>
-              <ul class="dropdown-menu" aria-labelledby="archivo">
+              <ul class="dropdown-menu" aria-labelledby="archivo">               
                 <li class="dropdown-submenu">
                   <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" id="de_operacion" role="button" aria-haspopup="true" aria-expanded="false">De operación  &nbsp;&nbsp;&nbsp;&nbsp;<span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></a>
                   <ul class="dropdown-menu" aria-labelledby="de_operacion">
+                     <li class="dropdown-item  col-6 col-md"><a href="farmacia.php?mod=Inventario&acc=articulos&acc1=Visualizar articulos&b=1&po=subcu">
+                    Ingresar Articulos <i  style=' float: right;' align="right"></i></a></li>
                     <li class="dropdown-item  col-6 col-md"><a href="inventario.php?mod=Inventario&acc=inventario_online&acc1=Inventario online&b=1&po=subcu">
                     Ingreso online <i  style=' float: right;' align="right"></i></a></li>
                     <li class="dropdown-item  col-6 col-md"><a href="inventario.php?mod=Inventario&acc=kardex_ing&acc1=Control de inventario&b=1&po=subcu">
                     Control de Inventario(E/S) <i  style=' float: right;' align="right"></i></a></li>
+                    
                   </ul>
                 </li>
                 
@@ -687,16 +692,16 @@ $("#datos").fadeIn();
                 <li class="dropdown-submenu">
                   <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" id="de_operacion" role="button" aria-haspopup="true" aria-expanded="false">De operación  &nbsp;&nbsp;&nbsp;&nbsp;<span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></a>
                   <ul class="dropdown-menu" aria-labelledby="de_operacion">
-                    <li class="dropdown-item  col-6 col-md"><a href="farmacia.php?mod=Farmacia&acc=ingresar_proveedor&acc1=Ingresar Proveedor&b=1&po=subcu">
-                    Ingreso proveedor <i  style=' float: right;' align="right"></i></a></li>
-                    <li class="dropdown-item  col-6 col-md"><a href="farmacia.php?mod=Farmacia&acc=ingresar_paciente&acc1=Ingresar Paciente&b=1&po=subcu">
-                    Ingreso paciente <i  style=' float: right;' align="right"></i></a></li>
-                    <li class="dropdown-item  col-6 col-md"><a href="farmacia.php?mod=Farmacia&acc=ingresar_descargos&acc1=Ingresar Descargos&b=1&po=subcu">
-                    Ingreso descargos <i  style=' float: right;' align="right"></i></a></li>
-                    <li class="dropdown-item  col-6 col-md"><a href="farmacia.php?mod=Farmacia&acc=ingresar_factura&acc1=Ingresar Factura&b=1&po=subcu">
-                    Ingresar Factura <i  style=' float: right;' align="right"></i></a></li>
+                    <!-- <li class="dropdown-item  col-6 col-md"><a href="farmacia.php?mod=Farmacia&acc=ingresar_proveedor&acc1=Ingresar Proveedor&b=1&po=subcu">
+                    Ingreso proveedor <i  style=' float: right;' align="right"></i></a></li> -->
+                    <!-- <li class="dropdown-item  col-6 col-md"><a href="farmacia.php?mod=Farmacia&acc=ingresar_paciente&acc1=Ingresar Paciente&b=1&po=subcu">
+                    Ingreso paciente <i  style=' float: right;' align="right"></i></a></li> -->
+                    <!-- <li class="dropdown-item  col-6 col-md"><a href="farmacia.php?mod=Farmacia&acc=ingresar_descargos&acc1=Ingresar Descargos&b=1&po=subcu">
+                    Ingreso descargos <i  style=' float: right;' align="right"></i></a></li> -->
+                    <!-- <li class="dropdown-item  col-6 col-md"><a href="farmacia.php?mod=Farmacia&acc=ingresar_factura&acc1=Ingresar Factura&b=1&po=subcu">
+                    Ingresar Factura <i  style=' float: right;' align="right"></i></a></li> -->
                     <li class="dropdown-item  col-6 col-md"><a href="farmacia.php?mod=Farmacia&acc=articulos&acc1=Visualizar articulos&b=1&po=subcu">
-                    Articulos <i  style=' float: right;' align="right"></i></a></li>
+                    Ingresar Articulos <i  style=' float: right;' align="right"></i></a></li>
                     <li class="dropdown-item  col-6 col-md"><a href="farmacia.php?mod=Farmacia&acc=pacientes&acc1=Visualizar paciente&b=1&po=subcu">
                     Pacientes <i  style=' float: right;' align="right"></i></a></li>
                      <li class="dropdown-item  col-6 col-md"><a href="farmacia.php?mod=Farmacia&acc=vis_descargos&acc1=Visualizar descargos&b=1&po=subcu">
@@ -709,41 +714,14 @@ $("#datos").fadeIn();
               </ul>
             </li>              
 <!-- ------------------------------------------------------ -->
-      <!--       <li class="nav-item dropdown">
-        <a class="nav-link dropdown-toggle" href="http://example.com" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-          Dropdown link
-        </a>
-        <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-          <li><a class="dropdown-item" href="#">Action</a></li>
-          <li><a class="dropdown-item" href="#">Another action</a></li>
-          <li class="dropdown-submenu">
-            <a class="dropdown-item dropdown-toggle" href="#">Submenu</a>
-            <ul class="dropdown-menu">
-              <li><a class="dropdown-item" href="#">Submenu action</a></li>
-              <li><a class="dropdown-item" href="#">Another submenu action</a></li>
-
-
-              <li class="dropdown-submenu">
-                <a class="dropdown-item dropdown-toggle" href="#">Subsubmenu</a>
-                <ul class="dropdown-menu">
-                  <li><a class="dropdown-item" href="#">Subsubmenu action</a></li>
-                  <li><a class="dropdown-item" href="#">Another subsubmenu action</a></li>
-                </ul>
-              </li>
-              <li class="dropdown-submenu">
-                <a class="dropdown-item dropdown-toggle" href="#">Second subsubmenu</a>
-                <ul class="dropdown-menu">
-                  <li><a class="dropdown-item" href="#">Subsubmenu action</a></li>
-                  <li><a class="dropdown-item" href="#">Another subsubmenu action</a></li>
-                </ul>
-              </li>
-
-
-
-            </ul>
-          </li>
-        </ul>
-      </li> -->
+     <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" id="archivo" data-toggle="dropdown" aria-haspopup="true" 
+              aria-expanded="false" style='padding-top: 5px;padding-bottom: 5px;'>Reportes</a>
+              <ul class="dropdown-menu" aria-labelledby="archivo">
+                <li class="dropdown-item  col-6 col-md"><a  href="farmacia.php?mod=Farmacia&acc=descargos_procesados&acc1=Descargos procesados&b=1&po=subcu"> Reporte de comprobantes</a></li>                
+               <!--  <li class="dropdown-item  col-6 col-md"><a href="panel.php"><span class="glyphicon glyphicon-chevron-left" aria-hidden="true">  Volver</a></li> -->
+              </ul>
+            </li>     
       <?php
        }}
        ?>

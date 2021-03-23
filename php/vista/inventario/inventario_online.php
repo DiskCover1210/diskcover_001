@@ -14,7 +14,7 @@
           console.log(response);
           if(response== -1)
           {
-            // Swal.fire('','Genere una cuenta llamada "Cta_Desperdicio" para desperdicios.','info');
+            Swal.fire('','Genere una cuenta llamada "Cta_Desperdicio" para desperdicios.','info');
            window.location = "../vista/inventario.php?mod=Inventario&cuenta=-1";
           }else if(response == -2)
           {           

@@ -364,7 +364,7 @@ function contracuenta()
     </div>
     <div class="row">
     	<div class="col-sm-4">
-    		<label class="radio-inline"><b><input type="checkbox" name="rbl_retencion" onclick="Ult_fact_Prove();modal_retencion();" id="rbl_retencion" > Retencion en la fuente:</b> <input type="text" name="" class="input-sm"></label>
+    		<label class="radio-inline"><b><input type="checkbox" name="rbl_retencion" onclick="Ult_fact_Prove($('#DCProveedor').val());modal_retencion();" id="rbl_retencion" > Retencion en la fuente:</b> <input type="text" name="" class="input-sm"></label>
     	</div>
     	<div class="col-sm-4">
     		<b>Retencion del I.V.A:</b> <input type="text" name="" class="input-sm">

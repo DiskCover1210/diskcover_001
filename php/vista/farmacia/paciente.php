@@ -2,6 +2,7 @@
 <script type="text/javascript">
   $( document ).ready(function() {
      provincia();
+
      cargar_clientes();
   });
 
@@ -20,9 +21,14 @@
              op+= '<option value="'+item.Codigo+'">'+item.Descripcion_Rubro+'</option>';
           });
           $('#ddl_provincia').html(op);
+          $("#ddl_provincia").val('17');
         }
       }
     });
+  }
+  function nombres(nombre)
+  {
+    $('#txt_nombre').val(nombre.ucwords());
   }
 
   function cargar_clientes()
@@ -65,23 +71,36 @@
     $('#txt_telefono').val('');
     $('#txt_tip').val('N');    
     $('#txt_id').val('');
+    $('#txt_email').val('');
     $('#btn_nu').html('<i class="fa fa-plus"></i> Nuevo cliente');
+    // $('#txt_codigo').attr("readonly", false);
   }
 
 
   function nuevo_paciente()
   {
-
     var parametros = 
     {
-       // 'cod':$('#txt_codigo').val(),
+       'cod':$('#txt_codigo').val(),
        'id':$('#txt_id').val(),
        'nom':$('#txt_nombre').val(),
        'ruc':$('#txt_ruc').val(),
        'pro':$('#ddl_provincia').val(),
        'loc':$('#txt_localidad').val(),
        'tel':$('#txt_telefono').val(),
+       'ema':$('#txt_email').val(),
        'tip':$('#txt_tip').val(),
+    }
+    if($('#txt_codigo').val() =='' || $('#txt_nombre').val()=='' || $('#txt_ruc').val()=='' || $('#ddl_provincia').val()=='' || $('#txt_localidad').val()=='' || $('#txt_telefono').val()== '' || $('#txt_email').val()=='' || $('#txt_tip').val()=='')
+    {
+
+       Swal.fire('','Llene todo los campos.','info');
+      return false;
+    }
+    if($('#txt_codigo').val() =='' || $('#txt_codigo').val()==0)
+    {
+       Swal.fire('','Numero de Historia invalido.','info');
+      return false;
     }
      $.ajax({
       data:  {parametros:parametros},
@@ -113,7 +132,8 @@
   function buscar_cod(tipo,campo)
   {
 
-      $('#myModal_espera').modal('show');    
+    // $('#txt_codigo').attr("readonly",true);
+    $('#myModal_espera').modal('show');    
     $('#btn_nu').html('<i class="fa fa-pencil"></i> Editar cliente');
     $('#txt_tip').val('E');
     var query = $('#'+campo).val();
@@ -162,13 +182,18 @@
         console.log(response);
         if(response !=-1)
         {
-           $('#txt_codigo').val(response[0].Matricula);
-           $('#txt_nombre').val(response[0].Cliente);
-           $('#txt_ruc').val(response[0].CI_RUC);
-           $('#ddl_provincia').val(response[0].Prov);
-           $('#txt_localidad').val(response[0].Ciudad);
-           $('#txt_telefono').val(response[0].Telefono);
-           $('#txt_id').val(response[0].ID);
+           $('#txt_codigo').val(response.matricula);
+           $('#txt_nombre').val(response.nombre);
+           $('#txt_ruc').val(response.ci);
+           $('#ddl_provincia').val(response.prov);
+           $('#txt_localidad').val(response.localidad);
+           $('#txt_telefono').val(response.telefono);
+           $('#txt_email').val(response.email);
+           $('#txt_id').val(response.id);
+           if(response.matricula == 0 || response.matricula == '')
+           {
+                $('#txt_codigo').attr("readonly",false);
+           }
            $(window).scrollTop(0);
           
         }else
@@ -217,9 +242,116 @@
 
   }
 
+  function validar_num_historia()
+  {
+    var num = $('#txt_codigo').val();
+    if(!num=='')
+    {
+       parametros = 
+      { 
+        'query':num,
+        'tipo':'C1',
+        'codigo':'',
+      }
+       $.ajax({
+      data:  {parametros:parametros},
+      url:   '../controlador/farmacia/pacienteC.php?historial_existente=true',
+      type:  'post',
+      dataType: 'json',
+      success:  function (response) { 
+        // console.log(response);
+        if(response==-1)
+        {
+          Swal.fire('','El numero de Historia ya existe.','error');
+          $('#txt_codigo').val('');
+        }
+      }
+    });
+
+    }
+  }
+
+  function validar_ci()
+  {
+     var num = $('#txt_ruc').val();
+    
+      $.ajax({
+      data:  {num:num},
+      url:   '../controlador/farmacia/pacienteC.php?validar_ci=true',
+      type:  'post',
+      dataType: 'json',
+      success:  function (response) { 
+        if(response == 2)
+        {
+           Swal.fire('Numero de cedula invalido.','','error');
+            $('#txt_ruc').val('');
+           return false;
+        }
+      }
+    });
+  }
+
+  function paciente_existente()
+  {
+    var num = $('#txt_ruc').val();
+    if(!num=='')
+    {
+      validar_ci();
+       parametros = 
+      { 
+        'query':num,
+        'tipo':'R1',
+        'codigo':'',
+      }
+       $.ajax({
+      data:  {parametros:parametros},
+      url:   '../controlador/farmacia/pacienteC.php?paciente_existente=true',
+      type:  'post',
+      dataType: 'json',
+      success:  function (response) { 
+        if(response!=-1)
+        {
+          Swal.fire({
+            title: 'Este CI ya esta registrado?',
+            text: "Desea cargar sus datos!",
+            type: 'info',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Si'
+            }).then((result) => {
+              if (result.value) {
+                $('#txt_codigo').val(response.matricula);
+                $('#txt_nombre').val(response.nombre);
+                $('#txt_ruc').val(response.ci);
+                $('#ddl_provincia').val(response.prov);
+                $('#txt_localidad').val(response.localidad);
+                $('#txt_telefono').val(response.telefono);
+                $('#txt_email').val(response.email);
+                $('#txt_id').val(response.id);
+                if(response.matricula == 0 || response.matricula == '')
+                {
+                     $('#txt_codigo').attr("readonly",false);
+                }
+
+                }else
+                {
+
+                $('#txt_ruc').val('');
+                }
+            });
+
+        }
+      }
+    });
+
+    }
+  }
+
+
 </script>
 <div class="container-lg">
-  <div class="row">
+  <div class="row"><br>
     <div class="col-lg-6 col-sm-10 col-md-6 col-xs-12">
        <div class="col-xs-2 col-md-2 col-sm-2 col-lg-1">
             <a  href="./farmacia.php?mod=Farmacia#" title="Salir de modulo" class="btn btn-default">
@@ -227,19 +359,19 @@
             </a>
         </div>
         <div class="col-xs-2 col-md-2 col-sm-2 col-lg-1">
-          <button type="button" class="btn btn-default" id="imprimir_pdf" title="Descargar PDF">
-            <img src="../../img/png/impresora.png">
-          </button>           
+          <a href="./farmacia.php?mod=Farmacia&acc=pacientes&acc1=Visualizar%20paciente&b=1&po=subcu#" type="button" class="btn btn-default" id="imprimir_pdf" title="Pacientes">
+            <img src="../../img/png/pacientes.png">
+          </a>           
         </div>
        <div class="col-xs-2 col-md-2 col-sm-2 col-lg-1">
-          <button type="button" class="btn btn-default" id="imprimir_excel" title="Descargar Excel">
-            <img src="../../img/png/table_excel.png">
-          </button>         
+          <a href="./farmacia.php?mod=Farmacia&acc=vis_descargos&acc1=Visualizar%20descargos&b=1&po=subcu#" type="button" class="btn btn-default" id="imprimir_excel" title="Descargos">
+            <img src="../../img/png/descargos.png">
+          </a>         
         </div>
         <div class="col-xs-2 col-md-2 col-sm-2 col-lg-1">
-          <button title="Guardar"  class="btn btn-default" onclick="">
-            <img src="../../img/png/grabar.png" >
-          </button>
+          <a href="./farmacia.php?mod=Farmacia&acc=articulos&acc1=Visualizar%20articulos&b=1&po=subcu#" title="Ingresar Articulosr"  class="btn btn-default" onclick="">
+            <img src="../../img/png/articulos.png" >
+          </a>
         </div>     
  </div>
 </div>
@@ -248,35 +380,47 @@
      <div class="panel panel-primary">
       <div class="panel-heading text-center"><b>BUSCAR CLIENTES</b></div>
       <div class="panel-body">
-      	<div class="row">
-          <div class="col-sm-6">
-            <b>Codigo de cliente :</b>
+        <div class="row">
+          <div class="col-sm-3">
+            <b>Num. Historia Clinica :</b>
             <input type="hidden" class="form-control" id="txt_tip" value="N">
             <input type="hidden" class="form-control" id="txt_id">   
             <div class="input-group">
-                <input type="text" class="form-control input-sm" id="txt_codigo">                
+                <input type="text" class="form-control input-sm" id="txt_codigo" onblur="validar_num_historia()">                
                 <span class="input-group-addon" title="Buscar" onclick="buscar_cod('C1','txt_codigo')"><i class="fa fa-search"></i></span>
                 <!-- <span class="input-group-addon" title="Buscar"><i class="fa fa-search"></i></span> -->
-            </div>
-            <b>RUC / CI:</b>
-            <input type="text" name="txt_ruc" id="txt_ruc" class="form-control input-sm">
-                
+            </div>            
+          </div>
+          <div class="col-sm-5">
+             <b>Nombre</b>
+              <input type="text" name="txt_nombre" id="txt_nombre" class="form-control input-sm" onblur="nombres(this.value)">            
+          </div>
+          <div class="col-sm-4">
+             <b>RUC / CI:</b>
+            <input type="text" name="txt_ruc" id="txt_ruc" class="form-control input-sm" onblur="paciente_existente()" onkeyup="num_caracteres('txt_ruc',10)">            
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-sm-3">
             <b>Provincia:</b>
             <select class="form-control input-sm" id="ddl_provincia">
-              <option>Seleccione una provincia</option>
-            </select>    
-                   
+              <option value="0">Seleccione una provincia</option>
+            </select>       
           </div>
-          <div class="col-sm-6">
-             <b>Nombre</b>
-                <input type="text" name="txt_nombre" id="txt_nombre" class="form-control input-sm">
-                 <b>Teléfono:</b>
-            <input type="text" name="txt_telefono" id="txt_telefono" class="form-control input-sm">
-            <b>Localidad:</b>
-            <input type="text" name="txt_localidad" id="txt_localidad" class="form-control input-sm">    
-            
-          </div>          
-        </div>        
+          <div class="col-sm-3">
+             <b>Localidad:</b>
+            <input type="text" name="txt_localidad" id="txt_localidad" class="form-control input-sm" value="QUITO">
+          </div>
+          <div class="col-sm-3">
+            <b>Teléfono:</b>
+            <input type="text" name="txt_telefono" id="txt_telefono" class="form-control input-sm">            
+          </div>
+          <div class="col-sm-3">
+            <b>Email:</b>
+            <input type="text" name="txt_email" id="txt_email" class="form-control input-sm" value="comprobantes@clinicasantabarbara.com.ec">            
+          </div>
+          
+        </div> 
       </div>
     </div>
   </div>
@@ -284,7 +428,7 @@
      <div class="col-sm-6">
         <input type="text" name="" placeholder="Buscar" class="form-control" onkeyup="cargar_clientes()" id="txt_query">
         <label class="radio-inline"><input type="radio" name="rbl_buscar" id="rbl_nombre" checked="" value="N"><b> Nombre</b></label>
-        <label class="radio-inline"><input type="radio" name="rbl_buscar" id="rbl_codigo" value="C"><b> Codigo</b></label>
+        <label class="radio-inline"><input type="radio" name="rbl_buscar" id="rbl_codigo" value="C"><b> Num. Historia Clinica </b></label>
         <label class="radio-inline"><input type="radio" name="rbl_buscar" id="rbl_ruc" value="R"><b> RUC / CI</b></label>
        
             
@@ -302,7 +446,7 @@
         <!-- N de articulos encontrados: 000 -->
       </div>
       <input type="hidden" name="" id="txt_pag" value="0">
-      <div class="col-sm-2" id="tbl_pag">
+      <div class="col-sm-12 text-right" id="tbl_pag">
         <!-- mostrados: 1-50 -->
       </div>  	
   </div>
@@ -312,7 +456,7 @@
   		<table class="table table-hover">
   			<thead>
   				<th>ITEM</th>
-  				<th>CODIGO</th>
+  				<th>NUM HISTORIA</th>
   				<th>NOMBRE</th>
   				<th>RUC</th>
   				<th>TELEFONO</th>

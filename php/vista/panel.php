@@ -85,7 +85,8 @@ if(isset($_GET['mos']))
 				$_SESSION['INGRESO']['Num_ND']=$empresa_d[0]['Num_ND'];		
 				$_SESSION['INGRESO']['Num_NC']=$empresa_d[0]['Num_NC'];
 				$_SESSION['INGRESO']['Email_Conexion_CE']=$empresa_d[0]['Email_Conexion_CE'];				
-				$_SESSION['INGRESO']['Formato_Cuentas']=$empresa_d[0]['Formato_Cuentas'];
+				$_SESSION['INGRESO']['Formato_Cuentas']=$empresa_d[0]['Formato_Cuentas'];			
+				$_SESSION['INGRESO']['Formato_Inventario']=$empresa_d[0]['Formato_Inventario'];
 				$_SESSION['INGRESO']['porc']=$empresa_d[0]['porc'];
 				$_SESSION['INGRESO']['Ambiente']=$empresa_d[0]['Ambiente'];
 				$_SESSION['INGRESO']['Obligado_Conta']=$empresa_d[0]['Obligado_Conta'];
@@ -255,6 +256,7 @@ if(isset($_GET['mos']))
 <html>
 <head>
   <meta charset="utf-8">
+<meta charset="ISO-8859-1">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
    <META HTTP-EQUIV="Pragma" CONTENT="no-cache"> <META HTTP-EQUIV="Expires" CONTENT="-1">
    
@@ -601,10 +603,11 @@ if(isset($_GET['mos']))
 			if(idMensaje=='empresa')
 			{
 				var select = document.getElementById(idMensaje); //El <select>
+				var sms = $('#Mensaje').val();
 				value1 = select.value;
 				//alert(value1);
 				$.post('ajax/vista_ajax.php'
-					, {ajax_page: idMensaje, com: value1 }, function(data){
+					, {ajax_page: idMensaje, com: value1,sms:sms }, function(data){
 						//alert('#'+idMensaje+'1');
 						//$('div.pdfcom').load(data);
 						//$('#pdfcom').html('<iframe style="width:100%; height:50vw;" src="ajax/TEMP/'+value1+'.pdf" frameborder="0" allowfullscreen></iframe>'); 
@@ -672,11 +675,15 @@ if(isset($_GET['mos']))
 			//redireccionamos
 			window.location="panel.php?mos="+value+"&mos1="+text+"&mos3="+arregloDeSubCadenas[1]+"";
 		}
-		function paginacion(pag,campo)
-		{
-			var numreg = pag*25;
-			$('#'+campo).val(numreg);
+		String.prototype.ucwords = function() {
+			str = this.toLowerCase();
+			// return str.replace(/(^([a-zA-Z\p{M}]))|([ -][a-zA-Z\p{M}])/g,
+			// 	function($1){
+			// 		return $1.toUpperCase();
+			// 		});
+			return str.toUpperCase(); 
 		}
+
 		function descargar_archivos(url,archivo)
 		{
             var link = document.createElement("a");
@@ -720,6 +727,21 @@ if(isset($_GET['mos']))
 			results = regex.exec(location.search);
 			return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
 		}
+
+		function num_caracteres(campo,num)
+{
+	var val = $('#'+campo).val();
+	var cant = val.length;
+	console.log(cant+'-'+num);
+
+	if(cant>num)
+	{
+		$('#'+campo).val(val.substr(0,num));
+		return false;
+	}
+
+}
+
 		
 		function soloNumeros(e)
 		{

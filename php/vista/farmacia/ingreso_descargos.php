@@ -1,16 +1,24 @@
-<?php  require_once("panel.php"); $num_ped = '';$cod='';if(isset($_GET['num_ped'])){$num_ped =$_GET['num_ped'];}
-if(isset($_GET['cod'])){$cod =$_GET['cod'];} $_SESSION['INGRESO']['modulo_']='99';?>
+<?php  require_once("panel.php"); $num_ped = '';$cod=''; $area = ''; $pro=''; if(isset($_GET['num_ped'])){$num_ped =$_GET['num_ped'];} if(isset($_GET['cod'])){$cod =$_GET['cod'];} if(isset($_GET['area'])){$area1 = explode('-', $_GET['area']); $area =$area1[0];$pro=$area1[1]; } $_SESSION['INGRESO']['modulo_']='99';?>
 <script type="text/javascript">
    $( document ).ready(function() {
     autocoplet_paci();
     autocoplet_ref();
     autocoplet_desc();
     autocoplet_cc();
+    autocoplet_area();
+    num_comprobante();
+    $('#txt_procedimiento').val('<?php echo $pro; ?>');
      // buscar_cod();
     var c = '<?php echo $cod; ?>';
+    var area = '<?php echo $area; ?>';
+    var pro = '<?php echo $pro; ?>';
     if(c!='')
     {
       buscar_codi();
+    }
+    if(area !='')
+    {
+      buscar_Subcuenta();
     }
     cargar_pedido();
 
@@ -18,6 +26,30 @@ if(isset($_GET['cod'])){$cod =$_GET['cod'];} $_SESSION['INGRESO']['modulo_']='99
 
 
 
+   function buscar_Subcuenta()
+   {
+     var area = '<?php echo $area; ?>';
+
+      var  parametros = 
+      { 
+        'cod':area,
+      }    
+      // console.log(parametros);
+     $.ajax({
+      data:  {parametros:parametros},
+      url:   '../controlador/farmacia/ingreso_descargosC.php?areas=true',
+      type:  'post',
+      dataType: 'json',
+      success:  function (response) { 
+        // console.log(response);
+        if(response != -1){       
+           $('#ddl_areas').append($('<option>',{value: response[0].Codigo, text:response[0].Detalle,selected: true }));
+         }
+      }
+    });
+
+
+   }
    function autocoplet_paci(){
       $('#ddl_paciente').select2({
         placeholder: 'Seleccione una paciente',
@@ -26,7 +58,7 @@ if(isset($_GET['cod'])){$cod =$_GET['cod'];} $_SESSION['INGRESO']['modulo_']='99
           dataType: 'json',
           delay: 250,
           processResults: function (data) {
-            console.log(data);
+            // console.log(data);
             return {
               results: data
             };
@@ -45,7 +77,7 @@ if(isset($_GET['cod'])){$cod =$_GET['cod'];} $_SESSION['INGRESO']['modulo_']='99
           dataType: 'json',
           delay: 250,
           processResults: function (data) {
-            console.log(data);
+            // console.log(data);
             return {
               results: data
             };
@@ -63,7 +95,7 @@ if(isset($_GET['cod'])){$cod =$_GET['cod'];} $_SESSION['INGRESO']['modulo_']='99
           dataType: 'json',
           delay: 250,
           processResults: function (data) {
-            console.log(data);
+            // console.log(data);
             return {
               results: data
             };
@@ -81,7 +113,7 @@ if(isset($_GET['cod'])){$cod =$_GET['cod'];} $_SESSION['INGRESO']['modulo_']='99
           dataType: 'json',
           delay: 250,
           processResults: function (data) {
-            console.log(data);
+            // console.log(data);
             return {
               results: data
             };
@@ -134,12 +166,12 @@ if(isset($_GET['cod'])){$cod =$_GET['cod'];} $_SESSION['INGRESO']['modulo_']='99
       type:  'post',
       dataType: 'json',
       success:  function (response) { 
-        console.log(response);
+        // console.log(response);
        
-           $('#txt_codigo').val(response[0].Matricula);
-           $('#txt_nombre').val(response[0].Cliente);
-           $('#ddl_paciente').append($('<option>',{value: response[0].CI_RUC, text:response[0].Cliente,selected: true }));
-           $('#txt_ruc').val(response[0].CI_RUC);
+           $('#txt_codigo').val(response.matricula);
+           $('#txt_nombre').val(response.nombre);
+           $('#ddl_paciente').append($('<option>',{value: response.ci, text:response.nombre,selected: true }));
+           $('#txt_ruc').val(response.ci);
       }
     });
   }
@@ -149,24 +181,53 @@ if(isset($_GET['cod'])){$cod =$_GET['cod'];} $_SESSION['INGRESO']['modulo_']='99
     if(tipo=='R')
     {
       var val = $('#ddl_referencia').val();
-      var partes = val.split('-');
-        $('#ddl_descripcion').append($('<option>',{value: partes[0]+'-'+partes[1]+'-'+partes[2]+'-'+partes[3]+'-'+partes[4]+'-'+partes[5]+'-'+partes[6], text:partes[2],selected: true }));
-        // console.log(partes[0]+'-'+partes[1]+'-'+partes[2]+'-'+partes[3]+'-'+partes[4]+'-'+partes[5]+'-'+partes[6]);
+      var partes = val.split('_');
+        $('#ddl_descripcion').append($('<option>',{value: partes[0]+'_'+partes[1]+'_'+partes[2]+'_'+partes[3]+'_'+partes[4]+'_'+partes[5]+'_'+partes[6], text:partes[2],selected: true }));
         $('#txt_precio').val(partes[1]); 
-        $('#txt_iva').val(partes[6]);  
+        $('#txt_iva').val(partes[6]); 
+        $('#txt_unidad').val(partes[7]); 
+        $('#txt_Stock').val(partes[8]);
+
+        $('#txt_max').val(partes[9]);
+        $('#txt_min').val(partes[10]); 
+        console.log($('#ddl_referencia').val());
     }else
     {
       var val = $('#ddl_descripcion').val();
-      var partes = val.split('-');
-        $('#ddl_referencia').append($('<option>',{value: partes[0]+'-'+partes[1]+'-'+partes[2]+'-'+partes[3]+'-'+partes[4]+'-'+partes[5], text:partes[0],selected: true }));
+      var partes = val.split('_');
+        $('#ddl_referencia').append($('<option>',{value: partes[0]+'_'+partes[1]+'_'+partes[2]+'_'+partes[3]+'_'+partes[4]+'_'+partes[5]+'_'+partes[6], text:partes[0],selected: true }));
 
-        // console.log(partes[0]+'-'+partes[1]+'-'+partes[2]+'-'+partes[3]+'-'+partes[4]+'-'+partes[5]);
+        // console.log($('#ddl_descripcion').val());
         $('#txt_precio').val(partes[1]); 
-        $('#txt_iva').val(partes[5]);  
+        $('#txt_iva').val(partes[6]);  
+        $('#txt_unidad').val(partes[7]);
+        $('#txt_Stock').val(partes[8]);
+        $('#txt_max').val(partes[9]);
+        $('#txt_min').val(partes[10]); 
+        console.log($('#ddl_descripcion').val());
     }
 
   }
 
+
+  function autocoplet_area(){
+      $('#ddl_areas').select2({
+        placeholder: 'Seleccione una Area de descargo',
+        ajax: {
+          url:   '../controlador/farmacia/descargosC.php?areas=true',
+          dataType: 'json',
+          delay: 250,
+          processResults: function (data) {
+            console.log(data);
+            return {
+              results: data
+            };
+          },
+          cache: true
+        }
+      });
+   
+  }
 
 
   function Guardar()
@@ -184,8 +245,15 @@ if(isset($_GET['cod'])){$cod =$_GET['cod'];} $_SESSION['INGRESO']['modulo_']='99
         $('#txt_cant').val('1');
         return false;
       }
-      var prod = producto.split('-');
+      // if(parseFloat($('#txt_cant').val()) > parseFloat($('#txt_Stock').val()))
+      // {
+      //   Swal.fire('','Stock insuficiente.','info');
+      //   $('#txt_cant').val($('#txt_Stock').val());
+      //   return false;
+      // }
+      var prod = producto.split('_');
     // console.log(producto);
+    // return false;
        var parametros = 
        {
            'codigo':prod[0],
@@ -194,7 +262,7 @@ if(isset($_GET['cod'])){$cod =$_GET['cod'];} $_SESSION['INGRESO']['modulo_']='99
            'uni':'',
            'cant':$('#txt_cant').val(),
            'cc':cc1[0],
-           'rubro':'',
+           'rubro':$('#ddl_areas').val(),
            'bajas':'',
            'observacion':'',
            'id':$('#txt_num_item').val(),
@@ -206,8 +274,9 @@ if(isset($_GET['cod'])){$cod =$_GET['cod'];} $_SESSION['INGRESO']['modulo_']='99
            'total':$('#txt_importe').val(),
            'num_ped':$('#txt_pedido').val(),
            'ci':$('#txt_ruc').val(),
-           'descuento':$('#txt_descuento').val(),
-           'iva':prod[6]
+           'descuento':0,
+           'iva':$('#txt_iva').val(),
+           'pro':$('#txt_procedimiento').val(),
        };
        $.ajax({
          data:  {parametros:parametros},
@@ -236,46 +305,51 @@ if(isset($_GET['cod'])){$cod =$_GET['cod'];} $_SESSION['INGRESO']['modulo_']='99
 
 
 
+
   function cargar_pedido()
   {
-    var p = $('#txt_pedido').val();
+    var num_ped = $('#txt_pedido').val();
+    var area = '<?php echo $area; ?>';
+    var num_his = '<?php echo $cod; ?>';
+    var pro = '<?php echo $pro; ?>';
     var parametros=
     {
-      'num_ped':p,
+      'num_ped':num_ped,
+      'area':area,
+      'num_his':num_his,
     }
      $.ajax({
       data:  {parametros:parametros},
       url:   '../controlador/farmacia/ingreso_descargosC.php?pedido=true',
       type:  'post',
       dataType: 'json',
-      success:  function (response) { 
-        console.log(response);
-        if(response.num_lin !=0 && p!='')
-        { 
-           var c = '<?php echo $num_ped; ?>';
-          if(c!='')
-          {        
-           $('#txt_num_lin').val(response.num_lin);
-           $('#txt_num_item').val(response.item);
-           $('#txt_ruc').val(response.ruc+'001');
-           $('#ddl_paciente').append($('<option>',{value: response.ruc+'001', text:'',selected: true }));
-          $('#tbl_body').html(response.tabla);
-          }else
+      success:  function (response) {
+        // console.log(response.tabla);
+       if(num_ped!='' && area!='' && num_his!='')
+       {
+          $('#txt_num_lin').val(response.num_lin);
+          $('#txt_num_item').val(response.item);
+          $('#tabla').html(response.tabla);
+          $('#txt_neg').val(response.neg);
+          $('#txt_sub_tot').val(response.subtotal);
+          $('#txt_tot_iva').val(response.iva);
+          $('#txt_pre_tot').val(response.total);
+          $('#txt_procedimiento').val(response.detalle);
+          if($('#txt_num_lin').val()!=0 && $('#txt_num_lin').val()!='')
           {
-            var num_p = $('#txt_pedido').val();
-            var cod = $('#txt_codigo').val();
-              var url="../vista/farmacia.php?mod=Farmacia&acc=ingresar_descargos&acc1=Ingresar%20Descargos&b=1&po=subcu&num_ped="+num_p+"&cod="+cod+"#";
-            $(location).attr('href',url);
+            $('#btn_comprobante').css('display','block');
           }
+       }else
+       {
+        var url="../vista/farmacia.php?mod=Farmacia&acc=ingresar_descargos&acc1=Ingresar%20Descargos&b=1&po=subcu&area="+area+"-"+pro+"&num_ped="+num_ped+"&cod="+num_his+"#";
+            $(location).attr('href',url);
+       }
+       if(response.num_lin==1)
+        {
+           var url="../vista/farmacia.php?mod=Farmacia&acc=ingresar_descargos&acc1=Ingresar%20Descargos&b=1&po=subcu&cod=5&area="+area+"-"+pro+"&num_ped="+num_ped+"&cod="+num_his+"#";
+            $(location).attr('href',url);
         }
-          $('#tbl_body').html(response.tabla);
-          var c = '<?php echo $num_ped; ?>';
-          if(c!='')
-            {
-              buscar_cod();
-            }
-         // buscar_cod();
-         descuentos();
+              
       }
     });
   }
@@ -285,8 +359,8 @@ if(isset($_GET['cod'])){$cod =$_GET['cod'];} $_SESSION['INGRESO']['modulo_']='99
     var parametros=
     {
       'can':$('#txt_can_lin_'+num).val(),
-      'pre':$('#txt_uti_lin_'+num).val(),
-      'des':$('#txt_des_lin_'+num).val(),
+      'pre':$('#txt_pre_lin_'+num).val(),
+      'des':0,
       'tot':$('#txt_tot_lin_'+num).val(),
       'lin':num,
       'ped':$('#txt_pedido').val(),
@@ -309,7 +383,7 @@ if(isset($_GET['cod'])){$cod =$_GET['cod'];} $_SESSION['INGRESO']['modulo_']='99
   {
     var ruc = $('#txt_ruc').val();
     var cli = $('#ddl_paciente').text();
-    console.log(cli);
+    // console.log(cli);
     Swal.fire({
       title: 'Quiere eliminar este registro?',
       text: "Esta seguro de eliminar este registro!",
@@ -333,8 +407,6 @@ if(isset($_GET['cod'])){$cod =$_GET['cod'];} $_SESSION['INGRESO']['modulo_']='99
               success:  function (response) { 
                 if(response==1)
                 {
-                  $('#txt_ruc').val(ruc);
-                  $('#ddl_paciente').append($('<option>',{value: ruc, text:'',selected: true }));
                   cargar_pedido();
                 }
               }
@@ -347,40 +419,39 @@ if(isset($_GET['cod'])){$cod =$_GET['cod'];} $_SESSION['INGRESO']['modulo_']='99
   {
     if(num)
     {
-      var cant = $('#txt_can_lin_'+num).val();
+      var cant = parseFloat($('#txt_can_lin_'+num).val());
       var pre = $('#txt_pre_lin_'+num).val();
       var uti = parseFloat($('#txt_uti_lin_'+num).val());
 
 
       var sin_des = (cant*pre);
-      var des = $('#txt_des_lin_'+num).val();
+      var des = 0;
       var val_des = (sin_des*des)/100;
       var impo = parseFloat(sin_des-val_des);
-      var iva = parseFloat($('#txt_iva_lin_'+num).val());
-      var tot = $('#txt_tot_lin_'+num).val(impo.toFixed(4));
+      var iva =0; 
+      // parseFloat($('#txt_iva_lin_'+num).val());
+      var tot = $('#txt_tot_lin_'+num).val(parseFloat(impo));
 
-      // console.log(tot);
        if(iva!=0 && uti!=0)
        {
-         var sin_des = (cant*uti);
-         var des = $('#txt_des_lin_'+num).val();
+         var sin_des = (cant*pre);
+         var des = 0;
          var val_des = (sin_des*des)/100;
          var impo = parseFloat(sin_des-val_des);
          var tot_iva = ((impo*1.12)-impo);
          // console.log(tot_iva);
-          $('#txt_iva_lin_'+num).val(parseFloat(tot_iva));
-          $('#txt_tot_lin_'+num).val(impo.toFixed(4));
+          $('#txt_iva_lin_'+num).val(0);
+          $('#txt_tot_lin_'+num).val(parseFloat(impo).toFixed(4));
        }else if(uti!=0 && iva==0)
        {
-         var sin_des = (cant*uti);
-         var des = $('#txt_des_lin_'+num).val();
-         var val_des = (sin_des*des)/100;
+         var sin_des = (cant*pre);
+         var des = 0;
+         var val_des = ((sin_des*des)/100);
          var impo = parseFloat(sin_des-val_des);
          var tot_iva = ((impo*1.12)-impo);
          // console.log(tot_iva);
           // $('#txt_iva_lin_'+num).val(parseFloat(tot_iva));
-          $('#txt_tot_lin_'+num).val(impo.toFixed(4));
-
+          $('#txt_tot_lin_'+num).val(parseFloat(impo).toFixed(4));
        }
 
     }else
@@ -389,7 +460,7 @@ if(isset($_GET['cod'])){$cod =$_GET['cod'];} $_SESSION['INGRESO']['modulo_']='99
       var cant = $('#txt_cant').val();
       var pre = $('#txt_precio').val();
       var sin_des = (cant*pre);
-      var des = $('#txt_descuento').val();
+      var des = 0;
       var val_des = (sin_des*des)/100;
       var tot = $('#txt_importe').val((sin_des-val_des).toFixed(2));
 
@@ -497,8 +568,8 @@ if(isset($_GET['cod'])){$cod =$_GET['cod'];} $_SESSION['INGRESO']['modulo_']='99
   {
     var costo = $('#txt_pre_lin_'+i).val();
     var pvp = $('#txt_uti_lin_'+i).val();
-    console.log(costo);
-    console.log(pvp);
+    // console.log(costo);
+    // console.log(pvp);
     if(parseFloat(pvp)< parseFloat(costo))
     {
       Swal.fire('','Precio de PVP debe ser mayor al costo.','error'); 
@@ -511,7 +582,7 @@ if(isset($_GET['cod'])){$cod =$_GET['cod'];} $_SESSION['INGRESO']['modulo_']='99
   function limpiar()
   {
     $('#txt_precio').val(0);
-    $('#txt_cant').val(0);
+    $('#txt_cant').val(1);
     $('#txt_descuento').val(0);
     $('#txt_importe').val(0);
     $('#txt_precio').val(0);
@@ -521,14 +592,26 @@ if(isset($_GET['cod'])){$cod =$_GET['cod'];} $_SESSION['INGRESO']['modulo_']='99
     $("#txt_iva").val(0);
   }
 
-  function generar_factura()
+  function generar_factura(fecha)
   {
+
+    if($('#txt_neg').val()=='true')
+    {
+      Swal.fire('','Tiene Stocks en negativos Ingrese el producto faltante.','info'); 
+      return false;
+    }
 
     $('#myModal_espera').modal('show');    
     var orden = $('#txt_pedido').val();
     var ruc= $('#txt_ruc').val();
+    var area= $('#ddl_areas').val();
+    var his= $('#txt_codigo').val();
+     var pro = '<?php echo $pro; ?>';
+    var nombre=  $('#ddl_paciente option:selected').text();
+
+    var reg=  $('#txt_num_lin').val();
      $.ajax({
-      data:  {orden:orden,ruc:ruc},
+      data:  {orden:orden,ruc:ruc,area:area,nombre:nombre,fecha:fecha},
       url:   '../controlador/farmacia/ingreso_descargosC.php?facturar=true',
       type:  'post',
       dataType: 'json',
@@ -536,8 +619,47 @@ if(isset($_GET['cod'])){$cod =$_GET['cod'];} $_SESSION['INGRESO']['modulo_']='99
       $('#myModal_espera').modal('hide');    
         if(response.resp==1)
         {
-          Swal.fire('','Comprobante '+response.com+' generado.','success'); 
-        }else
+          cargar_pedido();
+          Swal.fire({
+            title: 'Comprobante '+response.com+' generado.',
+            type:'success',
+            showDenyButton: true,
+            showCancelButton: false,
+            allowOutsideClick:false,
+            confirmButtonText: `OK`,
+            denyButtonText: `Don't save`,
+          }).then((result) => {
+              if (result.isConfirmed) {
+                if(reg==0)
+                {
+                var url="../vista/farmacia.php?mod=Farmacia&acc=ingresar_descargos&acc1=Ingresar%20Descargos&b=1&po=subcu&area="+area+"-"+pro+"&num_ped="+orden+"&cod="+his+"#";
+                }else
+                {
+                  var url="../vista/farmacia.php?mod=Farmacia&acc=ingresar_descargos&acc1=Ingresar%20Descargos&b=1&po=subcu&area="+area+"-"+pro+"&num_ped="+orden+"&cod="+his+"#";
+                }
+                $(location).attr('href',url);             
+                  } else
+                  {
+                    if(reg==0)
+                {
+                 var url="../vista/farmacia.php?mod=Farmacia&acc=ingresar_descargos&acc1=Ingresar%20Descargos&b=1&po=subcu&area="+area+"-"+pro+"&cod="+his+"#";
+                }else
+                {
+                  var url="../vista/farmacia.php?mod=Farmacia&acc=ingresar_descargos&acc1=Ingresar%20Descargos&b=1&po=subcu&area="+area+"-"+pro+"&num_ped="+orden+"&cod="+his+"#";
+                }
+                
+                   
+                  $(location).attr('href',url);
+                  }
+            })    
+
+
+        }else if(response.resp==-3)
+        {
+          Swal.fire('','Esta salida tiene mas de una fecha','info'); 
+          cargar_pedido();
+        }
+        else
         {
           Swal.fire('','No se pudo generado.','info'); 
         }
@@ -546,12 +668,90 @@ if(isset($_GET['cod'])){$cod =$_GET['cod'];} $_SESSION['INGRESO']['modulo_']='99
 
   }
 
+  function cambiar_procedimiento()
+  {
+    $('#modal_procedimiento').modal('show');
+  }
 
+  function guardar_new_pro()
+  {
+
+    $('#modal_procedimiento').modal('show');
+    var orden = $('#txt_pedido').val();
+    var new_pro = $('#txt_new_proce').val();
+    if(orden!='')
+    {
+      cambiar_proce_orden(new_pro);
+    }else
+    {
+      $('#txt_procedimiento').val(new_pro);
+    $('#modal_procedimiento').modal('hide');
+    }
+  }
+
+  function cambiar_proce_orden(pro)
+  {
+    var parametros=
+    {
+      'text':pro,
+      'ped':$('#txt_pedido').val(),
+    }
+     $.ajax({
+      data:  {parametros:parametros},
+      url:   '../controlador/farmacia/ingreso_descargosC.php?edi_proce=true',
+      type:  'post',
+      dataType: 'json',
+      success:  function (response) { 
+        if(response==1)
+        {
+          cargar_pedido();
+          $('#modal_procedimiento').modal('hide');
+        }else
+        {
+
+        }
+      }
+    });
+  }
+
+  // function generar_informe()
+  // {
+  //   var url =  '../controlador/farmacia/ingreso_descargosC.php?imprimir_pdf=true',
+  //  var datos = ;
+  //   window.open(url+datos, '_blank');
+  //    $.ajax({
+  //        data:  {datos:datos},
+  //        url:   url,
+  //        type:  'post',
+  //        dataType: 'json',
+  //        success:  function (response) {  
+          
+  //         } 
+  //      });
+  // }
+
+
+
+   function num_comprobante()
+   {
+    var fecha = $('#txt_fecha').val();
+     $.ajax({
+       data:  {fecha:fecha},
+      url:   '../controlador/farmacia/articulosC.php?num_com=true',
+      type:  'post',
+      dataType: 'json',
+      success:  function (response) { 
+        console.log(response);
+        $('#num').text(response);
+      }
+    });
+
+   }
 
 </script>
 
 <div class="container-lg">
-  <div class="row">
+  <div class="row"><br>
     <div class="col-lg-6 col-sm-10 col-md-6 col-xs-12">
        <div class="col-xs-2 col-md-2 col-sm-2 col-lg-1">
             <a  href="./farmacia.php?mod=Farmacia#" title="Salir de modulo" class="btn btn-default">
@@ -559,42 +759,53 @@ if(isset($_GET['cod'])){$cod =$_GET['cod'];} $_SESSION['INGRESO']['modulo_']='99
             </a>
         </div>
         <div class="col-xs-2 col-md-2 col-sm-2 col-lg-1">
-          <button type="button" class="btn btn-default" id="imprimir_pdf" title="Descargar PDF">
-            <img src="../../img/png/impresora.png">
-          </button>           
+          <button href="#" title="Generar reporte pdf"  class="btn btn-default" onclick="generar_informe()">
+            <img src="../../img/png/impresora.png" >
+          </button>
+        </div> 
+        <div class="col-xs-2 col-md-2 col-sm-2 col-lg-1">
+          <a href="./farmacia.php?mod=Farmacia&acc=pacientes&acc1=Visualizar%20paciente&b=1&po=subcu#" type="button" class="btn btn-default" id="imprimir_pdf" title="Pacientes">
+            <img src="../../img/png/pacientes.png">
+          </a>           
         </div>
        <div class="col-xs-2 col-md-2 col-sm-2 col-lg-1">
-          <button type="button" class="btn btn-default" id="imprimir_excel" title="Descargar Excel">
-            <img src="../../img/png/table_excel.png">
-          </button>         
+          <a href="./farmacia.php?mod=Farmacia&acc=vis_descargos&acc1=Visualizar%20descargos&b=1&po=subcu#" type="button" class="btn btn-default" id="imprimir_excel" title="Descargos">
+            <img src="../../img/png/descargos.png">
+          </a>         
         </div>
         <div class="col-xs-2 col-md-2 col-sm-2 col-lg-1">
-          <button title="Guardar"  class="btn btn-default" onclick="">
-            <img src="../../img/png/grabar.png" >
-          </button>
-        </div>     
+          <a href="./farmacia.php?mod=Farmacia&acc=articulos&acc1=Visualizar%20articulos&b=1&po=subcu#" title="Ingresar Articulosr"  class="btn btn-default" onclick="">
+            <img src="../../img/png/articulos.png" >
+          </a>
+        </div> 
+            
  </div>
 </div>
 <div class="container">
   <div class="row"><br>
      <div class="panel panel-primary">
-      <div class="panel-heading text-center"><b>Nuevo Pedido</b></div>
+      <div class="panel-heading">
+        <div class="row">
+         <div class="col-sm-6 text-right"><b>NUEVO DESCARGO</b></div>         
+         <div class="col-sm-6 text-right"> No. COMPROBANTE  <u id="num"></u></div>        
+        </div>
+      </div>
       <div class="panel-body" style="border: 1px solid #337ab7;">
         <div class="row">
-          <div class="col-sm-6"> 
-            <b>Codigo Cliente:</b>
-            <input type="text" name="txt_codigo" id="txt_codigo" class="form-control input-sm" readonly="">            
+          <div class="col-sm-3"> 
+            <b>Num Historia clinica:</b>
+            <input type="text" name="txt_codigo" id="txt_codigo" class="form-control input-sm" readonly="">      
+          </div>
+          <div class="col-sm-6">
             <b>Nombre:</b>
             <!-- <input type="text" name="txt_nombre" id="txt_nombre" class="form-control input-sm"> -->
             <select class="form-control input-sm" id="ddl_paciente" onchange="buscar_cod()">
               <option value="">Seleccione paciente</option>
-            </select>      
+            </select>
           </div>
-          <div class="col-sm-6">
+          <div class="col-sm-3">
             <b>RUC:</b>
-            <input type="text" name="txt_ruc" id="txt_ruc" class="form-control input-sm">  
-             <b>Fecha:</b>
-            <input type="date" name="txt_fecha" id="txt_fecha" class="form-control input-sm" value="<?php echo date('Y-m-d')  ?>">                
+            <input type="text" name="txt_ruc" id="txt_ruc" class="form-control input-sm">             
           </div>          
         </div>
       </div>
@@ -606,9 +817,19 @@ if(isset($_GET['cod'])){$cod =$_GET['cod'];} $_SESSION['INGRESO']['modulo_']='99
               <option value="">Seleccione Centro de costos</option>
             </select>           
           </div>
-          <div class="col-sm-6">    
+          <div class="col-sm-2">    
           <b>Numero de pedido</b>
           <input type="text" name="" id="txt_pedido" readonly="" class="form-control input-sm" value="<?php echo $num_ped;?>">     
+          </div>
+          <div class="col-sm-3">
+             <b>Fecha:</b>
+            <input type="date" name="txt_fecha" id="txt_fecha" class="form-control input-sm" value="<?php echo date('Y-m-d')  ?>" onblur="num_comprobante()">                 
+          </div>
+          <div class="col-sm-3">
+            <b>Area de descargo</b>
+            <select class="form-control input-sm" id="ddl_areas">
+              <option value="">Seleccione motivo de ingreso</option>
+            </select>            
           </div>          
         </div>
         <div class="row">
@@ -618,118 +839,100 @@ if(isset($_GET['cod'])){$cod =$_GET['cod'];} $_SESSION['INGRESO']['modulo_']='99
               <option value="">Escriba referencia</option>
             </select>           
           </div>
-          <div class="col-sm-8"> 
+          <div class="col-sm-5"> 
                 <b>Descripcion:</b>
                 <select class="form-control input-sm" id="ddl_descripcion" onchange="producto_seleccionado('D')">
                   <option value="">Escriba descripcion</option>
                 </select>          
-              </div>           
+              </div> 
+          <div class="col-sm-3"> 
+            <b>Procedimiento:</b>
+            <div class="input-group input-group-sm">
+                <textarea class="form-control input-sm" style="resize: none;" name="txt_procedimiento" id="txt_procedimiento" readonly=""></textarea>          
+                    <span class="input-group-btn">
+                      <button type="button" class="btn btn-info btn-flat" onclick="cambiar_procedimiento()"><i class="fa fa-pencil"></i></button>
+                    </span>
+              </div>
+           
+          </div>           
         </div>
         <div class="row">
                <div class="col-sm-4"> 
+                  <div class="col-sm-3"> 
+                    <b>MIN:</b>
+                    <input type="text" name="txt_min" id="txt_min" class="form-control input-sm"readonly="">
+                  </div>
+                  <div class="col-sm-3"> 
+                    <b>MAX:</b>
+                    <input type="text" name="txt_max" id="txt_max" class="form-control input-sm"readonly="">
+                  </div>   
                   
-              </div>
+              </div>               
               <div class="col-sm-2"> 
                 <b>Costo:</b>
                 <input type="text" name="txt_precio" id="txt_precio" class="form-control input-sm" value="0" onblur="calcular_totales();" readonly="">            
               </div>   
               <div class="col-sm-1"> 
                 <b>Cantidad:</b>
-                <input type="text" name="txt_cant" id="txt_cant" class="form-control input-sm" value="0" onblur="calcular_totales();">            
+                <input type="text" name="txt_cant" id="txt_cant" class="form-control input-sm" value="1" onblur="calcular_totales();">            
               </div>   
-              <div class="col-sm-2"> 
-                <b>Dscto:</b>
-                <input type="text" name="txt_descuento" id="txt_descuento" class="form-control input-sm" value="0" onblur="calcular_totales();">            
-              </div>   
+              <div class="col-sm-1"> 
+                <b>UNI:</b>
+                <input type="text" name="txt_unidad" id="txt_unidad" class="form-control input-sm" readonly="">            
+              </div>
+              <div class="col-sm-1"> 
+                <b>Stock:</b>
+                <input type="text" name="txt_Stock" id="txt_Stock" class="form-control input-sm" readonly="">            
+              </div>    
               <div class="col-sm-1"> 
                 <b>Importe:</b>
                 <input type="text" name="txt_importe" id="txt_importe" class="form-control input-sm" readonly="">
-                <input type="hidden" name="txt_iva" id="txt_iva" class="form-control input-sm" readonly="">            
+                <input type="hidden" name="txt_iva" id="txt_iva" class="form-control input-sm">            
               </div> 
               <div class="col-sm-1"><br>
-                <button class="btn btn-primary" onclick="Guardar()"><i class="fa fa-arrow-down"></i> Agregar</button>
+                <button class="btn btn-primary" onclick="calcular_totales();Guardar()"><i class="fa fa-arrow-down"></i> Agregar</button>
               </div>
         </div>
       </div>
     </div>
   </div>
   <div class="row">
-    <div class="table-responsive" style="height:400px">
+    <div class="table-responsive">
       <input type="hidden" name="" id="txt_num_lin" value="0">
       <input type="hidden" name="" id="txt_num_item" value="0">
-      <table class="table table-hover">
-        <thead>
-          <th>ITEM</th>
-          <th>REFERENCIA</th>
-          <th class="text-center">DESCRIPCION</th>
-          <th>CANTIDAD</th>
-          <th>COSTO</th>
-          <th>PVP</th>
-          <th>DCTO %</th>
-          <th>IVA</th>
-          <th>IMPORTE</th>
-        </thead>
-        <tbody style="height:400px" id="tbl_body">
-          
-        </tbody>
-        <tbody>
-          <tr>
-            <td colspan="6" class="text-right">
-              <b>% Descuentos</b>
-            </td>
-            <td>
-                <input type="text" class="form-control input-sm" name="" id="txt_des" value="0" onblur="descuentos()">
-            </td>
-            <td colspan="9">
-               <label class="radio-inline"><input type="radio" name="rbl_des" id="rbl_pedido" value="T" checked="" onclick="descuentos()"> Al Total</label>
-                <label class="radio-inline"><input type="radio" name="rbl_des" id="rbl_pedido" value="TL" onclick="descuentos()"> En las lineas</label>
-                <label class="radio-inline"><input type="radio" name="rbl_des" id="rbl_pedido" value="L" onclick="descuentos()"> Por lineas</label>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+      <input type="hidden" name="txt_neg" id="txt_neg" value="false">
+      <div id="tabla">
+        
+      </div>
+      
+
+         
     </div>
     
   </div>
-  <div class="row">
-    <div class="col-sm-9">
-      <button type="button" class="btn btn-primary" onclick="generar_factura()"><i class="fa fa-file-text-o"></i> Facturar</button>
-      <!-- <button type="button" class="btn btn-primary"><i class="fa fa-check"></i> Aceptar</button> -->
-      <!-- <button type="button" class="btn btn-danger"><i class="fa fa-close"></i> Cancelar</button>       -->
+</div>
+
+<div class="modal fade" id="modal_procedimiento" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true" data-keyboard="false" data-backdrop="static">
+  <div class="modal-dialog modal-dialog-centered modal-sm" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLongTitle">Cambiar procedimiento</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+         <div class="row">
+          <div class="col-sm-12">
+            Nombre de procedimiento
+            <input type="text" class="form-control input-sm" name="txt_new_proce" id="txt_new_proce">
+          </div>        
+         </div> 
+      </div>
+      <div class="modal-footer">
+          <button type="button" class="btn btn-primary" onclick="guardar_new_pro();">Guardar</button>
+          <button type="button" class="btn btn-default" data-dismiss="modal" aria-label="Close">Cerrar</button>
+        </div>
     </div>
-    <div class="col-sm-3">
-      <div class="row">
-          <div class="col-sm-6">
-            Sub Total:
-          </div>
-          <div class="col-sm-6">
-            <input type="text" name="" class="form-control input-sm" id="txt_sub_tot">
-          </div>        
-      </div> 
-      <div class="row">
-          <div class="col-sm-6">
-            Total descuento:
-          </div>
-          <div class="col-sm-6">
-            <input type="text" name="" id="txt_tot_des" class="form-control input-sm">
-          </div>        
-      </div> 
-      <div class="row">
-          <div class="col-sm-6">
-            IVA:
-          </div>
-          <div class="col-sm-6">
-            <input type="text" name="" class="form-control input-sm" id="txt_tot_iva" value="0">
-          </div>        
-      </div> 
-      <div class="row">
-          <div class="col-sm-6">
-            Precio Total:
-          </div>
-          <div class="col-sm-6">
-            <input type="text" name="" class="form-control input-sm" id="txt_pre_tot">
-          </div>        
-      </div>      
-    </div>   
-  </div>   
+  </div>
 </div>

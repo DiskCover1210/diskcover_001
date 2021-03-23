@@ -15,6 +15,7 @@ class pacienteM
 
 	function cargar_paciente($parametros,$pag=false)
 	{
+		// print_r($parametros);die();
 		if($pag==false)
 		{
 			$pag = 0;
@@ -22,6 +23,61 @@ class pacienteM
 		$cid = $this->conn;
 		$sql="SELECT * FROM Clientes WHERE 1=1 ";
 
+		if($parametros['codigo']!='')
+		{
+			$sql.=" AND CI_RUC='".$parametros['codigo']."'";
+		}
+		if($parametros['query']!='')
+		{
+		   switch ($parametros['tipo']) {
+			    case 'N':
+				    $sql.=" AND Cliente like '%".$parametros['query']."%'";
+				    break;
+				case 'N1':
+				    $sql.=" AND Cliente = '".$parametros['query']."'";
+				    break;
+			    case 'C':
+				    $sql.=" AND Matricula like '%".$parametros['query']."%'";
+				    break;
+				case 'C1':
+				    $sql.=" AND Matricula='".$parametros['query']."'";
+				    break;
+			    case 'R':
+				    $sql.=" AND CI_RUC like '".$parametros['query']."%'";
+				    break;
+				case 'R1':
+				    $sql.=" AND CI_RUC = '".$parametros['query']."'";
+				    break;		
+		   }
+	    }
+		$sql.=" ORDER BY ID OFFSET ".$pag." ROWS FETCH NEXT 25 ROWS ONLY;";
+		// print_r($sql);die();
+		$stmt = sqlsrv_query($cid, $sql);
+		if( $stmt === false)  
+		{  
+			echo "Error en consulta PA.\n";  
+			die( print_r( sqlsrv_errors(), true));  
+		}
+		$datos = array();
+		while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_ASSOC)) 
+		{
+			$datos[]=$row;
+		}
+		// print_r($datos);die();
+		return $datos;
+	}
+
+	function cargar_paciente_proveedor($parametros,$pag=false)
+	{
+		// print_r($parametros);die();
+		if($pag==false)
+		{
+			$pag = 0;
+		}
+		$cid = $this->conn;
+		$sql="SELECT * FROM Clientes WHERE 1=1 ";
+
+		
 		if($parametros['codigo']!='')
 		{
 			$sql.=" AND Codigo='".$parametros['codigo']."'";
@@ -49,9 +105,7 @@ class pacienteM
 				    break;		
 		   }
 	    }
-	    $sql_pag = $sql;
 		$sql.=" ORDER BY ID OFFSET ".$pag." ROWS FETCH NEXT 25 ROWS ONLY;";
-		$paginacion = paginancion($sql_pag,$parametros['fun'],$pag);
 		// print_r($sql);die();
 		$stmt = sqlsrv_query($cid, $sql);
 		if( $stmt === false)  
@@ -65,14 +119,13 @@ class pacienteM
 			$datos[]=$row;
 		}
 		// print_r($datos);die();
-		$tabla = array('datos'=>$datos,'pag'=>$paginacion);
-		return $tabla;
+		return $datos;
 	}
 	function insertar_paciente($datos,$campoWhere=false,$tipo=false)
 	{
 		if($tipo && $tipo == 'E')
 		{
-			// print_r($datos);print_r('expression');die();
+			// print_r($datos);print_r('expression');print_r($campoWhere);die();
 			return update_generico($datos,'Clientes',$campoWhere);
 		}else if($tipo && $tipo == 'N')
 		{

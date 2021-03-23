@@ -30,6 +30,21 @@ if(isset($_GET['eliminar']))
 	$respuesta = $controlador->eliminar_paciente($_POST['cli'],$_POST['ruc']);
 	echo json_encode($respuesta);
 }
+if(isset($_GET['historial_existente']))
+{
+	$respuesta = $controlador->historial_existente($_POST['parametros']);
+	echo json_encode($respuesta);
+}
+if(isset($_GET['paciente_existente']))
+{
+	$respuesta = $controlador->buscar_ficha($_POST['parametros']);
+	echo json_encode($respuesta);
+}
+if(isset($_GET['validar_ci']))
+{
+	$ci =$_POST['num'] ;
+	echo json_encode(digito_verificadorf($ci,1));
+}
 class pacienteC
 {
 	private $modelo;
@@ -41,8 +56,10 @@ class pacienteC
 	function cargar_paciente($parametros)
 	{
 		$datos = $this->modelo->cargar_paciente($parametros,$parametros['pag']);
+		$paginacion = paginancion('Clientes',$parametros['fun'],$parametros['pag']);
+		// print_r($paginacion);die();
 		$tr = '';
-		foreach ($datos['datos'] as $key => $value) 
+		foreach ($datos as $key => $value) 
 		{
 			$d =  dimenciones_tabl(strlen($value['ID']));
 			$d2 =  dimenciones_tabl(strlen($value['Codigo']));
@@ -52,18 +69,18 @@ class pacienteC
 			$tr.='<tr>
   					<td width="'.$d.'">'.$value['ID'].'</td>
   					<td width="'.$d2.'">'.$value['Matricula'].'</td>
-  					<td width="'.$d3.'">'.utf8_encode($value['Cliente']).'</td>
+  					<td width="'.$d3.'">'.$value['Cliente'].'</td>
   					<td width="'.$d4.'">'.$value['CI_RUC'].'</td>
   					<td width="'.$d5.'">'.$value['Telefono'].'</td>
   					<td width="90px">
   					    <a href="../vista/farmacia.php?mod=Farmacia&acc=vis_descargos&acc1=Visualizar%20descargos&b=1&po=subcu&cod='.$value['Matricula'].'&ci='.$value['CI_RUC'].'#" class="btn btn-sm btn-default" title="Ver Historial"><span class="glyphicon glyphicon-th-large"></span></a>
-  						<button class="btn btn-sm btn-primary" onclick="buscar_cod(\'E\',\''.$value['Codigo'].'\')" title="Editar paciente"><span class="glyphicon glyphicon-pencil"></span></button>  						
+  						<button class="btn btn-sm btn-primary" onclick="buscar_cod(\'E\',\''.$value['CI_RUC'].'\')" title="Editar paciente"><span class="glyphicon glyphicon-pencil"></span></button>  						
   						<button class="btn btn-sm btn-danger" title="Eliminar paciente"  onclick="eliminar(\''.$value['ID'].'\',\''.$value['CI_RUC'].'\')" ><span class="glyphicon glyphicon-trash"></span></button>
   					</td>
   				</tr>';
 			
 		}
-		$tabla = array('tr'=>$tr,'pag'=>$datos['pag']);
+		$tabla = array('tr'=>$tr,'pag'=>$paginacion);
 
 		// print_r($tabla);die();
 		return $tabla;
@@ -72,44 +89,19 @@ class pacienteC
 	function buscar_ficha($parametros)
 	{
 
+		// print_r($parametros);die();
 		$datos = $this->modelo->cargar_paciente($parametros);
-		// print_r($datos);die();
-		if(count($datos)>0){
-		if($datos[0]['Matricula']=='')
-		{			
-			$num_his = $this->modelo->ASIGNAR_COD_HISTORIA_CLINICA();
-			$revisar = $this->modelo->COD_HISTORIA_CLINICA_EXISTENTE($num_his);
-			while ($revisar == -1) {
-				$num_his+=1;
-				$revisar = $this->modelo->COD_HISTORIA_CLINICA_EXISTENTE($num_his);			
-			}
-			$datos[0]['campo']='Matricula';
-		    $datos[0]['dato']=$num_his;
-
-
-			$datos2[0]['campo']='Numero';
-		    $datos2[0]['dato']=$num_his;
-
-		    $campoWhere[0]['campo']='ID';
-		    $campoWhere[0]['valor']=$datos[0]['ID'];
-		    if($this->modelo->insertar_paciente($datos,$campoWhere)==1 and $this->modelo->ACTUALIZAR_COD_HISTORIA_CLINICA($datos2)==1)
-		    {
-		    	$datos = $this->modelo->cargar_paciente($parametros);
-		    	return $datos;
-		    }
-
+		if(!empty($datos))
+		{
+			$ficha = array('id'=>$datos[0]['ID'],'nombre'=>$datos[0]['Cliente'],'ci'=>$datos[0]['CI_RUC'],'prov'=>$datos[0]['Prov'],'localidad'=>$datos[0]['Direccion'],'telefono'=>$datos[0]['Telefono'],'email'=>$datos[0]['Email'],'matricula'=>$datos[0]['Matricula']);
+			// $ficha = array('id'=>$datos[0]['ID'],'nombre'=>$datos[0]['Cliente'],'ci'=>$datos[0]['CI_RUC'],'prov'=>$datos[0]['Prov'],'localidd'=>$datos[0]['Direccion'],'telefono'=>$datos[0]['Telefono'],'email'=>$datos[0]['Email'],'matricula'=>$datos[0]['Matricula']);
+			
+			return $ficha;
 		}else
 		{
-			$dat = array();
-		   foreach ($datos as $key => $value) {
-		   	 $dat[0] = array('CI_RUC'=>$value['CI_RUC'],'Cliente'=>$value['Cliente'],'Matricula'=>$value['Matricula']);
-		   }
-			return $dat;
-		}	
-	  }else
-	  {
-	  	return -1;
-	  }
+			return -1;
+		}
+		
 	}
 	function insertar_paciente($parametros)
 	{
@@ -123,9 +115,17 @@ class pacienteC
 		$datos[3]['dato']=$parametros['loc'];
 		$datos[4]['campo']='Telefono';
 		$datos[4]['dato']=$parametros['tel'];
+		$datos[5]['campo']='Email';
+		$datos[5]['dato']=$parametros['ema'];
+		$datos[6]['campo']='Matricula';
+		$datos[6]['dato']=$parametros['cod'];
 
 		if($parametros['tip']=='E')
 		{
+
+		$datos[7]['campo'] = 'Codigo';
+		$datos[7]['dato']=digito_verificadorf($parametros['ruc'],1);
+
 			$campoWhere[0]['campo']='ID';
 			$campoWhere[0]['valor']=$parametros['id'];
 			
@@ -133,10 +133,10 @@ class pacienteC
 		}else
 		{
 
-		$datos[5]['campo'] = 'Codigo';
-		$datos[5]['dato']=digito_verificadorf($parametros['ruc'],1);
-		$datos[6]['campo'] = 'T';
-		$datos[6]['dato']='N';
+		$datos[7]['campo'] = 'T';
+		$datos[7]['dato']='N';
+		$datos[8]['campo'] = 'Codigo';
+		$datos[8]['dato']=digito_verificadorf($parametros['ruc'],1);
 			return  $this->modelo->insertar_paciente($datos,false,$parametros['tip']);
 		}
 
@@ -171,6 +171,19 @@ class pacienteC
 		
 
 	}
+
+	function historial_existente($parametros)
+	{
+		$resp = $this->modelo->cargar_paciente($parametros);
+		if(!empty($resp))
+		{
+			return -1;
+		}else
+		{
+			return 1;
+		}
+	}
+
 	function imprimir_paciente()
 	{
 

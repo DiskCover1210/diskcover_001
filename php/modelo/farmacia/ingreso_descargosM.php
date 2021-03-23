@@ -23,8 +23,7 @@ class ingreso_descargosM
 	function buscar_producto($query,$tipo)
 		{
 			$cid = $this->conn;
-     //$sql2="SELECT  Codigo_Inv,Producto,Unidad from Catalogo_Productos WHERE Item = '".$_SESSION['INGRESO']['item']."' AND TC = 'I' AND Periodo='".$_SESSION['INGRESO']['periodo']."'";
-			$sql = "SELECT Codigo_Inv,Producto,TC,Valor_Total,Unidad,Stock_Actual,Cta_Inventario,Cta_Costo_Venta,IVA FROM Catalogo_Productos WHERE INV = 1 AND Periodo = '".$_SESSION['INGRESO']['periodo']."' AND Item = '".$_SESSION['INGRESO']['item']."' AND LEN(Cta_Inventario)>3 AND LEN(Cta_Costo_Venta)>3 AND ";
+			$sql = "SELECT Codigo_Inv,Producto,TC,Valor_Total,Unidad,Stock_Actual,Cta_Inventario,Cta_Costo_Venta,IVA,Unidad,Maximo,Minimo FROM Catalogo_Productos WHERE INV = 1 AND Periodo = '".$_SESSION['INGRESO']['periodo']."' AND Item = '".$_SESSION['INGRESO']['item']."' AND LEN(Cta_Inventario)>3 AND LEN(Cta_Costo_Venta)>3 AND ";
 			if($tipo =='desc')
 			{
 			 $sql.="Producto LIKE '%".$query."%'";
@@ -32,7 +31,7 @@ class ingreso_descargosM
 			{
 				$sql.=" Codigo_Inv LIKE '%".$query."%'";
 			}
-     // print_r($sql);die();s
+     // print_r($sql);die();
         $stmt = sqlsrv_query($cid, $sql);
         $datos =  array();
 	   if( $stmt === false)  
@@ -50,7 +49,7 @@ class ingreso_descargosM
 		function costo_venta($codigo_inv)
 	{
 		$cid = $this->conn;
-		$sql = "SELECT TOP 1 Codigo_Inv,Costo 
+		$sql = "SELECT TOP 1 Codigo_Inv,Costo,Existencia 
 		FROM Trans_Kardex
 		WHERE Fecha <= '".date('Y-m-d')."'
 		AND Codigo_Inv = '".$codigo_inv."'
@@ -87,11 +86,16 @@ class ingreso_descargosM
 	  }
 	}
 
-	function cargar_pedidos($orden)
+	function cargar_pedidos($orden,$SUBCTA,$fecha=false)
 	{
      $cid = $this->conn;
     // 'LISTA DE CODIGO DE ANEXOS
-     $sql = "SELECT * FROM Asiento_K WHERE ORDEN = '".$orden."' ORDER BY A_No DESC";
+     $sql = "SELECT * FROM Asiento_K WHERE ORDEN = '".$orden."' AND SUBCTA = '".$SUBCTA."'";
+     if($fecha)
+     {
+     	$sql.="AND Fecha_Fab = '".$fecha."'";
+     }
+     $sql.=" ORDER BY A_No DESC";
         // print_r($sql);die();
         $stmt = sqlsrv_query($cid, $sql);
         $datos =  array();
@@ -107,6 +111,28 @@ class ingreso_descargosM
 	   }
        return $datos;
 	}
+
+	function cargar_pedidos_fecha($orden,$SUBCTA)
+	{
+     $cid = $this->conn;
+    // 'LISTA DE CODIGO DE ANEXOS
+     $sql = "SELECT DISTINCT Fecha_Fab ,SUBCTA,ORDEN  FROM Asiento_K WHERE ORDEN = '".$orden."' AND SUBCTA = '".$SUBCTA."' ORDER BY Fecha_Fab DESC";
+        // print_r($sql);die();
+        $stmt = sqlsrv_query($cid, $sql);
+        $datos =  array();
+	   if( $stmt === false)  
+	   {  
+		 echo "Error en consulta PA.\n";  
+		 return '';
+		 die( print_r( sqlsrv_errors(), true));  
+	   }
+	    while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_ASSOC) ) 
+	   {
+		$datos[]=$row;	
+	   }
+       return $datos;
+	}
+
 
 	function buscar_cc($query=false)
 	{
@@ -251,11 +277,11 @@ class ingreso_descargosM
 		return $resp;
 	}
 
-	function datos_asiento_haber($orden)
+	function datos_asiento_haber($orden,$fecha)
 	{
      $cid = $this->conn;
     // 'LISTA DE CODIGO DE ANEXOS
-     $sql = "SELECT SUM(VALOR_TOTAL) as 'total',CTA_INVENTARIO as 'cuenta',Fecha_Fab as 'fecha',TC FROM Asiento_K  WHERE Item = '".$_SESSION['INGRESO']['item']."' AND ORDEN = '".$orden."' GROUP BY Codigo_B,ORDEN,CONTRA_CTA,CTA_INVENTARIO,Fecha_Fab,TC,SUBCTA";
+     $sql = "SELECT SUM(VALOR_TOTAL) as 'total',CTA_INVENTARIO as 'cuenta',Fecha_Fab as 'fecha',TC FROM Asiento_K  WHERE Item = '".$_SESSION['INGRESO']['item']."' AND ORDEN = '".$orden."' AND DH = '2' AND Fecha_Fab = '".$fecha."' GROUP BY Codigo_B,ORDEN,CTA_INVENTARIO,Fecha_Fab,TC,SUBCTA";
           // print_r($sql);die();
         $stmt = sqlsrv_query($cid, $sql);
         $datos =  array();
@@ -271,11 +297,11 @@ class ingreso_descargosM
 	   }
        return $datos;
 	}
-	function datos_asiento_debe($orden)
+	function datos_asiento_debe($orden,$fecha)
 	{
       $cid = $this->conn;
       // 'LISTA DE CODIGO DE ANEXOS
-     $sql = "SELECT SUM(VALOR_TOTAL) as 'total',CONTRA_CTA as 'cuenta',SUBCTA,Fecha_Fab as 'fecha',TC FROM Asiento_K  WHERE Item = '".$_SESSION['INGRESO']['item']."' and ORDEN = '".$orden."' GROUP BY Codigo_B,ORDEN,CONTRA_CTA,CTA_INVENTARIO,Fecha_Fab,TC,SUBCTA";
+     $sql = "SELECT SUM(VALOR_TOTAL) as 'total',CONTRA_CTA as 'cuenta',SUBCTA,Fecha_Fab as 'fecha',TC FROM Asiento_K  WHERE Item = '".$_SESSION['INGRESO']['item']."' AND DH = '2' and ORDEN = '".$orden."' AND Fecha_Fab = '".$fecha."' GROUP BY Codigo_B,ORDEN,CONTRA_CTA,Fecha_Fab,TC,SUBCTA";
           // print_r($sql);die();
         $stmt = sqlsrv_query($cid, $sql);
         $datos =  array();
@@ -485,6 +511,28 @@ class ingreso_descargosM
 		 $cid = $this->conn;
     // 'LISTA DE CODIGO DE ANEXOS
      $sql = "SELECT * FROM Catalogo_Cuentas  WHERE Item = '".$_SESSION['INGRESO']['item']."' AND Periodo = '".$_SESSION['INGRESO']['periodo']."' AND Codigo = '".$cuenta."'";
+          // print_r($sql);die();
+        $stmt = sqlsrv_query($cid, $sql);
+        $datos =  array();
+	   if( $stmt === false)  
+	   {  
+		 echo "Error en consulta PA.\n";  
+		 return '';
+		 die( print_r( sqlsrv_errors(), true));  
+	   }
+	    while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_ASSOC) ) 
+	   {
+		$datos[]=$row;	
+	   }
+       return $datos;
+	}
+
+	function catalogo_subcuentas($cuenta)
+	{
+
+		 $cid = $this->conn;
+    // 'LISTA DE CODIGO DE ANEXOS
+     $sql = "SELECT * FROM Catalogo_SubCtas   WHERE Item = '".$_SESSION['INGRESO']['item']."' AND Periodo = '".$_SESSION['INGRESO']['periodo']."' AND Codigo = '".$cuenta."'";
           // print_r($sql);die();
         $stmt = sqlsrv_query($cid, $sql);
         $datos =  array();
@@ -787,7 +835,6 @@ class ingreso_descargosM
 				$parametros['totalh']=$totald;
 			}
 		}
-		
 		if($parametros['concepto']=='')
 		{
 			$parametros['concepto']='.';
@@ -824,23 +871,24 @@ class ingreso_descargosM
            ,'.'
            ,'.')";
 		    // echo $sql.'<br>';
+           // print_r($sql);die();
 		    $stmt = sqlsrv_query( $cid, $sql);
 			if( $stmt === false)  
 			{  
 				 echo "Error en consulta PA.\n";  
 				 die( print_r( sqlsrv_errors(), true));  
 			}
+
 		   //consultamos transacciones
 		   $sql="SELECT CODIGO,CUENTA,PARCIAL_ME  ,DEBE ,HABER ,CHEQ_DEP ,DETALLE ,EFECTIVIZAR,CODIGO_C,CODIGO_CC
 				,ME,T_No,Item,CodigoU ,A_No,TC
 				FROM Asiento
 				WHERE 
-					T_No=".$_SESSION['INGRESO']['modulo_']." AND
+					T_No='".$_SESSION['INGRESO']['modulo_']."' AND
 					Item = '".$_SESSION['INGRESO']['item']."' 
 					AND CodigoU = '".$_SESSION['INGRESO']['Id']."' ";
 			
 			$sql=$sql." ORDER BY A_No ";
-			// print_r($sql);
 			$stmt = sqlsrv_query( $cid, $sql);
 			if( $stmt === false)  
 			{  
@@ -889,6 +937,8 @@ class ingreso_descargosM
 				    ,0
 				    ,'.');";
 				   // echo $sql.'<br>';
+
+           // print_r($sql);
 					$stmt1 = sqlsrv_query( $cid, $sql);
 					if( $stmt1 === false)  
 					{  
@@ -965,6 +1015,8 @@ class ingreso_descargosM
 							   ,'.'
 							   ,0)";
 						//echo $sql.'<br>';
+
+           // print_r($sql);die();
 						$stmt1 = sqlsrv_query( $cid, $sql);
 						if( $stmt1 === false)  
 						{  
@@ -1037,6 +1089,7 @@ class ingreso_descargosM
 					T_No=".$_SESSION['INGRESO']['modulo_']." AND
 					Item = '".$_SESSION['INGRESO']['item']."' 
 					AND CodigoU = '".$_SESSION['INGRESO']['Id']."' ";
+					// print_r($sql);
 					$stmt = sqlsrv_query( $cid, $sql);
 					if( $stmt === false)  
 					{  
@@ -1133,6 +1186,366 @@ order by CP.Codigo_Inv,CP.Producto,CP.TC,CP.Valor_Total,CP.Unidad,CP.Cta_Inventa
        return $datos;
 
 	}
+
+	function datos_asiento_SC($orden,$fecha)
+	{
+     $cid = $this->conn;
+    // 'LISTA DE CODIGO DE ANEXOS
+     $sql = "SELECT SUM(VALOR_TOTAL) as 'total',CONTRA_CTA,SUBCTA,Fecha_Fab,TC FROM Asiento_K  WHERE Item = '".$_SESSION['INGRESO']['item']."' AND CodigoU = '".$_SESSION['INGRESO']['Id']."' AND ORDEN = '".$orden."' AND Fecha_Fab = '".$fecha."'  GROUP BY CONTRA_CTA,Fecha_Fab,TC,SUBCTA";
+          // print_r($sql);die();
+        $stmt = sqlsrv_query($cid, $sql);
+        $datos =  array();
+	   if( $stmt === false)  
+	   {  
+		 echo "Error en consulta PA.\n";  
+		 return '';
+		 die( print_r( sqlsrv_errors(), true));  
+	   }
+	    while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_ASSOC) ) 
+	   {
+		$datos[]=$row;	
+	   }
+       return $datos;
+	}
+
+	function generar_asientos_SC($parametros)
+	{
+		$cid = $this->conn;
+		if($parametros['t']=='P' OR $parametros['t']=='C')
+		{
+			$sql=" SELECT codigo FROM clientes WHERE CI_RUC='".$parametros['sub']."' ";
+			$stmt = sqlsrv_query( $cid, $sql);
+			if( $stmt === false)  
+			{  
+				 echo "Error en consulta PA.\n";  
+				 die( print_r( sqlsrv_errors(), true));  
+			}
+			//echo $sql;
+			$row_count=0;
+			$i=0;
+			$Result = array();
+			while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_NUMERIC) ) 
+			{
+				$cod=$row[0];
+			}
+		}
+		else
+		{
+			//echo ' nnnn ';
+			$cod=$parametros['sub'];
+		}
+		//verificamos valor
+		$SC_No=0;
+		$sql=" SELECT MAX(SC_No) AS Expr1 FROM  Asiento_SC 
+		where CodigoU ='".$_SESSION['INGRESO']['CodigoU']."' 
+		AND item='".$_SESSION['INGRESO']['item']."'";
+		$stmt = sqlsrv_query($cid, $sql);
+		if( $stmt === false)  
+		{  
+			 echo "Error en consulta PA.\n";  
+			 die( print_r( sqlsrv_errors(), true));  
+		}
+		//echo $sql;
+		$row_count=0;
+		$i=0;
+		$Result = array();
+		while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_NUMERIC) ) 
+		{
+			$SC_No=$row[0];
+		}
+		if($SC_No==null)
+		{
+			$SC_No=1;
+		}
+		else
+		{
+			$SC_No++;
+		}
+		$fecha_actual=$parametros['fecha_sc'];
+		if($parametros['fac2']==0)
+		{
+			$ot = explode("-",$fecha_actual);
+			$fact2=$ot[0].$ot[1].$ot[2];
+			
+		}
+		else
+		{
+			$fact2=$parametros['fac2'];
+			
+		}
+		if($parametros['mes']==0)
+		{
+			$sql="INSERT INTO Asiento_SC(Codigo ,Beneficiario,Factura ,Prima,DH,Valor,Valor_ME
+           ,Detalle_SubCta,FECHA_V,TC,Cta,TM,T_No,SC_No
+           ,Fecha_D ,Fecha_H,Bloquear,Item,CodigoU)
+			VALUES
+           ('".$cod."'
+           ,'".$parametros['sub2']."'
+           ,'".$fact2."'
+           ,0
+           ,'".$parametros['tic']."'
+           ,".$parametros['valorn']."
+           ,0
+           ,'".$parametros['Trans']."'
+           ,'".$fecha_actual."'
+           ,'".$parametros['t']."'
+           ,'".$parametros['co']."'
+           ,".$parametros['moneda']."
+           ,".$parametros['T_N']."
+           ,".$SC_No."
+           ,null
+           ,null
+           ,0
+           ,'".$_SESSION['INGRESO']['item']."'
+           ,'".$_SESSION['INGRESO']['CodigoU']."')";
+		   $stmt = sqlsrv_query( $cid, $sql);
+		   //echo $sql;
+			if( $stmt === false)  
+			{  
+				 echo "Error en consulta PA.\n";  
+				 die( print_r( sqlsrv_errors(), true));  
+			}
+		}
+		else
+		{
+			$sql="INSERT INTO Asiento_SC(Codigo ,Beneficiario,Factura ,Prima,DH,Valor,Valor_ME
+			,Detalle_SubCta,FECHA_V,TC,Cta,TM,T_No,SC_No
+			,Fecha_D ,Fecha_H,Bloquear,Item,CodigoU)
+			VALUES
+			";
+			$dia=0;
+			for ($i=0;$i<$parametros['mes'];$i++)
+			{
+				$sql=$sql."('".$cod."'
+			   ,'".$parametros['sub2']."'
+			   ,'".$fact2."'
+			   ,0
+			   ,'".$parametros['tic']."'
+			   ,".$parametros['valorn']."
+			   ,0
+			   ,'".$parametros['Trans']."'
+			   ,'".$fecha_actual."'
+			   ,'".$parametros['t']."'
+			   ,'".$parametros['co']."'
+			   ,".$parametros['moneda']."
+			   ,".$parametros['T_N']."
+			   ,".$SC_No."
+			   ,null
+			   ,null
+			   ,0
+			   ,'".$_SESSION['INGRESO']['item']."'
+			   ,'".$_SESSION['INGRESO']['CodigoU']."'),";
+			   $SC_No++;
+			   $ot = explode("-",$fecha_actual);
+			   if($ot[1]=='01')
+			   {
+				    if($ot[2]>=28)
+				    {
+					   $dia=$ot[2];
+					    $year=esBisiesto_ajax($ot[0]);
+						if($year==1)
+						{
+							$fecha_actual = date("Y-m-d",strtotime($ot[0].'-02-29')); 
+							if($parametros['fac2']==0)
+							{
+								$fact2 = date("Ymd",strtotime($ot[0].'0229')); 
+							}
+							//$fact2 = $ot[0].'0229'; 
+						}
+						else
+						{
+							$fecha_actual = date("Y-m-d",strtotime($ot[0].'-02-28')); 
+							 if($parametros['fac2']==0)
+							{
+								$fact2 = date("Ymd",strtotime($ot[0].'0228')); 
+							}
+						}
+				    }
+					else
+					{
+						$fecha_actual = date("Y-m-d",strtotime($fecha_actual."+ 1 month")); 
+					   if($parametros['fac2']==0)
+						{
+							$fact2 = date("Ymd",strtotime($fact2."+ 1 month")); 
+						}
+					}
+				   
+			   }
+			   else
+			   {
+						
+						if( $dia>=28)
+						{
+							$ot = explode("-",$fecha_actual);
+							if($ot[1]=='02')
+							{
+								$fecha_actual = date("Y-m-d",strtotime($ot[0].'-03-31')); 
+								if($parametros['fac2']==0)
+								{
+									$fact2 = date("Ymd",strtotime($ot[0].'0331')); 
+								}
+							}
+							if($ot[1]=='03')
+							{
+								$fecha_actual = date("Y-m-d",strtotime($ot[0].'-04-30')); 
+								if($parametros['fac2']==0)
+								{
+									$fact2 = date("Ymd",strtotime($ot[0].'0430')); 
+								}
+							}
+							if($ot[1]=='04')
+							{
+								$fecha_actual = date("Y-m-d",strtotime($ot[0].'-05-31')); 
+								if($parametros['fac2']==0)
+								{
+									$fact2 = date("Ymd",strtotime($ot[0].'0531')); 
+								}
+							}
+							if($ot[1]=='05')
+							{
+								$fecha_actual = date("Y-m-d",strtotime($ot[0].'-06-30')); 
+								if($parametros['fac2']==0)
+								{
+									$fact2 = date("Ymd",strtotime($ot[0].'0630')); 
+								}
+							}
+							if($ot[1]=='06')
+							{
+								$fecha_actual = date("Y-m-d",strtotime($ot[0].'-07-31')); 
+								if($parametros['fac2']==0)
+								{
+									$fact2 = date("Ymd",strtotime($ot[0].'0731')); 
+								}
+							}
+							if($ot[1]=='07')
+							{
+								$fecha_actual = date("Y-m-d",strtotime($ot[0].'-08-31')); 
+								if($parametros['fac2']==0)
+								{
+									$fact2 = date("Ymd",strtotime($ot[0].'0831')); 
+								}
+							}
+							if($ot[1]=='08')
+							{
+								$fecha_actual = date("Y-m-d",strtotime($ot[0].'-09-30')); 
+								if($parametros['fac2']==0)
+								{
+									$fact2 = date("Ymd",strtotime($ot[0].'0930')); 
+								}
+							}
+							if($ot[1]=='09')
+							{
+								$fecha_actual = date("Y-m-d",strtotime($ot[0].'-10-31')); 
+								if($parametros['fac2']==0)
+								{
+									$fact2 = date("Ymd",strtotime($ot[0].'1031')); 
+								}
+							}
+							if($ot[1]=='10')
+							{
+								$fecha_actual = date("Y-m-d",strtotime($ot[0].'-11-30')); 
+								if($parametros['fac2']==0)
+								{
+									$fact2 = date("Ymd",strtotime($ot[0].'1130')); 
+								}
+							}
+							if($ot[1]=='11')
+							{
+								$fecha_actual = date("Y-m-d",strtotime($ot[0].'-12-31')); 
+								if($parametros['fac2']==0)
+								{
+									$fact2 = date("Ymd",strtotime($ot[0].'1231')); 
+								}
+							}
+						}
+						else
+						{
+							$fecha_actual = date("Y-m-d",strtotime($fecha_actual."+ 1 month")); 
+							if($parametros['fac2']==0)
+							{
+								$fact2 = date("Ymd",strtotime($fact2."+ 1 month")); 
+							}
+						}
+					
+			    }
+			}
+			//reemplazo una parte de la cadena por otra
+			$longitud_cad = strlen($sql); 
+			$cam2 = substr_replace($sql,"",$longitud_cad-1,1); 
+			$stmt = sqlsrv_query( $cid, $cam2);
+		    //echo $sql;
+			if( $stmt === false)  
+			{  
+				 echo "Error en consulta PA.\n";  
+				 die( print_r( sqlsrv_errors(), true));  
+			}
+			//echo $cam2;
+		}
+			$sql="SELECT Codigo, Beneficiario, Factura, Prima, DH, Valor, Valor_ME, Detalle_SubCta,T_No, SC_No,Item, CodigoU
+			FROM Asiento_SC
+			WHERE 
+				Item = '".$_SESSION['INGRESO']['item']."' 
+				AND CodigoU = '".$_SESSION['INGRESO']['Id']."' ";
+			$stmt = sqlsrv_query( $cid, $sql);
+			if( $stmt === false)  
+			{  
+				 echo "Error en consulta PA.\n";  
+				 die( print_r( sqlsrv_errors(), true));  
+			}
+			else
+			{
+				return 1;
+			}
+	
+	}
+	
+    function eliminar_aiseto_K($orden,$fecha)
+	{
+		 $cid=$this->conn;
+		$sql = "DELETE Asiento_K WHERE Item='".$_SESSION['INGRESO']['item']."' AND CodigoU='".$_SESSION['INGRESO']['CodigoU']."' AND DH='2' AND ORDEN ='".$orden."' AND Fecha_Fab ='".$fecha."'";
+		// print_r($sql);die();
+		$stmt = sqlsrv_query($cid, $sql);
+	    if( $stmt === false)  
+	      {  
+		     echo "Error en consulta PA.\n";  
+		     return -1;
+		     die( print_r( sqlsrv_errors(), true));  
+	      }
+	      else{
+	      	return 1;
+	      }      
+
+	}
+
+	function misma_fecha($orden,$Codprove)
+	{
+
+       $cid = $this->conn;
+		$sql = "SELECT DISTINCT Fecha_Fab FROM Asiento_K WHERE CodigoU = '".$_SESSION['INGRESO']['CodigoU']."' AND Item = '".$_SESSION['INGRESO']['item']."' AND DH = '2'  AND ORDEN ='".$orden."'  AND Codigo_B ='".$Codprove."'"; 
+		$stmt = sqlsrv_query($cid, $sql);        
+		 $datos =  array();
+        // print_r($sql);die();
+	   if( $stmt === false)  
+	   {  
+		 echo "Error en consulta PA.\n";  
+		 return '';
+		 die( print_r( sqlsrv_errors(), true));  
+	   }
+	    while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_ASSOC) ) 
+	   {
+		$datos[]=$row;	
+	   }
+	   if(count($datos)>1)
+	   {
+	   	  return -1;
+	   }else
+	   {
+	   	 return 1;
+	   }
+
+
+	}
+
 
 
 

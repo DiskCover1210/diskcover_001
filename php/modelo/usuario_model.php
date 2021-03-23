@@ -632,6 +632,7 @@ class usuario_model{
 				$empresa[$i]['Num_NC']=$obj->Num_NC;
 				$empresa[$i]['Email_Conexion_CE']=$obj->Email_Conexion_CE;
 				$empresa[$i]['Formato_Cuentas']=$obj->Formato_Cuentas;
+				$empresa[$i]['Formato_Inventario']=$obj->Formato_Inventario;
 				$empresa[$i]['Obligado_Conta']=$obj->Obligado_Conta;
 				$empresa[$i]['Ambiente']=$obj->Ambiente;
 				$empresa[$i]['LeyendaFA']=$obj->LeyendaFA;	
