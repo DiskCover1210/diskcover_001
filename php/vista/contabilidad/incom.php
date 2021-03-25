@@ -350,30 +350,33 @@
 
     }
 
-    function numero_comprobante()
+  function numero_comprobante()
     {
-    	var tip = $('#tipoc').val();
-    	var fecha = $('#fecha1').val();
-    	var parametros = 
-		{
-			"ajax_page": 'bus',
-			cl: 'num_com',
-			tip: tip,
-			fecha: fecha										
-		};
-		$.ajax({
-			data:  parametros,
-			url:   'ajax/vista_ajax.php',
-			type:  'post',
-			beforeSend: function () {
-					$("#num_com").html("");
-			},
-			success:  function (response) {
-					$("#num_com").html("");
-					$("#num_com").html(response);
-					// var valor = $("#subcuenta1").html();	
-			}
-		});
+      var tip = $('#tipoc').val();
+      var fecha = $('#fecha1').val();
+      if(tip=='CD'){ tip = 'Diario';}
+      else if(tip=='CI'){tip = 'Ingresos'}
+      else if(tip=='CE'){tip = 'Egresos';}
+      else if(tip=='ND'){tip = 'NotaDebito';}
+      else if(tip=='NC'){tip= 'NotaCredito';}
+      var parametros = 
+       {      
+         'tip': tip,
+         'fecha': fecha,                    
+       };
+    $.ajax({
+      data:  {parametros:parametros},
+       url:   '../controlador/contabilidad/incomC.php?num_comprobante=true',
+      type:  'post',
+      // beforeSend: function () {
+      //    $("#num_com").html("");
+      // },
+      success:  function (response) {
+          $("#num_com").html("");
+          $("#num_com").html('Comprobante de '+tip+' No. <?php echo date('Y');?>-'+response);
+          // var valor = $("#subcuenta1").html(); 
+      }
+    });
     }
 
     function agregar_depo()
@@ -838,6 +841,7 @@
             success:  function (response) { 
               if(response==1)
               {
+                eliminar_ac();
                 Swal.fire({
                    title: 'Comprobante Generado',
                    text: "",
@@ -879,6 +883,45 @@
           }
         });
 
+  }
+
+  function eliminar(codigo,tabla)
+  {
+     var parametros = 
+    {
+      'tabla':tabla,
+      'Codigo':codigo,
+    }
+
+    Swal.fire({
+      title: 'Esta seguro de eliminar este registro',
+      text: "",
+      type: 'info',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'OK!'
+    }).then((result) => {
+      if (result.value==true) {
+        $.ajax({
+          data:  {parametros:parametros},
+          url:   '../controlador/contabilidad/incomC.php?eliminarregistro=true',
+          type:  'post',
+          dataType: 'json',
+            success:  function (response) { 
+              if(response==1)
+              {
+                 cargar_tablas_contabilidad();
+                 cargar_tablas_tab4();
+                 cargar_tablas_retenciones();
+                 cargar_tablas_sc();
+                 cargar_totales_aseintos();
+              }
+
+          }
+        });                    
+      }
+    });
   }
 
 </script>

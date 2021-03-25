@@ -125,6 +125,12 @@ class incomM
 		$resp = insert_generico('Asiento_B',$datos);
 		return $resp;
 	}
+	function insertar_ingresos_tabla($tabla,$datos)
+	{
+		$resp = insert_generico($tabla,$datos);
+		return $resp;
+	}
+
 	function delete_asientoB($cta,$cheq)
 	{
 		$cid = $this->conn;
@@ -237,7 +243,9 @@ class incomM
 			else
 			{
 				$camne=array();
-				return grilla_generica($stmt,null,NULL,'1','8,9,10,11,clave1','asi_sc');
+				// return grilla_generica($stmt,null,NULL,'1','8,9,10,11,clave1','asi_sc');
+				$button[0] = array('nombre'=>'eliminar','tipo'=>'danger','icon'=>'fa fa-trash','dato'=>array('0,asiento'));
+				 grilla_generica($stmt,null,null,1,null,null,null,false,$button);
 			}
     }
 
@@ -258,7 +266,9 @@ class incomM
 			else
 			{
 				$camne=array();
-				return grilla_generica($stmt,null,NULL,'1','8,9,10,11,clave1','asi_sc');
+				// return grilla_generica($stmt,null,NULL,'1','8,9,10,11,clave1','asi_sc');
+				 $button[0] = array('nombre'=>'eliminar','tipo'=>'danger','icon'=>'fa fa-trash','dato'=>array('0,asientoSC'));
+				 grilla_generica($stmt,null,null,1,null,null,null,false,$button);
 			}
     }
 
@@ -279,7 +289,9 @@ class incomM
 			else
 			{
 				$camne=array();
-				return grilla_generica($stmt,null,NULL,'1','8,9,10,11,clave1','asi_sc');
+				// return grilla_generica($stmt,null,NULL,'1','8,9,10,11,clave1','asi_sc');
+				 $button[0] = array('nombre'=>'eliminar','tipo'=>'danger','icon'=>'fa fa-trash','dato'=>array('0,asientoB'));
+				 grilla_generica($stmt,null,null,1,null,null,null,false,$button);
 			}
     }
 
@@ -300,8 +312,31 @@ class incomM
 			else
 			{
 				$camne=array();
-				return grilla_generica($stmt,null,NULL,'1','8,9,10,11,clave1','asi_sc');
+				// return grilla_generica($stmt,null,NULL,'1','8,9,10,11,clave1','asi_sc');
+				 $button[0] = array('nombre'=>'eliminar','tipo'=>'danger','icon'=>'fa fa-trash','dato'=>array('0,air'));
+				 grilla_generica($stmt,null,null,1,null,null,null,false,$button);
 			}
+    }
+     function DG_asientoR_datos()
+    {
+    	$cid = $this->conn;
+       $sql = "SELECT *
+       FROM Asiento_Air
+       WHERE Item = '".$_SESSION['INGRESO']['item']. "'
+       AND CodigoU = '".$_SESSION['INGRESO']['CodigoU']."'
+       AND T_No = ".$_SESSION['INGRESO']['modulo_']." ";
+       $stmt = sqlsrv_query( $cid, $sql);
+			if( $stmt === false)  
+			{  
+				 echo "Error en consulta PA.\n";  
+				 die( print_r( sqlsrv_errors(), true));  
+			}
+		$datos = array();
+		 while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_ASSOC) ) 
+		 	{
+		 		$datos[] = $row;
+		 	}
+		return $datos;
     }
 
     function DG_AC()
@@ -322,7 +357,9 @@ class incomM
 			else
 			{
 				$camne=array();
-				return grilla_generica($stmt,null,NULL,'1','8,9,10,11,clave1','asi_sc');
+				// return grilla_generica($stmt,null,NULL,'1','8,9,10,11,clave1','asi_sc');
+				 $button[0] = array('nombre'=>'eliminar','tipo'=>'danger','icon'=>'fa fa-trash','dato'=>array('0,compras'));
+				 grilla_generica($stmt,null,null,1,null,null,null,false,$button);
 			}
     }
 
@@ -343,7 +380,9 @@ class incomM
 			else
 			{
 				$camne=array();
-				return grilla_generica($stmt,null,NULL,'1','8,9,10,11,clave1','asi_sc');
+				// return grilla_generica($stmt,null,NULL,'1','8,9,10,11,clave1','asi_sc');
+				 $button[0] = array('nombre'=>'eliminar','tipo'=>'danger','icon'=>'fa fa-trash','dato'=>array('0,ventas'));
+				 grilla_generica($stmt,null,null,1,null,null,null,false,$button);
 			}
     }
 
@@ -364,7 +403,9 @@ class incomM
 			else
 			{
 				$camne=array();
-				return grilla_generica($stmt,null,NULL,'1','8,9,10,11,clave1','asi_sc');
+				// return grilla_generica($stmt,null,NULL,'1','8,9,10,11,clave1','asi_sc');
+				 $button[0] = array('nombre'=>'eliminar','tipo'=>'danger','icon'=>'fa fa-trash','dato'=>array('0,expo'));
+				 grilla_generica($stmt,null,null,1,null,null,null,false,$button);
 			}
     }
 
@@ -386,7 +427,9 @@ class incomM
 			else
 			{
 				$camne=array();
-				return grilla_generica($stmt,null,NULL,'1','8,9,10,11,clave1','asi_sc');
+				// return grilla_generica($stmt,null,NULL,'1','8,9,10,11,clave1','asi_sc');
+				 $button[0] = array('nombre'=>'eliminar','tipo'=>'danger','icon'=>'fa fa-trash','dato'=>array('0,inpor'));
+				 grilla_generica($stmt,null,null,1,null,null,null,false,$button);
 			}
     }
 
@@ -631,6 +674,29 @@ class incomM
          WHERE Item = '".$_SESSION['INGRESO']['item']."'
          AND CodigoU = '".$_SESSION['INGRESO']['CodigoU']."'
          AND T_No = ".$_SESSION['INGRESO']['modulo_'].";";
+
+         $stmt = sqlsrv_query( $cid, $sql);
+		if( $stmt === false)  
+		{  
+			return -1;
+			echo "Error en consulta PA.\n";  
+			die( print_r( sqlsrv_errors(), true));  
+		}
+	   
+		  return 1;
+
+    }
+
+    function eliminar_registros($tabla,$Codigo)
+    {
+    	$cid = $this->conn;
+    	$sql = "DELETE FROM ".$tabla."
+         WHERE Item = '".$_SESSION['INGRESO']['item']."'
+         AND ".$Codigo."
+         AND CodigoU = '".$_SESSION['INGRESO']['CodigoU']."'
+         AND T_No = ".$_SESSION['INGRESO']['modulo_'].";";
+
+         // print_r($sql);die();
 
          $stmt = sqlsrv_query( $cid, $sql);
 		if( $stmt === false)  

@@ -106,7 +106,12 @@ class articulosM
 	function familia_pro($Codigo=false,$query = false)
 	{
 		$cid = $this->conn;
-		$sql = "SELECT ID,Codigo_Inv,Producto,TC,Minimo,Maximo,Cta_Inventario FROM Catalogo_Productos  WHERE Periodo = '".$_SESSION['INGRESO']['periodo']."' AND item='".$_SESSION['INGRESO']['item']."'  AND TC='I' AND INV='1'";
+		$sql = "SELECT ID,Codigo_Inv,Producto,TC,Minimo,Maximo,Cta_Inventario 
+		        FROM Catalogo_Productos  
+		        WHERE Periodo = '".$_SESSION['INGRESO']['periodo']."' 
+		        AND item='".$_SESSION['INGRESO']['item']."'  
+		        AND TC='I' 
+		        AND INV='1'";
 		if($Codigo)
 		{
 			$sql.="	 AND Codigo_Inv ='".$Codigo."'"; 
@@ -475,10 +480,13 @@ class articulosM
 	{
      $cid = $this->conn;
     // 'LISTA DE CODIGO DE ANEXOS
+     //tipo = a tipo de cuenta 1 activos 2 pasivo 3 patrimonio 4 ingreso 5 egresos
+     
      $sql = "SELECT Codigo,Codigo+'- '+Cuenta as 'Cuenta'
      FROM Catalogo_Cuentas
-     WHERE item ='016'
-     AND Periodo ='.'
+     WHERE Item ='".$_SESSION['INGRESO']['item']."'
+     AND Periodo ='".$_SESSION['INGRESO']['periodo']."'
+     AND TC = 'RP'
      AND DG ='D'";
      if($query)
      {

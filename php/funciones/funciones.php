@@ -3707,7 +3707,7 @@ function paginador($tabla,$filtro=null,$link=null)
 }
 //grilla generica para mostrar en caso de usar ajax
 //$tabla caso donde sean necesaria varias grillas
-function grilla_generica($stmt,$ti=null,$camne=null,$b=null,$ch=null,$tabla=null,$base=null,$estilo=false)
+function grilla_generica($stmt,$ti=null,$camne=null,$b=null,$ch=null,$tabla=null,$base=null,$estilo=false,$button=false)
 {
 	if($base==null or $base=='SQL SERVER')
 	{
@@ -3732,6 +3732,10 @@ function grilla_generica($stmt,$ti=null,$camne=null,$b=null,$ch=null,$tabla=null
 			$ch1 = explode(",", $ch);
 			$cant++;
 		}
+    if($button)
+    {
+      $cant++;
+    }
 		//si lleva o no border
 		$bor='';
     $bor1='';
@@ -3817,6 +3821,10 @@ function grilla_generica($stmt,$ti=null,$camne=null,$b=null,$ch=null,$tabla=null
 					{
 						echo "<th style='text-align: left;' id='tit_sel'>SEL</th>";
 					}
+          if($button)
+          {
+            echo "<th style='text-align: left;' id='tit_sel'></th>";
+          }
           /*
           datetime = 93;
 
@@ -4041,65 +4049,7 @@ function grilla_generica($stmt,$ti=null,$camne=null,$b=null,$ch=null,$tabla=null
 								//echo ' pp '.count($camneva);
 							}
 							//caso de indentar columna
-							/*if($camne['TITULO'][$i]=='indentar')
-							{
-								$tit[$ind]=$camne['TITULO'][$i];
-									//buscamos campos a evaluar
-								$camneva = explode(",", $camne['CAMPOE'][$i]);
-								//si solo es un campo
-								if(count($camneva)==1)
-								{
-									$camneva1 = explode("=", $camneva[0]);
-									$campoe[$ind]=$camneva1[0];
-									$campov[$ind]=$camneva1[1];
-									//echo ' pp '.$campoe[$ind].' '.$campov[$ind];
-								}
-								else
-								{
-									//hacer bucle
-								}
-								//para los campos a afectar
-								if(count($camne['CAMPOA'])==1 AND $i==0)
-								{
-									$campoaf[$ind]=$camne['CAMPOA'][$i];
-								}
-								else
-								{
-									//bucle
-									if(!empty($camne['CAMPOA'][$i]))
-									{
-										//otras opciones
-										$campoaf[$ind]=$camne['CAMPOA'][$i];
-									}
-								}
-								//valor adicional en este caso color
-								if(count($camne['ADICIONAL'])==1 AND $i==0)
-								{
-									$adicional[$ind]=$camne['ADICIONAL'][$i];
-								}
-								else
-								{
-									//bucle
-									if(!empty($camne['ADICIONAL'][$i]))
-									{
-										$adicional[$ind]=$camne['ADICIONAL'][$i];
-									}
-								}
-								//signo de comparacion
-								if(count($camne['SIGNO'])==1 AND $i==0)
-								{
-									$signo[$ind]=$camne['SIGNO'][$i];
-								}
-								else
-								{
-									//bucle
-									if(!empty($camne['SIGNO'][$i]))
-									{
-										$signo[$ind]=$camne['SIGNO'][$i];
-									}
-								}
-								$ind++;
-							}*/
+						
 							//caso italica, subrayar, indentar
 							if($camne['TITULO'][$i]=='italica' OR $camne['TITULO'][$i]=='subrayar' OR $camne['TITULO'][$i]=='indentar')
 							{
@@ -4299,6 +4249,30 @@ function grilla_generica($stmt,$ti=null,$camne=null,$b=null,$ch=null,$tabla=null
 									//die();
 								}
 							}
+              if($button)
+              {
+                foreach ($button as $key => $value) {
+                $nombre = str_replace(' ','_',$value['nombre']);
+                $icono = $value['icon'];
+                $tipo = $value['tipo'];
+                $id = '';
+                $datos = explode(',',$value['dato'][0]);
+                foreach ($datos as $key2 => $value2) {
+                  if(is_numeric($value2))
+                    {
+                      $id.= '\''.$row[$value2].'\',';
+                    }else
+                    {
+                      $id.= '\''.$value2.'\',';
+                    }
+                }
+                $id=substr($id,0,-1);
+               
+                 echo '<td><button class="btn btn-'.$tipo.' btn-sm"  type="button" onclick="'.$nombre.'('.$id.')"><i class ="'.$icono.'"></i></button></td>';             
+                }
+                }
+
+              // print_r($button);die();
 							//comparamos con los valores de los array para personalizar las celdas
 							//para titulo color fila
 							$cfila1='';
@@ -5863,7 +5837,7 @@ function dimenciones_tabl($len)
       {
         $query = $MesComp.''.$query;
       }
-       if($_SESSION['INGRESO']['Num_CE'] and $query=='Egreso')
+       if($_SESSION['INGRESO']['Num_CE'] and $query=='Egresos')
       {
         $query = $MesComp.''.$query;
       }

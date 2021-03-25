@@ -147,6 +147,20 @@ if(isset($_GET['generar_comprobante']))
 	$parametros = $_POST['parametros'];
 	echo json_encode($controlador->generar_comprobante($parametros));
 }
+if(isset($_GET['eliminarregistro']))
+{
+    $parametros = $_POST['parametros'];
+    echo json_encode($controlador->eliminar_registro($parametros));
+}
+
+if(isset($_GET['num_comprobante']))
+{    
+    $parametros = $_POST['parametros'];
+
+    // print_r($parametros);die();
+    echo json_encode(numero_comprobante1($parametros['tip'],true,false,$parametros['fecha']));
+}
+
 
 class incomC
 {
@@ -314,85 +328,6 @@ class incomC
 		return array('cuenta'=>$Cuenta,'codigo'=>$Codigo,'tipocta'=>$TipoCta,'subcta'=>$SubCta,'tipopago'=>$TipoPago,'moneda'=>$Moneda_US);
      }
 
-     function cualquiera($parametros)
-     {
-     	$EsRetencion = True;
-     	$TextOpcDH = $parametros['debe_haber'];
-     	$TextoValido= strtoupper($parametros['cheq']);
-     	$FechaValida =  $parametros['efectivizar'];
-     	$Fecha_Vence =  $parametros['efectivizar'];
-     	if($parametros['subcta']=='BA')
-     	{
-     		$NoCheque = $parametros['cheq'];
-     	}else
-     	{
-     		$NoCheque = '.';
-     	}
-     	if($OpcCoop)
-     	{
-     		if($parametros['moneda'])
-     		{
-     			$OpcTM = 2;
-     		}else
-     		{
-     			$OpcTM = 1;
-     		}
-     	}
-     	if(is_numeric($TextOpcDH))
-     	{
-     		$OpcDH = strlen($TextOpcDH);
-     	}
-     	if($OpcDH>=1 && $OpcTM>=1)
-     	{
-     		switch ($parametros['cta']) {
-     			case 'C':
-     			case 'P':
-     			case 'G':
-     			case 'I':
-     			case 'PM':
-     				 // // Label17.Caption = "VALOR M/N"
-          // //            If Moneda_US Or OpcTM = 2 Then Label17.Caption = "VALOR M/E"
-          //            $FechaTexto =$parametros['MBoxFecha'];
-          //            $SubCtaGen = $parametros['Codigo'];
-          //            FSubCtas.Show 1
-          //            $TextCuenta.Text = ""
-                     $Asientos_Grabados;
-     				break;
-     			case 'CP':
-     				$FechaTexto = $MBoxFecha;
-                    $Nombre_Cta_Ret = $Cuenta;
-                    $SubCtaGen = $Codigo;
-                  if($OpcDH > 1) 
-            	      {
-            		// abrirsub facturas
-            	      }
-            	 break;
-     			case "CC":
-            if($CentroDeCosto) 
-            {
-               $CodigoCC = '.';
-               $FechaTexto = $parametros['MBoxFecha'];
-               $SubCtaGen = $parametros['Codigo'];
-               // FCentroCostos.Show 1
-               // Asientos_Grabados
-            }
-     			
-     			default:
-     				# code...
-     				break;
-     		}
-
-     	}
-
-     	// muestra asoenmto sc
-
-     // SQL2 = "SELECT * " _
-     //      & "FROM Asiento_SC " _
-     //      & "WHERE Item = '" & NumEmpresa & "' " _
-     //      & "AND CodigoU = '" & CodigoUsuario & "' " _
-     //      & "AND T_No = " & Trans_No & " " _
-     //      & "ORDER BY Cta, Codigo, SC_No "
-     }
 
      function catalogo_subcta($parametros)
      {
@@ -519,33 +454,166 @@ class incomC
      }
      function generar_comprobante($parametros)
      {
+         if($parametros['tip']=='CD'){$tip = 'Diario';}
+         else if($parametros['tip']=='CI'){$tip = 'Ingresos';}
+         else if($parametros['tip']=='CE'){$tip = 'Egresos';}
+         else if($parametros['tip']=='ND'){$tip = 'NotaDebito';}
+         else if($parametros['tip']=='NC'){$tip= 'NotaCredito';}
+
+         $num_com = numero_comprobante1($tip,true,true,$parametros['fecha']);
+         // $num_com = '123654789';
+
      	$parametro_comprobante = array(
             'ru'=> $parametros['ruc'], //codigo del cliente que sale co el ruc del beneficiario codigo
             'tip'=>$parametros['tip'],//tipo de cuenta contable cd, etc
             "fecha1"=> $parametros['fecha'],// fecha actual 2020-09-21
             'concepto'=>$parametros['concepto'], //detalle de la transaccion realida
             'totalh'=> $parametros['totalh'], //total del haber
-            'num_com'=> $parametros['num_com'], // codigo de comprobante de esta forma 2019-9000002
+            'num_com'=> '.'.date('Y', strtotime($parametros['fecha'])).'-'.$num_com, // codigo de comprobante de esta forma 2019-9000002
             );
+
 				 // print_r($nombre);print_r($ruc);print_r($fecha);
 				 // print_r($parametro_comprobante);die();
 
-            $cod = explode('-',$parametros['num_com']);
+            // $cod = explode('-',$parametros['num_com']);
             // print_r($cod);die();
-            $resp = generar_comprobantes($parametro_comprobante);
+              if($this->ingresar_trans_Air($num_com,$parametros['tip'])==1){
+                $resp = generar_comprobantes($parametro_comprobante);
             // print_r($resp);die();
-                if($resp==$cod[1])
+                if($resp==$num_com)
                 {
-                	return 1;
+                    return 1;
                 }else
                 {
-                	return -1;
+                    return -1;
                 }
+              }else
+              {
+                echo " no se genero";
+              }
+           
 
+     }
+     function ingresar_trans_Air($numero,$tipo)
+     {
+        $air = $this->modelo->DG_asientoR_datos();
+        $fallo = false;
+        if(count($air)>0)
+        {
+            foreach ($air as $key => $value) {
+                $datos[0]['campo'] = 'CodRet';
+                $datos[1]['campo'] = 'Detalle';
+                $datos[2]['campo'] = 'BaseImp';
+                $datos[3]['campo'] = 'Porcentaje';
+                $datos[4]['campo'] = 'ValRet';
+                $datos[5]['campo'] = 'EstabRetencion';
+                $datos[6]['campo'] = 'PtoEmiRetencion';
+                $datos[7]['campo'] = 'SecRetencion';
+                $datos[8]['campo'] = 'AutRetencion';
+                $datos[9]['campo'] = 'FechaEmiRet';
+                $datos[10]['campo'] = 'Cta_Retencion';
+                $datos[11]['campo'] = 'EstabFactura';
+                $datos[12]['campo'] = 'PuntoEmiFactura';
+                $datos[13]['campo'] = 'Factura_No';
+                $datos[14]['campo'] = 'IdProv';
+                $datos[15]['campo'] = 'Item';
+                $datos[16]['campo'] = 'CodigoU';
+                $datos[17]['campo'] = 'A_No';
+                $datos[18]['campo'] = 'T_No';
+                $datos[19]['campo'] = 'Tipo_Trans';
+                $datos[20]['campo'] = 'T';
+                $datos[21]['campo'] = 'Numero';
+                $datos[22]['campo'] = 'TP';
+
+                $datos[0]['dato'] =$value['CodRet'];
+                $datos[1]['dato'] =$value['Detalle'];
+                $datos[2]['dato'] =$value['BaseImp'];
+                $datos[3]['dato'] =$value['Porcentaje'];
+                $datos[4]['dato'] =$value['ValRet'];
+                $datos[5]['dato'] =$value['EstabRetencion'];
+                $datos[6]['dato'] =$value['PtoEmiRetencion'];
+                $datos[7]['dato'] =$value['SecRetencion'];
+                $datos[8]['dato'] =$value['AutRetencion'];
+                $datos[9]['dato'] =$value['FechaEmiRet']->format('Y-m-d');
+                $datos[10]['dato'] =$value['Cta_Retencion'];
+                $datos[11]['dato'] =$value['EstabFactura'];
+                $datos[12]['dato'] =$value['PuntoEmiFactura'];
+                $datos[13]['dato'] =$value['Factura_No'];
+                $datos[14]['dato'] =$value['IdProv'];
+                $datos[15]['dato'] =$value['Item'];
+                $datos[16]['dato'] =$value['CodigoU'];
+                $datos[17]['dato'] =$value['A_No'];
+                $datos[18]['dato'] =$value['T_No'];
+                $datos[19]['dato'] =$value['Tipo_Trans'];
+                $datos[20]['dato'] ='N';
+                $datos[21]['dato'] =$numero;
+                $datos[22]['dato'] =$tipo;
+            }
+           $resp = $this->modelo->insertar_ingresos_tabla('Trans_Air',$datos);
+           if($resp !='')
+           {
+             $fallo = true;
+           }
+        }
+        // print_r($air);die();
+        if($fallo==false)
+        {
+            return 1;
+        }
+        else{
+            return -1;
+        }
      }
      function eliminar_retenciones()
      {
         return $this->modelo->eliminacion_retencion();
+     }
+     function eliminar_registro($parametros)
+     {
+        $Codigo = '';
+        $tabla = '';
+       switch ($parametros['tabla']) {
+           case 'asiento':
+             $Codigo = "CODIGO = '".$parametros['Codigo']."' ";
+            $tabla = 'Asiento';
+               break;
+            case 'asientoSC':
+             $Codigo = "Codigo = '".$parametros['Codigo']."' ";
+             $tabla = 'Asiento_SC';
+               # code...
+               break;
+            case 'asientoB':
+             $Codigo = "CTA_BANCO = '".$parametros['Codigo']."' ";
+             $tabla = 'Asiento_B';
+               # code...
+               break;
+            case 'inpor':
+             $Codigo = "Cod_Sustento = '".$parametros['Codigo']."' ";
+             $tabla = 'Asiento_Importaciones';
+               # code...
+               break;
+            case 'expo':
+             $Codigo = "Codigo = '".$parametros['Codigo']."' ";
+            $tabla = 'Asiento_Exportaciones';
+               # code...
+               break;
+            case 'ventas':
+             $Codigo = "IdProv = '".$parametros['Codigo']."' ";
+            $tabla = 'Asiento_Ventas';
+               # code...
+               break;
+            case 'compras':
+             $Codigo = "IdProv = '".$parametros['Codigo']."' ";
+            $tabla = 'Asiento_Compras';
+               # code...
+               break;
+            case 'air':             
+             $Codigo = "CodRet = '".$parametros['Codigo']."' ";
+             $tabla = 'Asiento_Air';
+               # code...
+               break;
+       }
+       return $this->modelo->eliminar_registros($tabla,$Codigo);
      }
 }
 ?>

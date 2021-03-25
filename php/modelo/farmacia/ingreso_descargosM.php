@@ -1502,7 +1502,7 @@ order by CP.Codigo_Inv,CP.Producto,CP.TC,CP.Valor_Total,CP.Unidad,CP.Cta_Inventa
     function eliminar_aiseto_K($orden,$fecha)
 	{
 		 $cid=$this->conn;
-		$sql = "DELETE Asiento_K WHERE Item='".$_SESSION['INGRESO']['item']."' AND CodigoU='".$_SESSION['INGRESO']['CodigoU']."' AND DH='2' AND ORDEN ='".$orden."' AND Fecha_Fab ='".$fecha."'";
+		$sql = "DELETE Asiento_K WHERE Item='".$_SESSION['INGRESO']['item']."' AND DH='2' AND ORDEN ='".$orden."' AND Fecha_Fab ='".$fecha."'";
 		// print_r($sql);die();
 		$stmt = sqlsrv_query($cid, $sql);
 	    if( $stmt === false)  
