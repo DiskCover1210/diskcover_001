@@ -103,6 +103,8 @@ if(isset($_GET['mos']))
 				$_SESSION['INGRESO']['Ruta_Certificado'] = $empresa_d[0]['Ruta_Certificado'];
 				$_SESSION['INGRESO']['Clave_Certificado'] = $empresa_d[0]['Clave_Certificado'];
 				$_SESSION['INGRESO']['Ambiente'] = $empresa_d[0]['Ambiente'];
+				$_SESSION['INGRESO']['Dec_PVP'] = $empresa_d[0]['Dec_PVP'];
+				$_SESSION['INGRESO']['Dec_Costo'] = $empresa_d[0]['Dec_Costo'];
 				// print_r($empresa_d);die();
 				$_SESSION['INGRESO']['Ciudad'] = $empresa_d[0]['Ciudad'];
 				$_SESSION['INGRESO']['modulo']=modulos_habiliatados();

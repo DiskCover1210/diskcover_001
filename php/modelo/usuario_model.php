@@ -603,6 +603,9 @@ class usuario_model{
 				$empresa[$i]['Ruta_Certificado'] = $obj->Ruta_Certificado;
 				$empresa[$i]['Clave_Certificado'] = $obj->Clave_Certificado;
 				$empresa[$i]['Ambiente'] = $obj->Ambiente;		
+
+				$empresa[$i]['Dec_PVP'] = $obj->Dec_PVP;		
+				$empresa[$i]['Dec_Costo'] = $obj->Dec_Costo;		
 				//$empresa[$i]['Sucursal']=$obj->Sucursal;
 				//consultar sucursal
 				$empresa[$i]['Sucursal']=false;

@@ -1,5 +1,5 @@
 <?php 
-// $_SESSION['INGRESO']['modulo_']='99';
+date_default_timezone_set('America/Guayaquil');
 if(!class_exists('variables_g'))
 {
 	include(dirname(__DIR__,2).'/db/variables_globales.php');//
@@ -754,6 +754,7 @@ class ingreso_descargosM
 
 	function generar_comprobantes($parametros)
 	{
+		$_SESSION['INGRESO']['modulo_']='99';
 		$cid = $this->conn;
 		if(isset($parametros['cotizacion']))
 		{
@@ -889,6 +890,8 @@ class ingreso_descargosM
 					AND CodigoU = '".$_SESSION['INGRESO']['Id']."' ";
 			
 			$sql=$sql." ORDER BY A_No ";
+
+			// print_r($sql);die();
 			$stmt = sqlsrv_query( $cid, $sql);
 			if( $stmt === false)  
 			{  
@@ -954,6 +957,8 @@ class ingreso_descargosM
 					Item = '".$_SESSION['INGRESO']['item']."' 
 					AND CodigoU = '".$_SESSION['INGRESO']['Id']."' ";
 
+					// print_r($sql);die();
+
 				//echo $sql;
 				$stmt = sqlsrv_query(   $cid, $sql);
 				if( $stmt === false)  
@@ -1016,7 +1021,7 @@ class ingreso_descargosM
 							   ,0)";
 						//echo $sql.'<br>';
 
-           // print_r($sql);die();
+           // print_r($sql);
 						$stmt1 = sqlsrv_query( $cid, $sql);
 						if( $stmt1 === false)  
 						{  
@@ -1024,6 +1029,8 @@ class ingreso_descargosM
 							 die( print_r( sqlsrv_errors(), true));  
 						}
 					}
+
+				// die();
 				}
 				//incrementamos el secuencial
 				if($_SESSION['INGRESO']['Num_CD']==1)
@@ -1191,7 +1198,7 @@ order by CP.Codigo_Inv,CP.Producto,CP.TC,CP.Valor_Total,CP.Unidad,CP.Cta_Inventa
 	{
      $cid = $this->conn;
     // 'LISTA DE CODIGO DE ANEXOS
-     $sql = "SELECT SUM(VALOR_TOTAL) as 'total',CONTRA_CTA,SUBCTA,Fecha_Fab,TC FROM Asiento_K  WHERE Item = '".$_SESSION['INGRESO']['item']."' AND CodigoU = '".$_SESSION['INGRESO']['Id']."' AND ORDEN = '".$orden."' AND Fecha_Fab = '".$fecha."'  GROUP BY CONTRA_CTA,Fecha_Fab,TC,SUBCTA";
+     $sql = "SELECT SUM(VALOR_TOTAL) as 'total',CONTRA_CTA,SUBCTA,Fecha_Fab,TC FROM Asiento_K  WHERE Item = '".$_SESSION['INGRESO']['item']."' AND ORDEN = '".$orden."' AND Fecha_Fab = '".$fecha."'  GROUP BY CONTRA_CTA,Fecha_Fab,TC,SUBCTA";
           // print_r($sql);die();
         $stmt = sqlsrv_query($cid, $sql);
         $datos =  array();

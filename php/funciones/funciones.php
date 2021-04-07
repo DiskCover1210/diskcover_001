@@ -5711,7 +5711,7 @@ function insert_generico($tabla=null,$datos=null)
 		// print_r($cam2.$v2);
 		// die();
 		$stmt = sqlsrv_query( $cid, $cam2.$v2);
-		//echo  $cam2.$v2
+		// echo  $cam2.$v2 ;die();
 		if( $stmt === false)  
 		{  
       // return -1;
@@ -7038,6 +7038,113 @@ function generar_comprobantes($parametros)
         }
       }
   }
+
+  function mayorizar_inventario_sp()
+  {
+    // set_time_limit(1024);
+    // ini_set("memory_limit", "-1");
+    // $desde = '2019/10/28';
+    // $hasta = '2019/11/29';
+    $_SESSION['INGRESO']['modulo_']='01';
+    $conn = new Conectar();
+      $cid=$conn->conexion();
+      $parametros = array(
+      array(&$_SESSION['INGRESO']['item'], SQLSRV_PARAM_IN),
+      array(&$_SESSION['INGRESO']['periodo'], SQLSRV_PARAM_IN),
+      array(&$_SESSION['INGRESO']['CodigoU'], SQLSRV_PARAM_IN),
+      array(&$_SESSION['INGRESO']['modulo_'], SQLSRV_PARAM_IN),
+      array(&$_SESSION['INGRESO']['Dec_PVP'], SQLSRV_PARAM_IN),
+      array(&$_SESSION['INGRESO']['Dec_Costo'], SQLSRV_PARAM_IN)
+      );     
+     $sql="EXEC sp_Mayorizar_Inventario @Item=?, @Periodo=?, @Usuario=?, @NumModulo=?, @DecPVP=?, @DecCosto=?";
+     // print_r($_SESSION['INGRESO']);die();
+
+      $stmt = sqlsrv_prepare($cid, $sql,$parametros);
+      if(!$stmt)
+      {
+        die( print_r( sqlsrv_errors(), true));
+      }
+      if (!sqlsrv_execute($stmt)) {
+   
+         echo "Error en consulta PA.\n";         
+         $respuesta = -1;
+         die( print_r( sqlsrv_errors(), true));
+         return $respuesta;  
+       die;
+      }
+     $respuesta =  1;
+       return $respuesta;   
+  }
+
+  function sp_Reindexar_Periodo()
+  {
+    // set_time_limit(1024);
+    // ini_set("memory_limit", "-1");
+    // $desde = '2019/10/28';
+    // $hasta = '2019/11/29';
+    $_SESSION['INGRESO']['modulo_']='01';
+    $conn = new Conectar();
+      $cid=$conn->conexion();
+      $parametros = array(
+      array(&$_SESSION['INGRESO']['item'], SQLSRV_PARAM_IN),
+      array(&$_SESSION['INGRESO']['periodo'], SQLSRV_PARAM_IN)
+      );     
+     $sql="EXEC sp_Reindexar_Periodo @Item=?, @Periodo=?";
+     // print_r($_SESSION['INGRESO']);die();
+
+      $stmt = sqlsrv_prepare($cid, $sql,$parametros);
+      if(!$stmt)
+      {
+        die( print_r( sqlsrv_errors(), true));
+      }
+      if (!sqlsrv_execute($stmt)) {
+   
+         echo "Error en consulta PA.\n";         
+         $respuesta = -1;
+         die( print_r( sqlsrv_errors(), true));
+         return $respuesta;  
+       die;
+      }
+     $respuesta =  1;
+       return $respuesta;   
+  }
+
+  // function sp_mayorizar_cuentas()
+  // {
+    // set_time_limit(1024);
+    // ini_set("memory_limit", "-1");
+    // $desde = '2019/10/28';
+    // $hasta = '2019/11/29';
+    // $Escoop = false;
+    // $ConSucursal = false;
+    //  $conn = new Conectar();
+    //   $cid=$conn->conexion();
+    //   $parametros = array(
+    //   array(&$_SESSION['INGRESO']['item'], SQLSRV_PARAM_IN),
+    //   array(&$_SESSION['INGRESO']['periodo'], SQLSRV_PARAM_IN),
+    //   array(&$Escoop, SQLSRV_PARAM_IN),
+    //   array(&$ConSucursal, SQLSRV_PARAM_IN),
+    //   );     
+    //  $sql="EXEC sp_Reindexar_Periodo @Item=?, @Periodo=?";
+    //  // print_r($_SESSION['INGRESO']);die();
+
+    //   $stmt = sqlsrv_prepare($cid, $sql,$parametros);
+    //   if(!$stmt)
+    //   {
+    //     die( print_r( sqlsrv_errors(), true));
+    //   }
+    //   if (!sqlsrv_execute($stmt)) {
+   
+    //      echo "Error en consulta PA.\n";         
+    //      $respuesta = -1;
+    //      die( print_r( sqlsrv_errors(), true));
+    //      return $respuesta;  
+    //    die;
+    //   }
+    //  $respuesta =  1;
+    //    return $respuesta;   
+  // }
+
 
 
 ?>
