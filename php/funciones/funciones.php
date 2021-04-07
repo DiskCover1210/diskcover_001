@@ -3120,6 +3120,64 @@ function select_option_mysql($tabla,$value,$mostrar,$filtro=null)
 	}
 	$cid->close();
 }
+
+//consulta menus del sistema
+function select_menu_mysql()
+{
+  require_once("../db/db.php");
+  $cid = Conectar::conexion('MYSQL');;
+  $sql = "SELECT * FROM menu_modulos";
+  $consulta=$cid->query($sql) or die($cid->error);
+
+  //verificar codigo del menu que se necesita
+  while ($menu_item = $consulta->fetch_assoc()) {
+    if (strtolower($_GET['mod']) == strtolower($menu_item['descripcionMenu'])) {
+      $codMenu = $menu_item['codMenu'];
+    }
+  }
+
+  //seleccionar todos los items del menu
+  $sql = "SELECT * FROM menu_modulos WHERE codMenu LIKE '".$codMenu."%' ORDER BY codMenu ASC";
+  $submenu=$cid->query($sql) or die($cid->error);
+  $array_menu = array();
+  $i = 0;
+  while ($menu_item = $submenu->fetch_assoc()) {
+    //echo $menu_item['codMenu']." ".$menu_item['descripcionMenu']."<br>";
+    $array_menu[$i]['codMenu'] = $menu_item['codMenu'];
+    $array_menu[$i]['descripcionMenu'] = $menu_item['descripcionMenu'];
+    $array_menu[$i]['accesoRapido'] = $menu_item['accesoRapido'];
+    $array_menu[$i]['rutaProceso'] = $menu_item['rutaProceso'];
+    $i++;
+  }
+  return $array_menu;
+  $cid->close();
+  exit();
+}
+
+//consulta niveles del menu
+function select_nivel_menu_mysql($padre)
+{
+  require_once("../db/db.php");
+  $cid = Conectar::conexion('MYSQL');
+
+  //seleccionar los niveles del menu
+  $sql = "SELECT * FROM menu_modulos WHERE codMenu LIKE '".$padre.".%' ORDER BY codMenu ASC";
+  $submenu=$cid->query($sql) or die($cid->error);
+  $array_menu = array();
+  $i = 0;
+  while ($menu_item = $submenu->fetch_assoc()) {
+    //echo $menu_item['codMenu']." ".$menu_item['descripcionMenu']."<br>";
+    $array_menu[$i]['codMenu'] = $menu_item['codMenu'];
+    $array_menu[$i]['descripcionMenu'] = $menu_item['descripcionMenu'];
+    $array_menu[$i]['accesoRapido'] = $menu_item['accesoRapido'];
+    $array_menu[$i]['rutaProceso'] = $menu_item['rutaProceso'];
+    $i++;
+  }
+  return $array_menu;
+  $cid->close();
+  exit();
+}
+
 //contar registros se usa para determinar tamaños de ventanas
 function contar_option($tabla,$value,$mostrar,$filtro=null)
 {
