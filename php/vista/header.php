@@ -108,11 +108,16 @@ width:100%!important;
   top: .8em;
 }
 
+.dropdown-menu{
+  background: #85e7ff;
+}
+
 .dropdown-submenu .dropdown-menu {
   top: 0;
   left: 100%;
   margin-left: .1rem;
   margin-right: .1rem;
+  background: #85e7ff;
 }
 </style>
 <script>
@@ -251,8 +256,10 @@ $("#datos").fadeIn();
 
         <?php } ?>
           <ul class="nav navbar-nav">
+
         <!---------inicio de pestañas de empresa------------>
         <?php
+        /*
      if(isset($_GET['mod'])){
       
       if( $_GET['mod'] =='empresa') 
@@ -301,12 +308,11 @@ $("#datos").fadeIn();
             </li>
               
         <?php
-      }}
+      }}*/
       ?>
+      <!--------fin de  pestañas de empresa---->
 
-
-        <!--------fin de  pestañas de empresa---->
-        <!--------inicio de  pestañas de contabilidad---->
+      <!--------inicio de  pestañas de contabilidad---->
 
       <?php
        if(isset($_GET['mod']))
@@ -367,8 +373,8 @@ $("#datos").fadeIn();
               echo '</li>';
             }
           }
-          //if($_GET['mod']=='contabilidad') 
-            // {
+          /*if($_GET['mod']=='contabilidad') 
+             {
        ?>
             <!--
               <li class="nav-item dropdown">
@@ -557,13 +563,14 @@ $("#datos").fadeIn();
  
 -->
 <?php
-      //}
+      }*/
 }
 ?>
         <!--------fin de pestañas de contabilidad---->
         <!--------inicio de pestañas de educativo---->
          
       <?php
+      /*
           if(isset($_GET['mod']))
           {
              if($_GET['mod']=='educativo' ) 
@@ -591,6 +598,7 @@ $("#datos").fadeIn();
             </li>    
       <?php
        }}
+       */
        $f =date('Y-m-d');
        // print_r($_SESSION);die();
        if(isset($_SESSION['INGRESO']['Fecha']))
@@ -661,6 +669,7 @@ $("#datos").fadeIn();
 <!------------ empiesa pestaña inventario------>
 
    <?php
+    /*
           if(isset($_GET['mod']))
           {
              if($_GET['mod']=='Inventario' ) 
@@ -725,15 +734,15 @@ $("#datos").fadeIn();
         </ul>
       </li> -->
       <?php
-       }}
+       }}*/
        ?>
 
-<!-----------fin de pestaña ionventario---------->
+<!-----------fin de pestaña inventario---------->
 
 <!------------ inicio pestaña  Farmacia------>
 
    <?php
-          if(isset($_GET['mod']))
+          /*if(isset($_GET['mod']))
           {
              if($_GET['mod']=='Farmacia' ) 
                {         
@@ -768,7 +777,6 @@ $("#datos").fadeIn();
                 <li class="dropdown-item  col-6 col-md"><a href="panel.php"><span class="glyphicon glyphicon-chevron-left" aria-hidden="true">  Volver</a></li>
               </ul>
             </li>              
-<!-- ------------------------------------------------------ -->
      <li class="nav-item dropdown">
               <a class="nav-link dropdown-toggle" id="archivo" data-toggle="dropdown" aria-haspopup="true" 
               aria-expanded="false" style='padding-top: 5px;padding-bottom: 5px;'>Reportes</a>
@@ -778,10 +786,10 @@ $("#datos").fadeIn();
               </ul>
             </li>     
       <?php
-       }}
+       }}*/
        ?>
 
-<!-----------fin de pestaña ionventario---------->
+<!-----------fin de pestaña farmacia---------->
 
      
 
