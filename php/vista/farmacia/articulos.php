@@ -402,7 +402,7 @@
        $('#myModal_espera').modal('hide');  
        if(response.resp==1)
         {
-          Swal.fire('','Comprobante '+response.com+' generado.','success'); 
+          Swal.fire('Comprobante '+response.com+' generado.','','success'); 
           cargar_productos();
         }else if(response.resp==-2)
         {

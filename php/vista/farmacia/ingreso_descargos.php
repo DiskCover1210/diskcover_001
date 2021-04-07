@@ -1,4 +1,4 @@
-<?php  require_once("panel.php"); $num_ped = '';$cod=''; $area = ''; $pro=''; if(isset($_GET['num_ped'])){$num_ped =$_GET['num_ped'];} if(isset($_GET['cod'])){$cod =$_GET['cod'];} if(isset($_GET['area'])){$area1 = explode('-', $_GET['area']); $area =$area1[0];$pro=$area1[1]; } $_SESSION['INGRESO']['modulo_']='99';?>
+<?php  require_once("panel.php"); $num_ped = '';$cod=''; $area = ''; $pro=''; if(isset($_GET['num_ped'])){$num_ped =$_GET['num_ped'];} if(isset($_GET['cod'])){$cod =$_GET['cod'];} if(isset($_GET['area'])){$area1 = explode('-', $_GET['area']); $area =$area1[0];$pro=$area1[1]; } $_SESSION['INGRESO']['modulo_']='99'; date_default_timezone_set('America/Guayaquil'); ?>
 <script type="text/javascript">
    $( document ).ready(function() {
     autocoplet_paci();
@@ -237,6 +237,12 @@
    var cc1 = cc.split('-');
    var ruc = $('#txt_ruc').val();
    var cc = $('#ddl_cc').val();
+   var cos = $('#txt_precio').val();
+   if(cos=='' || cos ==0)
+   {
+     Swal.fire('No se pudo agregar por que el costo de este articulo es igual 0.','','info');
+     return false;
+   }
     if(producto !='' && ruc!='' && cc!='')
     {
       if($('#txt_cant').val()<=0)

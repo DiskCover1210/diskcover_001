@@ -570,6 +570,7 @@ class articulosC
 
 	function generar_factura_entrada($orden,$ruc,$CodigoPrv)
 	{
+		// print_r($CodigoPrv);die();
 		if($this->modelo->misma_fecha($orden,$CodigoPrv)==-1)
 		{
 			return array('resp'=>-3,'com'=>'');

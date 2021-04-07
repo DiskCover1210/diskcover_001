@@ -1,13 +1,16 @@
 <?php 
+date_default_timezone_set('America/Guayaquil');
 include (dirname(__DIR__,2).'/modelo/farmacia/pacienteM.php');
 include (dirname(__DIR__,2).'/modelo/farmacia/descargosM.php');
 include (dirname(__DIR__,2).'/modelo/farmacia/ingreso_descargosM.php');
-// $_SESSION['INGRESO']['modulo_']='99';
+$_SESSION['INGRESO']['modulo_']='99';
 
 /**
  * 
  */
 $controlador = new ingreso_descargosC();
+// sp_Reindexar_Periodo();
+// mayorizar_inventario_sp();
 if(isset($_GET['paciente']))
 {
 	$query = '';
@@ -311,7 +314,7 @@ class ingreso_descargosC
   					     <input type="text" class=" text-right form-control input-sm" id="txt_can_lin_'.$value['A_No'].'" value="'.$value['CANTIDAD'].'" onblur="calcular_totales(\''.$value['A_No'].'\');"/>
   					</td>
   					<td width="'.$d5.'">
-  					     <input type="text" onblur="calcular_totales(\''.$value['A_No'].'\');" class="text-right form-control input-sm" id="txt_pre_lin_'.$value['A_No'].'" value="'.number_format($costo[0]['Costo'],2).'" readonly=""/>
+  					     <input type="text" onblur="calcular_totales(\''.$value['A_No'].'\');" class="text-right form-control input-sm" id="txt_pre_lin_'.$value['A_No'].'" value="'.number_format($value['VALOR_UNIT'],2).'" readonly=""/>
   					</td>
   					<!--<td width="'.$d6.'">
   					     <input type="text" onblur="validar_pvp_costo(\''.$value['A_No'].'\');calcular_totales(\''.$value['A_No'].'\');" class="text-right form-control input-sm" id="txt_uti_lin_'.$value['A_No'].'" value="'.number_format($value['VALOR_UNIT'],2).'" />
@@ -498,6 +501,8 @@ class ingreso_descargosC
                   $this->modelo->generar_asientos_SC($parametros);
 		}
 
+		// print_r('expression');die();
+
 		//asientos para el debe
 		$asiento_debe = $this->modelo->datos_asiento_debe($orden,$fecha);
 		$fecha = $asiento_debe[0]['fecha']->format('Y-m-d');
@@ -546,7 +551,6 @@ class ingreso_descargosC
 		// $parametros = array('tip'=> 'CD','fecha'=>$fecha);
 	 //    $num_comprobante = $this->modelo->numero_comprobante($parametros);
 
-		// print_r($fecha);die();
 	    $num_comprobante = numero_comprobante1('Diario',true,true,$fecha);
 	    $dat_comprobantes = $this->modelo->datos_comprobante();
 	    $debe = 0;
@@ -571,11 +575,11 @@ class ingreso_descargosC
 				 // print_r($parametro_comprobante);die();
                 $resp = $this->modelo->generar_comprobantes($parametro_comprobante);
                 // $cod = explode('-',$num_comprobante);
+                // die();
                 if($resp==$num_comprobante)
                 {
                 	if($this->ingresar_trans_kardex_salidas($orden,$num_comprobante,$fecha,$area,$ruc,$nombre)==1)
                 	{
-
                 		$resp = $this->modelo->eliminar_aiseto_K($orden,$fecha);
                 		if($resp==1)
                 		{
@@ -610,6 +614,7 @@ class ingreso_descargosC
 	function ingresar_trans_kardex_salidas($orden,$comprobante,$fechaC,$area,$ruc,$nombre)
     {
 		$datos_K = $this->modelo->cargar_pedidos($orden,$area,$fechaC);
+		// print_r($datos_K);
 		// $comprobante = explode('.',$comprobante);
 		// $comprobante = explode('-',trim($comprobante[1]));
 		$comprobante = $comprobante;
@@ -665,11 +670,15 @@ class ingreso_descargosC
 		    $datos[19]['dato'] ='Salida de inventario para '.$nombre.' con CI: '.$ruc.' el dia '.$fechaC;
 		    $datos[20]['campo'] ='Orden_No';
 		    $datos[20]['dato'] =$orden;
+
+		    // print_r($datos);
 		     if($this->modelo->insertar_trans_kardex($datos)!="")
 		     {
 		     	$resp = 0;
-		     } 
+		     }
 	}
+
+                		// print_r($resp);die();
 	return $resp;
 
 }
