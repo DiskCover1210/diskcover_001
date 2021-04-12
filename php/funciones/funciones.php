@@ -5831,26 +5831,26 @@ function dimenciones_tabl($len)
     $val = 60*8;
     return $val.'px';
   }elseif ($len==1) {
-     $val = ($len+2)*8;
+     $val = ($len+3)*8;
     return $val.'px';
   }elseif ($len >= 10 And $len<=13){
-     $val = ($len+2)*8;
+     $val = ($len+3)*8;
     return $val.'px';
   }elseif ($len==10){
-     $val = ($len+2)*8;
+     $val = ($len+3)*8;
     return $val.'px';
   }elseif ($len>3 And $len <6) {
-     $val = ($len+2)*8;
+     $val = ($len+3)*8;
     return $val.'px';
   }elseif ($len==3){
-     $val = ($len+2)*8;
+     $val = ($len+3)*8;
     return $val.'px';
   }elseif ($len>13 And $len<60) {
-     $val = ($len+2)*8;
+     $val = ($len+3)*8;
     return $val.'px';
   }else
   {
-     $val = ($len+2)*8;
+     $val = ($len+3)*8;
     return $val.'px';
   }
 }
@@ -7167,6 +7167,54 @@ function generar_comprobantes($parametros)
        return $respuesta;   
   }
 
+  function Leer_Campo_Empresa($query)
+  {
+     $conn = new Conectar();
+     $cid=$conn->conexion();
+    $sql = "SELECT ".$query." 
+            FROM Empresas 
+            WHERE Item = '".$_SESSION['INGRESO']['item']."'";
+    $stmt = sqlsrv_query( $cid, $sql);
+      if( $stmt === false)  
+      {  
+         echo "Error en consulta PA.\n";  
+         die( print_r( sqlsrv_errors(), true));  
+      }
+       $result = 0;  
+      while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_ASSOC) ) 
+        {
+           $result =$row;
+        }
+        return $result;
+
+  }
+
+function buscar_cta_iva_inventario()
+  {
+    $cid = $this->conn;
+    $sql = "SELECT * FROM Ctas_Proceso WHERE Periodo = '".$_SESSION['INGRESO']['periodo']."' AND Item='".$_SESSION['INGRESO']['item']."' AND Detalle = 'Cta_Iva_Inventario'";
+    // print_r($sql); die();
+    $stmt = sqlsrv_query($cid, $sql);
+        $datos =  array();
+     if( $stmt === false)  
+     {  
+     echo "Error en consulta PA.\n";  
+     return '';
+     die( print_r( sqlsrv_errors(), true));  
+     }
+      while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_ASSOC) ) 
+     {
+            $datos[]=$row;
+     }
+     if(count($datos)>0)
+     {
+       return $datos[0]['Codigo'];
+     }else
+     {
+       return -1;
+     }
+
+  }
   // function sp_mayorizar_cuentas()
   // {
     // set_time_limit(1024);
