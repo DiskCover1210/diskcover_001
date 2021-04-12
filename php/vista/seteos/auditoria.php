@@ -1,10 +1,18 @@
-<?php  require_once("panel.php"); date_default_timezone_set('America/Guayaquil'); ?>
+<?php  require_once("panel.php");@session_start();  date_default_timezone_set('America/Guayaquil'); $nom = $_SESSION['INGRESO']['Entidad']; $entidad = $_SESSION['INGRESO']['RUCEnt']; $id = $_SESSION['INGRESO']['IDEntidad']; //print_r($_SESSION['INGRESO']);die();?>
+<style type="text/css">
+	.reset {
+		min-height: auto;
+	}
+</style>
 <script type="text/javascript">
 
   $(document).ready(function()
   {
+  	var intro = document.getElementById('seccion');
+    intro.style.minHeight = '800px';
    // cargar_modulos();
-   autocmpletar();
+   entidad_default();
+  		autocmpletar();
    autocmpletar_usuario();
    autocmpletar_modulos(); 
    autocmpletar_empresa();
@@ -27,7 +35,8 @@
 	}
 	function limpiar_ddl(id)
 	{
-        $('#'+id).empty();
+        // $('#'+id).empty();
+        $('#'+id).val(null).trigger('change');
         cargar_registros();
 
 	}
@@ -49,6 +58,24 @@
           cache: true
         }
       });
+  }
+
+  function entidad_default()
+  {
+  	var ent = '<?php echo $entidad;?>';
+  	var id =  '<?php echo $id;?>';
+  	var nom =  '<?php echo $nom;?>';
+
+  	console.log(ent);
+  	console.log(id);
+  	if(ent != '1792164710001')
+  	{
+  		$('#ddl_entidad').prop('disabled', true);
+  		$('#ddl_entidad').append($('<option>',{value: ent+'_'+id, text: nom ,selected: true }));
+
+  	}else
+  	{
+  	}
   }
 
   function change_entidad()
@@ -195,7 +222,7 @@ function reporte_excel()
         </div>
  </div>
 </div>
-<div class="container"><br>
+<div class="container">
 	<form id="filtros">
 	<div class="row">
 		<div class="col-sm-2">
@@ -208,7 +235,7 @@ function reporte_excel()
 		</div>
 		<div class="col-sm-4">
 			<b>ENTIDAD</b>
-			<div class="input-group input-group-sm"> 
+			<div class="input-group input-group-sm"  style="display: flex;"> 
 			    <select class="form-control input-sm" id="ddl_entidad" name="ddl_entidad" style="display: none;"  onchange="change_entidad();cargar_registros();">
 				    <option value="">Seleccione entidad</option>
 			    </select>
@@ -219,7 +246,7 @@ function reporte_excel()
 		</div>
 		<div class="col-sm-4">
 			<b>EMPRESA</b>
-			<div class="input-group input-group-sm"> 
+			<div class="input-group input-group-sm" style="display: flex;"> 
 			    <select class="form-control input-sm" id="ddl_empresa" name="ddl_empresa" onchange="cargar_registros()">
 				    <option value="">Seleccione Empresa</option>
 			    </select>
@@ -251,17 +278,16 @@ function reporte_excel()
                       <button type="button" class="btn btn-danger" onclick="limpiar_ddl('ddl_usuario')"><i class="fa fa-trash"></i></button>
                     </span>
               </div>
-		</div>		
-	</div>
-	<div class="row">
-		<div class="col-sm-12 text-right">
+		</div>
+		<div class="col-sm-6 text-right">
+			<b>Num Registros</b><br>
 			<select id="ddl_num_reg" name="ddl_num_reg">
 				<option value="50">1 a 50</option>
 				<option value="100">1 a 100</option>
 				<option value="200">1 a 200</option>
 				<option value="T">Todos</option>
 			</select>
-		</div>
+		</div>		
 	</div>
 </form>
 	<div class="row"><br>

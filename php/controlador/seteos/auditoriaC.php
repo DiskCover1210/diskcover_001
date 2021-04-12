@@ -146,7 +146,7 @@ class auditoriaC
 		$borde = 1;
 		// print_r($datos);die();
 		$pos=1;
-		    		$tablaHTML[0]['medidas']=array(15,13,30,20,23,35,30,27);
+		    		$tablaHTML[0]['medidas']=array(15,13,55,20,23,55,55,35);
 		            $tablaHTML[0]['alineado']=array('L','L','L','L','L','L','L','L');
 		            $tablaHTML[0]['datos']=array('FECHA','HORA','ENTIDAD','IP ACCESO','MODULO','TAREA REALIZADA','EMPRESA','USAURIO');
 		            $tablaHTML[0]['borde'] =$borde;
@@ -166,13 +166,13 @@ class auditoriaC
 			$pos+=1;
 		}
 	   
-		$this->pdf->cabecera_reporte_MC($titulo,$tablaHTML,$contenido=false,$image=false,$Fechaini,$Fechafin,$sizetable,$mostrar,25,'P');
+		$this->pdf->cabecera_reporte_MC($titulo,$tablaHTML,$contenido=false,$image=false,$Fechaini,$Fechafin,$sizetable,$mostrar,25,'H');
   }
 
   function imprimir_excel($parametros)
   {
-		$empresa = explode('_', $parametros['ddl_empresa']);
-		$parametros['ddl_empresa'] = $empresa[0];
+		$empresa = explode('_', $parametros['ddl_entidad']);
+		$parametros['ddl_entidad'] = $empresa[0];
   	$datos = $this->modelo->tabla_registros($parametros['ddl_entidad'],$parametros['ddl_empresa'],$parametros['ddl_usuario'],$parametros['ddl_modulos'],$parametros['txt_desde'],$parametros['txt_hasta'],$parametros['ddl_num_reg']);
   	$reg = array();
   	foreach ($datos as $key => $value) {
