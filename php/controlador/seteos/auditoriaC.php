@@ -125,6 +125,10 @@ class auditoriaC
     	// print_r($parametros);die();
   	    $desde = str_replace('-','',$parametros['txt_desde']);
 		$hasta = str_replace('-','',$parametros['txt_hasta']);
+		$empresa = explode('_', $parametros['ddl_entidad']);
+		$parametros['ddl_entidad'] = $empresa[0];
+
+		// print_r($parametros);die();
 
 		// $datos = $this->modelo->pedido_paciente_distintos(false,$parametros['rbl_buscar'],$parametros['txt_query'],$parametros['txt_desde'],$parametros['txt_hasta'],$parametros['txt_tipo_filtro']);
 
@@ -167,6 +171,8 @@ class auditoriaC
 
   function imprimir_excel($parametros)
   {
+		$empresa = explode('_', $parametros['ddl_empresa']);
+		$parametros['ddl_empresa'] = $empresa[0];
   	$datos = $this->modelo->tabla_registros($parametros['ddl_entidad'],$parametros['ddl_empresa'],$parametros['ddl_usuario'],$parametros['ddl_modulos'],$parametros['txt_desde'],$parametros['txt_hasta'],$parametros['ddl_num_reg']);
   	$reg = array();
   	foreach ($datos as $key => $value) {
