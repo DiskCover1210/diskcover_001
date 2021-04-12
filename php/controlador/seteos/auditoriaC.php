@@ -41,6 +41,11 @@ if(isset($_GET['imprimir_pdf']))
 	$parametros= $_GET;
      $controlador->imprimir_pdf($parametros);
 }
+if(isset($_GET['imprimir_excel']))
+{   
+	$parametros= $_GET;
+	$controlador->imprimir_excel($parametros);	
+}
 
 class auditoriaC
 {
@@ -82,7 +87,7 @@ class auditoriaC
 	function reporte_auditoria($parametros)
 	{
 		// print_r($parametros);die();
-		$datos = $this->modelo->tabla_registros($parametros['ent'],$parametros['emp'],$parametros['usu'],$parametros['mod'],$parametros['des'],$parametros['has']);
+		$datos = $this->modelo->tabla_registros($parametros['ent'],$parametros['emp'],$parametros['usu'],$parametros['mod'],$parametros['des'],$parametros['has'],$parametros['numReg']);
 		$tr='';
 		if(count($datos)>0)
 		{
@@ -137,12 +142,12 @@ class auditoriaC
 		$borde = 1;
 		// print_r($datos);die();
 		$pos=1;
-		    		$tablaHTML[0]['medidas']=array(18,10,30,20,20,20,30,30);
+		    		$tablaHTML[0]['medidas']=array(15,13,30,20,23,35,30,27);
 		            $tablaHTML[0]['alineado']=array('L','L','L','L','L','L','L','L');
 		            $tablaHTML[0]['datos']=array('FECHA','HORA','ENTIDAD','IP ACCESO','MODULO','TAREA REALIZADA','EMPRESA','USAURIO');
 		            $tablaHTML[0]['borde'] =$borde;
 
-		$datos = $this->modelo->tabla_registros($parametros['ddl_entidad'],$parametros['ddl_empresa'],$parametros['ddl_usuario'],$parametros['ddl_modulos'],$parametros['txt_desde'],$parametros['txt_hasta']);
+		$datos = $this->modelo->tabla_registros($parametros['ddl_entidad'],$parametros['ddl_empresa'],$parametros['ddl_usuario'],$parametros['ddl_modulos'],$parametros['txt_desde'],$parametros['txt_hasta'],$parametros['ddl_num_reg']);
 		
 		foreach ($datos as $key => $value) {
 			 $ent = $this->modelo->entidades(false,$value['RUC']);
@@ -151,16 +156,27 @@ class auditoriaC
 
 		    $tablaHTML[$pos]['medidas']=$tablaHTML[0]['medidas'];
 		    $tablaHTML[$pos]['alineado']=$tablaHTML[0]['alineado'];
-		    $tablaHTML[$pos]['datos']=array($value['Fecha'],$value['Hora'],$value['enti'],$value['IP_Acceso'],$value['Aplicacion'],$value['Tarea'],$empresas[0]['text'],$value['nom']);
+		    $tablaHTML[$pos]['datos']=array($value['Fecha'],$value['Hora'],utf8_decode($value['enti']),$value['IP_Acceso'],$value['Aplicacion'],utf8_decode($value['Tarea']),utf8_decode($empresas[0]['text']),utf8_decode($value['nom']));
 		    $tablaHTML[$pos]['borde'] =$borde;
 
 			$pos+=1;
 		}
 	   
 		$this->pdf->cabecera_reporte_MC($titulo,$tablaHTML,$contenido=false,$image=false,$Fechaini,$Fechafin,$sizetable,$mostrar,25,'P');
-		
-		
-
   }
+
+  function imprimir_excel($parametros)
+  {
+  	$datos = $this->modelo->tabla_registros($parametros['ddl_entidad'],$parametros['ddl_empresa'],$parametros['ddl_usuario'],$parametros['ddl_modulos'],$parametros['txt_desde'],$parametros['txt_hasta'],$parametros['ddl_num_reg']);
+  	$reg = array();
+  	foreach ($datos as $key => $value) {
+			 $ent = $this->modelo->entidades(false,$value['RUC']);
+			 $ent = explode('_', $ent[0]['id']);
+			 $empresas = $this->modelo->empresas($ent[1],false,$value['Item']);
+  		$reg[] = array('Fecha'=>$value['Fecha'],'Hora'=>$value['Hora'],'Entidad'=>$value['enti'],'IP_Acceso'=>$value['IP_Acceso'],'Aplicacion'=>$value['Aplicacion'],'Tarea'=>$value['Tarea'],'Empresa'=>$empresas[0]['text'],'Usuario'=>$value['nom']); 
+  	}
+	 $this->modelo->imprimir_excel($reg);
+  }
+
 }
 ?>

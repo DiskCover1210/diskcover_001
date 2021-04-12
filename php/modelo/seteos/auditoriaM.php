@@ -93,7 +93,7 @@ class auditoriaM
 	      return $datos;
 	}
 
-	function tabla_registros($entidad = false,$empresa=false,$CodigoU=false,$aplicacion=false,$desde=false,$hasta=false)
+	function tabla_registros($entidad = false,$empresa=false,$CodigoU=false,$aplicacion=false,$desde=false,$hasta=false,$numReg = 50)
 	{
 		$cid = Conectar::conexion('MYSQL');
 		$sql = "SELECT IP_Acceso,Nombre_Usuario as 'nom',RUC,A.Fecha,Hora,Aplicacion,Tarea,Item,Nombre_Entidad as 'enti' 
@@ -128,7 +128,10 @@ class auditoriaM
 			$sql.=" '".$desde."'";
 		}
 
-		$sql.=' LIMIT 0, 50 ';
+		if($numReg!='T')
+		{
+		  $sql.=' LIMIT 0, '.$numReg.' ';
+		}
 
 		 // print_r($sql);die();
 		 $datos=array();
@@ -141,6 +144,11 @@ class auditoriaM
 			}
 		 }
 	    return $datos;
+	}
+
+	function imprimir_excel($stmt1)
+	{		
+	     exportar_excel_auditoria($stmt1,'Auditoria',null,1);
 	}
 
 

@@ -2602,6 +2602,10 @@ function exportar_excel_descargos($stmt,$ti=null,$camne=null,$b=null,$base=null)
 {
 	excel_file_descargos($stmt,$ti,$camne,$b,$base); 
 }
+function exportar_excel_auditoria($stmt,$ti=null,$camne=null,$b=null,$base=null)
+{
+  excel_file_auditoria($stmt,$ti,$camne,$b,$base); 
+}
 function exportar_excel_comp($stmt,$ti=null,$camne=null,$b=null,$base=null)
 {
   excel_file_comp($stmt,$ti,$camne,$b,$base); 

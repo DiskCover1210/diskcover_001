@@ -127,6 +127,7 @@
       'emp':$('#ddl_empresa').val(),  // numero de registeros que se van a visualizar
       'mod':$('#ddl_modulos').val(),
       'usu':$('#ddl_usuario').val(),
+      'numReg':$('#ddl_num_reg').val(),
     }
      $.ajax({
        data:  {parametros:parametros},
@@ -146,6 +147,22 @@
 function reporte_pdf()
 {
    var url = '../controlador/seteos/auditoriaC.php?imprimir_pdf=true&';
+   var datos =  $("#filtros").serialize();
+    window.open(url+datos, '_blank');
+     $.ajax({
+         data:  {datos:datos},
+         url:   url,
+         type:  'post',
+         dataType: 'json',
+         success:  function (response) {  
+          
+          } 
+       });
+
+}
+function reporte_excel()
+{
+   var url = '../controlador/seteos/auditoriaC.php?imprimir_excel=true&';
    var datos =  $("#filtros").serialize();
     window.open(url+datos, '_blank');
      $.ajax({
@@ -235,6 +252,16 @@ function reporte_pdf()
                     </span>
               </div>
 		</div>		
+	</div>
+	<div class="row">
+		<div class="col-sm-12 text-right">
+			<select id="ddl_num_reg" name="ddl_num_reg">
+				<option value="50">1 a 50</option>
+				<option value="100">1 a 100</option>
+				<option value="200">1 a 200</option>
+				<option value="T">Todos</option>
+			</select>
+		</div>
 	</div>
 </form>
 	<div class="row"><br>
