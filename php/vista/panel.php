@@ -1127,7 +1127,7 @@ if(isset($_GET['mos']))
 		?>
 <!-- Site wrapper -->
 <script type="text/javascript"></script>
-<section class="content-wrapper">
+<section class="content-wrapper" id="seccion" style="min-height: auto;">
   <div class="box box-default">
    <div class="box-body"> 
    	<br>
