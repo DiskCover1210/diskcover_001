@@ -53,7 +53,7 @@ if(isset($_SESSION['INGRESO']['IP_VPN_RUTA']))
 						}
 					}else
 					{
-						echo "<div class='box-body'><img src='../../img/modulo_contable.gif' width='100%'></div>";
+						echo "<div class='box-body'><img src='../../img/modulo_seteo.png' width='100%'></div>";
 					}
 					
 				?>	
