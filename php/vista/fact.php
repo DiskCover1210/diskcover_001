@@ -69,6 +69,12 @@ $tc=$encriptar('FA');
 				   <div class="table-responsive" id="tabla_" style="overflow-y: scroll; overflow-x: scroll; height:450px; width: auto;">
 						 <!--  /.box-header -->
 						<?php
+
+						//reporte facturacion
+						if ($_SESSION['INGRESO']['accion']=='fact') 
+						{
+							require_once("fact_m.php");
+						}
 						//verificamos sesion sql
 						if(isset($_SESSION['INGRESO']['IP_VPN_RUTA'])) 
 						{

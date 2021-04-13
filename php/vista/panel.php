@@ -28,6 +28,7 @@ require_once("../funciones/funciones.php");
 // if (isset($_GET['mos'])) {
 // 	print_r('expressiossn');die();
 // }
+
 if(isset($_GET['mos']))
 {
 	// print_r($_SESSION);die();
@@ -1140,11 +1141,6 @@ if(isset($_GET['mos']))
 				if ($_SESSION['INGRESO']['accion']=='rde') 
 				{
 					require_once("rde_m.php");
-				}
-				//reporte facturacion
-				if ($_SESSION['INGRESO']['accion']=='fact') 
-				{
-					require_once("fact_m.php");
 				}
 					
 			}	
