@@ -89,6 +89,45 @@ if(isset($_GET['mos3']))
            });
       });
 </script>
+<script type="text/javascript">
+        $('body').on("keydown", function(e) { 
+            if (e.ctrlKey && e.which === 117) {
+              window.location.href = "contabilidad.php?mod=contabilidad&amp;acc=ctaOperaciones&amp;acc1=Ingresar Comprobantes&amp;b=1";
+              e.preventDefault();
+            }
+            if (e.ctrlKey && e.which === 68) {
+              window.location.href = "contabilidad.php?mod=contabilidad&amp;acc=diario_general&amp;acc1=diario general&amp;b=1";
+              e.preventDefault();
+            }
+            if (e.ctrlKey && e.which === 70) {
+              window.location.href = "contabilidad.php?mod=contabilidad&amp;acc=libro_banco&amp;acc1=Libro Banco&amp;b=1";
+              e.preventDefault();
+            }
+            if (e.ctrlKey && e.which === 77) {
+              window.location.href = "contabilidad.php?mod=contabilidad&amp;acc=mayor_auxiliar&amp;acc1=Mayor auxiliar&amp;b=1";
+              e.preventDefault();
+            }
+            if (e.ctrlKey && e.which === 76) {
+              window.location.href = "contabilidad.php?mod=contabilidad&amp;acc=compro&amp;acc1=Comprobantes Procesados&amp;b=1";
+              e.preventDefault();
+            }
+            if (e.ctrlKey && e.which === 84) {
+              window.location.href = "contabilidad.php?mod=contabilidad&amp;acc=macom&amp;acc1=Mayorización&amp;b=1";
+              e.preventDefault();
+            }
+            if (e.ctrlKey && e.which === 71) {
+              window.location.href = "contabilidad.php?mod=contabilidad&amp;acc=bacsg&amp;acc1=Balance de Comprobacion/Situación/General&a";
+              e.preventDefault();
+            }
+            if (e.ctrlKey && e.which === 123) {
+              window.location.href = "contabilidad.php?mod=contabilidad&amp;acc=anexos_trans&amp;acc1=Generar Anexos transaccioneales&amp";
+              e.preventDefault();
+            }
+        });
+        $("#button").on("click", function(e) { 
+            alert("You clicked button");
+        }); 
+    </script>
 <style type="text/css">
   .color
   {
