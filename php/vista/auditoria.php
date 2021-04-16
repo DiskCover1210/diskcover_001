@@ -53,7 +53,7 @@ $_SESSION['INGRESO']['modulo_']='06';
 						}
 					}else
 					{
-						echo "<div class='box-body'><img src='../../img/modulo_seteo.png' width='100%'></div>";
+						echo "<div class='box-body'><img src='../../img/modulo_auditoria.png' width='100%'></div>";
 					}
 					
 				?>	
