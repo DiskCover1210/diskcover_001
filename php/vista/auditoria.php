@@ -11,36 +11,22 @@ require_once("panel.php");
 require_once("chequear_seguridad_e.php");
 require_once("../controlador/contabilidad_controller.php");
 //require_once("../funciones/numeros_en_letras.php");
-$_SESSION['INGRESO']['modulo_']='26';
+$_SESSION['INGRESO']['modulo_']='06';
 //verificamos sesion sql
-if(isset($_SESSION['INGRESO']['IP_VPN_RUTA']) && $_SESSION['INGRESO']['Tipo_Base'] =='SQL SERVER') 
-{
-	$database=$_SESSION['INGRESO']['Base_Datos'];
-	$server=$_SESSION['INGRESO']['IP_VPN_RUTA'];
-	$user=$_SESSION['INGRESO']['Usuario_DB'];
-	$password=$_SESSION['INGRESO']['Contraseña_DB'];
-	$usuario=getUsuario();
-	$_SESSION['INGRESO']['CodigoU']=$usuario[0]['CodigoU'];
-	$_SESSION['INGRESO']['Nombre_Completo']=$usuario[0]['Nombre_Completo'];
-	//verificamos en acceso si puede ingresar a esa empresa
-	$_SESSION['INGRESO']['accesoe']='0';
-	$_SESSION['INGRESO']['modulo'][0]='0';
-	$permiso=getAccesoEmpresas();
-}else
-{
-	echo "<script>
-				Swal.fire({
-				  type: 'error',
-				  title: 'Asegurese de tener credeciales de SQLSERVER',
-				  text: '',
-				  allowOutsideClick:false,
-				}).then((result) => {
-				  if (result.value) {
-					location.href='panel.php#';
-				  } 
-				});
-			</script>";
-}
+// if(isset($_SESSION['INGRESO']['IP_VPN_RUTA'])) 
+// {
+// 	$database=$_SESSION['INGRESO']['Base_Datos'];
+// 	$server=$_SESSION['INGRESO']['IP_VPN_RUTA'];
+// 	$user=$_SESSION['INGRESO']['Usuario_DB'];
+// 	$password=$_SESSION['INGRESO']['Contraseña_DB'];
+// 	$usuario=getUsuario();
+// 	$_SESSION['INGRESO']['CodigoU']=$usuario[0]['CodigoU'];
+// 	$_SESSION['INGRESO']['Nombre_Completo']=$usuario[0]['Nombre_Completo'];
+// 	//verificamos en acceso si puede ingresar a esa empresa
+// 	$_SESSION['INGRESO']['accesoe']='0';
+// 	$_SESSION['INGRESO']['modulo'][0]='0';
+// 	$permiso=getAccesoEmpresas();
+// }
 	//echo ' jjj '.$_SESSION['autentificado'];
 	//die();
 	//cuerpo
@@ -63,7 +49,7 @@ if(isset($_SESSION['INGRESO']['IP_VPN_RUTA']) && $_SESSION['INGRESO']['Tipo_Base
 						//cambio de clave
 						if ($_SESSION['INGRESO']['accion']=='auditoria') 
 						{
-							require_once("seteos/auditoria.php");
+							require_once("auditoria/auditoria.php");
 						}
 					}else
 					{

@@ -352,19 +352,15 @@ class usuario_model{
 		if($items!="")
 		{
 		$sql = "SELECT * 
-				FROM `lista_empresas` 
-				WHERE IP_VPN_RUTA<>'.' 
-				AND Base_Datos<>'.' 
-				AND Usuario_DB<>'.' 
-				AND Contrasena_DB<>'.' 
-				AND Tipo_Base<>'.' 
-				AND Puerto<>'0'									 
-				AND `ID_Empresa`='".$id_entidad."' AND Item in (".$items.");";
+				FROM `lista_empresas`  where							 
+				 `ID_Empresa`='".$id_entidad."' AND Item in (".$items.");";
 				// print_r($sql);die();
 		 $consulta=$this->db->query($sql);		
 		   while($filas=$consulta->fetch_assoc()){
             $empresa[]=$filas;
             }
+
+		// print_r($sql);die();
 	  }
 	  // print_r($empresa);die();
         return $empresa;
@@ -387,6 +383,8 @@ class usuario_model{
 		//							WHERE `ID`=".$id_empresa.";";
 		//$filas=$consulta->fetch_assoc();
 		//echo $filas['IP_VPN_RUTA'];
+
+		$empresa = array();
 		 if ($consulta) {
 
 			/* Obtener la información del campo para todas las columnas */
@@ -400,7 +398,6 @@ class usuario_model{
 				$i++;
 			}
 		}
-		// $empresa = array();
         while($filas=$consulta->fetch_assoc()){
             $empresa[]=$filas;
 
@@ -412,6 +409,43 @@ class usuario_model{
         // print_r($empresa);die();
         return $empresa;
 	}
+
+	function getEmpresasId_sin_sqlserver($id_empresa){
+		    $sql = "SELECT * FROM `lista_empresas` WHERE  `ID`=".$id_empresa.";";
+									 // print_r($sql);die();
+			$consulta=$this->db->query($sql);
+		
+		//echo "SELECT * FROM `Lista_Empresas` 
+		//							WHERE `ID`=".$id_empresa.";";
+		//$filas=$consulta->fetch_assoc();
+		//echo $filas['IP_VPN_RUTA'];
+
+		$empresa = array();
+		 if ($consulta) {
+
+			/* Obtener la información del campo para todas las columnas */
+			$info_campo = $consulta->fetch_fields();
+			$i=0;
+			foreach ($info_campo as $valor) {
+				if($i==15)
+				{
+					$contra=$valor->name;
+				}
+				$i++;
+			}
+		}
+        while($filas=$consulta->fetch_assoc()){
+            $empresa[]=$filas;
+
+			//$_SESSION['INGRESO']['Contraseña_DB']=$filas[$contra];
+			// print_r($_SESSION['INGRESO']['Contraseña_DB']);die();
+			//echo ' vvv '.$filas['IP_VPN_RUTA'];
+        }
+        // print_r('expression');
+        // print_r($empresa);die();
+        return $empresa;
+	}
+
 	//consultar periodo mysql
 	function getPeriodoActualMYSQL($Opcem=null){
 		$empresa=array();
@@ -640,7 +674,8 @@ class usuario_model{
 				$empresa[$i]['Ambiente']=$obj->Ambiente;
 				$empresa[$i]['LeyendaFA']=$obj->LeyendaFA;	
 				$empresa[$i]['RUC']=$obj->RUC;
-				$empresa[$i]['Gerente']=$obj->Gerente;					
+				$empresa[$i]['Gerente']=$obj->Gerente;	
+				$empresa[$i]['Cotizacion']=$obj->Cotizacion;					
 							
 				//IVA ACTUAL
 				$sql="SELECT ROUND((Porc/100), 2) AS porc FROM Tabla_Por_ICE_IVA WHERE IVA <> '0' 
@@ -760,18 +795,21 @@ class usuario_model{
         return $usuario;
 	}
 	//consultar datos usuarios mysql
-	function getUsuarioMYSQL($item,$nombre)
+	function getUsuarioMYSQL()
 	{
 		$usuario=array();
-		$sql="SELECT    * FROM Accesos
-				WHERE        (Usuario = 'WALTER') AND (Clave = '070216')
-		 ";
+		$sql="SELECT    * FROM acceso_usuarios
+				WHERE        (Usuario = '".$_SESSION['INGRESO']['Mail']."') 
+				AND (Clave = '".$_SESSION['INGRESO']['Clave']."')";
 		//echo $sql;
 		$consulta=$this->db->query($sql);
+		if($consulta)
+		{
 		while($filas=$consulta->fetch_assoc()){
             $usuario[]=$filas;
 			//echo ' vvv '.$filas['IP_VPN_RUTA'];
         }
+      }
         return $usuario;
 	}
 	//verificar acceso usuario
@@ -781,8 +819,6 @@ class usuario_model{
 		$_SESSION['INGRESO']['modulo']=array();
 		$sql="SELECT    * FROM Acceso_Empresa 
 				WHERE  Codigo='".$_SESSION['INGRESO']['CodigoU']."' ";
-		
-		//echo $sql;
 		$stmt = false;
 		if($this->dbs!='')
 		{
@@ -854,15 +890,53 @@ class usuario_model{
 	function getAccesoEmpresasMYSQL()
 	{
 		$usuario=array();
-		$sql="SELECT    * FROM Acceso_Empresa 
-				WHERE  Codigo='".$_SESSION['INGRESO']['CodigoU']."' AND Item='".$_SESSION['INGRESO']['item']."'
+		$sql="SELECT * 
+		FROM acceso_empresas 
+		WHERE CI_NIC='".$_SESSION['INGRESO']['CodigoU']."' AND Item='".$_SESSION['INGRESO']['item']."'
 		 ";
-		//echo $sql;
+		// echo $sql;die();
 		$consulta=$this->db->query($sql);
-		while($filas=$consulta->fetch_assoc()){
-            $usuario[]=$filas;
-			//echo ' vvv '.$filas['IP_VPN_RUTA'];
-        }
+		if($consulta)
+		{
+          $i=0;
+			while($filas=$consulta->fetch_assoc()) 
+			{
+				//echo "entro 1";
+				$usuario[$i]['Modulo']=$filas['Modulo'];	
+				//echo " mmm ".$permiso[$i]['Modulo'].' ind= '.$i.'<br>';
+				$usuario[$i]['Item']=$filas['Item'];					
+				//echo $empresa[$i]['Opc'].' '.$empresa[$i]['Sucursal'];
+				//die(); 			
+				//echo $empresa[$i]['Fecha_Inicial'];
+				$i++;
+			}
+			//no existe
+			if($i==0)
+			{
+				//echo "entro 2";
+				$usuario[$i]['Modulo']='TODOS';
+				$usuario[$i]['Item']='TODOS';
+				$_SESSION['INGRESO']['accesoe']='TODOS';
+				$_SESSION['INGRESO']['modulo'][$i]='TODOS';
+			}
+			else
+			{
+				//hacemos ciclo para buscar si puede acceder a la empresa y que modulos
+				$j=0;
+				for($i=0;$i<count($usuario);$i++)
+				{
+					if($usuario[$i]['Item']==$_SESSION['INGRESO']['item'])
+					{
+						//echo $permiso[$i]['Item']." ".$_SESSION['INGRESO']['item']."<br>";
+						$_SESSION['INGRESO']['accesoe']='1';
+						$_SESSION['INGRESO']['modulo'][$j]=$usuario[$i]['Modulo'];
+						//echo ' per '.$permiso[$i]['Modulo'].' '.$_SESSION['INGRESO']['modulo'][$j].' ind= '.$i.'<br>';
+						$j++;
+					}
+				}
+			}
+        } 
+
         return $usuario;
 	}
 	//consultar modulo
@@ -941,6 +1015,7 @@ class usuario_model{
 		$sql="SELECT A.Modulo as 'modulo',M.Aplicacion as 'apli',M.link as 'link',M.icono as 'icono' FROM acceso_empresas A LEFT JOIN modulos M on A.Modulo = M.modulo WHERE CI_NIC='".$_SESSION['INGRESO']['Id']."' AND Item='".$_SESSION['INGRESO']['item']."' AND ID_Empresa='".$_SESSION['INGRESO']['IDEntidad']."' ";
 		// echo $sql;
 		$consulta=$this->db->query($sql);
+		// echo $consulta;
 		while($filas=$consulta->fetch_assoc()){
             $usuario[]=$filas;
 			//echo ' vvv '.$filas['IP_VPN_RUTA'];

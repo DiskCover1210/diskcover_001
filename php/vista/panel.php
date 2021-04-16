@@ -51,14 +51,24 @@ if(isset($_GET['mos']))
 			//die();
 			//$('#selector').css('cursor', 'wait');
 			$empresa=getEmpresasId($cod[0]);
-			// print_r($empresa); die();
+			if(empty($empresa))
+			{
+				$emp = empresa_sin_creenciales_sqlserver($cod[0]);
+				crear_variables_session($emp);
+				$usuario=getUsuario();
+				
+			   $_SESSION['INGRESO']['CodigoU']=$usuario[0]['CI_NIC'];
+			   $_SESSION['INGRESO']['Nombre_Completo']=$usuario[0]['Nombre_Usuario'];
+			   $_SESSION['INGRESO']['accesoe'] = getAccesoEmpresas();
+			}
+
 			foreach ($empresa as &$valor) 
 			{
 				// print_r($valor['Fecha']);die();
 				$_SESSION['INGRESO']['IP_VPN_RUTA']=$valor['IP_VPN_RUTA'];
 				$_SESSION['INGRESO']['Base_Datos']=$valor['Base_Datos'];
 				$_SESSION['INGRESO']['Usuario_DB']=$valor['Usuario_DB'];
-				$_SESSION['INGRESO']['Contraseña_DB']=$valor['Contrasena_DB'];
+				$_SESSION['INGRESO']['Contraseña_DB']=$valor['Contrasena_DB'];				
 				$_SESSION['INGRESO']['Tipo_Base']=$valor['Tipo_Base'];
 				$_SESSION['INGRESO']['Puerto']=$valor['Puerto'];
 				$_SESSION['INGRESO']['Fecha']=$valor['Fecha'];
@@ -68,7 +78,7 @@ if(isset($_GET['mos']))
 				$_SESSION['INGRESO']['Fecha_ce']=$valor['Fecha_CE'];
 				//echo $_SESSION['INGRESO']['IP_VPN_RUTA'];
 				//obtenemos el resto de inf. de la empresa tales como correo direccion
-
+				
 				$empresa_d=getEmpresasDE($_SESSION['INGRESO']['item'],$_SESSION['INGRESO']['noempr']);
 				// print_r($empresa_d);die();
 				$_SESSION['INGRESO']['Direccion']=$empresa_d[0]['Direccion'];
@@ -106,8 +116,10 @@ if(isset($_GET['mos']))
 				$_SESSION['INGRESO']['Ambiente'] = $empresa_d[0]['Ambiente'];
 				$_SESSION['INGRESO']['Dec_PVP'] = $empresa_d[0]['Dec_PVP'];
 				$_SESSION['INGRESO']['Dec_Costo'] = $empresa_d[0]['Dec_Costo'];
+				$_SESSION['INGRESO']['Cotizacion'] = $empresa_d[0]['Cotizacion'];
 				// print_r($empresa_d);die();
 				$_SESSION['INGRESO']['Ciudad'] = $empresa_d[0]['Ciudad'];
+			   
 				$_SESSION['INGRESO']['modulo']=modulos_habiliatados();
 				// print_r($_SESSION['INGRESO']);die();	
 
@@ -148,6 +160,8 @@ if(isset($_GET['mos']))
 				
 				
 			}
+
+			// print_r($_SESSION);die();
 			//die();
 		}
 		?>
@@ -1081,6 +1095,8 @@ if(isset($_GET['mos']))
 			{
 			
 				  require_once("header.php");
+
+
 				
 			}
 			
@@ -1176,6 +1192,7 @@ if(isset($_GET['mos']))
 					
 				   }else
 					{
+						// print_r($_SESSION);die();
 						if(!isset($_SESSION['INGRESO']['modulo_']) || $_SESSION['INGRESO']['modulo_']==""){
 				         echo $l ='<div class="row">'.contruir_modulos($_SESSION['INGRESO']['modulo']).'</div>';
 				       }
