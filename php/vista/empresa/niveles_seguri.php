@@ -581,8 +581,8 @@ function usar_busqueda()
  <div class="row">
 	<div class="col-sm-4">
    	<b>Entidad</b> <br>
-      <div class="input-group">
-         <select class="form-control" id="ddl_entidad" onchange="cargar_empresas();"><option value="">Seleccione entidad</option></select>
+      <div class="input-group" style="display: flex; width: 90%;">
+         <select class="form-control" id="ddl_entidad" onchange="cargar_empresas();" style="display: none;"><option value="">Seleccione entidad</option></select>
        <div class="input-group-btn">
           <button type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#myModal_ruc"><span class="fa fa-search"></span> RUC</button>
        </div>

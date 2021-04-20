@@ -54,7 +54,8 @@ $(document).ready(function() {
             	validar_estudiante(nuevo,nuevo,false);
 
             	$("#home_1").load(" #home_1");
-            }else
+            }
+            else
             {
             	Swal.fire({
 				 type: 'error',
@@ -350,7 +351,7 @@ function lista_cursos()
 				 type: 'info',
 				 title: 'Cliente paso A FACTURAR',
 				 //text: 'the quantity entered is outside the order range!'
-          });
+                 });
 				validar_estudiante(banco,pass,false);
 			}else
 			{
@@ -407,6 +408,7 @@ function lista_cursos()
 			{
 				existente_clave(usu,pass);
 			}
+			$('#myModal_espera').modal('hide');
 		}
 	  });
 	
@@ -439,13 +441,15 @@ function lista_cursos()
 		  dataType:'json',
 		  data:{usu:usu,pass:pass,nuevo:nuevo}, 
 		  beforeSend: function () {
+
+		  	  $('#modal_espera').modal('hide');
 		  	  $('#myModal_espera').modal('show');
 		  	       provincias();
                   limpiar();
              },
 		  success: function(response){		  	
 
-			if(response!='')
+			if(response!='' && response !='-2')
 			{
 			//$('#contenido_tab').css('display','block');
 
@@ -565,9 +569,15 @@ function lista_cursos()
 		    //$('#modal_espera').modal('hide');
 		    $('#myModal_espera').modal('hide');
 		       console.log(response);
+            }else if(response == '-2')
+            {
+		        $('#myModal_espera').modal('hide');
+            	$('#nueva_matricula').modal('show');
+            	// alert('el usuario no tiene registrado un matricula');
             }else
             {
             	abrir_modal();
+		        $('#myModal_espera').modal('hide');
 		     //  $('#modal_espera').modal('hide');
             }
 		  
@@ -708,7 +718,16 @@ function lista_cursos()
 		       $('#modal_espera').modal('hide');
 		       $('#select_cursos').val('');
 		  		validar_estudiante(nuevo,nuevo,true);
-		  	}
+		  	}else if(response=='ci')
+            {
+            	Swal.fire({
+				 type: 'error',
+				 title: 'Cedula ingresada incorrecta',
+				 text: 'Asegurese que su numero sea correcto!'
+             });
+            	$('#modal_espera').modal('hide');
+
+            }
 			
 			console.log(response);
 		}
@@ -1351,6 +1370,27 @@ function lista_cursos()
 		}	
 	}
 
+
+	function registro_matricula()
+	{
+		var usuario = $('#txt_cod_banco').val();
+		 $.ajax({
+		  url: '../controlador/detalle_estudianteC.php?nueva_matricula=true',
+		  type:'post',
+		  dataType:'json',
+		  data:{usuario:usuario},
+		  success: function(response){
+		  if(response=='' || response == null)
+		  {
+		  	$('#nueva_matricula').modal('hide');
+		  	login_data();
+		  }	  	
+			
+		}
+	  });
+
+	}
+
 </script>
 
 <!--<h2>Balance de Comprobacion/Situación/General</h2>-->
@@ -1369,7 +1409,7 @@ function lista_cursos()
         </div>
         <div class="col-sm-2">
         	<br>
-        	<button onclick="login_data();" class=" btn btn-primary btn-sm"><span class="glyphicon glyphicon-search" aria-hidden="true"></span> Buscar</button>
+        	<button onclick="login_data();" class=" btn btn-primary btn-sm" type="button"><span class="glyphicon glyphicon-search" aria-hidden="true"></span> Buscar</button>
         </div>
     	
     </div>
@@ -1513,7 +1553,7 @@ function lista_cursos()
       	<div class="col-sm-12">
       		<div class="col-sm-12">
       			<b>OBSERVACIONES</b>
-      		    <textarea class="form-control input-sm" id="observaciones" onblur="pasar_tab('menu2')" disabled="">
+      		    <textarea class="form-control input-sm" id="observaciones" onblur="pasar_tab('menu2')">
       		    	
       		    </textarea>     			
       		</div>
@@ -1770,6 +1810,28 @@ function lista_cursos()
     </div>
   </div>
 </div>
+<div class="modal fade" id="nueva_matricula" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel"> El estudiante no tiene una matricula anterior</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">       
+        Desea Crear una nueva matricula?
+        <div class="spinner-border"></div>
+
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-success" onclick="registro_matricula()">Crear matricula</button>
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 
 
 

@@ -118,7 +118,7 @@ C.Telefono_R,Telefono_RS,Lugar_Trabajo_R,Email_R,Email_R,Matricula_No,Folio_No,C
 	   }
 		// AND PASS='".$pass."'";
 
-		//print_r($sql);
+		// print_r($sql);
 		$stmt = sqlsrv_query($cid, $sql);
 	    if( $stmt === false)  
 	      {  

@@ -128,6 +128,12 @@ if(isset($_GET['ver_fac']))
 {
   $controlador->ver_fac_pdf($_GET['codigo'],$_GET['ser'],$_GET['ci']);
 }
+if(isset($_GET['nueva_matricula']))
+{
+  $parametros = $_POST['usuario'];
+  //print_r($parametros);
+  echo json_encode($controlador->nueva_matricula($parametros));
+}
 class detalle_estudianteC
 {
 	private $modelo;
@@ -152,11 +158,17 @@ class detalle_estudianteC
 	function validar_estudiante($usu,$pass,$nuevo)
 	{
 
-  	    $this->est_d = $this->modelo->login($usu,$pass,$nuevo);
+  	$this->est_d = $this->modelo->login($usu,$pass,$nuevo);
 		$datos = $this->modelo->login($usu,$pass,$nuevo);
+    if(!empty($datos)){
 	    // print_r($datos);
-		$datos1= array_map(array($this, 'encode'), $datos);
-		return $datos1;
+      $datos1= array_map(array($this, 'encode'), $datos);
+    return $datos1;
+    }else
+    {
+      return -2;
+    }
+		
 		//print_r($datos1);
 
 	}
@@ -357,8 +369,11 @@ class detalle_estudianteC
 
   function nuevo_estudiante($parametros){
   //	echo digito_verificadorf($parametros,1).'<br>';
-     $datos =  digito_verificadorf($parametros['codigo'],null,null,null,null,'si');
-
+     $datos =  digito_verificadorf($parametros['codigo'],'',null,null,null,'si');
+// print_r('expression');
+     // print_r($datos);die();
+     if($datos['codigo']!=2)
+     {
     // print_r($datos);
   	 $dato[0]['campo']='Codigo';
      $dato[0]['dato']=$datos['codigo'];
@@ -403,6 +418,11 @@ class detalle_estudianteC
           return 'fail2';
         }
    }
+ }else
+ {
+  ob_end_clean();
+   return 'ci';
+ }
 
   }
 
@@ -890,6 +910,16 @@ if (!file_exists('../../img/img_estudiantes/'.$datos[0]['Archivo_Foto']))
   function ver_fac_pdf($cod,$ser,$ci)
   {
     $this->modelo->pdf_factura($cod,$ser,$ci);
+  }
+
+  function nueva_matricula($usuario)
+  {
+     $datos[0]['campo']='Codigo';
+     $datos[0]['dato']=$usuario;
+     $datos[1]['campo']='T';
+     $datos[1]['dato']='N';
+     return  insert_generico("Clientes_Matriculas",$datos);
+
   }
 
 

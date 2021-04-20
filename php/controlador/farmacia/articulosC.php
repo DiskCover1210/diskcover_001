@@ -12,6 +12,12 @@ if(isset($_GET['productos']))
 	$parametros= $_POST['parametros'];	
 	echo json_encode($controlador->cargar_productos($parametros));
 }
+if(isset($_GET['search']))
+{
+	$query = $_POST['search'];
+	echo json_encode($controlador->autocompletar($query));
+
+}
 if(isset($_GET['familias']))
 {
 	$query = '';
@@ -406,6 +412,7 @@ class articulosC
 	}
 	function Ingresar_proveedor($parametros)
 	{
+		
 		$datos[0]['campo'] = 'FA';
 		$datos[0]['dato'] = '1';
 		$datos[1]['campo'] = 'T';
@@ -427,7 +434,7 @@ class articulosC
 
 
 		$datos1[0]['campo'] = 'Codigo';
-		$datos1[0]['dato'] = $datos[2]['dato'];
+		$datos1[0]['dato'] = $parametros['txt_ruc'];
 		$datos1[1]['campo'] = 'Cta';
 		$datos1[1]['dato'] = $this->modelo->buscar_cta_proveedor();
 		$datos1[2]['campo'] = 'Item';
@@ -437,7 +444,12 @@ class articulosC
 		$datos1[3]['campo'] = 'TC';
 		$datos1[3]['dato'] = 'P';
 
+
+		
+		if($parametros['txt_id_prove']=='')
+		{
 		 $cli = $this->modelo->guardar('Clientes',$datos);
+		}else{$cli='';}
 		$cta = $this->modelo->guardar('Catalogo_CxCxP',$datos1);
 
 		if($cli=='' && $cta =='')
@@ -949,5 +961,17 @@ function eliminar_factura($parametros)
      }
 
   }
+
+  function autocompletar($query)
+	{
+
+		$datos = $this->modelo->clientes_all($query);
+		// print_r($datos);die();
+		$result = array();
+		foreach ($datos as $key => $value) {
+			 $result[] = array("value"=>$value['ID'],"label"=>$value['Cliente'],'dir'=>$value['Direccion'],'tel'=>$value['Telefono'],'email'=>$value['Email'],'CI'=>$value['CI_RUC']);
+		}
+		return $result;
+	}
 
 }

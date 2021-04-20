@@ -1567,7 +1567,8 @@ function digito_verificadorf($ruc,$solovar=null,$pag=null,$idMen=null,$item=null
 				{
 					if($solovar!=1)
 					{
-						echo "<script> alert('ya existe este RUC/CI: ".$ruc." '); </script>";
+						///
+            echo "<script> alert('ya existe este RUC/CI: ".$ruc." '); </script>";
 					}
 					
 					$Codigo_RUC_CI++;

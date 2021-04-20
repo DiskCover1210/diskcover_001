@@ -483,6 +483,8 @@ class kardex_ingC
   {
     // print_r($parametros);die();
     $datos = $this->modelo->ListarProveedorUsuario($parametros['cta'],$parametros['contra'],$parametros['DCBenef']);
+
+    // print_r($datos);die();
     if(count($datos)>0)
     {
     if($datos[0]['tipodoc']=='R')
@@ -588,6 +590,8 @@ class kardex_ingC
     $datos[42]['campo']= "T_No";
     $datos[43]['campo']= "CodigoU";
     $datos[44]['campo']= "Item";
+    $datos[45]['campo']= "Cta_Servicio";
+    $datos[46]['campo']= "Cta_Bienes";
 
 
      if($parametros['TipoComprobante']=='5' || $parametros['TipoComprobante']==4)
@@ -642,17 +646,235 @@ class kardex_ingC
     $datos[43]['dato']= $_SESSION['INGRESO']['CodigoU'];
     $datos[44]['dato']= $_SESSION['INGRESO']['item'];
 
-    // print_r($datos);die();
+    $datos[45]['dato']= $parametros["Servicio"];
+    $datos[46]['dato']= $parametros["Bienes"];
 
+    // print_r($datos);die();
 
     if(insert_generico("Asiento_Compras",$datos)==null)
     {
+      $this->proceso_asientos($parametros);
      // if($this->grabar_asiento_compras($parametros)==1)
             // {
              return 1;
             // }
 
     }
+  }
+
+
+  function proceso_asientos($parametros)
+  {
+    $Trans_No = 1; //cambiar por variable modulo_
+    $OpcTM = 1;
+    $OpcDH = 1;
+    $NoCheque = G_NINGUNO;
+    $Total_RetIVA = 0;
+    $fecha = $parametros['FechaEmision'];
+    if(Leer_Campo_Empresa('Registrar_IVA')!=0)
+    {
+       $Cta =buscar_cta_iva_inventario();
+       $DetalleComp = "Registro del IVA en compras Doc. No. ".$parametros['Establecimiento'].$parametros['PuntoEmision']."-".$parametros[' Secuencial'].", ".$parametros['NombreCliente'];
+        $datosCTA = LeerCta($Cta); 
+       if($ValorDH > 0)
+        {          
+             $this->ingresar_asientos($DetalleComp,$ValorDH,$datosCTA,$OpcTM,$OpcDH,$A_No,$parametros['opcion_mult'],$fecha);
+        } 
+    }
+    $OpcDH = 2;
+    $compras = $this->modelo->dtaAsiento_compras($Trans_No);
+    if(count($compras)>0)
+    {
+        $A_No = 1;
+      foreach ($compras as $key => $value) {
+        // print_r($value);die();
+         $Cta = $compras[0]["Cta_Servicio"];
+         $DetalleComp = "Retencion del ".$compras[0]["Porc_Servicios"]."%, Factura No. ".$compras[0]["Secuencial"].", de ".$parametros['NombreCliente'];
+          $datosCTA = LeerCta($Cta); 
+         $ValorDH = $compras[0]["ValorRetServicios"];
+         $Total_RetIVA = $Total_RetIVA +$compras[0]["ValorRetServicios"];
+         if ($ValorDH > 0)
+          {
+             $this->ingresar_asientos($DetalleComp,$ValorDH,$datosCTA,$OpcTM,$OpcDH,$A_No,$parametros['opcion_mult'],$fecha);
+            // InsertarAsiento AdoAsientos
+          }
+        // 'Porcentaje por Bienes: 0,70,100
+         $Cta = $compras[0]["Cta_Bienes"];
+         $DetalleComp = "Retencion del ".$compras[0]["Porc_Bienes"]."%, Factura No. ".$compras[0]["Secuencial"].", de ".$parametros['NombreCliente'];
+         $datosCTA = LeerCta($Cta); 
+         $ValorDH = $compras[0]["ValorRetBienes"];
+         $Total_RetIVA = $Total_RetIVA + $compras[0]["ValorRetBienes"];
+         if($ValorDH > 0){
+          // print_r($ValorDH);die();
+            $this->ingresar_asientos($DetalleComp,$ValorDH,$datosCTA,$OpcTM,$OpcDH,$A_No,$parametros['opcion_mult'],$fecha);
+        }
+        $A_No+=1;
+      }
+    }
+
+    $air = $this->modelo->Cargar_DataGrid($Trans_No);
+    $Total_Ret = 0;
+
+    if(count($air)>0)
+    {
+      $Cta = $air[0]["Cta_Retencion"];
+      $DetalleComp = "Retencion (".$air[0]["CodRet"].") No. ".$air[0]["SecRetencion"]." del ".round(($air[0]["Porcentaje"] * 100),1)."%, de ".$parametros['NombreCliente'];      
+       $datosCTA = LeerCta($Cta); 
+      $ValorDH = $air[0]["ValRet"];
+      $Total_Ret = $Total_Ret + $air[0]["ValRet"];
+      if($ValorDH > 0 ){
+        $this->ingresar_asientos($DetalleComp,$ValorDH,$datosCTA,$OpcTM,$OpcDH,$A_No,$parametros['opcion_mult'],$fecha);
+        }  
+
+    }
+  }
+
+
+  function ingresar_asientos($DetalleComp,$ValorDH,$datosCTA,$OpcTM,$OpcDH,$A_No,$Opcion_Mulp,$fecha)
+  {
+    $InsertarCta = True;
+    $Dolar =round($_SESSION['INGRESO']['Cotizacion'],2);
+    $Ln_No_A = 0;
+    $CodigoCli = '.';
+    $NoCheque = '.';
+    $Codigo = $datosCTA[0]['Codigo'];
+    $Moneda_US = $datosCTA[0]['Moneda_US'];
+    $Cuenta = $datosCTA[0]['Cuenta'];
+    $SubCta = $datosCTA[0]['SubCta'];
+    $Trans_No = 1;
+    $OpcCoop = False;
+    $CodigoCC = '.';
+  if(empty($CodigoCli)){$CodigoCli = G_NINGUNO;}
+  if(is_null($CodigoCli)){$CodigoCli = G_NINGUNO;}
+  if($NoCheque == G_NINGUNO){$CodigoCli = G_NINGUNO;}
+  
+  $ValorDHAux = round($ValorDH, 2);
+  // 'MsgBox ValorDHAux
+
+  if($Codigo <> G_NINGUNO) {
+     $Debe = 0; $Haber = 0;
+     // 'And Moneda_US = False Then ValorDH = Redondear(ValorDH * Dolar,2)
+     // print_r($Moneda_US);die();
+     if($OpcTM == 2 Or $Moneda_US!=0){
+        if ($Opcion_Mulp !='/') {
+          // print_r('sss');
+           $ValorDH = $ValorDH * $Dolar;
+        }else{
+           if($Dolar <= 0){
+              $MsgBox = "No se puede Dividir para cero, cambie la Cotización.";
+              $ValorDH = 0;
+              // print_r($Dolar);
+           }else{
+              $ValorDH = Val($ValorDH / $Dolar);
+              // print_r('saaa');
+           }
+        }
+     }
+     switch ($OpcDH) {
+       case '1':$Debe = $ValorDH;break;
+       case '2':$Haber = $ValorDH;break;       
+     }
+
+     if($ValorDH <> 0 And $Cuenta <> G_NINGUNO){
+      switch ($SubCta) {
+        case 'C':
+        case 'P':
+        case 'G':
+        case 'I':
+        case 'CP':
+        case 'PM':
+        case 'CC':
+          // sSQL = "SELECT * " _
+          //           & "FROM Asiento " _
+          //           & "WHERE TC = '" & SubCta & "' " _
+          //           & "AND CODIGO = '" & Codigo & "' " _
+          //           & "AND T_No = " & Trans_No & " " _
+          //           & "AND Item = '" & NumEmpresa & "' " _
+          //           & "AND CodigoU = '" & CodigoUsuario & "' "
+          //      Select Case OpcDH
+          //        Case 1: sSQL = sSQL & "AND DEBE > 0 "
+          //        Case 2: sSQL = sSQL & "AND HABER > 0 "
+          //      End Select
+          //      Select_AdoDB AdoRegSC, sSQL
+          //      If AdoRegSC.RecordCount > 0 Then
+          //         InsertarCta = False
+          //         Ln_No_A = AdoRegSC.Fields("A_No")
+          //      End If
+          //      AdoRegSC.Close
+          break;
+      }
+// print_r('expression');die();
+           
+            $datos[0]['campo']= "PARCIAL_ME";
+            $datos[0]['dato'] = 0;
+            $datos[1]['campo']= "ME";
+            $datos[1]['dato'] = 0;
+            $datos[2]['campo']= "CODIGO";
+            $datos[2]['dato'] = $Codigo;
+            $datos[3]['campo']= "CUENTA";
+            $datos[3]['dato'] = $Cuenta;
+            $datos[4]['campo']= "DETALLE";
+            $datos[4]['dato'] = trim(substr($DetalleComp, 0, 60));
+             if ($OpcCoop){
+                if($Moneda_US){
+                   $Debe = round($Debe / $Dolar, 2);
+                   $Haber = round($Haber / $Dolar, 2);
+                }else{
+                   $Debe = round($Debe, 2);
+                   $Haber = round($Haber, 2);
+                }
+             }
+               $datos[0]['campo']= "PARCIAL_ME";
+               $datos[0]['dato'] = 0;
+                if($Moneda_US==1 Or $OpcTM == 2){
+                   if (($Debe - $Haber) < 0){ $ValorDHAux = -$ValorDHAux;
+                  $datos[0]['campo']= "PARCIAL_ME";
+                  $datos[0]['dato'] = $ValorDHAux;
+                  $datos[1]['campo']= "ME";
+                  $datos[1]['dato'] = 1;
+                }
+                $Debe = round($Debe, 2);
+                $Haber = round($Haber, 2);
+             }
+            $datos[5]['campo']= "DEBE";
+            $datos[5]['dato'] = $Debe;
+            $datos[6]['campo']= "HABER";
+            $datos[6]['dato'] = $Haber;
+            $datos[7]['campo']= "EFECTIVIZAR";
+            $datos[7]['dato'] = $fecha;
+            $datos[8]['campo']= "CHEQ_DEP";
+            $datos[8]['dato'] = $NoCheque;
+            $datos[9]['campo']= "CODIGO_C";
+            $datos[9]['dato'] = $CodigoCli;
+            $datos[10]['campo']= "CODIGO_CC";
+            $datos[10]['dato'] = $CodigoCC;
+            $datos[11]['campo']= "T_No";
+            $datos[11]['dato'] = $Trans_No;
+            $datos[12]['campo']= "Item";
+            $datos[12]['dato'] = $_SESSION['INGRESO']['item'];
+            $datos[13]['campo']= "CodigoU";
+            $datos[13]['dato'] = $_SESSION['INGRESO']['CodigoU'];
+            $datos[14]['campo']= "TC";
+            $datos[14]['dato'] = $SubCta;
+      if($InsertarCta)
+      {
+
+               $datos[15]['campo']= "A_No";
+               $datos[15]['dato'] = $A_No;
+        // insertar
+
+      }else
+      {
+        $datos[15]['campo']="A_No";
+        $datos[15]['dato'] = $Ln_No_A;
+        // actualizar
+
+      }  
+
+    // print_r($datos);die();    
+      insert_generico('Asiento',$datos);             
+     }//abre en 
+  }
   }
 
   function Insertar_DataGrid($parametros)
@@ -702,9 +924,10 @@ class kardex_ingC
        $datos[14]['dato']= $parametros["IdProv"];
        $datos[15]['dato']= $this->modelo->Maximo_De("Asiento_Air", "A_No");    
        $datos[16]['dato']= "1"; //ojo cambia
-       $datos[17]['dato']= "C";
+       $datos[17]['dato']= $parametros['Tipo_Trans'];
        $datos[18]['dato']=$_SESSION['INGRESO']['CodigoU'];
        $datos[19]['dato']=$_SESSION['INGRESO']['item'];
+       // print_r($datos);die();
         if(insert_generico("Asiento_Air",$datos)==null)
           {
            
@@ -864,7 +1087,7 @@ class kardex_ingC
   }
    function modal_ingresar_asiento($parametros)
      {
-      // print_r($parametros);die();
+      print_r($parametros);die();
         $cuenta = $this->modelo->cuentas_todos($parametros['cta']); 
         $parametros_asiento = array(
         "va" => round($parametros['val'],2),

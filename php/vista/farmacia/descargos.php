@@ -512,7 +512,7 @@ function reporte_excel()
         <div class="row text-center">
           <div class="col-sm-12">
             <b>Numero de Historia clinica</b>
-            <input type="txt_nombre" name="txt_histo_actu" id = "txt_histo_actu" class="form-control input-sm">  
+            <input type="text" name="txt_histo_actu" id = "txt_histo_actu" class="form-control input-sm">  
           </div> 
       </div>
       </form>

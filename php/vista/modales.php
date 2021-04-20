@@ -820,6 +820,18 @@ if(isset($_GET['FCompras']))
 {
 	require_once('contabilidad/FCompras.php');
 }
+if(isset($_GET['FExportaciones']))
+{
+	require_once('contabilidad/FExportaciones.php');
+}
+if(isset($_GET['FImportaciones']))
+{
+	require_once('contabilidad/FImportaciones.php');
+}
+if(isset($_GET['FVentas']))
+{
+	require_once('contabilidad/FVentas.php');
+}
 
 ?>
 

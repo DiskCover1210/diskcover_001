@@ -346,6 +346,10 @@ if(isset($_GET['mos']))
 <script src="../../lib/dist/js/demo.js"></script>
 
 
+<script src="../../lib/dist/js/jquery-ui.js"></script>
+  <link rel="stylesheet" href="../../lib/dist/css/jquery-ui.css">
+
+
 <script src="../../lib/dist/js/select2.min.js"></script>
   <link rel="stylesheet" href="../../lib/dist/css/select2.min.css">
   

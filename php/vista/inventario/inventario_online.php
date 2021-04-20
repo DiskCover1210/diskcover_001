@@ -429,7 +429,7 @@ function validar_entrada()
 
   if($('#txt_bajas_').val()!=0)
   {
-    if($('#ddl_rubro_bajas_').val() == "" || $('#txt_obs_').val()=="")
+    if($('#ddl_rubro_bajas_').val() == "")
     {
        Swal.fire(
             '',
@@ -453,7 +453,7 @@ function validar_entrada()
   }
   }else
   {
-    if($('#ddl_rubro_bajas_').val() != "" || $('#txt_obs_').val()!="")
+    if($('#ddl_rubro_bajas_').val() != "")
     {
        Swal.fire(
             '',
@@ -1133,7 +1133,7 @@ $('#txt_'+id+'_').val(nu);
                       <option value="">Baja por</option>
                     </select>
                 </div>  
-                <div class="col-sm-1"  style=" padding-left: 2px;  padding-right: 0px; display: none"  id ="ob">
+                <div class="col-sm-1"  style=" padding-left: 2px;  padding-right: 0px;"  id ="ob">
                   <b>Observaciones</b>
                   <textarea placeholder="observacion" class="form-control" id="txt_obs_"></textarea>
                 </div>

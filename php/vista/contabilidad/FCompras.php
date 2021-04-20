@@ -302,6 +302,7 @@ function contracuenta()
                         <div class="box-body">
                             <div class="row">
                                 <div class="col-sm-3">
+                                  <input type="hidden" name="txt_opc_mult" id="txt_opc_mult" value="<?php echo $_GET['opc_mult'];?>">
                                     <label class="radio-inline" onclick="habilitar_bienes()"><input type="checkbox" name="ChRetB" id="ChRetB"> Bienes</label>
                                 </div>
                                 <div class="col-sm-9">
@@ -365,8 +366,8 @@ function contracuenta()
                                         <b>Devolucion del IVA:</b>
                                      </div>
                                      <div class="col-sm-19">
-                                        <label class="radio-inline"><input type="radio" name="cbx_iva" id="iva_si" value="S" checked=""> SI</label>
-                                        <label class="radio-inline"><input type="radio" name="cbx_iva" id="iva_no" value="N"> NO</label>
+                                        <label class="radio-inline"><input type="radio" name="cbx_iva" id="iva_si" value="S"> SI</label>
+                                        <label class="radio-inline"><input type="radio" name="cbx_iva" id="iva_no" value="N" checked=""> NO</label>
                                     </div>                                    
                                 </div>
                                 <div class="row">
@@ -395,7 +396,7 @@ function contracuenta()
                                         <div class="col-sm-5">
                                             <b>tipo de comprobate</b>
                                             <select class="form-control input-sm" id="DCTipoComprobante" onchange="mostrar_panel()">
-                                                <option value="">Seleccione tipo de comprobante</option>
+                                                <option value="1">Factura</option>
                                             </select>
                                         </div>
                                         <div class="col-sm-2">
@@ -415,7 +416,7 @@ function contracuenta()
                                         </div>
                                         <div class="col-sm-3">
                                             <b>Autorizacion</b>
-                                            <input type="text" name="" class="form-control input-sm" id="TxtNumAutor" onblur="autorizacion_factura()" placeholder="0000000001" onkeyup="solo_10_numeros(this.id)">
+                                            <input type="text" name="" class="form-control input-sm text-right" id="TxtNumAutor" onblur="autorizacion_factura()" placeholder="0000000001" onkeyup="solo_10_numeros(this.id)">
                                         </div>
                                     </div>
                                     <div class="row">
@@ -434,19 +435,19 @@ function contracuenta()
                                             </div>
                                          <div class="col-sm-2">
                                                 <b>No Obj. IVA</b>
-                                                <input type="text" name="" class="form-control input-sm" value="0.00" id="TxtBaseImpoNoObjIVA">
+                                                <input type="text" name="" class="form-control input-sm text-right" value="0.00" id="TxtBaseImpoNoObjIVA">
                                             </div>
                                             <div class="col-sm-1" style="padding-right: 5px;padding-left: 5px;">
                                                 <b>Tarifa 0</b>
-                                                <input type="text" name="" class="form-control input-sm" value="0.00" id="TxtBaseImpo">
+                                                <input type="text" name="" class="form-control input-sm text-right" value="0.00" id="TxtBaseImpo">
                                             </div>
                                             <div class="col-sm-1" style="padding-right: 5px;padding-left: 5px;">
                                                 <b>Tarifa 12</b>
-                                                <input type="text" name="" class="form-control input-sm" value="0.00" id="TxtBaseImpoGrav">
+                                                <input type="text" name="" class="form-control input-sm text-right" value="0.00" id="TxtBaseImpoGrav">
                                             </div>
                                             <div class="col-sm-2">
                                                 <b>Valor ICE</b>
-                                             <input type="text" name="" class="form-control input-sm" value="0.00"  id="TxtBaseImpoIce">
+                                             <input type="text" name="" class="form-control input-sm  text-right" value="0.00"  id="TxtBaseImpoIce">
                                             </div>  
                                     </div>                          
                                  </div>
@@ -467,7 +468,7 @@ function contracuenta()
                                             IVA
                                         </div>
                                         <div class="col-sm-4">
-                                            <select class="form-control input-sm" id="DCPorcenIva" onchange="calcular_iva()">
+                                            <select class="form-control input-sm" id="DCPorcenIva" onchange="calcular_iva()" onblur="calcular_iva();calcular_ice();">
                                                 <option value="I">Iva</option>
                                             </select>
                                         </div>
@@ -475,7 +476,7 @@ function contracuenta()
                                             Valor I.V.A
                                         </div>
                                         <div class="col-sm-4">
-                                           <input type="text" name="" class="form-control input-sm" id="TxtMontoIva" value="0">
+                                           <input type="text" name="" class="form-control input-sm  text-right" id="TxtMontoIva" value="0">
                                         </div>                            
                                     </div>
                                     <div class="row"><br>
@@ -483,15 +484,15 @@ function contracuenta()
                                             ICE
                                         </div>
                                         <div class="col-sm-4">
-                                            <select class="form-control input-sm" id="DCPorcenIce" onchange="calcular_ice()">
-                                                <option value="I">ICE</option>
+                                            <select class="form-control input-sm" id="DCPorcenIce" onchange="calcular_ice()" onblur="calcular_iva();calcular_ice();">
+                                                <option value="0">ICE</option>
                                             </select>
                                         </div>
                                         <div class="col-sm-3">
                                             Valor ICE
                                         </div>
                                         <div class="col-sm-4">
-                                           <input type="text" name="" class="form-control input-sm" id="TxtMontoIce"  value="0.00" readonly="">
+                                           <input type="text" name="" class="form-control input-sm  text-right" id="TxtMontoIce"  value="0.00" readonly="">
                                         </div>       
                                     </div>
                                 </div>
@@ -509,11 +510,11 @@ function contracuenta()
                                         </div>
                                         <div class="col-sm-4">
                                             <b>BIENES</b>
-                                            <input type="text" name="" class="form-control input-sm" id="TxtIvaBienMonIva" readonly="" value="0">
+                                            <input type="text" name="" class="form-control input-sm  text-right" id="TxtIvaBienMonIva" readonly="" value="0">
                                         </div>                            
                                         <div class="col-sm-4">
                                             <b>SERVICIOS</b>
-                                           <input type="text" name="" class="form-control input-sm" id="TxtIvaSerMonIva" readonly="" value="0">
+                                           <input type="text" name="" class="form-control input-sm  text-right" id="TxtIvaSerMonIva" readonly="" value="0">
                                         </div>       
                                     </div>
                                     <div class="row">
@@ -536,10 +537,10 @@ function contracuenta()
                                 Valor RET
                                         </div>
                                         <div class="col-sm-4">
-                                            <input type="text" name="" class="form-control input-sm" id="TxtIvaBienValRet" value="0" readonly="">
+                                            <input type="text" name="" class="form-control input-sm  text-right" id="TxtIvaBienValRet" value="0" readonly="">
                                         </div>                            
                                         <div class="col-sm-4">
-                                           <input type="text" name="" class="form-control input-sm" id="TxtIvaSerValRet" value="0" readonly="">
+                                           <input type="text" name="" class="form-control input-sm  text-right" id="TxtIvaSerValRet" value="0" readonly="">
                                         </div>       
                                     </div>
                                 </div>
@@ -596,7 +597,7 @@ function contracuenta()
                       <b>Forma de pago</b>
                       <select class="form-control input-sm" onchange="mostrar_panel_ext()" id="CFormaPago">
                         <option value="">Seleccione forma de pago</option>
-                        <option value="1">Local</option>
+                        <option value="1" selected="">Local</option>
                         <option value="2">Exterior</option>
                       </select>
                     </div>
@@ -636,7 +637,7 @@ function contracuenta()
                                 <div class="box-body">
                                     <div class="row">
                                         <div class="col-sm-4">
-                                          <label class="radio-inline" onclick="mostra_select()" id="lbl_rbl"><input type="checkbox" name="ChRetF" id="ChRetF"> Retenecion en la fuente</label>
+                                          <label class="radio-inline" onclick="mostra_select()" id="lbl_rbl"><input type="checkbox" name="ChRetF" id="ChRetF"> Retencion en la fuente</label>
                                         </div>
                                         <div class="col-sm-8">
                                           <select class="form-control input-sm" id="DCRetFuente" style="display: none;" onchange="$('#DCRetFuente').css('border','1px solid #d2d6de');">
@@ -666,7 +667,7 @@ function contracuenta()
                                             SUMATORIA
                                           </div>
                                           <div class="col-sm-8"><br>
-                                            <input type="text" name="" class="form-control input-sm" id="TxtSumatoria">
+                                            <input type="text" name="" class="form-control input-sm  text-right" id="TxtSumatoria">
                                           </div>
                                         </div>                                      
                                       </div>                          
@@ -674,21 +675,21 @@ function contracuenta()
                                     <div class="row">
                                       <div class="col-sm-7">
                                         <b>CODIGO DE RETENCION</b>
-                                        <select class="form-control input-sm" id="DCConceptoRet" name="DCConceptoRet" onchange="calcular_porc_ret()">
+                                        <select class="form-control input-sm" id="DCConceptoRet" name="DCConceptoRet" onchange="calcular_porc_ret()" onblur="calcular_porc_ret()">
                                           <option value="">Seleccione Codigo de retencion</option>
                                         </select>                                        
                                       </div>
                                       <div class="col-sm-2">
                                         <b>BASE IMP</b>
-                                        <input type="text" class="form-control input-sm" name="TxtBimpConA" id="TxtBimpConA">
+                                        <input type="text" class="form-control input-sm  text-right" name="TxtBimpConA" id="TxtBimpConA">
                                       </div>
                                        <div class="col-sm-1" style="padding-left: 0px;padding-right: 0px">
                                         <b>PORC</b>
-                                        <input type="text" class="form-control input-sm" name="TxtPorRetConA" id="TxtPorRetConA" onblur="insertar_grid()" readonly="">
+                                        <input type="text" class="form-control input-sm  text-right" name="TxtPorRetConA" id="TxtPorRetConA" onblur="insertar_grid()" readonly="">
                                       </div>
                                        <div class="col-sm-2">
                                         <b>VALOR RET</b>
-                                        <input type="text" class="form-control input-sm" name="TxtValConA" id="TxtValConA" readonly="">
+                                        <input type="text" class="form-control input-sm text-right" name="TxtValConA" id="TxtValConA" readonly="">
                                       </div>
                                     </div>
                                 </div>

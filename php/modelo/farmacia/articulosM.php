@@ -216,7 +216,7 @@ class articulosM
 		$sql ="SELECT CI_RUC,Cliente,CP.Cta,CP.Codigo as 'Codigo'
 		FROM Clientes C
 		INNER JOIN Catalogo_CxCxP CP ON C.Codigo = CP.Codigo
-		WHERE CP.Item = '016' AND CP.Periodo = '.' AND LEN(Cliente)>1 AND CP.TC  ='P' AND Cta = '".$cta."'";
+		WHERE CP.Item = '".$_SESSION['INGRESO']['item']."' AND CP.Periodo = '.' AND LEN(Cliente)>1 AND CP.TC  ='P' AND Cta = '".$cta."'";
 		if($query)
 		{
 			$sql.=" AND Cliente LIKE '%".$query."%'";
@@ -580,5 +580,32 @@ class articulosM
 	   }
 
 
+	}
+
+	function clientes_all($query=false)
+	{
+		$cid = $this->conn;
+		$sql="SELECT  *
+		FROM Clientes C
+		WHERE  LEN(Cliente)>1  ";
+		if($query)
+			{
+				$sql.="AND Cliente LIKE '%".$query."%'";
+			}
+			$sql.= "ORDER BY C.Cliente OFFSET 0 ROWS FETCH NEXT 25 ROWS ONLY;";
+		$stmt = sqlsrv_query($cid, $sql);        
+		 $datos =  array();
+        // print_r($sql);die();
+	   if( $stmt === false)  
+	   {  
+		 echo "Error en consulta PA.\n";  
+		 return '';
+		 die( print_r( sqlsrv_errors(), true));  
+	   }
+	    while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_ASSOC) ) 
+	   {
+		$datos[]=$row;	
+	   }
+       return $datos;
 	}
 }
