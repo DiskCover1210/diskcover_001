@@ -515,7 +515,7 @@ class articulosM
 	{
 		// print_r($_SESSION);die();
        $cid = $this->conn;
-		$sql="SELECT Codigo_Inv FROM Catalogo_Productos WHERE Codigo_Inv like '".$cta.".%' AND Periodo = '".$_SESSION['INGRESO']['periodo']."' AND LEN(Codigo_Inv)=12  AND TC='P' ORDER BY Codigo_Inv DESC";  
+		$sql="SELECT Codigo_Inv FROM Catalogo_Productos WHERE Codigo_Inv like '".$cta.".%' AND Periodo = '".$_SESSION['INGRESO']['periodo']."'  AND TC='P' ORDER BY ID DESC";  
 		$stmt = sqlsrv_query($cid, $sql);
         $datos =  array();
         // print_r($sql);die();
@@ -531,6 +531,28 @@ class articulosM
 	   }
        return $datos;
 	}
+
+	function buscar_cod_existente($Codigo_Inv)
+	{
+		// print_r($_SESSION);die();
+       $cid = $this->conn;
+		$sql="SELECT Codigo_Inv FROM Catalogo_Productos WHERE Codigo_Inv  = '".$Codigo_Inv."' AND Periodo = '".$_SESSION['INGRESO']['periodo']."'  AND TC='P' ";  
+		$stmt = sqlsrv_query($cid, $sql);
+        $datos =  array();
+        // print_r($sql);die();
+	   if( $stmt === false)  
+	   {  
+		 echo "Error en consulta PA.\n";  
+		 return '';
+		 die( print_r( sqlsrv_errors(), true));  
+	   }
+	    while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_ASSOC) ) 
+	   {
+		$datos[]=$row;	
+	   }
+       return $datos;
+	}
+
 
 	function familia_con_productos($codigo)
 	{
@@ -582,7 +604,7 @@ class articulosM
 
 	}
 
-	function clientes_all($query=false)
+	function clientes_all($query=false,$codigo = false)
 	{
 		$cid = $this->conn;
 		$sql="SELECT  *
@@ -592,7 +614,12 @@ class articulosM
 			{
 				$sql.="AND Cliente LIKE '%".$query."%'";
 			}
+		if($codigo)
+		{
+			$sql.="AND Codigo ='".$codigo."'";
+		}
 			$sql.= "ORDER BY C.Cliente OFFSET 0 ROWS FETCH NEXT 25 ROWS ONLY;";
+		
 		$stmt = sqlsrv_query($cid, $sql);        
 		 $datos =  array();
         // print_r($sql);die();
@@ -607,5 +634,27 @@ class articulosM
 		$datos[]=$row;	
 	   }
        return $datos;
+	}
+
+
+	function catalogo_Cxcxp($Codigo)
+	{
+		$cid = $this->conn;
+		$sql="SELECT * FROM Catalogo_CxCxP WHERE Codigo = '".$Codigo."' AND TC='P' AND Item = '".$_SESSION['INGRESO']['item']."' AND Periodo = '".$_SESSION['INGRESO']['periodo']."'";
+		$stmt = sqlsrv_query($cid, $sql);        
+		 $datos =  array();
+        // print_r($sql);die();
+	   if( $stmt === false)  
+	   {  
+		 echo "Error en consulta PA.\n";  
+		 return '';
+		 die( print_r( sqlsrv_errors(), true));  
+	   }
+	    while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_ASSOC) ) 
+	   {
+		$datos[]=$row;	
+	   }
+       return $datos;
+
 	}
 }

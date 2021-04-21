@@ -1043,7 +1043,7 @@ $('#txt_'+id+'_').val(nu);
     <div class="row">
       <div class="col-lg-3 col-sm-4 col-md-8 col-xs-12">
         <div class="col-xs-2 col-md-2 col-sm-2 col-lg-2">
-            <a  href="./inventario.php?mod=Inventario#" title="Salir de modulo" class="btn btn-default">
+             <a  href="<?php $ruta = explode('&' ,$_SERVER['REQUEST_URI']); print_r($ruta[0].'#');?>" title="Salir de modulo" class="btn btn-default">
               <img src="../../img/png/salire.png">
             </a>
         </div>
