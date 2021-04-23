@@ -674,7 +674,7 @@ function TiposCtaStrg($cuenta) {
    foreach ($to as $key => $value) {
  //  	print_r($value);
   		 $mail = new PHPMailer();
-         $mail->isSMTP();
+       $mail->isSMTP();
 	     $mail->SMTPDebug = 0;
 	     $mail->Host = "smtp.gmail.com";
 	     $mail->Port =  465;
@@ -706,6 +706,7 @@ function TiposCtaStrg($cuenta) {
           	$respuesta = false;
      	  }
     }
+    print_r($mail->ErrorInfo);die();
     return $respuesta;
   }
 

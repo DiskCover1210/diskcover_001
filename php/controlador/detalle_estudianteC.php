@@ -4,8 +4,9 @@ ini_set('display_errors', '1');
 require_once(dirname(__DIR__,1).'/modelo/detalle_estudianteM.php'); 
 include(dirname(__DIR__).'/funciones/funciones.php');
 require(dirname(__DIR__,2).'/lib/fpdf/cabecera_pdf.php');
-require(dirname(__DIR__,2).'/lib/phpmailer/class.phpmailer.php');
-require(dirname(__DIR__,2).'/lib/phpmailer/class.smtp.php');
+// require(dirname(__DIR__,2).'/lib/phpmailer/class.phpmailer.php');
+// require(dirname(__DIR__,2).'/lib/phpmailer/class.smtp.php');
+require(dirname(__DIR__,2).'/lib/phpmailer/enviar_emails.php');
 require_once("../../lib/excel/plantilla.php");
 /**
  * 
@@ -140,6 +141,7 @@ class detalle_estudianteC
 	private $empresa;
 	private $est_d;
 	private $empresaGeneral;
+  private $email;
 	
 	function __construct()
 	{
@@ -147,6 +149,7 @@ class detalle_estudianteC
 		$this->pdf = new cabecera_pdf();		
 		$this->empresa = $this->modelo->institucion_data();
 		$this->empresaGeneral = $this->modelo->Empresa_data();
+    $this->email = new enviar_emails();
 
 	}
 
@@ -855,18 +858,18 @@ if (!file_exists('../../img/img_estudiantes/'.$datos[0]['Archivo_Foto']))
     //print_r($correo1);
     //print_r($email_conexion);
 
-  	enviar_email($archivos,$correo1,$cuerpo_correo,$titulo_correo,$correo_apooyo,$nombre,$email_conexion,$email_pass);
+  	$this->email->enviar_email($archivos,$correo1,$cuerpo_correo,$titulo_correo,$correo_apooyo,$nombre,$email_conexion,$email_pass);
      
   	  $correo2 = $this->empresa[0]['Mail_Colegio'].',asesorcomercial.viclaz@gmail.com,orlandoquintero45@gmail.com,ejfc_omoshiroi@hotmail.com';
 
    // print_r($correo2);
-  	if(enviar_email($archivos,$correo2,$cuerpo_correo,$titulo_correo,$correo_apooyo,$nombre,$email_conexion,$email_pass))
+  	if($this->email->enviar_email($archivos,$correo2,$cuerpo_correo,$titulo_correo,$correo_apooyo,$nombre,$email_conexion,$email_pass))
     {
 
       $correo3 = $empresaGeneral[0]['Email_Contabilidad'].',asesorcomercial.viclaz@gmail.com,orlandoquintero45@gmail.com,ejfc_omoshiroi@hotmail.com';
 
     //print_r($correo3);
-      return enviar_email($archivosC,$correo3,$cuerpo_correo,$titulo_correo,$correo_apooyo,$nombre1,$email_conexion,$email_pass);
+      return $this->email->enviar_email($archivosC,$correo3,$cuerpo_correo,$titulo_correo,$correo_apooyo,$nombre1,$email_conexion,$email_pass);
 
     }
 
