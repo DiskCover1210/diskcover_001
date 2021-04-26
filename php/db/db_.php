@@ -47,7 +47,7 @@ class Conectar{
 					}*/ 
 					$server=''.$_SESSION['INGRESO']['IP_VPN_RUTA'].', '.$_SESSION['INGRESO']['Puerto'];
 					$connectionInfo = array("Database"=>$_SESSION['INGRESO']['Base_Datos'], "UID" => $_SESSION['INGRESO']['Usuario_DB'],
-					"PWD" => $_SESSION['INGRESO']['Contraseña_DB']);
+					"PWD" => $_SESSION['INGRESO']['Contraseña_DB'], "CharacterSet" => "UTF-8");
 
 					$cid = sqlsrv_connect($server, $connectionInfo); //returns false
 					if( $cid === false )
@@ -155,7 +155,7 @@ class Conectar{
 					//$server=$_SESSION['INGRESO']['IP_VPN_RUTA'];
 					$server=''.$_SESSION['INGRESO']['IP_VPN_RUTA'].', '.$_SESSION['INGRESO']['Puerto'];
 					$connectionInfo = array("Database"=>$_SESSION['INGRESO']['Base_Datos'], "UID" => $_SESSION['INGRESO']['Usuario_DB'],
-					"PWD" => $_SESSION['INGRESO']['Contraseña_DB']);
+					"PWD" => $_SESSION['INGRESO']['Contraseña_DB'] , "CharacterSet" => "UTF-8");
 
 					$cid = sqlsrv_connect($server, $connectionInfo); //returns false
 					if( $cid === false )
@@ -277,7 +277,7 @@ class Conectar{
 			//$server=$_SESSION['INGRESO']['IP_VPN_RUTA'];
 			$server=''.$_SESSION['INGRESO']['IP_VPN_RUTA'].', '.$_SESSION['INGRESO']['Puerto'];
 			$connectionInfo = array("Database"=>$_SESSION['INGRESO']['Base_Datos'], "UID" => $_SESSION['INGRESO']['Usuario_DB'],
-			"PWD" => $_SESSION['INGRESO']['Contraseña_DB']);
+			"PWD" => $_SESSION['INGRESO']['Contraseña_DB'], "CharacterSet" => "UTF-8"); 
 
 			$cid = sqlsrv_connect($server, $connectionInfo); //returns false
 			if( $cid === false )

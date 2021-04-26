@@ -344,12 +344,7 @@ function ReadSetDataNum($sqls,$ParaEmpresa =false,$Incrementar = false)
   $NumCodigo = 0;
   $NuevoNumero = False;
   $FechaComp = '';
-  if(strlen($FechaComp)<10)
-  {
-  	$FechaComp =date('d/m/Y');
-  	// print_r($FechaComp);
-  }
-  if($FechaComp == '00/00/0000')
+  if(strlen($FechaComp) < 10 || $FechaComp == '00/00/0000')
   {
   	$FechaComp =date('d/m/Y');
   }
@@ -361,132 +356,118 @@ function ReadSetDataNum($sqls,$ParaEmpresa =false,$Incrementar = false)
   {
   	$NumEmpresa = '000';
   }
- 
-    
-    // $HoraDelSistema = Second(Time)
-    // $HoraDelSistema = Int((HoraDelSistema * Rnd) + 1)
-    // if($HoraDelSistema < 6)
-    // {
-    // 	$HoraDelSistema = 6;
-    // }
 
   $Num_Meses_CI=false;
-  $Num_Meses_CD=false;
+  $Num_Meses_CD=false;  
   $Num_Meses_CE=false;
   $Num_Meses_ND=false;
   $Num_Meses_NC=false;
     
 
-    if($sqls != '')
+  if($sqls != '')
+  {
+    $MesComp = '';
+    if(strlen($FechaComp) >= 10)
     {
-    	$MesComp = '';
-    	if(strlen($FechaComp) >= 10)
-    	{
-    		$MesComp = date('m');;
-    	}
-    	if($MesComp =='')
-    	{
-    		$MesComp = '01';
-    	}
-    	if($Num_Meses_CD and $sqls == 'Diario')
-    	{
-    	   $SQLs = $MesComp.''.$sqls;
-           $Si_MesComp = True;
-    	}
-    	if($Num_Meses_CI and $sqls == 'Ingresos')
-    	{
-    	   $SQLs = $MesComp.''.$sqls;
-           $Si_MesComp = True;
-    	}
-    	if($Num_Meses_CE and $sqls == 'Egresos')
-    	{
-    	   $SQLs = $MesComp.''.$sqls;
-           $Si_MesComp = True;
-    	}
-    	if($Num_Meses_ND and $sqls == 'NotaDebito')
-    	{
-    	   $SQLs = $MesComp.''.$sqls;
-           $Si_MesComp = True;
-    	}
-    	if($Num_Meses_NC and $sqls == 'NotaCredito')
-    	{
-    	   $SQLs = $MesComp.''.$sqls;
-           $Si_MesComp = True;
-    	}
+    	$MesComp = date('m');;
     }
-
-    if($sqls !='')
+    if($MesComp == '')
     {
-    	$MesComp = "";
-    	if(strlen($FechaComp) >= 10)
-    	{
-    		$MesComp = date('m');
-    	}
-    	if($MesComp == '')
-    	{
-    		$MesComp = '01';
-    	}
-    	$conn = new Conectar();
-	    $cid=$conn->conexion();
-        $sql = "SELECT Numero, ID FROM Codigos
-             WHERE Concepto = '".$sqls. "' 
-             AND Periodo = '".$_SESSION['INGRESO']['periodo']. "'
-             AND Item = '".$_SESSION['INGRESO']['item']."'" ;
+    	$MesComp = '01';
+    }
+    if($Num_Meses_CD and $sqls == 'Diario')
+    {
+    	$SQLs = $MesComp.''.$sqls;
+      $Si_MesComp = True;
+    }
+    if($Num_Meses_CI and $sqls == 'Ingresos')
+    {
+    	$SQLs = $MesComp.''.$sqls;
+      $Si_MesComp = True;
+    }
+    if($Num_Meses_CE and $sqls == 'Egresos')
+    {
+    	$SQLs = $MesComp.''.$sqls;
+      $Si_MesComp = True;
+    }
+    if($Num_Meses_ND and $sqls == 'NotaDebito')
+    {
+    	$SQLs = $MesComp.''.$sqls;
+      $Si_MesComp = True;
+    }
+    if($Num_Meses_NC and $sqls == 'NotaCredito')
+    {
+    	$SQLs = $MesComp.''.$sqls;
+      $Si_MesComp = True;
+    }
+  }
+
+  if($sqls !='')
+  {
+    $MesComp = "";
+    if(strlen($FechaComp) >= 10)
+    {
+    	$MesComp = date('m');
+    }
+    if($MesComp == '')
+    {
+    	$MesComp = '01';
+    }
+    $conn = new Conectar();
+	  $cid=$conn->conexion();
+    $sql = "SELECT Numero, ID FROM Codigos
+            WHERE Concepto = '".$sqls. "' 
+            AND Periodo = '".$_SESSION['INGRESO']['periodo']. "'
+            AND Item = '".$_SESSION['INGRESO']['item']."'" ;
 		$stmt = sqlsrv_query($cid, $sql);
-	    if( $stmt === false)  
-	      {  
-		     echo "Error en consulta PA.\n";  
-		     return '';
-		     die( print_r( sqlsrv_errors(), true));  
-	      }   
-         //echo $sql;
-	    $result = array();	
-	    while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_ASSOC) ) 
-	      {
-	    	$result[] =$row;
-		    //echo $row[0];
-	      }
+	  if( $stmt === false)  
+	  {  
+		  echo "Error en consulta PA.\n";  
+		  return '';
+		  die( print_r( sqlsrv_errors(), true));  
+	  }   
+    //echo $sql;
+	  $result = array();	
+	  while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_ASSOC) ) 
+	  {
+	    $result[] =$row;
+		  //echo $row[0];
+	  }
 
-	      if(count($result)>0)
-	      {
-	      	$NumCodigo = $result[0]["Numero"];
+	  if(count($result)>0)
+	  {
+	    $NumCodigo = $result[0]["Numero"];
 
-	      }else
-	      {
-	      	$NuevoNumero = True;
-            $NumCodigo = 1;
-            if($Num_Meses_CD && $Si_MesComp){$NumCodigo = intval($MesComp.''.'000001');}
-            if($Num_Meses_CI && $Si_MesComp){$NumCodigo = intval($MesComp.''.'000001');}
-            if($Num_Meses_CE && $Si_MesComp){$NumCodigo = intval($MesComp.''.'000001');}
-            if($Num_Meses_ND && $Si_MesComp){$NumCodigo = intval($MesComp.''.'000001');}
-            if($Num_Meses_NC && $Si_MesComp){$NumCodigo = intval($MesComp.''.'000001');}
-
-	      }
-	    if($NumCodigo > 0)
+	  }else
+	  {
+	    $NuevoNumero = True;
+      $NumCodigo = 1;
+      if($Num_Meses_CD && $Si_MesComp){$NumCodigo = intval($MesComp.''.'000001');}
+      if($Num_Meses_CI && $Si_MesComp){$NumCodigo = intval($MesComp.''.'000001');}
+      if($Num_Meses_CE && $Si_MesComp){$NumCodigo = intval($MesComp.''.'000001');}
+      if($Num_Meses_ND && $Si_MesComp){$NumCodigo = intval($MesComp.''.'000001');}
+      if($Num_Meses_NC && $Si_MesComp){$NumCodigo = intval($MesComp.''.'000001');}
+	  }
+	  
+    if($NumCodigo > 0)
+	  {
+	    if($NuevoNumero)
 	    {
-	    	if($NuevoNumero)
-	    	{
-	    		$Strgs = "INSERT INTO Codigos (Periodo,Item,Concepto,Numero)
+	    	$Strgs = "INSERT INTO Codigos (Periodo,Item,Concepto,Numero)
                 VALUES ('".$_SESSION['INGRESO']['periodo']."','".$_SESSION['INGRESO']['item']."','".$sqls."',".$NumCodigo.") ";
                 //faltra ejecutar
-	    	}
-	    	if($Incrementar)
-	    	{
-	    		$Strgs = "UPDATE Codigos 
+	    }
+	    if($Incrementar)
+	    {
+	    	$Strgs = "UPDATE Codigos 
                 SET Numero = Numero + 1 
                 WHERE Concepto = '".$sqls."'
                 AND Periodo = '" .$_SESSION['INGRESO']['periodo']."' 
                 AND Item = '".$_SESSION['INGRESO']['item']. "' ";
-
-                //falta ejecutar
-
-	    	}
 	    }
-
-
-    }
-
- return $NumCodigo;
+	  }
+  }
+  return $NumCodigo;
 }
 
 
