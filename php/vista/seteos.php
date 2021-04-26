@@ -13,7 +13,7 @@ require_once("../controlador/contabilidad_controller.php");
 //require_once("../funciones/numeros_en_letras.php");
 $_SESSION['INGRESO']['modulo_']='26';
 //verificamos sesion sql
-if(isset($_SESSION['INGRESO']['IP_VPN_RUTA'])) 
+if(isset($_SESSION['INGRESO']['IP_VPN_RUTA']) && $_SESSION['INGRESO']['Tipo_Base'] =='SQL SERVER') 
 {
 	$database=$_SESSION['INGRESO']['Base_Datos'];
 	$server=$_SESSION['INGRESO']['IP_VPN_RUTA'];
@@ -26,6 +26,20 @@ if(isset($_SESSION['INGRESO']['IP_VPN_RUTA']))
 	$_SESSION['INGRESO']['accesoe']='0';
 	$_SESSION['INGRESO']['modulo'][0]='0';
 	$permiso=getAccesoEmpresas();
+}else
+{
+	echo "<script>
+				Swal.fire({
+				  type: 'error',
+				  title: 'Asegurese de tener credeciales de SQLSERVER',
+				  text: '',
+				  allowOutsideClick:false,
+				}).then((result) => {
+				  if (result.value) {
+					location.href='panel.php#';
+				  } 
+				});
+			</script>";
 }
 	//echo ' jjj '.$_SESSION['autentificado'];
 	//die();

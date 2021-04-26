@@ -4,8 +4,9 @@ ini_set('display_errors', '1');
 require_once(dirname(__DIR__,1).'/modelo/detalle_estudianteM.php'); 
 include(dirname(__DIR__).'/funciones/funciones.php');
 require(dirname(__DIR__,2).'/lib/fpdf/cabecera_pdf.php');
-require(dirname(__DIR__,2).'/lib/phpmailer/class.phpmailer.php');
-require(dirname(__DIR__,2).'/lib/phpmailer/class.smtp.php');
+// require(dirname(__DIR__,2).'/lib/phpmailer/class.phpmailer.php');
+// require(dirname(__DIR__,2).'/lib/phpmailer/class.smtp.php');
+require(dirname(__DIR__,2).'/lib/phpmailer/enviar_emails.php');
 require_once("../../lib/excel/plantilla.php");
 /**
  * 
@@ -128,12 +129,19 @@ if(isset($_GET['ver_fac']))
 {
   $controlador->ver_fac_pdf($_GET['codigo'],$_GET['ser'],$_GET['ci']);
 }
+if(isset($_GET['nueva_matricula']))
+{
+  $parametros = $_POST['usuario'];
+  //print_r($parametros);
+  echo json_encode($controlador->nueva_matricula($parametros));
+}
 class detalle_estudianteC
 {
 	private $modelo;
 	private $empresa;
 	private $est_d;
 	private $empresaGeneral;
+  private $email;
 	
 	function __construct()
 	{
@@ -141,6 +149,7 @@ class detalle_estudianteC
 		$this->pdf = new cabecera_pdf();		
 		$this->empresa = $this->modelo->institucion_data();
 		$this->empresaGeneral = $this->modelo->Empresa_data();
+    $this->email = new enviar_emails();
 
 	}
 
@@ -152,11 +161,17 @@ class detalle_estudianteC
 	function validar_estudiante($usu,$pass,$nuevo)
 	{
 
-  	    $this->est_d = $this->modelo->login($usu,$pass,$nuevo);
+  	$this->est_d = $this->modelo->login($usu,$pass,$nuevo);
 		$datos = $this->modelo->login($usu,$pass,$nuevo);
+    if(!empty($datos)){
 	    // print_r($datos);
-		$datos1= array_map(array($this, 'encode'), $datos);
-		return $datos1;
+      $datos1= array_map(array($this, 'encode'), $datos);
+    return $datos1;
+    }else
+    {
+      return -2;
+    }
+		
 		//print_r($datos1);
 
 	}
@@ -357,8 +372,11 @@ class detalle_estudianteC
 
   function nuevo_estudiante($parametros){
   //	echo digito_verificadorf($parametros,1).'<br>';
-     $datos =  digito_verificadorf($parametros['codigo'],null,null,null,null,'si');
-
+     $datos =  digito_verificadorf($parametros['codigo'],'',null,null,null,'si');
+// print_r('expression');
+     // print_r($datos);die();
+     if($datos['codigo']!=2)
+     {
     // print_r($datos);
   	 $dato[0]['campo']='Codigo';
      $dato[0]['dato']=$datos['codigo'];
@@ -403,6 +421,11 @@ class detalle_estudianteC
           return 'fail2';
         }
    }
+ }else
+ {
+  ob_end_clean();
+   return 'ci';
+ }
 
   }
 
@@ -835,18 +858,18 @@ if (!file_exists('../../img/img_estudiantes/'.$datos[0]['Archivo_Foto']))
     //print_r($correo1);
     //print_r($email_conexion);
 
-  	enviar_email($archivos,$correo1,$cuerpo_correo,$titulo_correo,$correo_apooyo,$nombre,$email_conexion,$email_pass);
+  	$this->email->enviar_email($archivos,$correo1,$cuerpo_correo,$titulo_correo,$correo_apooyo,$nombre,$email_conexion,$email_pass);
      
   	  $correo2 = $this->empresa[0]['Mail_Colegio'].',asesorcomercial.viclaz@gmail.com,orlandoquintero45@gmail.com,ejfc_omoshiroi@hotmail.com';
 
    // print_r($correo2);
-  	if(enviar_email($archivos,$correo2,$cuerpo_correo,$titulo_correo,$correo_apooyo,$nombre,$email_conexion,$email_pass))
+  	if($this->email->enviar_email($archivos,$correo2,$cuerpo_correo,$titulo_correo,$correo_apooyo,$nombre,$email_conexion,$email_pass))
     {
 
       $correo3 = $empresaGeneral[0]['Email_Contabilidad'].',asesorcomercial.viclaz@gmail.com,orlandoquintero45@gmail.com,ejfc_omoshiroi@hotmail.com';
 
     //print_r($correo3);
-      return enviar_email($archivosC,$correo3,$cuerpo_correo,$titulo_correo,$correo_apooyo,$nombre1,$email_conexion,$email_pass);
+      return $this->email->enviar_email($archivosC,$correo3,$cuerpo_correo,$titulo_correo,$correo_apooyo,$nombre1,$email_conexion,$email_pass);
 
     }
 
@@ -890,6 +913,16 @@ if (!file_exists('../../img/img_estudiantes/'.$datos[0]['Archivo_Foto']))
   function ver_fac_pdf($cod,$ser,$ci)
   {
     $this->modelo->pdf_factura($cod,$ser,$ci);
+  }
+
+  function nueva_matricula($usuario)
+  {
+     $datos[0]['campo']='Codigo';
+     $datos[0]['dato']=$usuario;
+     $datos[1]['campo']='T';
+     $datos[1]['dato']='N';
+     return  insert_generico("Clientes_Matriculas",$datos);
+
   }
 
 

@@ -49,16 +49,44 @@ class ingreso_descargosM
 		function costo_venta($codigo_inv)
 	{
 		$cid = $this->conn;
-		$sql = "SELECT TOP 1 Codigo_Inv,Costo,Existencia 
+		$sql = "SELECT  SUM(Entrada-Salida) as 'Existencia' 
 		FROM Trans_Kardex
 		WHERE Fecha <= '".date('Y-m-d')."'
 		AND Codigo_Inv = '".$codigo_inv."'
 		AND Item = '".$_SESSION['INGRESO']['item']."'
 		AND Periodo = '".$_SESSION['INGRESO']['periodo']."'
-		AND T <> 'A'
-		ORDER BY Fecha DESC,TP DESC, Numero DESC,ID DESC";
+		AND T <> 'A'";
 		// print_r($sql);die();
 		$stmt = sqlsrv_query($cid, $sql);
+        $datos =  array();
+	   if( $stmt === false)  
+	   {  
+		 echo "Error en consulta PA.\n";  
+		 return '';
+		 die( print_r( sqlsrv_errors(), true));  
+	   }
+	    while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_ASSOC) ) 
+	   {
+		$datos[]=$row;	
+	   }
+       return $datos;
+
+	}
+
+
+	function costo_producto($Codigo_Inv)
+	{
+
+		$cid = $this->conn;
+		$sql = "SELECT TOP 1 Codigo_Inv,Costo,Valor_Unitario,Existencia,Total,T 
+               FROM Trans_Kardex 
+               WHERE Item = '".$_SESSION['INGRESO']['item']. "' 
+               AND Periodo = '".$_SESSION['INGRESO']['periodo']."' 
+               AND Fecha <= '".date('Y-m-d')."' 
+               AND Codigo_Inv = '".$Codigo_Inv."' 
+               AND T <> 'A' 
+               ORDER BY Fecha DESC,TP DESC, Numero DESC,ID DESC ";
+        $stmt = sqlsrv_query($cid, $sql);
         $datos =  array();
 	   if( $stmt === false)  
 	   {  

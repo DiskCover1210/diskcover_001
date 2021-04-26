@@ -12,6 +12,12 @@ if(isset($_GET['productos']))
 	$parametros= $_POST['parametros'];	
 	echo json_encode($controlador->cargar_productos($parametros));
 }
+if(isset($_GET['search']))
+{
+	$query = $_POST['search'];
+	echo json_encode($controlador->autocompletar($query));
+
+}
 if(isset($_GET['familias']))
 {
 	$query = '';
@@ -136,6 +142,7 @@ class articulosC
 		foreach ($datos as $key => $value) {			
 			$Familia = $this->modelo->familia_pro(substr($value['Codigo_Inv'],0,5));
 			$costo =  $this->ing_descargos->costo_venta($value['Codigo_Inv']);
+			$costoTrans = $this->ing_descargos->costo_producto($value['Codigo_Inv']);
 			if(empty($Familia))
 			{
 				$Familia[0]['Producto'] = '-';
@@ -143,12 +150,15 @@ class articulosC
 			}
 			if(empty($costo))
 			{
-				$costo[0]['Costo'] = 0;
 				$costo[0]['Existencia'] = 0;
+			}
+			if(empty($costoTrans))
+			{
+				$costoTrans[0]['Costo'] = 0;				
 			}
 
 
-			$productos[] = array('id'=>$Familia[0]['Producto'].'_'.$Familia[0]['Codigo_Inv'].'_'.$value['Codigo_Inv'].'_'.$costo[0]['Costo'].'_'.$value['Cta_Inventario'].'_'.$value['Producto'].'_'.$value['Unidad'].'_'.$value['Ubicacion'].'_'.$value['IVA'].'_'.$costo[0]['Existencia'].'_'.$value['Reg_Sanitario'].'_'.$value['Maximo'].'_'.$value['Minimo'],'text'=>$value['Producto']);
+			$productos[] = array('id'=>$Familia[0]['Producto'].'_'.$Familia[0]['Codigo_Inv'].'_'.$value['Codigo_Inv'].'_'.$costoTrans[0]['Costo'].'_'.$value['Cta_Inventario'].'_'.$value['Producto'].'_'.$value['Unidad'].'_'.$value['Ubicacion'].'_'.$value['IVA'].'_'.$costo[0]['Existencia'].'_'.$value['Reg_Sanitario'].'_'.$value['Maximo'].'_'.$value['Minimo'],'text'=>$value['Producto']);
 
 		}
 		return $productos;
@@ -406,48 +416,57 @@ class articulosC
 	}
 	function Ingresar_proveedor($parametros)
 	{
-		$datos[0]['campo'] = 'FA';
-		$datos[0]['dato'] = '1';
-		$datos[1]['campo'] = 'T';
-		$datos[1]['dato'] = 'N';
-		$datos[2]['campo'] = 'Codigo';
-		$datos[2]['dato'] = digito_verificadorf($parametros['txt_ruc'],1);
-		$datos[3]['campo'] = 'Cliente';
-		$datos[3]['dato'] = $parametros['txt_nombre_prove'];
-		$datos[4]['campo'] = 'CI_RUC';
-		$datos[4]['dato'] = $parametros['txt_ruc'];
-		$datos[5]['campo'] = 'Email';
-		$datos[5]['dato'] = $parametros['txt_email'];
-		$datos[6]['campo'] = 'Telefono';
-		$datos[6]['dato'] = $parametros['txt_telefono'];
-		$datos[7]['campo'] = 'Direccion';
-		$datos[7]['dato'] = $parametros['txt_direccion'];
-		$datos[8]['campo'] = 'Fecha';
-		$datos[8]['dato'] = strval(date('Y-m-d'));
 
-
-		$datos1[0]['campo'] = 'Codigo';
-		$datos1[0]['dato'] = $datos[2]['dato'];
-		$datos1[1]['campo'] = 'Cta';
-		$datos1[1]['dato'] = $this->modelo->buscar_cta_proveedor();
-		$datos1[2]['campo'] = 'Item';
-		$datos1[2]['dato'] = $_SESSION['INGRESO']['item'];
-		$datos1[3]['campo'] = 'Periodo';
-		$datos1[3]['dato'] = $_SESSION['INGRESO']['periodo'];
-		$datos1[3]['campo'] = 'TC';
-		$datos1[3]['dato'] = 'P';
-
-		 $cli = $this->modelo->guardar('Clientes',$datos);
-		$cta = $this->modelo->guardar('Catalogo_CxCxP',$datos1);
-
-		if($cli=='' && $cta =='')
+		$codigo = digito_verificadorf($parametros['txt_ruc'],1);
+		$existe = $this->modelo->clientes_all(false,$codigo);
+		$cli = '';
+		if(empty($existe))
 		{
-			return 1;
+			$datos[0]['campo'] = 'FA';
+		    $datos[0]['dato'] = '1';
+		    $datos[1]['campo'] = 'T';
+		    $datos[1]['dato'] = 'N';
+		    $datos[2]['campo'] = 'Codigo';
+		    $datos[2]['dato'] = $codigo;
+		    $datos[3]['campo'] = 'Cliente';
+		    $datos[3]['dato'] = $parametros['txt_nombre_prove'];
+		    $datos[4]['campo'] = 'CI_RUC';
+		    $datos[4]['dato'] = $parametros['txt_ruc'];
+		    $datos[5]['campo'] = 'Email';
+		    $datos[5]['dato'] = $parametros['txt_email'];
+		    $datos[6]['campo'] = 'Telefono';
+		    $datos[6]['dato'] = $parametros['txt_telefono'];
+		    $datos[7]['campo'] = 'Direccion';
+		    $datos[7]['dato'] = $parametros['txt_direccion'];
+		    $datos[8]['campo'] = 'Fecha';
+		    $datos[8]['dato'] = strval(date('Y-m-d'));
+		    $cli = $this->modelo->guardar('Clientes',$datos);
+		}else{$cli =1;}
 
-		}else
-		{
-			return -1;
-		}
+		 $exist = $this->modelo->catalogo_Cxcxp($codigo);
+
+		 if(empty($exist))
+		 {
+		 	$datos1[0]['campo'] = 'Codigo';
+		    $datos1[0]['dato'] = $codigo;
+		    $datos1[1]['campo'] = 'Cta';
+		    $datos1[1]['dato'] = $this->modelo->buscar_cta_proveedor();
+		    $datos1[2]['campo'] = 'Item';
+		    $datos1[2]['dato'] = $_SESSION['INGRESO']['item'];
+		    $datos1[3]['campo'] = 'Periodo';
+		    $datos1[3]['dato'] = $_SESSION['INGRESO']['periodo'];
+		    $datos1[3]['campo'] = 'TC';
+		    $datos1[3]['dato'] = 'P';
+		    $cta = $this->modelo->guardar('Catalogo_CxCxP',$datos1);
+		 }else{$cta = 1;}
+
+		 if($cta == 1 && $cli ==1)
+		 {
+		 	return -2;
+		 }else
+		 {
+		 	return 1;
+		 }
 
 	}
 
@@ -875,7 +894,7 @@ function cuentas_asignar($cuenta,$query)
 }
 function buscar_ultimo($cta)
 {
-	$dato =$this->modelo->buscar_ultimo($cta);
+	$dato =$this->modelo->buscar_ultimo($cta);	
 	$format_inv= explode('.', $_SESSION['INGRESO']['Formato_Inventario']);
 	$pos = count($format_inv);
 	$num_car =strlen($format_inv[$pos-1]);
@@ -892,7 +911,24 @@ function buscar_ultimo($cta)
 		{
 			$ceros = str_repeat('0',$falta);
 			$num = $ceros.''.$num;
-		}
+		}		
+		$cod_in = $cta.'.'.$num;
+		$existe = true;
+	    while ($existe == true) {
+		    $cod = $this->modelo->buscar_cod_existente($cod_in);
+		    if(empty($cod))
+		    {
+			    $existe =false;
+			    break;
+		    }else{
+		    	 $num = $ceros.($num+1);
+		         $cod_in = $cta.'.'.$num;
+		    }
+		   
+	    }
+
+	    // print_r($num);die();
+
 	}
 	return $num;	
 }
@@ -949,5 +985,17 @@ function eliminar_factura($parametros)
      }
 
   }
+
+  function autocompletar($query)
+	{
+
+		$datos = $this->modelo->clientes_all($query);
+		// print_r($datos);die();
+		$result = array();
+		foreach ($datos as $key => $value) {
+			 $result[] = array("value"=>$value['ID'],"label"=>$value['Cliente'],'dir'=>$value['Direccion'],'tel'=>$value['Telefono'],'email'=>$value['Email'],'CI'=>$value['CI_RUC']);
+		}
+		return $result;
+	}
 
 }

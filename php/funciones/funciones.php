@@ -655,7 +655,7 @@ function TiposCtaStrg($cuenta) {
    foreach ($to as $key => $value) {
  //  	print_r($value);
   		 $mail = new PHPMailer();
-         $mail->isSMTP();
+       $mail->isSMTP();
 	     $mail->SMTPDebug = 0;
 	     $mail->Host = "smtp.gmail.com";
 	     $mail->Port =  465;
@@ -687,6 +687,7 @@ function TiposCtaStrg($cuenta) {
           	$respuesta = false;
      	  }
     }
+    print_r($mail->ErrorInfo);die();
     return $respuesta;
   }
 
@@ -1548,7 +1549,8 @@ function digito_verificadorf($ruc,$solovar=null,$pag=null,$idMen=null,$item=null
 				{
 					if($solovar!=1)
 					{
-						echo "<script> alert('ya existe este RUC/CI: ".$ruc." '); </script>";
+						///
+            echo "<script> alert('ya existe este RUC/CI: ".$ruc." '); </script>";
 					}
 					
 					$Codigo_RUC_CI++;
@@ -3327,6 +3329,7 @@ function cone_ajaxMYSQL1()
 function cone_ajax()
 {
 	//realizamos conexion
+  $cid ='';
 	if(isset($_SESSION['INGRESO']['IP_VPN_RUTA'])) 
 	{
 		$database=$_SESSION['INGRESO']['Base_Datos'];
@@ -7170,13 +7173,14 @@ function generar_comprobantes($parametros)
         {
            $result =$row;
         }
-        return $result;
+        return $result[$query];
 
   }
 
 function buscar_cta_iva_inventario()
   {
-    $cid = $this->conn;
+    $conn = new Conectar();
+    $cid=$conn->conexion();
     $sql = "SELECT * FROM Ctas_Proceso WHERE Periodo = '".$_SESSION['INGRESO']['periodo']."' AND Item='".$_SESSION['INGRESO']['item']."' AND Detalle = 'Cta_Iva_Inventario'";
     // print_r($sql); die();
     $stmt = sqlsrv_query($cid, $sql);
@@ -7200,6 +7204,123 @@ function buscar_cta_iva_inventario()
      }
 
   }
+
+function LeerCta($CodigoCta )
+{
+  $conn = new Conectar();
+  $cid=$conn->conexion();
+  $Cuenta = G_NINGUNO;
+  $Codigo = G_NINGUNO;
+  $TipoCta = "G";
+  $SubCta = "N";
+  $TipoPago = "01";
+  $Moneda_US = False;
+  if(strlen(substr($CodigoCta, 1, 1)) >= 1){
+
+     $sql = "SELECT Codigo, Cuenta, TC, ME, DG, Tipo_Pago
+             FROM Catalogo_Cuentas
+             WHERE Codigo = '".$CodigoCta."'
+             AND Item = '".$_SESSION['INGRESO']['item']."'
+             AND Periodo = '".$_SESSION['INGRESO']['periodo']."' ";
+    $stmt = sqlsrv_query($cid, $sql);
+    $datos =  array();
+    $datoscta = array();
+     if( $stmt === false)  
+     {  
+     echo "Error en consulta PA.\n";  
+     return '';
+     die( print_r( sqlsrv_errors(), true));  
+     }
+      while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_ASSOC) ) 
+     {
+            $datos[]=$row;
+     }
+
+     // print_r($datos);die();
+     // print_r('expression');
+     if (count($datos)>0) {
+       foreach ($datos as $key => $value) {
+         
+         if (intval($value['Tipo_Pago']) <= 0){ $tipo= "01";}
+         $datoscta[] = array( 'Codigo' =>$value["Codigo"],'Cuenta'=>$value["Cuenta"],'SubCta'=>$value["TC"],'Moneda_US'=>$value["ME"],'TipoCta'=>$value["DG"],'TipoPago'=> $tipo);
+       }
+     }
+     return $datoscta;
+     // DataReg.open sSQL, AdoStrCnn, , , adCmdText
+     // With DataReg
+     //  If .RecordCount > 0 Then
+     //      $Codigo = .Fields("Codigo")
+     //      $Cuenta = .Fields("Cuenta")
+     //      $SubCta = .Fields("TC")
+     //      $Moneda_US = .Fields("ME")
+     //      $TipoCta = .Fields("DG")
+     //      $TipoPago = .Fields("Tipo_Pago")
+     //      If Val(TipoPago) <= 0 Then TipoPago = "01"
+     //  End If
+     // End With
+     // DataReg.Close
+  }
+}
+
+function crear_variables_session($empresa)
+{
+
+  // print_r($empresa);die();
+        $_SESSION['INGRESO']['IP_VPN_RUTA']='mysql.diskcoversystem.com';
+        $_SESSION['INGRESO']['Base_Datos']='diskcover_empresas';
+        $_SESSION['INGRESO']['Usuario_DB']='diskcover';
+        $_SESSION['INGRESO']['Contraseña_DB']='disk2017Cover';
+        $_SESSION['INGRESO']['Tipo_Base']='MySQL';
+        $_SESSION['INGRESO']['Puerto']='13306';
+        $_SESSION['INGRESO']['Fecha']='';
+        $_SESSION['INGRESO']['Logo_Tipo']=$empresa[0]['Logo_Tipo'];
+        $_SESSION['INGRESO']['periodo']='.';
+        $_SESSION['INGRESO']['Razon_Social']=$empresa[0]['Razon_Social'];
+        $_SESSION['INGRESO']['Fecha_ce']='';
+        //echo $_SESSION['INGRESO']['IP_VPN_RUTA'];
+        //obtenemos el resto de inf. de la empresa tales como correo direccion
+        // print_r($empresa_d);die();
+        $_SESSION['INGRESO']['Direccion']='';
+        $_SESSION['INGRESO']['Telefono1']='';
+        $_SESSION['INGRESO']['FAX']='';
+        $_SESSION['INGRESO']['Nombre_Comercial']='';
+        $_SESSION['INGRESO']['Razon_Social']=$empresa[0]['Razon_Social'];
+        $_SESSION['INGRESO']['Sucursal']='';
+        $_SESSION['INGRESO']['Opc']='';
+        $_SESSION['INGRESO']['noempr']=$empresa[0]['Empresa'];
+        $_SESSION['INGRESO']['S_M']='';
+        $_SESSION['INGRESO']['Num_CD']='';
+        $_SESSION['INGRESO']['Num_CE']='';
+        $_SESSION['INGRESO']['Num_CI']='';
+        $_SESSION['INGRESO']['Num_ND']='';
+        $_SESSION['INGRESO']['Num_NC']='';
+        $_SESSION['INGRESO']['Email_Conexion_CE']='';
+        $_SESSION['INGRESO']['Formato_Cuentas']='';
+        $_SESSION['INGRESO']['Formato_Inventario']='';
+        $_SESSION['INGRESO']['porc']='';
+        $_SESSION['INGRESO']['Ambiente']='';
+        $_SESSION['INGRESO']['Obligado_Conta']='';
+        $_SESSION['INGRESO']['LeyendaFA']='';
+        $_SESSION['INGRESO']['Email']='';
+        $_SESSION['INGRESO']['RUC']=$empresa[0]['RUC_CI_NIC'];
+        $_SESSION['INGRESO']['Gerente']=$empresa[0]['Gerente'];;
+        $_SESSION['INGRESO']['Det_Comp']='';
+        $_SESSION['INGRESO']['Signo_Dec']='';
+        $_SESSION['INGRESO']['Signo_Mil']='';
+        $_SESSION['INGRESO']['Sucursal']='';
+        $_SESSION['INGRESO']['RUC_Contador'] = '';
+        $_SESSION['INGRESO']['CI_Representante'] = '';
+        $_SESSION['INGRESO']['Ruta_Certificado'] = '';
+        $_SESSION['INGRESO']['Clave_Certificado'] = '';
+        $_SESSION['INGRESO']['Ambiente'] = '';
+        $_SESSION['INGRESO']['Dec_PVP'] = '';
+        $_SESSION['INGRESO']['Dec_Costo'] = '';
+        $_SESSION['INGRESO']['Cotizacion'] = '';
+        // print_r($empresa_d);die();
+        $_SESSION['INGRESO']['Ciudad'] = $empresa[0]['Ciudad'];;       
+        $_SESSION['INGRESO']['accesoe']='0';
+}
+
   // function sp_mayorizar_cuentas()
   // {
     // set_time_limit(1024);

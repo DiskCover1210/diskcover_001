@@ -24,6 +24,16 @@ function getEmpresasId($id_empresa)
 	// print_r($_SESSION); die();
 	return $empresa;
 }
+//devuelve empresas seleccionada por el usuario de mysql sin credenciales sqlserver
+function empresa_sin_creenciales_sqlserver($id_empresa)
+{
+	//echo ' dd '.$id_empresa;
+	$per=new usuario_model();
+	$empresa=$per->getEmpresasId_sin_sqlserver($id_empresa);
+	// print_r($empresa);die();
+	// print_r($_SESSION); die();
+	return $empresa;
+}
 //devuelve inf del detalle de la empresa seleccionada por el usuario
 function getEmpresasDE($item,$nombre)
 {
@@ -95,9 +105,11 @@ function getUsuario()
 //verificar acceso usuario
 function getAccesoEmpresas()
 {
-	//echo ' dd '.$id_empresa;
+	// echo ' dd '.$id_empresa;
 	if(isset($_SESSION['INGRESO']['Tipo_Base']) and $_SESSION['INGRESO']['Tipo_Base']=='SQL SERVER') 
 	{
+
+	// echo ' dd '.$id_empresa;
 		$per=new usuario_model();
 		//hacemos conexion en sql
 		$per->conexionSQL();
@@ -106,9 +118,8 @@ function getAccesoEmpresas()
 	//mysql
 	if(isset($_SESSION['INGRESO']['Tipo_Base']) and $_SESSION['INGRESO']['Tipo_Base']=='MySQL') 
 	{
-		//echo ' sss '.$_SESSION['INGRESO']['Tipo_Base'];
-		$per=new usuario_model();
-		
+		// echo ' sss '.$_SESSION['INGRESO']['Tipo_Base'];
+		$per=new usuario_model();		
 		$empresa=$per->getAccesoEmpresasMYSQL();
 	}
 	

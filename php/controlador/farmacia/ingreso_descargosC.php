@@ -140,16 +140,23 @@ class ingreso_descargosC
 		foreach ($datos as $key => $value) {
 
 			$costo_venta = $this->modelo->costo_venta($value['Codigo_Inv']);
+			$costotra = $this->modelo->costo_producto($value['Codigo_Inv']);
 			// print_r($costo_venta);die();
 			if(empty($costo_venta))
 			{
-				$costo = 0;
 				$exist = 0;
 			}else
 			{
-				      $costo = $costo_venta[0]['Costo'];
 				      $exist = $costo_venta[0]['Existencia'];
 			}
+			if(empty($costotra))
+			{
+				$costo = 0;
+			}else
+			{
+				      $costo = $costotra[0]['Costo'];
+			}
+
 			if($tipo=='ref')
 			{
 				$producto[] = array('id'=>$value['Codigo_Inv'].'_'.$costo.'_'.$value['Producto'].'_'.$value['Cta_Inventario'].'_'.$value['TC'].'_'.$value['Cta_Costo_Venta'].'_'.$value['IVA'].'_'.$value['Unidad'].'_'.$exist.'_'.$value['Maximo'].'_'.$value['Minimo'],'text'=>$value['Codigo_Inv']);
