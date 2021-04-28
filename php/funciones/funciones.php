@@ -7377,5 +7377,109 @@ function crear_variables_session($empresa)
   // }
 
 
+function grilla_generica_new($sql,$tabla,$encabezado=false,$columnas=false,$border=false,$sobreado=false)
+{
+  $conn = new Conectar();
+  $cid=$conn->conexion();
+  $cid1=$conn->conexion();
+  $stmt = sqlsrv_query($cid, $sql);
+  $columnas = sqlsrv_query($cid1, $sql);
+  $columnas = sqlsrv_field_metadata($columnas);
+  $columnas_uti = array();
+  foreach ($columnas as $key => $value) {
+      $d =  datos_tabla($tabla,$value['Name']);
+   array_push($columnas_uti, $d[0]);
+  }
+  // print_r($columnas_uti);die();
+   $datos =  array();
+     if( $stmt === false)  
+     {  
+     echo "Error en consulta PA.\n";  
+     return '';
+     die( print_r( sqlsrv_errors(), true));  
+     }
+     while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_ASSOC) ) 
+     {
+            $datos[]=$row;
+     }
+ 
+  $tbl = '<div class="table responsive" style="overflow-x: scroll;"><table class="table table-hover" style="table-layout: fixed;"><thead>';
+  //cabecera de la consulta sql//
+  foreach ($columnas_uti as $key => $value) {
+    $medida = dimenciones_tabl($value['CHARACTER_MAXIMUM_LENGTH']);
+     switch ($value['DATA_TYPE']) 
+     {
+        case 'nvarchar':
+            $alineado = 'text-left'; 
+          break;                
+        case 'int':            
+        case 'money':            
+        case 'real':                             
+            $alineado = 'text-right';  
+          break;
+        case 'bit':       
+            $alineado = 'text-left'; 
+          break;
+      }         
+
+    $tbl.='<th class="'.$alineado.'" style="width:'.$medida.'">'.$value['COLUMN_NAME'].'</th>'; 
+  }
+  //fin de cabecera
+  $tbl.='</thead><tbody>';
+//cuerpo de la consulta
+  foreach ($datos as $key => $value) {
+     $tbl.='<tr>';
+     foreach ($value as $key1 => $value1) {            
+             if(is_object($value1))
+             {
+               $tbl.='<td>'.$value1->format('Y-m-d').'</td>';              
+             }
+             else
+             {              
+                  $tbl.='<td class="'.$alineado.'">'.utf8_encode($value1).'</td>';         
+            }    
+         }
+
+      }          
+ 
+
+          
+  $tbl.='</tbody>
+      </table>
+      
+    </div>';
+    // print_r($tbl);die();
+
+
+    return $tbl;
+
+}
+
+function datos_tabla($tabla,$campo=false)
+{
+    $conn = new Conectar();
+    $cid=$conn->conexion();
+    $sql="SELECT COLUMN_NAME,DATA_TYPE,CHARACTER_MAXIMUM_LENGTH
+    FROM Information_Schema.Columns
+    WHERE TABLE_NAME = '".$tabla."' ";
+    if($campo){
+      $sql.=" AND COLUMN_NAME = '".$campo."'";
+    }
+    $stmt = sqlsrv_query($cid, $sql);
+     $datos =  array();
+     if( $stmt === false)  
+     {  
+     echo "Error en consulta PA.\n";  
+     return '';
+     die( print_r( sqlsrv_errors(), true));  
+     }
+     while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_ASSOC) ) 
+     {
+            $datos[]=$row;
+     }
+
+     return $datos;
+}
+
 
 ?>
