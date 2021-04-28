@@ -28,6 +28,7 @@ require_once("../funciones/funciones.php");
 // if (isset($_GET['mos'])) {
 // 	print_r('expressiossn');die();
 // }
+header('Content-Type: text/html; charset=utf-8');
 
 if(isset($_GET['mos']))
 {
