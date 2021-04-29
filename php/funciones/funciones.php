@@ -7350,6 +7350,28 @@ function crear_variables_session($empresa)
         $_SESSION['INGRESO']['accesoe']='0';
 }
 
+  function Leer_Seteos_Ctas($Det_Cta = ""){
+    //conexion
+    $conn = new Conectar();
+    $cid=$conn->conexion();
+    $RatonReloj;
+    $Cta_Ret_Aux = "0";
+    $SSQLSeteos = "SELECT * 
+               FROM Ctas_Proceso 
+               WHERE Item = '".$_SESSION['INGRESO']['item']."'
+               AND Periodo = '".$_SESSION['INGRESO']['periodo']."'
+               AND Detalle = '".$Det_Cta."' ";
+    $stmt = sqlsrv_query($cid, $SSQLSeteos);
+    if( $stmt === false)  
+    {  
+      die( print_r( sqlsrv_errors(), true));
+    } else
+    {
+      $datos = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_ASSOC);
+      return $datos['Codigo'];
+    }
+  }
+
   // function sp_mayorizar_cuentas()
   // {
     // set_time_limit(1024);

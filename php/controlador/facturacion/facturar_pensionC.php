@@ -22,6 +22,15 @@ if(isset($_GET['catalogoProducto']))
 	$controlador->getCatalogoProductos();
 }
 
+if(isset($_GET['saldoFavor']))
+{
+	$controlador->getSaldoFavor();
+}
+
+if(isset($_GET['saldoPendiente']))
+{
+	$controlador->getSaldoPendiente();
+}
 
 class facturar_pensionC
 {
@@ -82,6 +91,22 @@ class facturar_pensionC
 			$cuentas[] = array('codigo'=>$value['Codigo'],'nombre'=>utf8_encode($value['NomCuenta']));
 		}
 		return $cuentas;
+	}
+
+	public function getSaldoFavor(){
+		$codigoCliente = $_POST['codigoCliente'];
+		$datos = $this->facturacion->getSaldoFavor($codigoCliente);
+		$catalogo = sqlsrv_fetch_array( $datos, SQLSRV_FETCH_ASSOC);
+		echo json_encode($catalogo);
+		exit();
+	}
+
+	public function getSaldoPendiente(){
+		$codigoCliente = $_POST['codigoCliente'];
+		$datos = $this->facturacion->getSaldoPendiente($codigoCliente);
+		$catalogo = sqlsrv_fetch_array( $datos, SQLSRV_FETCH_ASSOC);
+		echo json_encode($catalogo);
+		exit();
 	}
 }
 ?>

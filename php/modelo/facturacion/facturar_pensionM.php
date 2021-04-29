@@ -90,6 +90,33 @@ class facturar_pensionM
 		return $stmt;
     }
 
+    public function getSaldoFavor($codigoCliente){
+    	$SubCtaGen = Leer_Seteos_Ctas("Cta_Anticipos_Clientes");
+  		$sql = "SELECT Codigo, SUM(Creditos-Debitos) As Saldo_Pendiente
+       		FROM Trans_SubCtas
+       		WHERE Item = '".$_SESSION['INGRESO']['item']."'
+       		AND Periodo = '".$_SESSION['INGRESO']['periodo']."'
+       		AND Codigo = '".$codigoCliente."'
+       		AND Cta = '".$SubCtaGen."'
+       		AND T = 'N'
+       		GROUP BY Codigo ";
+       	$stmt = sqlsrv_query( $this->dbs, $sql);
+		return $stmt;
+    }
+
+    public function getSaldoPendiente($codigoCliente){
+  		$sql = "SELECT CodigoC,SUM(Saldo_MN) As Saldo_Pend 
+                FROM Facturas 
+                WHERE Item = '".$_SESSION['INGRESO']['item']."'
+                AND Periodo = '".$_SESSION['INGRESO']['periodo']."'
+                AND CodigoC = '".$codigoCliente."'
+                AND Saldo_MN > 0
+                AND T <> 'A'
+                GROUP BY CodigoC";
+       	$stmt = sqlsrv_query( $this->dbs, $sql);
+		return $stmt;
+    }
+
 }
 
 ?>
