@@ -7262,6 +7262,35 @@ function LeerCta($CodigoCta )
   }
 }
 
+function costo_venta($codigo_inv)
+  {
+  $conn = new Conectar();
+  $cid=$conn->conexion();
+    $sql = "SELECT  SUM(Entrada-Salida) as 'Existencia' 
+    FROM Trans_Kardex
+    WHERE Fecha <= '".date('Y-m-d')."'
+    AND Codigo_Inv = '".$codigo_inv."'
+    AND Item = '".$_SESSION['INGRESO']['item']."'
+    AND Periodo = '".$_SESSION['INGRESO']['periodo']."'
+    AND T <> 'A'";
+    // print_r($sql);die();
+    $stmt = sqlsrv_query($cid, $sql);
+        $datos =  array();
+     if( $stmt === false)  
+     {  
+     echo "Error en consulta PA.\n";  
+     return '';
+     die( print_r( sqlsrv_errors(), true));  
+     }
+      while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_ASSOC) ) 
+     {
+    $datos[]=$row;  
+     }
+       return $datos;
+
+  }
+  
+
 function crear_variables_session($empresa)
 {
 
