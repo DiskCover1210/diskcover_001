@@ -14,7 +14,7 @@
     background-color: #C1C000;
     border: 0;
   }
-  #saldo_input{
+  .saldo_input{
     background-color: #FFFFBE;
     border: 0;
   }
@@ -52,6 +52,7 @@
 
 <script type="text/javascript">
   
+  var total = 0;
   $(document).ready(function () {
     autocomplete_cliente();
     catalogoLineas();
@@ -66,8 +67,11 @@
       $('#ci_ruc').val(data.ci_ruc);
       $('#persona').val(data.cliente);
       $('#grupo').val(data.grupo);
+      $('#chequeNo').val(data.grupo);
       $('#codigoB').val("Código del banco: "+data.ci_ruc);
       catalogoProductos(data.codigo);
+      saldoFavor(data.codigo);
+      saldoPendiente(data.codigo);
     });
   });
 
@@ -113,7 +117,6 @@
   }
 
   function catalogoProductos(codigoCliente){
-    console.log(codigoCliente);
     $.ajax({
       type: "POST",                 
       url: '../controlador/facturacion/facturar_pensionC.php?catalogoProducto=true',
@@ -122,25 +125,120 @@
       {
         if (data) {
           datos = JSON.parse(data);
+          clave = 1;
           for (var indice in datos) {
+            subtotal = parseFloat(datos[indice].valor) - parseFloat(datos[indice].descuento) - parseFloat(datos[indice].descuento2);
             var tr = `<tr>
-              <td><input type="checkbox" name="`+datos[indice].mes+`"></td>
+              <td><input type="checkbox" id="checkbox`+clave+`" onclick="totalFactura('checkbox`+clave+`',`+datos[indice].valor+`)" name="`+datos[indice].mes+`"></td>
               <td>`+datos[indice].mes+`</td>
               <td>`+datos[indice].codigo+`</td>
               <td>`+datos[indice].periodo+`</td>
               <td>`+datos[indice].producto+`</td>
-              <td>`+datos[indice].valor+`</td>
-              <td>`+datos[indice].descuento+`</td>
-              <td>`+datos[indice].descuento2+`</td>
-              <td>`+datos[indice].valor+`</td>
+              <td><input size="10px" type ="text" id="valor`+clave+`" value ="`+parseFloat(datos[indice].valor).toFixed(2)+`" disabled/></td>
+              <td><input size="10px" type ="text" id="descuento`+clave+`" value ="`+parseFloat(datos[indice].descuento).toFixed(2)+`" disabled/></td>
+              <td><input size="10px" type ="text" id="descuento2`+clave+`" value ="`+parseFloat(datos[indice].descuento2).toFixed(2)+`" disabled/></td>
+              <td><input size="10px" type ="text" id="subtotal`+clave+`" value ="`+parseFloat(subtotal).toFixed(2)+`" disabled/></td>
             </tr>`;
             $("#cuerpo").append(tr);
+            clave++;
           }
         }else{
           console.log("No tiene datos");
         }            
       }
     });
+  }
+
+  function saldoFavor(codigoCliente){
+    $.ajax({
+      type: "POST",                 
+      url: '../controlador/facturacion/facturar_pensionC.php?saldoFavor=true',
+      data: {'codigoCliente' : codigoCliente }, 
+      success: function(data)
+      {
+        datos = JSON.parse(data);
+        valor = 0;
+        if (datos !== null) {
+          valor = datos.Saldo_Pendiente;
+        }
+        $("#saldoFavor").val(parseFloat(valor).toFixed(2));
+      }
+    });
+  }
+
+  function saldoPendiente(codigoCliente){
+    $.ajax({
+      type: "POST",                 
+      url: '../controlador/facturacion/facturar_pensionC.php?saldoPendiente=true',
+      data: {'codigoCliente' : codigoCliente }, 
+      success: function(data)
+      {
+        datos = JSON.parse(data);
+        valor = 0;
+        if (datos !== null) {
+          valor = datos.Saldo_Pend;
+        }
+        $("#saldoPendiente").val(parseFloat(valor).toFixed(2));
+      }
+    });
+  }
+
+  function totalFactura(id,valor){
+    var checkBox = document.getElementById(id);
+    if (checkBox.checked == true){
+      total += valor;
+    } else {
+      total -= valor;
+    }
+    $("#total12").val(parseFloat(0.00).toFixed(2));
+    $("#descuento").val(parseFloat(0.00).toFixed(2));
+    $("#descuentop").val(parseFloat(0.00).toFixed(2));
+    $("#efectivo").val(parseFloat(0.00).toFixed(2));
+    $("#abono").val(parseFloat(0.00).toFixed(2));
+    $("#iva12").val(parseFloat(0.00).toFixed(2));
+    $("#total").val(parseFloat(total).toFixed(2));
+    $("#total0").val(parseFloat(total).toFixed(2));
+    $("#valorBanco").val(parseFloat(total).toFixed(2));
+    $("#saldoTotal").val(parseFloat(total).toFixed(2));
+  }
+
+  function calcularDescuento(){
+    $('#myModal').modal('hide');
+    porcentaje = $('#porcentaje').val();
+    var table = document.getElementById('customers');
+    var rowLength = table.rows.length;
+
+    for(var i=1; i<rowLength; i+=1){
+      var row = table.rows[i];
+      var cellLength = row.cells.length;
+      checkbox = "checkbox"+i;
+      var checkBox = document.getElementById(checkbox);
+      if (checkBox.checked == true){
+        valor = $("#valor"+i).val();
+        descuento1 = valor * (porcentaje/100);
+        $("#descuento2"+i).val(descuento1.toFixed(2));
+        subtotal = valor - descuento1;
+        $("#subtotal"+i).val(subtotal.toFixed(2));
+        console.log(row.cells[0]);
+        console.log(valor);
+      }
+      total0 = $("#total0").val();
+      descuento = total0 * (porcentaje/100);
+      total = total0 - descuento;
+      $("#descuentop").val(parseFloat(descuento).toFixed(2));
+      $("#total").val(parseFloat(total).toFixed(2));
+      $("#valorBanco").val(parseFloat(total).toFixed(2));
+      $("#saldoTotal").val(total.toFixed(2));
+    }
+  }
+
+  function calcularSaldo(){
+    total = $("#total").val();
+    efectivo = $("#efectivo").val();
+    abono = $("#abono").val();
+    saldo = total - efectivo - abono;
+    console.log(saldo);
+    $("#saldoTotal").val(saldo.toFixed(2));
   }
 
 </script>
@@ -287,8 +385,12 @@
         </div>
         <br>
         <div class="row">
-          <div class="col-sm-12">
-            <table class="table table-responsive table-bordered thead-dark" id="customers" style="height: 100px">
+          <div class="col-sm-12" style="
+              height: 150px;
+              overflow: auto;
+              display: block;
+          ">
+            <table class="table table-responsive table-bordered thead-dark" id="customers">
               <thead>
                 <tr>
                   <th></th>
@@ -296,10 +398,10 @@
                   <th>Código</th>
                   <th>Año</th>
                   <th>Producto</th>
-                  <th>Valor</th>
-                  <th>Descuento</th>
-                  <th>Desc. P. P.</th>
-                  <th>Total</th>
+                  <th width="100px">Valor</th>
+                  <th width="100px">Descuento</th>
+                  <th width="100px">Desc. P. P.</th>
+                  <th width="100px">Total</th>
                 </tr>
               </thead>
               <tbody id="cuerpo">
@@ -307,6 +409,7 @@
             </table>          
           </div>
         </div>
+        <br>
         <div class="row">
           <div class="col-sm-2 text-right">
             <label>Bancos/Tarjetas</label>
@@ -326,7 +429,7 @@
             <label class="form-control input-sm" id="saldo">Saldo a favor</label>
           </div>
           <div class="col-sm-2">
-            <input type="input" id="saldo_input" class="form-control input-sm text-right blue" name="saldo" value="0.00">
+            <input type="input" id="saldoFavor" class="form-control input-sm text-right black saldo_input" name="saldoFavor">
           </div>
         </div>
         <div class="row">
@@ -348,7 +451,7 @@
             <label class="form-control input-sm" id="saldo">Saldo pendiente</label>
           </div>
           <div class="col-sm-2">
-            <input type="input" id="saldo_input" class="form-control input-sm text-right blue" name="saldo" value="0.00">
+            <input type="input" id="saldoPendiente" class="form-control input-sm text-right blue saldo_input" name="saldoPendiente">
           </div>
         </div>
         <div class="row">
@@ -356,7 +459,7 @@
             <label>Cheque / Deposito del banco</label>
           </div>
           <div class="col-sm-5">
-            <input type="text" name="cheque" class="form-control input-sm" value="SGP">
+            <input type="text" name="cheque" class="form-control input-sm" value=".">
           </div>
           <div class="col-sm-4 text-center">
             <input type="text" name="codigoB" class="red1 form-control input-sm" id="codigoB" style="color: white" value="Código del banco: " />
@@ -367,13 +470,13 @@
             <b>Total Tarifa 0%</b>
           </div>
           <div class="col-sm-2">
-            <input type="text" name="txt_max_in" id="txt_max_in" class="form-control input-sm red text-right" value="35.70">
+            <input type="text" name="total0" id="total0" class="form-control input-sm red text-right">
           </div>
           <div class="col-sm-2 text-right">
             <b>Cheque No.</b>
           </div>
           <div class="col-sm-2">
-            <input type="text" name="txt_max_in" id="txt_max_in" class="form-control input-sm text-right">
+            <input type="text" name="chequeNo" id="chequeNo" class="form-control input-sm text-right">
           </div>
           <div class="col-sm-4 text-center">
             <input type="text" class="form-control input-sm" id="codigoB"/>
@@ -384,7 +487,7 @@
             <b>Total Tarifa 12%</b>
           </div>
           <div class="col-sm-2">
-            <input type="text" name="txt_min_in" id="txt_min_in" class="form-control input-sm red text-right" value="0.00">
+            <input type="text" name="total12" id="total12" class="form-control input-sm red text-right">
           </div>
         </div>
         <div class="row">
@@ -392,27 +495,28 @@
             <b>Descuentos</b>
           </div>
           <div class="col-sm-2">
-            <input type="text" name="txt_canti" id="txt_canti" class="form-control input-sm red text-right" value="0.00">
+            <input type="text" name="descuento" id="descuento" class="form-control input-sm red text-right">
           </div>
           <div class="col-sm-2 text-right">
             <b>Valor Banco</b>
           </div>
           <div class="col-sm-2">
-            <input type="text" name="txt_canti" id="txt_canti" class="form-control input-sm red text-right" value="0.00">
+            <input type="text" name="valorBanco" id="valorBanco" class="form-control input-sm red text-right">
           </div>
         </div>
         <div class="row">
           <div class="col-sm-2 text-right">
             <b>Desc x P P</b>
+            <button type="button" class="btn" data-toggle="modal" data-target="#myModal">%</button>
           </div>
           <div class="col-sm-2">
-            <input type="text" name="txt_precio" id="txt_precio" class="form-control input-sm red text-right" value="0.00">
+            <input type="text" name="descuentop" id="descuentop" class="form-control input-sm red text-right">
           </div>
           <div class="col-sm-2 text-right">
             <b>Efectivo</b>
           </div>
           <div class="col-sm-2">
-            <input type="text" name="txt_canti" id="txt_canti" class="form-control input-sm red text-right" value="0.00">
+            <input type="text" name="efectivo" id="efectivo" onkeyup="calcularSaldo();" class="form-control input-sm red text-right">
           </div>
         </div>
         <div class="row">
@@ -420,13 +524,13 @@
             <b>I. V. A. 12%</b>
           </div>
           <div class="col-sm-2">
-            <input type="text" name="txt_precio_ref" id="txt_precio_ref" class="form-control input-sm red text-right" value="0.00">
+            <input type="text" name="iva12" id="iva12" class="form-control input-sm red text-right">
           </div>
           <div class="col-sm-2 text-right">
             <b>Abono N/C</b>
           </div>
           <div class="col-sm-2">
-            <input type="text" name="txt_precio_ref" id="txt_precio_ref" class="form-control input-sm red text-right" value="0.00">
+            <input type="text" name="abono" id="abono" onkeyup="calcularSaldo();" class="form-control input-sm red text-right">
           </div>
         </div>
         <div class="row">
@@ -434,13 +538,13 @@
             <b>Total Facturado</b>
           </div>
           <div class="col-sm-2">
-            <input type="text" name="txt_precio_ref" id="txt_precio_ref" class="form-control input-sm red text-right" value="0.00">
+            <input type="text" name="total" id="total" class="form-control input-sm red text-right">
           </div>
           <div class="col-sm-2 text-right">
             <b>Saldo</b>
           </div>
           <div class="col-sm-2">
-            <input type="text" name="txt_precio_ref" id="txt_precio_ref" class="form-control input-sm red text-right" value="0.00">
+            <input type="text" name="saldoTotal" id="saldoTotal" class="form-control input-sm red text-right">
           </div>
           <div class=" col-sm-4 col-sm-offset-8">
             <div class="col-sm-2 col-sm-offset-4">
@@ -462,7 +566,26 @@
     <input type="hidden" name="" id="txt_pag" value="0">
     <div id="tbl_pag"></div>    
   </div>
-  <div class="row" id="tbl_ingresados">
+</div>
+
+<!-- Modal -->
+<div id="myModal" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+
+    <!-- Modal content-->
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h4 class="modal-title">Porcentaje de descuento</h4>
+      </div>
+      <div class="modal-body">
+        <input type="text" name="porcentaje" id="porcentaje" class="form-control" placeholder="Ingrese el porcentaje de descuento %">
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" onclick="calcularDescuento();">Aceptar</button>
+        <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+      </div>
+    </div>
 
   </div>
 </div>
