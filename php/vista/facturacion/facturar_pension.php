@@ -53,6 +53,10 @@
 <script type="text/javascript">
   
   var total = 0;
+  var total0 = 0;
+  var total12 = 0;
+  var iva12 = 0;
+  var descuento = 0;
   $(document).ready(function () {
     autocomplete_cliente();
     catalogoLineas();
@@ -69,6 +73,22 @@
       $('#grupo').val(data.grupo);
       $('#chequeNo').val(data.grupo);
       $('#codigoB').val("Código del banco: "+data.ci_ruc);
+      $("#total12").val(parseFloat(0.00).toFixed(2));
+      $("#descuento").val(parseFloat(0.00).toFixed(2));
+      $("#descuentop").val(parseFloat(0.00).toFixed(2));
+      $("#efectivo").val(parseFloat(0.00).toFixed(2));
+      $("#abono").val(parseFloat(0.00).toFixed(2));
+      $("#iva12").val(parseFloat(0.00).toFixed(2));
+      $("#total").val(parseFloat(0.00).toFixed(2));
+      $("#total0").val(parseFloat(0.00).toFixed(2));
+      $("#valorBanco").val(parseFloat(0.00).toFixed(2));
+      $("#saldoTotal").val(parseFloat(0.00).toFixed(2));
+      //$("input[type=checkbox]").prop("checked", false);
+      total = 0;
+      total0 = 0;
+      total12 = 0;
+      iva12 = 0;
+      descuento = 0;
       catalogoProductos(data.codigo);
       saldoFavor(data.codigo);
       saldoPendiente(data.codigo);
@@ -126,10 +146,11 @@
         if (data) {
           datos = JSON.parse(data);
           clave = 1;
+          $("#cuerpo").empty();
           for (var indice in datos) {
-            subtotal = parseFloat(datos[indice].valor) - parseFloat(datos[indice].descuento) - parseFloat(datos[indice].descuento2);
+            subtotal = (parseFloat(datos[indice].valor) + (parseFloat(datos[indice].valor) * parseFloat(datos[indice].iva) / 100)) - parseFloat(datos[indice].descuento) - parseFloat(datos[indice].descuento2);
             var tr = `<tr>
-              <td><input type="checkbox" id="checkbox`+clave+`" onclick="totalFactura('checkbox`+clave+`',`+datos[indice].valor+`)" name="`+datos[indice].mes+`"></td>
+              <td><input type="checkbox" id="checkbox`+clave+`" onclick="totalFactura('checkbox`+clave+`','`+subtotal+`','`+datos[indice].iva+`','`+datos[indice].descuento+`')" name="`+datos[indice].mes+`"></td>
               <td>`+datos[indice].mes+`</td>
               <td>`+datos[indice].codigo+`</td>
               <td>`+datos[indice].periodo+`</td>
@@ -142,6 +163,9 @@
             $("#cuerpo").append(tr);
             clave++;
           }
+          $("#efectivo").val(parseFloat(0.00).toFixed(2));
+          $("#abono").val(parseFloat(0.00).toFixed(2));
+          $("#descuentop").val(parseFloat(0.00).toFixed(2));
         }else{
           console.log("No tiene datos");
         }            
@@ -183,21 +207,37 @@
     });
   }
 
-  function totalFactura(id,valor){
+  function totalFactura(id,valor,iva,descuento1){
+    console.log(valor);
+    valor = parseFloat(valor);
+    descuento1 = parseFloat(descuento1);
     var checkBox = document.getElementById(id);
     if (checkBox.checked == true){
+      if (iva == 0) {
+        total0 += valor;
+      }else{
+        iva12 += valor*(iva/100);
+        total12 += valor;
+      }
+      descuento += descuento1;
       total += valor;
+      console.log(total);
     } else {
+      if (iva == 0) {
+        total0 -= valor;  
+      }else{
+        total12 -= valor;
+      }
+      descuento -= descuento1;
       total -= valor;
+      console.log(total);
     }
-    $("#total12").val(parseFloat(0.00).toFixed(2));
-    $("#descuento").val(parseFloat(0.00).toFixed(2));
-    $("#descuentop").val(parseFloat(0.00).toFixed(2));
-    $("#efectivo").val(parseFloat(0.00).toFixed(2));
-    $("#abono").val(parseFloat(0.00).toFixed(2));
-    $("#iva12").val(parseFloat(0.00).toFixed(2));
+
+    $("#total12").val(parseFloat(total12).toFixed(2));
+    $("#descuento").val(parseFloat(descuento).toFixed(2));
+    $("#iva12").val(parseFloat(iva12).toFixed(2));
     $("#total").val(parseFloat(total).toFixed(2));
-    $("#total0").val(parseFloat(total).toFixed(2));
+    $("#total0").val(parseFloat(total0).toFixed(2));
     $("#valorBanco").val(parseFloat(total).toFixed(2));
     $("#saldoTotal").val(parseFloat(total).toFixed(2));
   }
