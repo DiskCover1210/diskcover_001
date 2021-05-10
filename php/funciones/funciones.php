@@ -7229,6 +7229,35 @@ function LeerCta($CodigoCta )
   }
 }
 
+function costo_venta($codigo_inv)
+  {
+  $conn = new Conectar();
+  $cid=$conn->conexion();
+    $sql = "SELECT  SUM(Entrada-Salida) as 'Existencia' 
+    FROM Trans_Kardex
+    WHERE Fecha <= '".date('Y-m-d')."'
+    AND Codigo_Inv = '".$codigo_inv."'
+    AND Item = '".$_SESSION['INGRESO']['item']."'
+    AND Periodo = '".$_SESSION['INGRESO']['periodo']."'
+    AND T <> 'A'";
+    // print_r($sql);die();
+    $stmt = sqlsrv_query($cid, $sql);
+        $datos =  array();
+     if( $stmt === false)  
+     {  
+     echo "Error en consulta PA.\n";  
+     return '';
+     die( print_r( sqlsrv_errors(), true));  
+     }
+      while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_ASSOC) ) 
+     {
+    $datos[]=$row;  
+     }
+       return $datos;
+
+  }
+  
+
 function crear_variables_session($empresa)
 {
 
@@ -7286,6 +7315,8 @@ function crear_variables_session($empresa)
         // print_r($empresa_d);die();
         $_SESSION['INGRESO']['Ciudad'] = $empresa[0]['Ciudad'];;       
         $_SESSION['INGRESO']['accesoe']='0';
+        $_SESSION['INGRESO']['CodigoU']='';
+         $_SESSION['INGRESO']['Nombre_Completo']='';
 }
 
   function Leer_Seteos_Ctas($Det_Cta = ""){
@@ -7568,6 +7599,324 @@ function crear_variables_session($empresa)
     $resultado = explode(" ", $texto);
     return $resultado[0];
   }
+
+function grilla_generica_new($sql,$tabla,$titulo=false,$botones=false,$check=false,$imagen=false,$border=1,$sombreado=1,$head_fijo=1,$tamaño_tabla=300)
+{
+
+  $conn = new Conectar();
+  $cid=$conn->conexion();
+  $cid1=$conn->conexion();
+  $stmt = sqlsrv_query($cid, $sql);
+  $columnas = sqlsrv_query($cid1, $sql);
+  $columnas = sqlsrv_field_metadata($columnas);
+  $columnas_uti = array();
+  foreach ($columnas as $key => $value) {
+      $d =  datos_tabla($tabla,$value['Name']);
+      if(empty($d))
+      {
+        array_push($columnas_uti,$value['Name']);
+      }else
+      {
+        array_push($columnas_uti, $d[0]);
+      }
+      // print_r($d);
+  }
+  // print_r($columnas_uti);die();
+  $medida_body =array();
+  $alinea_body =array();
+   $datos =  array();
+     if( $stmt === false)  
+     {  
+     echo "Error en consulta PA.\n";  
+     return '';
+     die( print_r( sqlsrv_errors(), true));  
+     }
+     while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_ASSOC) ) 
+     {
+            $datos[]=$row;
+     }
+ $tbl =' <style type="text/css">
+  #datos_t tbody tr:nth-child(even) { background:#fffff;}
+  #datos_t tbody tr:nth-child(odd) { background: #e2fbff;}
+  #datos_t tbody tr:nth-child(even):hover {  background: #DDB;}
+  #datos_t thead { background: #afd6e2; }
+  #datos_t tbody tr:nth-child(odd):hover {  background: #DDA;}
+ ';
+
+ if($border)
+ {
+  $tbl.=' #datos_t table {border-collapse: collapse;}
+  #datos_t table, th, td {  border: solid 1px #aba0a0;  padding: 2px;  }'; 
+ }
+
+ if($sombreado)
+ {
+  $tbl.='#datos_t tbody { box-shadow: 10px 10px 6px rgba(0, 0, 0, 0.6);  }
+   #datos_t thead { background: #afd6e2;  box-shadow: 10px 0px 6px rgba(0, 0, 0, 0.6);} ';
+ }
+
+ if($head_fijo)
+ {
+ $tbl.='tbody { display:block; height:'.$tamaño_tabla.'px;  overflow-y:auto;  width:fit-content;}
+  thead,tbody tr {    display:table;  width:100%;  table-layout:fixed;  } 
+  thead { width: calc( 100% - 1.2em )/* scrollbar is average 1em/16px width, remove it from thead width */}
+  /*thead tr {    display:table;  width:98.5%;  table-layout:fixed;  }*/ ';
+ } 
+
+ $tbl.="</style>";
+
+if($titulo)
+ {
+  // $num = count($columnas_uti);
+   $tbl.="<div class='text-center'><b>".$titulo."</b></div>";
+ }
+ $tbl.= '<div class="table-responsive" style="overflow-x: scroll;"><div style="width:fit-content;padding-right:20px"><table class="table" style="table-layout: fixed;" id="datos_t"><thead>';
+  //cabecera de la consulta sql//
+ if($botones)
+  {
+    $med_b = count($botones)*42;
+    $tbl.='<th width="'.$med_b.'"></th>';
+  }
+  if($check)
+  {
+     $label = false;
+     if(isset($check[0]['text_visible']))
+      {
+        $label = $check[0]['text_visible'];
+      }
+      if($label==true)
+      {
+        $tbl.='<th width="'.dimenciones_tabl(strlen($check[0]['boton'])).'" class="text-center">'.$check[0]['boton'].'</th>';
+      }else
+      {
+        $tbl.='<th width="30px" class="text-center"></th>';
+      }
+  }
+  foreach ($columnas_uti as $key => $value) {
+    //calcula dimenciones de cada columna 
+    if(is_array($value))
+    {
+    if($value['CHARACTER_MAXIMUM_LENGTH']!='')
+    {
+    if($value['CHARACTER_MAXIMUM_LENGTH']>=60)
+    {
+      $medida = '300px';
+    }else{
+      if(($value['CHARACTER_MAXIMUM_LENGTH']==1 && strlen($value['COLUMN_NAME'])>2) || ($value['CHARACTER_MAXIMUM_LENGTH']==2 && strlen($value['COLUMN_NAME'])>2) || ($value['CHARACTER_MAXIMUM_LENGTH']==3 && strlen($value['COLUMN_NAME'])>2))
+      {
+        $medida = dimenciones_tabl(strlen($value['COLUMN_NAME']));
+      }else
+      {
+        $medida = dimenciones_tabl($value['CHARACTER_MAXIMUM_LENGTH']);
+      }
+    }
+   }else
+   {
+     $medida = dimenciones_tabl(strlen($value['COLUMN_NAME']));
+   }
+   //fin de dimenciones
+   //alinea dependiendo el tipo de dato que sea
+     switch ($value['DATA_TYPE']) 
+     {
+        case 'nvarchar':
+            $alineado = 'text-left'; 
+          break;                
+        case 'int':            
+        case 'money':            
+        case 'real':                             
+            $alineado = 'text-right';  
+          break;
+        case 'bit':       
+            $alineado = 'text-left'; 
+          break;
+        case 'datetime':       
+          $alineado = 'text-left'; 
+          $medida ='100px';
+        break;
+      } 
+  //fin de alineacion        
+
+    $tbl.='<th class="'.$alineado.'" style="width:'.$medida.'">'.$value['COLUMN_NAME'].'</th>'; 
+    array_push($medida_body, $medida);
+    array_push($alinea_body, $alineado);
+  }else
+  {
+    // print_r($columnas);die();
+    foreach ($columnas as $key6 => $value6) {
+      if($value == $value6['Name'])
+      {
+         $medida = '300px';
+         $alineado = 'text-left';
+         if($value6['Size']<60)
+          {
+            if($value6['Size']!='')
+            {
+              $medida = dimenciones_tabl($value6['Size']);
+            }else
+            {
+              $medida = dimenciones_tabl(strlen($value6['Name']));
+            }
+          }
+           switch ($value6['Type']) 
+            {
+               case '-9':// campo nvarchar 
+                   $alineado = 'text-left'; 
+                 break;                
+               case '4':  //campo int          
+               case '7':  //campo real          
+               case '3':  //campo money                         
+                   $alineado = 'text-right';  
+                 break;
+               case '-7':      //campo bit 
+                   $alineado = 'text-left'; 
+                 break;
+               case '93':       // campo date
+                 $alineado = 'text-left'; 
+                 $medida ='100px';
+               break;
+             }
+           // $medida1 = explode('p',$medida);
+           // $medida1  = ($medida1[0]-6).'px';
+           // // $medida1 = $medida1.'px'; 
+           $tbl.='<th class="'.$alineado.'" style="width:'.$medida.'">'.$value6['Name'].'</th>'; 
+           array_push($medida_body, $medida);
+           array_push($alinea_body, $alineado);
+           break;
+      }
+    }
+   
+    // $tbl.='<th class="'.$alineado.'" style="width:'.$medida.'">'.$value['COLUMN_NAME'].'</th>'; 
+    // array_push($medida_body, $medida);
+  }
+  }
+  //fin de cabecera
+  $tbl.='</thead><tbody>';
+
+//cuerpo de la consulta
+  $colum = 0;
+  foreach ($datos as $key => $value) {
+     $tbl.='<tr>';
+     //crea botones
+       if($botones)
+        {
+          $med_b = count($botones)*42;
+          $tbl.='<td width="'.$med_b.'px">';
+          foreach ($botones as $key3 => $value3) {
+            $valor = '';
+            $tipo = 'default';
+            $icono = '<i class="far fa-circle nav-icon"></i>';
+            if(isset($value3['tipo']))
+            {
+              $tipo = $value3['tipo'];
+            }
+            if(isset($value3['icono']))
+            {
+              $icono = $value3['icono'];
+            }
+            $k = explode(',', $value3['id']);
+            foreach ($k as $key4 => $value4) {
+              // print_r($value);die();
+              $valor.="'".$value[$value4]."',";
+            }
+            if($valor!='')
+            {
+              $valor = substr($valor,0,-1);
+            }
+            $funcion = str_replace(' ','_', $value3['boton']);
+            $tbl.='<button class="btn btn-sm btn-'.$tipo.'" onclick="'.$funcion.'('.$valor.')" title="'.$value3['boton'].'">'.$icono.'</button>';
+          }
+          $tbl.='</td>';
+        }
+        //fin de crea botones
+        //crea los check
+        if($check)
+        {
+           $label = false;
+           $med_ch ='30px';
+           if(isset($check[0]['text_visible']))
+            {
+              $label = $check[0]['text_visible'];
+            }
+            if($label)
+            {
+              $med_ch = dimenciones_tabl(strlen($check[0]['boton']));
+            }
+          $tbl.='<td width="'.$med_ch.'" class="text-center">';
+          foreach ($check as $key3 => $value3) {
+            $valor = '';
+            $k = explode(',', $value3['id']);
+            foreach ($k as $key4 => $value4) {
+              // print_r($value);die();
+              $valor.="'".$value[$value4]."',";
+            }
+            if($valor!='')
+            {
+              $valor = substr($valor,0,-1);
+            }
+            $funcion = str_replace(' ','_', $value3['boton']);
+            
+            $tbl.='<label><input type="checkbox" onclick="'.$funcion.'('.$valor.')" title="'.$value3['boton'].'"></label>';
+            
+          }
+          $tbl.='</td>';
+        }
+        //fin de creacion de checks
+
+     foreach ($value as $key1 => $value1) { 
+             $medida = $medida_body[$colum]; 
+             $alineado = $alinea_body[$colum]; 
+             if(is_object($value1))
+             {
+               $tbl.='<td style="width:'.$medida.'">'.$value1->format('Y-m-d').'</td>';              
+             }
+             else
+             {              
+                  $tbl.='<td style="width:'.$medida.'" class="'.$alineado.'">'.utf8_encode($value1).'</td>';         
+             }
+            $colum+=1;    
+         }
+
+         $colum=0;  
+      }          
+          
+  $tbl.='</tbody>
+      </table>
+      </div>
+      
+    </div>';
+    // print_r($tbl);die();
+
+
+    return $tbl;
+
+}
+
+function datos_tabla($tabla,$campo=false)
+{
+    $conn = new Conectar();
+    $cid=$conn->conexion();
+    $sql="SELECT COLUMN_NAME,DATA_TYPE,CHARACTER_MAXIMUM_LENGTH
+    FROM Information_Schema.Columns
+    WHERE TABLE_NAME = '".$tabla."' ";
+    if($campo){
+      $sql.=" AND COLUMN_NAME = '".$campo."'";
+    }
+    // print_r($sql);die();
+    $stmt = sqlsrv_query($cid, $sql);
+     $datos =  array();
+     if( $stmt === false)  
+     {  
+     echo "Error en consulta PA.\n";  
+     return '';
+     die( print_r( sqlsrv_errors(), true));  
+     }
+     while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_ASSOC) ) 
+     {
+            $datos[]=$row;
+     }
+
+     return $datos;
+}
 
 
   function Leer_Cta_Catalogo($CodigoCta = ""){
