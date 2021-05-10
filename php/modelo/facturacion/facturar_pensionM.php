@@ -117,6 +117,48 @@ class facturar_pensionM
 		return $stmt;
     }
 
+    public function updateClientesFacturacion($TxtGrupo,$codigoCliente){
+  		$sql = "UPDATE Clientes_Facturacion
+                	SET GrupoNo = '".$TxtGrupo."'
+                	WHERE Periodo = '".$_SESSION['INGRESO']['periodo']."'
+                	AND Item = '".$_SESSION['INGRESO']['item']."'
+                	AND Codigo = '".$codigoCliente."' ";
+       	$stmt = sqlsrv_query( $this->dbs, $sql);
+		$rows_affected = sqlsrv_rows_affected( $stmt);
+		return $rows_affected;
+    }
+
+    public function updateClientesMatriculas($TextRepresentante,$TextCI,$TD_Rep,$TxtTelefono,$TxtDireccion,$TxtEmail,$TxtGrupo,$codigoCliente){
+        $sql = "UPDATE Clientes_Matriculas
+                	SET Representante = '".$TextRepresentante."', 
+                	Cedula_R = '".$TextCI."', 
+                	TD = '".$TD_Rep."', 
+                	Telefono_R = '".$TxtTelefono."', 
+                	Lugar_Trabajo_R = '".$TxtDireccion."', 
+                	Email_R = '".$TxtEmail."', 
+                	Grupo_No = '".$TxtGrupo."' 
+                	WHERE Periodo = '".$_SESSION['INGRESO']['periodo']."'
+                	AND Item = '".$_SESSION['INGRESO']['item']."'
+                	AND Codigo = '".$codigoCliente."' ";
+        print_r($sql);
+       	$stmt = sqlsrv_query( $this->dbs, $sql);
+       	$rows_affected = sqlsrv_rows_affected( $stmt);
+		return $rows_affected;
+    }
+
+    public function updateClientes($TxtTelefono,$TxtDirS,$TxtDireccion,$TxtEmail,$TxtGrupo,$codigoCliente){
+        $sql = "UPDATE Clientes
+                	SET Telefono = '".$TxtTelefono."', 
+                	Telefono_R = '".$TxtTelefono."', 
+                	Direccion = '".$TxtDirS."', 
+                	DireccionT = '".$TxtDireccion."', 
+                	Email = '".$TxtEmail."', 
+                	Grupo = '".$TxtGrupo."' 
+                	WHERE Codigo = '".$codigoCliente."'";
+       	$stmt = sqlsrv_query( $this->dbs, $sql);
+		$rows_affected = sqlsrv_rows_affected( $stmt);
+		return $rows_affected;
+    }
 }
 
 ?>

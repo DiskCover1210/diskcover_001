@@ -72,6 +72,8 @@
       $('#persona').val(data.cliente);
       $('#grupo').val(data.grupo);
       $('#chequeNo').val(data.grupo);
+      $('#codigoCliente').val(data.codigo);
+      $('#tdCliente').val(data.tdCliente);
       $('#codigoB').val("Código del banco: "+data.ci_ruc);
       $("#total12").val(parseFloat(0.00).toFixed(2));
       $("#descuento").val(parseFloat(0.00).toFixed(2));
@@ -113,6 +115,7 @@
   }
 
   function catalogoLineas(){
+    $('#myModal_espera').modal('show');
     var cursos = $("#DCLinea");
     fechaEmision = $('#fechaEmision').val();
     fechaVencimiento = $('#fechaVencimiento').val();
@@ -134,9 +137,11 @@
         }            
       }
     });
+    $('#myModal_espera').modal('hide');
   }
 
   function catalogoProductos(codigoCliente){
+    $('#myModal_espera').modal('show');
     $.ajax({
       type: "POST",                 
       url: '../controlador/facturacion/facturar_pensionC.php?catalogoProducto=true',
@@ -171,6 +176,7 @@
         }            
       }
     });
+    $('#myModal_espera').modal('hide');
   }
 
   function saldoFavor(codigoCliente){
@@ -281,6 +287,59 @@
     $("#saldoTotal").val(saldo.toFixed(2));
   }
 
+  function guardarPension(){
+    validarDatos = $("#total").val();
+    if (validarDatos <= 0 ) {
+      alert('Ingrese los datos necesarios para guardar la factura');
+    }else{
+      var update = confirm("¿Desea actualizar los datos del cliente?");
+      TextRepresentante = $("#persona").val();
+      TxtDireccion = $("#direccion").val();
+      TxtTelefono = $("#telefono").val();
+      TextFacturaNo = $("#factura").val();
+      TxtGrupo = $("#grupo").val();
+      TextCI = $("#ci_ruc").val();
+      TD_Rep = $("#tdCliente").val();
+      TxtEmail = $("#email").val();
+      TxtDirS = $("#direccion1").val();
+      TextCheque = $("#valorBanco").val();
+      DCBanco = $("#cuentaBanco").val();
+      TxtEfectivo = $("#efectivo").val();
+      TxtNC = $("#cuentaNC").val();
+      DCNC = $("#abono").val();
+      codigoCliente = $("#codigoCliente").val();
+      var confirmar = confirm("Esta seguro que desea guardar \n La factura No."+TextFacturaNo);
+      if (confirmar == true) {
+        $.ajax({
+          type: "POST",
+          url: '../controlador/facturacion/facturar_pensionC.php?guardarPension=true',
+          data: {
+            'update' : update,
+            'TextRepresentante' : TextRepresentante,
+            'TxtDireccion' : TxtDireccion,
+            'TxtTelefono' : TxtTelefono,
+            'TextFacturaNo' : TextFacturaNo,
+            'TxtGrupo' : TxtGrupo,
+            'TextCI' : TextCI,
+            'TD_Rep' : TD_Rep,
+            'TxtEmail' : TxtEmail,
+            'TxtDirS' : TxtDirS,
+            'codigoCliente' : codigoCliente,
+            'TextCheque' : TextCheque,
+            'DCBanco' : DCBanco,
+            'TxtEfectivo' : TxtEfectivo,
+            'TxtNC' : TxtNC,
+            'DCNC' : DCNC, 
+          }, 
+          success: function(data)
+          {
+            
+          }
+        });
+      }
+    }
+  }
+
 </script>
 <div class="container" id="container1">
   <div class="row">
@@ -357,14 +416,14 @@
           <div class="col-sm-6">
             <select class="form-control input-sm" id="cliente" name="cliente" >
               <option value="">Seleccione un cliente</option>
-              
             </select>
+            <input type="hidden" name="codigoCliente" id="codigoCliente">
           </div>
           <div class="col-sm-2">
             <input type="input" class="form-control input-sm" id="grupo" name="grupo">   
           </div>
           <div class=" col-sm-2">
-            <input type="input" class="form-control input-sm text-right" name="factura" value="<?php echo $codigo; ?>">
+            <input type="input" class="form-control input-sm text-right" name="factura" id="factura" value="<?php echo $codigo; ?>">
           </div>
         </div>
         <div class="row">
@@ -390,6 +449,9 @@
           </div>
           <div class="col-sm-1 text-right">
             <label>CI/R.U.C</label>
+          </div>
+          <div class="col-sm-1 text-right">
+            <input type="input" class="form-control input-sm" name="tdCliente" id="tdCliente">
           </div>
           <div class=" col-sm-2">
             <input type="input" class="form-control input-sm" name="ci" id="ci_ruc">   
@@ -455,7 +517,7 @@
             <label>Bancos/Tarjetas</label>
           </div>
           <div class="col-sm-6">
-            <select class="form-control input-sm">
+            <select class="form-control input-sm" name="cuentaBanco" id="cuentaBanco">
               <option>Seleccione Banco/Tarjeta</option>
               <?php
                 $cuentas = $facturar->getCatalogoCuentas();
@@ -477,7 +539,7 @@
             <label>Notas de crédito</label>
           </div>
           <div class="col-sm-6">
-            <select class="form-control input-sm">
+            <select class="form-control input-sm" name="cuentaNC" id="cuentaNC">
               <option>Seleccione nota de crédito</option>
               <?php
                 $cuentas = $facturar->getNotasCredito();
@@ -510,7 +572,7 @@
             <b>Total Tarifa 0%</b>
           </div>
           <div class="col-sm-2">
-            <input type="text" name="total0" id="total0" class="form-control input-sm red text-right">
+            <input type="text" name="total0" id="total0" class="form-control input-sm red text-right" readonly>
           </div>
           <div class="col-sm-2 text-right">
             <b>Cheque No.</b>
@@ -527,7 +589,7 @@
             <b>Total Tarifa 12%</b>
           </div>
           <div class="col-sm-2">
-            <input type="text" name="total12" id="total12" class="form-control input-sm red text-right">
+            <input type="text" name="total12" id="total12" class="form-control input-sm red text-right" readonly>
           </div>
         </div>
         <div class="row">
@@ -535,7 +597,7 @@
             <b>Descuentos</b>
           </div>
           <div class="col-sm-2">
-            <input type="text" name="descuento" id="descuento" class="form-control input-sm red text-right">
+            <input type="text" name="descuento" id="descuento" class="form-control input-sm red text-right" readonly>
           </div>
           <div class="col-sm-2 text-right">
             <b>Valor Banco</b>
@@ -550,7 +612,7 @@
             <button type="button" class="btn" data-toggle="modal" data-target="#myModal">%</button>
           </div>
           <div class="col-sm-2">
-            <input type="text" name="descuentop" id="descuentop" class="form-control input-sm red text-right">
+            <input type="text" name="descuentop" id="descuentop" class="form-control input-sm red text-right" readonly>
           </div>
           <div class="col-sm-2 text-right">
             <b>Efectivo</b>
@@ -564,7 +626,7 @@
             <b>I. V. A. 12%</b>
           </div>
           <div class="col-sm-2">
-            <input type="text" name="iva12" id="iva12" class="form-control input-sm red text-right">
+            <input type="text" name="iva12" id="iva12" class="form-control input-sm red text-right" readonly>
           </div>
           <div class="col-sm-2 text-right">
             <b>Abono N/C</b>
@@ -578,7 +640,7 @@
             <b>Total Facturado</b>
           </div>
           <div class="col-sm-2">
-            <input type="text" name="total" id="total" class="form-control input-sm red text-right">
+            <input type="text" name="total" id="total" class="form-control input-sm red text-right" readonly>
           </div>
           <div class="col-sm-2 text-right">
             <b>Saldo</b>
@@ -588,8 +650,8 @@
           </div>
           <div class=" col-sm-4 col-sm-offset-8">
             <div class="col-sm-2 col-sm-offset-4">
-              <a  href="./farmacia.php?mod=Farmacia#" title="Salir de modulo" class="btn btn-default">
-                <img src="../../img/png/save.png" width="25" height="30">
+              <a title="Guardar" class="btn btn-default">
+                <img src="../../img/png/save.png" width="25" height="30" onclick="guardarPension();">
               </a>
             </div>
             <div class="col-xs-2 col-md-2 col-sm-2 col-lg-1">

@@ -580,42 +580,9 @@ function TextoValido($texto,$numero=false,$Mayusculas=false,$NumeroDecimales=fal
 		}
 
 	}
-
+  //print_r($result);
 	return $result;
 }
-
-// Public Sub TextoValido(TextB As TextBox,Optional Numero As Boolean,Optional Mayusculas As Boolean,Optional NumeroDecimales As Byte)
-// Dim TextosB As String
-//     TextosB = TextB
-//     If IsNull(TextosB) Then TextosB = ""
-//     If IsEmpty(TextosB) Then TextosB = ""
-//     TextosB = Replace(TextosB, vbCr, "")
-//     TextosB = Replace(TextosB, vbLf, "")
-//     TextosB = TrimStrg(TextosB)
-//     If Numero Then
-//        If TextosB = "" Then TextosB = "0"
-//       'MsgBox IsNumeric(TextosB)'
-//        If IsNumeric(TextosB) Then
-//           Select Case NumeroDecimales
-//             Case 0: TextosB = Format$(TextosB, "##0.00")
-//             Case Is > 2: TextosB = Format$(TextosB, "#,##0." & String$(NumeroDecimales, "0"))
-//             Case Else: TextosB = Format$(TextosB, "##0.00")
-//           End Select
-//           TextB = TrimStrg(TextosB)
-//        Else
-//           TextosB = "0"
-//           TextB = TextosB
-//           TextB.SetFocus
-//        End If
-//     Else
-//        If TextosB = "" Then TextosB = Ninguno
-//        TextB = TextosB
-//     End If
-// End Sub
-
-
-
-
 
 //string de tipo de cuenta
 function TiposCtaStrg($cuenta) {
@@ -7379,6 +7346,290 @@ function crear_variables_session($empresa)
     //    return $respuesta;   
   // }
 
+  function TextoValido1($TextB,$Numero = false, $Mayusculas = false, $NumeroDecimales = 2){
+    $TextosB = "";
+    $TextosB = $TextB;
+    if (is_null($TextosB)) $TextosB = "";
+    
+    if (empty($TextosB)) $TextosB = "";
+    $TextosB = trim($TextosB);
+    if ($Mayusculas) $TextosB = strtoupper($TextosB);
+    if ($Numero) {
+      if ($TextosB == "") $TextosB = "0";
+      if (is_numeric($TextosB)) {
+        if($NumeroDecimales) {
+          if($NumeroDecimales == 0){
+            $TextosB = number_format($TextosB, $NumeroDecimales, '.', '');
+          }elseif ($NumeroDecimales > 2) {
+            $TextosB = Format($TextosB, $NumeroDecimales, '.', '');
+          }else{
+            $TextosB = number_format($TextosB, $NumeroDecimales, '.', '');
+          }
+        }
+        $TextB = trim($TextosB);
+      } else {
+        $TextosB = "0";
+        $TextB = $TextosB;
+      }
+    }else{
+      if ($TextosB == "") $TextosB = G_NINGUNO;
+      $TextB = $TextosB;
+    }
+    return $TextB;
+  }
+
+  function Leer_Datos_Clientes($Codigo_CIRUC_Cliente = ""){
+    //Dim AdoCliDB As ADODB.Recordset
+    $TBenef = $Codigo_CIRUC_Cliente;
+    $Por_Codigo = false;
+    $Por_CIRUC = false;
+    $Por_Cliente = false;
+    $CadAux = "";
+
+    if ($TBenef != "") {
+      $FA = false;
+      $Asignar_Dr = false;
+      $Codigo = G_NINGUNO;
+      $Cliente = G_NINGUNO;
+      $Tipo_Cta = G_NINGUNO;
+      $Cta_Numero = G_NINGUNO;
+      $Descuento = false;
+      $T = "";
+      $TP = "";
+      $CI_RUC = "";
+      $TD = "";
+      $Fecha = "";
+      $Fecha_A = "";
+      $Fecha_N = "";
+      $Sexo = "";
+      $Email1 = "";
+      $Email2 = "";
+      $Direccion = "";
+      $DirNumero = "";
+      $Telefono1 = "";
+      $TelefonoT = "";
+      $Celular = "";
+      $Ciudad = "";
+      $Prov = "";
+      $Pais = "";
+      $Profesion = ""; 
+      $Representante = G_NINGUNO;
+      $RUC_CI_Rep = "";
+      $TD_Rep = "";
+      $Direccion_Rep = "SD";
+      $Grupo_No = "";
+      $Contacto = "";
+      $Calificacion = "";
+      $Plan_Afiliado = "";
+      $Cte_Ahr_Otro = "";
+      $Cta_Transf = "";
+      $Cod_Banco = 0;
+      $Salario = 0;
+    }
+    
+    //if (strlen($Codigo_CIRUC_Cliente) <= 0) $Codigo_CIRUC_Cliente = G_NINGUNO;
+    /*
+   'Por Codigo
+    sSQL = "SELECT Codigo " _
+         & "FROM Clientes " _
+         & "WHERE Codigo = '" & Codigo_CIRUC_Cliente & "' "
+    Select_AdoDB AdoCliDB, sSQL
+    If AdoCliDB.RecordCount > 0 Then
+       TBenef.Codigo = AdoCliDB.Fields("Codigo")
+       Por_Codigo = True
+    End If
+    AdoCliDB.Close
+    
+   'Por CI o RUC
+    If Not Por_Codigo Then
+       sSQL = "SELECT Codigo " _
+            & "FROM Clientes " _
+            & "WHERE CI_RUC = '" & Codigo_CIRUC_Cliente & "' "
+       Select_AdoDB AdoCliDB, sSQL
+       If AdoCliDB.RecordCount > 0 Then
+          TBenef.Codigo = AdoCliDB.Fields("Codigo")
+          Por_CIRUC = True
+       End If
+       AdoCliDB.Close
+    End If
+        
+   'Por Cliente
+    If Not Por_CIRUC Then
+       sSQL = "SELECT Codigo " _
+            & "FROM Clientes " _
+            & "WHERE Cliente = '" & Codigo_CIRUC_Cliente & "' "
+       Select_AdoDB AdoCliDB, sSQL
+       If AdoCliDB.RecordCount > 0 Then
+          TBenef.Codigo = AdoCliDB.Fields("Codigo")
+          Por_Cliente = True
+       End If
+       AdoCliDB.Close
+    End If
+    
+   'Verificamos la informacion del Clienete
+    If Por_Codigo Or Por_CIRUC Or Por_Cliente Then
+       With TBenef
+            sSQL = "SELECT * " _
+                 & "FROM Clientes " _
+                 & "WHERE Codigo = '" & .Codigo & "' "
+            Select_AdoDB AdoCliDB, sSQL
+            If AdoCliDB.RecordCount > 0 Then
+              .FA = AdoCliDB.Fields("FA")
+              .Asignar_Dr = AdoCliDB.Fields("Asignar_Dr")
+              .Cliente = AdoCliDB.Fields("Cliente")
+              .Descuento = AdoCliDB.Fields("Descuento")
+              .T = AdoCliDB.Fields("T")
+              .CI_RUC = AdoCliDB.Fields("CI_RUC")
+              .TD = AdoCliDB.Fields("TD")
+              .Fecha = AdoCliDB.Fields("Fecha")
+              .Fecha_N = AdoCliDB.Fields("Fecha_N")
+              .Sexo = AdoCliDB.Fields("Sexo")
+              .Email1 = AdoCliDB.Fields("Email")
+              .Email2 = AdoCliDB.Fields("Email2")
+              .EmailR = .Email1
+              .Direccion = AdoCliDB.Fields("Direccion")
+              .DirNumero = AdoCliDB.Fields("DirNumero")
+              .Telefono1 = AdoCliDB.Fields("Telefono")
+              .TelefonoT = AdoCliDB.Fields("Telefono")
+              .Ciudad = AdoCliDB.Fields("Ciudad")
+              .Prov = AdoCliDB.Fields("Prov")
+              .Pais = AdoCliDB.Fields("Pais")
+              .Profesion = AdoCliDB.Fields("Profesion")
+              .Grupo_No = AdoCliDB.Fields("Grupo")
+              .Contacto = AdoCliDB.Fields("Contacto")
+              .Calificacion = AdoCliDB.Fields("Calificacion")
+              .Plan_Afiliado = AdoCliDB.Fields("Plan_Afiliado")
+              .Actividad = AdoCliDB.Fields("Actividad")
+              .Credito = AdoCliDB.Fields("Credito")
+              .Direccion_Rep = .Direccion
+              'Averiguamos si no funciona con unidades educativas
+               Select Case .TD
+                 Case "C", "R", "P"
+                     .Representante = .Cliente
+                     .RUC_CI_Rep = .CI_RUC
+                     .TD_Rep = .TD
+                 Case Else
+                     .Representante = "CONSUMIDOR FINAL"
+                     .RUC_CI_Rep = "9999999999999"
+                     .TD_Rep = "R"
+               End Select
+             '.Salario = 0
+            End If
+            AdoCliDB.Close
+       
+           'Averiguamos si tiene Representante
+            sSQL = "SELECT Representante, Cedula_R, Lugar_Trabajo_R, Telefono_RS, TD, Email_R, Tipo_Cta, Cod_Banco, Cta_Numero, Caducidad " _
+                 & "FROM Clientes_Matriculas " _
+                 & "WHERE Item = '" & NumEmpresa & "' " _
+                 & "AND Periodo = '" & Periodo_Contable & "' " _
+                 & "AND Codigo = '" & .Codigo & "' "
+            Select_AdoDB AdoCliDB, sSQL
+            If AdoCliDB.RecordCount > 0 Then
+               Select Case AdoCliDB.Fields("TD")
+                 Case "C", "R", "P"
+                      If Len(AdoCliDB.Fields("Representante")) > 1 And Len(AdoCliDB.Fields("Cedula_R")) > 1 Then
+                        .Representante = Replace(AdoCliDB.Fields("Representante"), "  ", " ")
+                        .RUC_CI_Rep = AdoCliDB.Fields("Cedula_R")
+                        .TD_Rep = AdoCliDB.Fields("TD")
+                        .Telefono1 = AdoCliDB.Fields("Telefono_RS")
+                        .TelefonoT = AdoCliDB.Fields("Telefono_RS")
+                        .Tipo_Cta = AdoCliDB.Fields("Tipo_Cta")
+                        .Cod_Banco = AdoCliDB.Fields("Cod_Banco")
+                        .Cta_Numero = AdoCliDB.Fields("Cta_Numero")
+                        .Direccion_Rep = AdoCliDB.Fields("Lugar_Trabajo_R")
+                        .Fecha_Cad = AdoCliDB.Fields("Caducidad")
+                        .EmailR = AdoCliDB.Fields("Email_R")
+                      End If
+                 Case Else
+                     .Representante = "CONSUMIDOR FINAL"
+                     .RUC_CI_Rep = "9999999999999"
+                     .TD_Rep = "R"
+               End Select
+            End If
+            AdoCliDB.Close
+            CadAux = .Email1 & .Email2 & .EmailR
+            If Len(CadAux) <= 3 Then
+              .Email1 = EmailProcesos
+              .Email2 = EmailProcesos
+              .EmailR = EmailProcesos
+            End If
+       End With
+    End If
+    Leer_Datos_Clientes = TBenef
+    End Function*/
+  }
+
+  function SinEspaciosDer($texto = ""){
+    $resultado = substr(strrchr($texto, " "), 1);
+    return $resultado;
+  }
+
+  function SinEspaciosIzq($texto = ""){
+    $resultado = explode(" ", $texto);
+    return $resultado[0];
+  }
 
 
+  function Leer_Cta_Catalogo($CodigoCta = ""){
+    
+    //conexion
+    $conn = new Conectar();
+    $cid=$conn->conexion();
+
+    //RatonReloj
+    $NoEncontroCta = true;
+    $Cuenta = G_NINGUNO;
+    $Codigo_Catalogo = G_NINGUNO;
+    $TipoCta = "G";
+    $SubCta = "N";
+    $TipoPago = "01";
+    $Moneda_US = false;
+    $cuenta = [];
+    
+    if (intval(substr($CodigoCta, 1,1)) >= 1) {
+      $sSQL = "SELECT Codigo, Cuenta, TC, ME, DG, Tipo_Pago
+            FROM Catalogo_Cuentas
+            WHERE Codigo = '".$CodigoCta."' 
+            AND Item = '".$_SESSION['INGRESO']['item']."'
+            AND Periodo = '".$_SESSION['INGRESO']['periodo']."'";
+      $datos = sqlsrv_query( $cid, $sql);
+      print_r($sql);
+      $cuenta['TipoPago'] = 0;
+      while ($value = sqlsrv_fetch_array( $datos, SQLSRV_FETCH_ASSOC)) {
+        $cuenta['Codigo_Catalogo'] = $value['Codigo'];
+        $cuenta['Cuenta'] = $value['Cuenta'];
+        $cuenta['SubCta'] = $value['TC'];
+        $cuenta['Moneda_US'] = $value['ME'];
+        $cuenta['TipoCta'] = $value['DG'];
+        $cuenta['TipoPago'] = $value['Tipo_Pago'];
+      }
+      if (intval($cuenta['TipoPago']) <= 0) {
+        $cuenta['TipoPago'] = "01";
+        $NoEncontroCta = false;
+      }
+      if ($NoEncontroCta) {
+        $sSQL = "SELECT Codigo, Cuenta, TC, ME, DG, Tipo_Pago
+                FROM Catalogo_Cuentas
+                WHERE Codigo_Ext LIKE '%".$CodigoCta."'_
+                AND Item = '".$_SESSION['INGRESO']['item']."'
+                AND Periodo = '".$_SESSION['INGRESO']['periodo']."'";
+        print_r($sql);
+        $datos = sqlsrv_query( $cid, $sql);
+        while ($value = sqlsrv_fetch_array( $datos, SQLSRV_FETCH_ASSOC)) {
+          $cuenta['Codigo_Catalogo'] = $value['Codigo'];
+          $cuenta['Cuenta'] = $value['Cuenta'];
+          $cuenta['SubCta'] = $value['TC'];
+          $cuenta['Moneda_US'] = $value['ME'];
+          $cuenta['TipoCta'] = $value['DG'];
+          $cuenta['TipoPago'] = $value['Tipo_Pago'];
+        }
+        if (intval($cuenta['TipoPago']) <= 0) {
+          $cuenta['TipoPago'] = "01";
+          $NoEncontroCta = false;
+        }
+      }
+    }
+    print_r($cuenta);
+    return $cuenta;
+  }
 ?>
