@@ -140,7 +140,6 @@ class facturar_pensionM
                 	WHERE Periodo = '".$_SESSION['INGRESO']['periodo']."'
                 	AND Item = '".$_SESSION['INGRESO']['item']."'
                 	AND Codigo = '".$codigoCliente."' ";
-        print_r($sql);
        	$stmt = sqlsrv_query( $this->dbs, $sql);
        	$rows_affected = sqlsrv_rows_affected( $stmt);
 		return $rows_affected;
@@ -158,6 +157,16 @@ class facturar_pensionM
        	$stmt = sqlsrv_query( $this->dbs, $sql);
 		$rows_affected = sqlsrv_rows_affected( $stmt);
 		return $rows_affected;
+    }
+
+    public function getAsiento($codigoCliente){
+    	$sql = "SELECT * 
+       			FROM Asiento_F
+       			WHERE Item = '".$_SESSION['INGRESO']['item']."' 
+       			AND CodigoU = '".$codigoCliente."'
+       			ORDER BY A_No ";
+       	$stmt = sqlsrv_query( $this->dbs, $sql);
+		return $stmt;
     }
 }
 
