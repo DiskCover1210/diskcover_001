@@ -7702,7 +7702,7 @@ if($titulo)
     {
       $medida = '300px';
     }else{
-      if(($value['CHARACTER_MAXIMUM_LENGTH']==1 && strlen($value['COLUMN_NAME'])>2) || ($value['CHARACTER_MAXIMUM_LENGTH']==2 && strlen($value['COLUMN_NAME'])>2) || ($value['CHARACTER_MAXIMUM_LENGTH']==3 && strlen($value['COLUMN_NAME'])>2))
+      if(($value['CHARACTER_MAXIMUM_LENGTH']==1 && strlen($value['COLUMN_NAME'])>2) || ($value['CHARACTER_MAXIMUM_LENGTH']==2 && strlen($value['COLUMN_NAME'])>2) || ($value['CHARACTER_MAXIMUM_LENGTH']==3 && strlen($value['COLUMN_NAME'])>2) || ($value['CHARACTER_MAXIMUM_LENGTH']==5 && strlen($value['COLUMN_NAME'])>2))
       {
         $medida = dimenciones_tabl(strlen($value['COLUMN_NAME']));
       }else
