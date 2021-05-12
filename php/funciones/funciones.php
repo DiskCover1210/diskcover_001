@@ -7600,8 +7600,12 @@ function crear_variables_session($empresa)
     return $resultado[0];
   }
 
-function grilla_generica_new($sql,$tabla,$titulo=false,$botones=false,$check=false,$imagen=false,$border=1,$sombreado=1,$head_fijo=1,$tamaño_tabla=300)
+function grilla_generica_new($sql,$tabla,$id_tabla=false,$titulo=false,$botones=false,$check=false,$imagen=false,$border=1,$sombreado=1,$head_fijo=1,$tamaño_tabla=300,$num_decimales=2)
 {
+  if($id_tabla=='' || $id_tabla == false)
+  {
+    $id_tabla = 'datos_t';
+  }
 
   $conn = new Conectar();
   $cid=$conn->conexion();
@@ -7636,30 +7640,30 @@ function grilla_generica_new($sql,$tabla,$titulo=false,$botones=false,$check=fal
             $datos[]=$row;
      }
  $tbl =' <style type="text/css">
-  #datos_t tbody tr:nth-child(even) { background:#fffff;}
-  #datos_t tbody tr:nth-child(odd) { background: #e2fbff;}
-  #datos_t tbody tr:nth-child(even):hover {  background: #DDB;}
-  #datos_t thead { background: #afd6e2; }
-  #datos_t tbody tr:nth-child(odd):hover {  background: #DDA;}
+  #'.$id_tabla.' tbody tr:nth-child(even) { background:#fffff;}
+  #'.$id_tabla.' tbody tr:nth-child(odd) { background: #e2fbff;}
+  #'.$id_tabla.' tbody tr:nth-child(even):hover {  background: #DDB;}
+  #'.$id_tabla.' thead { background: #afd6e2; }
+  #'.$id_tabla.' tbody tr:nth-child(odd):hover {  background: #DDA;}
  ';
 
  if($border)
  {
-  $tbl.=' #datos_t table {border-collapse: collapse;}
-  #datos_t table, th, td {  border: solid 1px #aba0a0;  padding: 2px;  }'; 
+  $tbl.=' #'.$id_tabla.' table {border-collapse: collapse;}
+  #'.$id_tabla.' table, th, td {  border: solid 1px #aba0a0;  padding: 2px;  }'; 
  }
 
  if($sombreado)
  {
-  $tbl.='#datos_t tbody { box-shadow: 10px 10px 6px rgba(0, 0, 0, 0.6);  }
-   #datos_t thead { background: #afd6e2;  box-shadow: 10px 0px 6px rgba(0, 0, 0, 0.6);} ';
+  $tbl.='#'.$id_tabla.' tbody { box-shadow: 10px 10px 6px rgba(0, 0, 0, 0.6);  }
+   #'.$id_tabla.' thead { background: #afd6e2;  box-shadow: 10px 0px 6px rgba(0, 0, 0, 0.6);} ';
  }
 
  if($head_fijo)
  {
- $tbl.='tbody { display:block; height:'.$tamaño_tabla.'px;  overflow-y:auto;  width:fit-content;}
-  thead,tbody tr {    display:table;  width:100%;  table-layout:fixed;  } 
-  thead { width: calc( 100% - 1.2em )/* scrollbar is average 1em/16px width, remove it from thead width */}
+ $tbl.='#'.$id_tabla.' tbody { display:block; height:'.$tamaño_tabla.'px;  overflow-y:auto;  width:fit-content;}
+  #'.$id_tabla.' thead,tbody tr {    display:table;  width:100%;  table-layout:fixed;  } 
+  #'.$id_tabla.' thead { width: calc( 100% - 1.2em )/* scrollbar is average 1em/16px width, remove it from thead width */}
   /*thead tr {    display:table;  width:98.5%;  table-layout:fixed;  }*/ ';
  } 
 
@@ -7670,7 +7674,7 @@ if($titulo)
   // $num = count($columnas_uti);
    $tbl.="<div class='text-center'><b>".$titulo."</b></div>";
  }
- $tbl.= '<div class="table-responsive" style="overflow-x: scroll;"><div style="width:fit-content;padding-right:20px"><table class="table" style="table-layout: fixed;" id="datos_t"><thead>';
+ $tbl.= '<div class="table-responsive" style="overflow-x: scroll;"><div style="width:fit-content;padding-right:20px"><table class="table" style="table-layout: fixed;" id="'.$id_tabla.'"><thead>';
   //cabecera de la consulta sql//
  if($botones)
   {
@@ -7702,12 +7706,20 @@ if($titulo)
     {
       $medida = '300px';
     }else{
-      if(($value['CHARACTER_MAXIMUM_LENGTH']==1 && strlen($value['COLUMN_NAME'])>2) || ($value['CHARACTER_MAXIMUM_LENGTH']==2 && strlen($value['COLUMN_NAME'])>2) || ($value['CHARACTER_MAXIMUM_LENGTH']==3 && strlen($value['COLUMN_NAME'])>2) || ($value['CHARACTER_MAXIMUM_LENGTH']==5 && strlen($value['COLUMN_NAME'])>2))
+      if(($value['CHARACTER_MAXIMUM_LENGTH']<=10 && strlen($value['COLUMN_NAME'])>2))
       {
         $medida = dimenciones_tabl(strlen($value['COLUMN_NAME']));
       }else
       {
-        $medida = dimenciones_tabl($value['CHARACTER_MAXIMUM_LENGTH']);
+        $med_nom = str_replace('px','', dimenciones_tabl(strlen($value['COLUMN_NAME'])));
+        $medida = str_replace('px','',dimenciones_tabl($value['CHARACTER_MAXIMUM_LENGTH']));
+        if($medida<$med_nom)
+        {
+          $medida = dimenciones_tabl(strlen($value['COLUMN_NAME']));
+        }else
+        {
+           $medida = dimenciones_tabl($value['CHARACTER_MAXIMUM_LENGTH']);
+        }
       }
     }
    }else
@@ -7731,7 +7743,8 @@ if($titulo)
           break;
         case 'datetime':       
           $alineado = 'text-left'; 
-          $medida ='100px';
+          $medida = dimenciones_tabl(strlen($value['COLUMN_NAME']));
+          // $medida ='100px';
         break;
       } 
   //fin de alineacion        
@@ -7816,14 +7829,20 @@ if($titulo)
             $k = explode(',', $value3['id']);
             foreach ($k as $key4 => $value4) {
               // print_r($value);die();
-              $valor.="'".$value[$value4]."',";
+              if(isset($value[$value4]))
+              {
+                $valor.="'".$value[$value4]."',";
+              }else
+              {
+                $valor.="'".$value4."',";
+              }
             }
             if($valor!='')
             {
               $valor = substr($valor,0,-1);
             }
             $funcion = str_replace(' ','_', $value3['boton']);
-            $tbl.='<button class="btn btn-sm btn-'.$tipo.'" onclick="'.$funcion.'('.$valor.')" title="'.$value3['boton'].'">'.$icono.'</button>';
+            $tbl.='<button type="button" class="btn btn-sm btn-'.$tipo.'" onclick="'.$funcion.'('.$valor.')" title="'.$value3['boton'].'">'.$icono.'</button>';
           }
           $tbl.='</td>';
         }
@@ -7870,8 +7889,14 @@ if($titulo)
                $tbl.='<td style="width:'.$medida.'">'.$value1->format('Y-m-d').'</td>';              
              }
              else
-             {              
-                  $tbl.='<td style="width:'.$medida.'" class="'.$alineado.'">'.utf8_encode($value1).'</td>';         
+             {
+              if($alineado=='text-left')
+              {                
+                  $tbl.='<td style="width:'.$medida.'" class="'.$alineado.'">'.utf8_encode($value1).'</td>';  
+              }else
+              {
+                 $tbl.='<td style="width:'.$medida.'" class="'.$alineado.'">'.number_format($value1,$num_decimales).'</td>'; 
+              }    
              }
             $colum+=1;    
          }
