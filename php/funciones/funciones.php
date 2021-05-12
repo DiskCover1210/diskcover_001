@@ -7919,6 +7919,104 @@ function datos_tabla($tabla,$campo=false)
 }
 
 
+// Public Sub FechaValida(NomBox As MaskEdBox, Optional ChequearCierreMes As Boolean)
+
+//  'Empezamos a verificar la fecha ingresada'
+//   $ErrorFecha = False
+//   If NomBox.Text = LimpiarFechas Then NomBox.Text = FechaSistema
+//   NomBox.Text = Format$(NomBox.Text, FormatoFechas)
+//   DiaV = Val(MidStrg(NomBox.Text, 1, 2))
+//   MesV = Val(MidStrg(NomBox.Text, 4, 2))
+//   AñoV = Val(MidStrg(NomBox.Text, 7, 4))
+//   If AñoV <= 1900 Then ErrorFecha = True   ' AñoV = 2000'
+//   If AñoV >= Year(FechaSistema) + 8 Then ErrorFecha = True  ' AñoV = 2000'
+//  'MsgBox AñoV'
+//   If (AñoV > 0) And (DiaV > 0) And (MesV > 0) Then
+//      Select Case MesV
+//        Case 1, 3, 5, 7, 8, 10, 12
+//            If (DiaV > 31) Then ErrorFecha = True
+//        Case 2
+//            If ((AñoV Mod 4 <> 0) And (DiaV > 28)) Then ErrorFecha = True
+//            If ((AñoV Mod 4 = 0) And (DiaV > 29)) Then ErrorFecha = True
+//        Case 4, 6, 9, 11
+//            If (DiaV > 30) Then ErrorFecha = True
+//        Case Else
+//             ErrorFecha = True
+//      End Select
+//   Else
+//      ErrorFecha = True
+//   End If
+//  'Resultado Final de la verificacion de la Fecha ingresada'
+//   Cadena = ""
+//   If ErrorFecha Then
+//      Cadena = "ESTA INCORRECTA" & vbCrLf
+//   Else
+//     'Abrimos la base de datos para los cierres del mes
+//      Set AdoCierre = New ADODB.Recordset
+//      AdoCierre.CursorType = adOpenDynamic
+//      AdoCierre.CursorLocation = adUseClient'
+//     'Averiguamos si esta cerrado el mes de procesamiento'
+//      Anio = Year(NomBox.Text)
+//      FechaCierre = "01/" & Month(FechaSistema) & "/" & Year(FechaSistema)
+//      FechaFin1 = BuscarFecha(NomBox.Text)
+//      sSQL1 = "SELECT * " _
+//            & "FROM Fechas_Balance " _
+//            & "WHERE Periodo = '" & Periodo_Contable & "' " _
+//            & "AND Item = '" & NumEmpresa & "' " _
+//            & "AND Cerrado = " & Val(adFalse) & " " _
+//            & "AND Fecha_Inicial <= #" & FechaFin1 & "# " _
+//            & "AND Fecha_Final >= #" & FechaFin1 & "# " _
+//            & "AND MidStrg(Detalle,1,4) = '" & Anio & "' " _
+//            & "ORDER BY Fecha_Inicial "
+//      sSQL1 = CompilarSQL(sSQL1)
+//     'MsgBox sSQL1'
+//      AdoCierre.open sSQL1, AdoStrCnn, , , adCmdText
+//      With AdoCierre
+//       If .RecordCount > 0 Then
+//           FechaCierre = .Fields("Fecha_Inicial")
+//       End If
+//      End With
+//      AdoCierre.Close
+//     'MsgBox ChequearCierreMes & vbCrLf & ErrorFecha'
+//      If ChequearCierreMes Then
+//         If CFechaLong(NomBox.Text) < CFechaLong(FechaCierre) Then
+//            ErrorFecha = True
+//            Cadena = Cadena & "ES INFERIOR A LA DEL CIERRE DEL MES" & vbCrLf
+//         End If
+//      End If
+//      If (AñoV > 2050) Then
+//         Cadena = Cadena & "ES SUPERIOR A LA PERMITIDA POR EL SISTEMA" & vbCrLf
+//         ErrorFecha = True
+//      End If
+     
+//     'Carga la Tabla de Porcentaje Iva'
+//      Set AdoCierre = New ADODB.Recordset
+//      AdoCierre.CursorType = adOpenDynamic
+//      AdoCierre.CursorLocation = adUseClient
+     
+//      sSQL1 = "SELECT * " _
+//            & "FROM Tabla_Por_ICE_IVA " _
+//            & "WHERE IVA <> " & Val(adFalse) & " " _
+//            & "AND Fecha_Inicio <= #" & FechaFin1 & "# " _
+//            & "AND Fecha_Final >= #" & FechaFin1 & "# " _
+//            & "ORDER BY Porc "
+//      sSQL1 = CompilarSQL(sSQL1)
+//      AdoCierre.open sSQL1, AdoStrCnn, , , adCmdText
+//      If AdoCierre.RecordCount > 0 Then Porc_IVA = Redondear(AdoCierre.Fields("Porc") / 100, 2)
+//      AdoCierre.Close
+//   End If
+//   RatonNormal
+//   If ErrorFecha Then
+//      MsgBox "LA FECHA QUE ESTA INTENTANDO INGRESAR" & vbCrLf & vbCrLf _
+//           & Cadena & vbCrLf _
+//           & "CONSULTE AL ADMINISTRADOR DEL SISTEMA" & vbCrLf & vbCrLf _
+//           & "PARA SOLUCIONAR EL INCONVENIENTE"
+//      NomBox.Text = LimpiarFechas
+//      NomBox.SetFocus
+//   End If
+//   RatonNormal
+// End Sub
+
   function Leer_Cta_Catalogo($CodigoCta = ""){
     
     //conexion
@@ -8053,9 +8151,11 @@ function datos_tabla($tabla,$campo=false)
     return $Respuesta;
   }
 
-  function agregar_factura($datos1)
+  function Grabar_Factura($datos1)
   {
-    $cid=$this->conn->conexion();
+    //conexion
+    $conn = new Conectar();
+    $cid=$conn->conexion();
     $nombrec= $datos1['nombrec'];
     $ruc= $datos1['ruc'];
     $email= $datos1['email'];
@@ -8537,4 +8637,73 @@ function datos_tabla($tabla,$campo=false)
       return 2;
     }
   }
+
+  function Grabar_Abonos($TA)
+  {
+    //conexion
+    $conn = new Conectar();
+    $cid=$conn->conexion();
+
+  $nombrec= $datos1['nombrec'];
+  $ruc= $datos1['ruc'];
+  $email= $datos1['email'];
+  $ser= $datos1['ser'];
+  $n_fac= $datos1['n_fac'];
+  $abo= $datos1['abo'];
+  $abo1=explode("-", $abo);
+  $compro_a= $datos1['compro_a'];
+  $monto_a= $datos1['monto_a'];
+  $me= $datos1['me'];
+  $fecha_actual = date("Y-m-d"); 
+  
+  $sql="SELECT * FROM Clientes WHERE  (CI_RUC= '".$ruc."') ";
+  $stmt = sqlsrv_query($cid, $sql);
+  if( $stmt === false)  
+  {  
+     echo "Error en consulta PA.\n";  
+     die( print_r( sqlsrv_errors(), true));  
+  }
+  $row_count=0;
+  $ii=0;
+  $Result = array();
+  while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_NUMERIC) ) 
+  {
+    $codigo=$row[2];
+  }
+  
+  $dato[0]['campo']='Periodo';
+  $dato[0]['dato']=$_SESSION['INGRESO']['periodo'];
+  $dato[1]['campo']='Item';
+  $dato[1]['dato']=$_SESSION['INGRESO']['item'];
+  $dato[2]['campo']='CodigoC';
+  $dato[2]['dato']=$codigo;
+  $dato[3]['campo']='Fecha';
+  $dato[3]['dato']=$fecha_actual;
+  $dato[4]['campo']='Abono';
+  $dato[4]['dato']=$monto_a;
+  $dato[5]['campo']='CodigoU';
+  $dato[5]['dato']=$_SESSION['INGRESO']['CodigoU'];
+  $dato[6]['campo']='HABIT';
+  $dato[6]['dato']=$me;
+  $dato[7]['campo']='Cta';
+  $dato[7]['dato']=$abo1[0];
+  $dato[8]['campo']='Comprobante';
+  $dato[8]['dato']=$compro_a;
+  $insert_generico("Asiento_Abonos",$dato);
+  cerrarSQLSERVERFUN($cid);
+    $resp = $this->modelo->agregar_abono($_POST);
+    if($resp==1)
+    {
+      echo "<script type='text/javascript'>
+          Swal.fire({
+            //position: 'top-end',
+            type: 'success',
+            title: 'abono agregado con exito!',
+            showConfirmButton: true
+            //timer: 2500
+          });
+        </script>";
+    }
+  }
+
 ?>

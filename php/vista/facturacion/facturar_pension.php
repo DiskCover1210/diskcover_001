@@ -130,7 +130,7 @@
           // Limpiamos el select
           cursos.find('option').remove();
           for (var indice in datos) {
-            cursos.append('<option value="' + datos[indice].id + '">' + datos[indice].text + '</option>');
+            cursos.append('<option value="' + datos[indice].id +" "+datos[indice].text+ ' ">' + datos[indice].text + '</option>');
           }
         }else{
           console.log("No tiene datos");
@@ -294,6 +294,7 @@
     }else{
       var update = confirm("¿Desea actualizar los datos del cliente?");
       TextRepresentante = $("#persona").val();
+      DCLinea = $("#DCLinea").val();
       TxtDireccion = $("#direccion").val();
       TxtTelefono = $("#telefono").val();
       TextFacturaNo = $("#factura").val();
@@ -315,6 +316,7 @@
           url: '../controlador/facturacion/facturar_pensionC.php?guardarPension=true',
           data: {
             'update' : update,
+            'DCLinea' : DCLinea,
             'TextRepresentante' : TextRepresentante,
             'TxtDireccion' : TxtDireccion,
             'TxtTelefono' : TxtTelefono,
