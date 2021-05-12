@@ -49,6 +49,8 @@ class descargosM
 		}
 
 		$sql.=" GROUP BY ORDEN ,Codigo_B,Fecha_Fab,C.Cliente,A.SUBCTA,CS.Detalle,C.Matricula,A.Detalle ORDER BY Fecha_Fab DESC";
+		$sql.=" OFFSET 0 ROWS FETCH NEXT 50 ROWS ONLY;";
+		
 		// print_r($sql);die();
 		$stmt = sqlsrv_query($cid, $sql);
         $datos =  array();
@@ -64,6 +66,104 @@ class descargosM
 	   }
        return $datos;
 	}
+
+	function productos_procesados($codigo_b=false,$tipo=false,$query=false,$desde=false,$hasta =false,$busfe=false)
+	{
+
+		$cid = $this->conn;
+		$sql = "SELECT DISTINCT A.CODIGO_INV,CANTIDAD
+			FROM Asiento_K  A
+			LEFT JOIN Clientes C ON A.Codigo_B = C.CI_RUC 
+			LEFT JOIN Catalogo_SubCtas CS ON CS.Codigo = A.SUBCTA
+			WHERE 1=1  AND DH='2' ";
+		if($codigo_b)
+		{
+			$sql.=" AND Codigo_B = '".$codigo_b."' ";
+		}
+		if($tipo=='P' AND $query!='')
+		{
+			$sql.=" AND ORDEN = '".$query."' ";
+		}
+		if($tipo=='C' AND $query!='')
+		{
+			$sql.=" AND Codigo_B LIKE '".$query."%' ";
+		}
+		if ($tipo=='N' AND $query!='') 
+		{
+			$sql.=" AND Cliente LIKE '%".$query."%'";
+		}
+		if($busfe)
+		{		
+			  $sql.=" AND Fecha_Fab BETWEEN '".$desde."' and '".$hasta."'";
+		}
+
+		// print_r($sql);die();
+		$stmt = sqlsrv_query($cid, $sql);
+        $datos =  array();
+	   if( $stmt === false)  
+	   {  
+		 echo "Error en consulta PA.\n";  
+		 return '';
+		 die( print_r( sqlsrv_errors(), true));  
+	   }
+	    while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_ASSOC) ) 
+	   {
+            $datos[]=$row;
+	   }
+       return $datos;
+	}
+
+	function ordenes_producto_nega($codigo_b=false,$tipo=false,$query=false,$desde=false,$hasta =false,$busfe=false,$negativos=false)
+	{
+
+		$cid = $this->conn;
+		$sql = "SELECT DISTINCT ORDEN
+			FROM Asiento_K  A
+			LEFT JOIN Clientes C ON A.Codigo_B = C.CI_RUC 
+			LEFT JOIN Catalogo_SubCtas CS ON CS.Codigo = A.SUBCTA
+			WHERE 1=1  AND DH='2' ";
+		if($codigo_b)
+		{
+			$sql.=" AND Codigo_B = '".$codigo_b."' ";
+		}
+		if($tipo=='P' AND $query!='')
+		{
+			$sql.=" AND ORDEN = '".$query."' ";
+		}
+		if($tipo=='C' AND $query!='')
+		{
+			$sql.=" AND Codigo_B LIKE '".$query."%' ";
+		}
+		if ($tipo=='N' AND $query!='') 
+		{
+			$sql.=" AND Cliente LIKE '%".$query."%'";
+		}
+		if($busfe)
+		{		
+			  $sql.=" AND Fecha_Fab BETWEEN '".$desde."' and '".$hasta."'";
+		}
+		if($negativos)
+		{
+			$sql.= " AND CODIGO_INV IN (".$negativos.")";
+		}
+		
+		// print_r($sql);die();
+		$stmt = sqlsrv_query($cid, $sql);
+        $datos =  array();
+	   if( $stmt === false)  
+	   {  
+		 echo "Error en consulta PA.\n";  
+		 return '';
+		 die( print_r( sqlsrv_errors(), true));  
+	   }
+	    while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_ASSOC) ) 
+	   {
+            $datos[]=$row;
+	   }
+       return $datos;
+	}
+
+
 
 
 	function pedido_paciente_distintos($codigo_b=false,$tipo=false,$query=false,$desde=false,$hasta =false,$busfe=false)

@@ -46,85 +46,114 @@ require_once("panel.php");
       });
   }
 
-  function cargar_modulos(empresas)
-    {
-    	var parametros ={
-    		'empresa':empresas,
-    		'usu':$('#ddl_usuarios').val(),
-    		'entidad':$('#ddl_entidad').val(),
-    	}
-    	$.ajax({
-    		data:  {parametros:parametros},
-    		url:   '../controlador/niveles_seguriC.php?modulos=true',
-    		type:  'post',
-    		dataType: 'json',
-    		beforeSend: function () { 
-    		  $('#modu').html('<img src="../../img/gif/loader4.1.gif" width="50%">');
-    		},
-    		success:  function (response) { 
-    			if(response)
-    			 {
-    			 	// console.log(response);
-    			 	$('#modu').html(response.body);
-            $('#tabs_titulo').html(response.header);
-    			 	cargar_modulos_otros(empresas);
-    					// $('#myModal_espera').modal('hide'); 
-    			 }
-    		}
-    	});
-  }
+  // function cargar_modulos(empresas)
+  //   {
+  //   	var parametros ={
+  //   		'empresa':empresas,
+  //   		'usu':$('#ddl_usuarios').val(),
+  //   		'entidad':$('#ddl_entidad').val(),
+  //   	}
+  //     console.log(parametros);
+  //   	$.ajax({
+  //   		data:  {parametros:parametros},
+  //   		url:   '../controlador/niveles_seguriC.php?modulos=true',
+  //   		type:  'post',
+  //   		dataType: 'json',
+  //   		beforeSend: function () { 
+  //   		  $('#modu').html('<img src="../../img/gif/loader4.1.gif" width="50%">');
+  //   		},
+  //   		success:  function (response) { 
+  //   			if(response)
+  //   			 {
+  //   			 	console.log(response);
+  //           // $('#modu').remove();
+  //           // $('#tabs_titulo').remove();
 
-  function cargar_modulos_otros(emp)
-    {
-    	var parametros ={
-    		'entidad':$('#ddl_entidad').val(),
-    		'empresa':emp,
-    		'usuario':$('#ddl_usuarios').val(),
-    	}
-    	$.ajax({
-    		 data:  {parametros:parametros},
-    		url:   '../controlador/niveles_seguriC.php?mod_activos=true',
-    		type:  'post',
-    		dataType: 'json',
-    		// beforeSend: function () { 
-    		//   $('#modu').html('<img src="../../img/gif/loader4.1.gif" width="50%">');
-    		// },
-    		success:  function (response) { 
-    			if(response)
-    			 {
-    			 	$.each(response, function(i, item){
+  //   			 	$('#modu').html(response.body);
+  //           $('#tabs_titulo').html(response.header);
+  //   			 	cargar_modulos_otros(empresas);
+  //   					// $('#myModal_espera').modal('hide'); 
+  //   			 }
+  //   		}
+  //   	});
+  // }
+
+  // function cargar_modulos_otros(emp)
+  //   {
+  //   	var parametros ={
+  //   		'entidad':$('#ddl_entidad').val(),
+  //   		'empresa':emp,
+  //   		'usuario':$('#ddl_usuarios').val(),
+  //   	}
+  //   	$.ajax({
+  //   		 data:  {parametros:parametros},
+  //   		url:   '../controlador/niveles_seguriC.php?mod_activos=true',
+  //   		type:  'post',
+  //   		dataType: 'json',
+  //   		// beforeSend: function () { 
+  //   		//   $('#modu').html('<img src="../../img/gif/loader4.1.gif" width="50%">');
+  //   		// },
+  //   		success:  function (response) { 
+  //   			if(response)
+  //   			 {
+  //   			 	$.each(response, function(i, item){
     			 		
-    			 		$('#modulos_'+item.item+'_'+item.Modulo).prop('checked',true);
-              //  $('.nav-tabs a[href="#modulos_' + item.item+'_'+item.Modulo + '"]').tab('show'); 
+  //   			 		$('#modulos_'+item.item+'_'+item.Modulo).prop('checked',true);
+  //             //  $('.nav-tabs a[href="#modulos_' + item.item+'_'+item.Modulo + '"]').tab('show'); 
 
-              //$('#panel_mo').load(' #panel_mo');
-    			 		// console.log(item.Modulo);
-    			 		// console.log(i);
-    			 	}); 
+  //             //$('#panel_mo').load(' #panel_mo');
+  //   			 		// console.log(item.Modulo);
+  //   			 		// console.log(i);
+  //   			 	}); 
 
-    			 }
-    		}
-    	});
-  }
+  //   			 }
+  //   		}
+  //   	});
+  // }
   function buscar_permisos()
   {
-  	var empres = $('#txt_empresas').val();
+    
+      var id = $('#ddl_usuarios').val();
+      var texto = $('select[name="ddl_usuarios"] option:selected').text();
+      cargar_empresas();
+      $('#ddl_usuarios').append($('<option>',{value: id, text:texto,selected: true }));
   	if($('#ddl_usuarios').val()!='')
   	{
   		usuario();
-  	}
-  	if(empres != '')
-  	{
-  		empre = empres.slice(0,-1).split(',');
-  	   $.each(empre, function(i, item){
-        cargar_modulos_otros(item);
-        // console.log(item.Modulo);
-        // console.log(i);
-       }); 
-    }
-     
-    
+      usuario_empresa();
+  	}    
   }
+
+   function usuario_empresa()
+  {
+      var parametros ={
+        'entidad':$('#ddl_entidad').val(),
+        'usuario':$('#ddl_usuarios').val(),
+      }
+      $.ajax({
+         data:  {parametros:parametros},
+        url:   '../controlador/niveles_seguriC.php?usuario_empresa=true',
+        type:  'post',
+        dataType: 'json',
+        // beforeSend: function () { 
+        //   $('#modu').html('<img src="../../img/gif/loader4.1.gif" width="50%">');
+        // },
+        success:  function (response) { 
+          if(response)
+           {
+            $.each(response,function(i,item){
+              // console.log(item);
+               var ind = item.split('_');
+               $('#'+item).prop('checked',true);
+               $('#indice_'+ind[2]).css('display','initial');  
+            })
+             // console.log(response);
+           }
+        }
+      });
+
+  }
+
 
   function usuario()
   {
@@ -184,78 +213,103 @@ require_once("panel.php");
 
   }
 
-  function empresa_select(id)
-  {
+  // function empresa_select(id)
+  // {
 
-  	if($('#emp_'+id).prop('checked'))
-  	{
-  		var ant = $('#txt_empresas').val();
-  		if(ant == '')
-  		{
-  			$('#txt_empresas').val(id+',');
-  		}else
-  		{
-  			$('#txt_empresas').val(ant+id+',');
-  		}
-  		var ant = $('#txt_empresas').val();
-  		empresa_select1(ant);
+  // 	if($('#emp_'+id).prop('checked'))
+  // 	{
+  // 		var ant = $('#txt_empresas').val();
+  // 		if(ant == '')
+  // 		{
+  // 			$('#txt_empresas').val(id+',');
+  // 		}else
+  // 		{
+  // 			$('#txt_empresas').val(ant+id+',');
+  // 		}
+  // 		var ant = $('#txt_empresas').val();
+  //     activo(id);
+  // 		empresa_select1(ant);
   		
-  	}else
-  	{
-  		    var ant = $('#txt_empresas').val();
-  			var res = ant.split(id+',').join('');
-  			$('#txt_empresas').val(res);
-  			$('#'+id).remove();
-  			$("#tab_"+id).remove();
-  		if($('#txt_empresas').val() == '')
-  		{
-  			// alert('vacio');
-  			$('#modu').html('<div>No a seleccionado ninguna empresa</div>');
-  		}
+  // 	}else
+  // 	{
+  //     if($('#rbl_all').prop('checked')){
+  //       $('#rbl_all').prop('checked',false);
+  //       var lis = $('#txt_list_emp').val();
+  //       lis = lis.split(',');
+  //       ite = '';
+  //       $.each(lis,function(i,item){
+  //         if($('#emp_'+item).prop('checked'))
+  //         {
+  //           ite+=item+',';
+  //         }
+  //       })
+  //       if($('#txt_coincidencia').val()!='')
+  //       {
+  //         empresa_select($('#txt_modal_conten').val());
+  //       }else
+  //       {
+  //         empresa_select($('#txt_modal_conten').val());
+  //       }
+
+  //       var ant = $('#txt_empresas').val(ite);
+  //     }
+
+  //       var ant = $('#txt_empresas').val();
+  // 			var res = ant.split(id+',').join('');
+  // 			$('#txt_empresas').val(res);
+  // 			$('#'+id).remove();
+  // 			$("#tab_"+id).remove();
+  // 		if($('#txt_empresas').val() == '')
+  // 		{
+  // 			// alert('vacio');
+  // 			$('#modu').html('<div>No a seleccionado ninguna empresa</div>');
+  // 		}
   		
   		
-  	}
+  // 	}
 
-  }
+  // }
 
-  function empresa_select1(selected)
-  {
-  	// alert(selected);
-        var num_em = selected.slice(0,-1).split(',');
-        var nom  = $('#lbl_'+num_em[num_em.length-1]).text();
-        if (selected !='') 
-        {
-        	if(num_em.length == 1)
-        	{
-        		cargar_modulos(selected);
-        	}else
-        	{
-        		var tab = $('#tabs_titulo').html();
-        		var num_tab = '<li id="tab_'+num_em[num_em.length-1]+'"><a data-toggle="tab" href="#'+num_em[num_em.length-1]+'">'+nom+'</a></li>';
-        		$('#tabs_titulo').html(tab+num_tab);
+  // function empresa_select1(selected)
+  // {
+  // 	// alert(selected);
+  //       var num_em = selected.slice(0,-1).split(',');
+  //       var nom  = $('#lbl_'+num_em[num_em.length-1]).text();
+  //       if (selected !='') 
+  //       {
+  //       	if(num_em.length == 1)
+  //       	{
+  //       		cargar_modulos(selected);
+  //           // alert('sss');
+  //       	}else
+  //       	{
+  //       		var tab = $('#tabs_titulo').html();
+  //       		var num_tab = '<li id="tab_'+num_em[num_em.length-1]+'" onclick="activo(\''+num_em[num_em.length-1]+'\')"><a data-toggle="tab" href="#'+num_em[num_em.length-1]+'">'+nom+'</a></li>';
+  //       		$('#tabs_titulo').html(tab+num_tab);
 
-        		var cont = $('#tab-content').html();
-        		console.log(cont);
+  //       		var cont = $('#tab-content').html();
+  //       		console.log(cont);
 
-        		var res = cont.split(num_em[0]).join(num_em[num_em.length-1]);
-        		var res = res.split('checked').join('');
-            var res = res.split('in active').join('');
-        		$('#tab-content').html(cont+res); 
-        		cargar_modulos_otros(num_em[num_em.length-1]);
-        		// console.log(res);
-        	}
-        }else
-        {
-        	$('#modu').html('<div>No a seleccionado ninguna empresa</div>')
-        } 
+  //       		var res = cont.split(num_em[0]).join(num_em[num_em.length-1]);
+  //       		var res = res.split('checked').join('');
+  //           var res = res.split('in active').join('');
+  //       		$('#tab-content').html(cont+res); 
+  //       		cargar_modulos_otros(num_em[num_em.length-1]);
+  //       		// console.log(res);
+  //       	}
+  //       }else
+  //       {
+  //       	$('#modu').html('<div>No a seleccionado ninguna empresa</div>')
+  //       } 
        
-        		// buscar_permisos();
-  }
+  //       		// buscar_permisos();
+  // }
 
   function cargar_empresas()
   {
 
-  	$('#ddl_usuarios').val('');
+  	$('#ddl_usuarios').val('');   
+    $('#tbl_modulos').html('');
   	$('#modu').html('<div>No a seleccionado ninguna empresa</div>');
   	$('#txt_empresas').val('');
   	autocmpletar_usuario();
@@ -270,31 +324,43 @@ require_once("panel.php");
     		//   $('#myModal_espera').modal('show'); 
     		// },
     		success:  function (response) { 
-    			if(response)
-    				{    					
-    				  $('#empresas').html(response);
-    					// $('#myModal_espera').modal('hide'); 
-    				}
+    			 					
+    				 $('#tbl_modulos').html(response);
+              
     		}
     	});
 
   }
 function guardar()
   {
-  	var empre = $('#txt_empresas').val().slice(0,-1).split(',');
-  	$.each(empre, function(i, item){
-  		var selected = '';
-  		 $('#form_'+item+' input[type=checkbox]').each(function(){
-            if (this.checked) {
-                selected += $(this).val()+',';
-            }
-        });
-       enviar_para_guardar(selected+item);        
-    }); 
 
+    var selected = '';
+    // if($('#txt_coincidencia').val()!='')
+    // {
+      var emp = $('#txt_empresas').val();
+    //   item =$('#txt_modal_conten').val();
+    //    $('#form_'+item+' input[type=checkbox]').each(function(){
+    //         if (this.checked) {
+    //             selected += $(this).val()+',';
+    //         }
+    //     // });       
+    //     }); 
+    // }else
+    // {
+    //   var emp = $('#txt_empresas').val();
+    //   item = $('#txt_modal_conten').val();
+    //    $('#form_'+item+' input[type=checkbox]').each(function(){
+    //         if (this.checked) {
+    //             selected += $(this).val()+',';
+    //         }
+    //     // });       
+    //     }); 
+    // }
+
+       enviar_para_guardar(selected,emp); 
   }
 
- function enviar_para_guardar(modulos)
+ function enviar_para_guardar(modulos,empresas)
  {
  	var parametros = {
  		'n1':$('#rbl_n1').prop('checked'),
@@ -308,9 +374,13 @@ function guardar()
  		'usuario':$('#txt_usuario').val(),
  		'pass':$('#txt_pass').val(),
  		'modulos':modulos,
+    'empresas':empresas,
  		'entidad':$('#ddl_entidad').val(),
  		'CI_usuario':$('#ddl_usuarios').val(),
  	}
+
+  console.log(parametros);
+  // return false;
  	$.ajax({
     		 data:  {parametros:parametros},
     		url:   '../controlador/niveles_seguriC.php?guardar_datos=true',
@@ -331,6 +401,7 @@ function guardar()
     						//timer: 2500
     						});
     					$('#myModal_espera').modal('hide'); 
+              $('#rbl_all').prop('checked',false); 
     					buscar_permisos();
     				}
     		}
@@ -457,68 +528,132 @@ function guardar()
 
  }
 
- function buscar_empresa_ruc()
- {
-  var ruc = $('#ruc_empresa').val();
-      $.ajax({
-        data:  {ruc:ruc},
-        url:   '../controlador/niveles_seguriC.php?buscar_ruc=true',
+//  function buscar_empresa_ruc()
+//  {
+//   var ruc = $('#ruc_empresa').val();
+//       $.ajax({
+//         data:  {ruc:ruc},
+//         url:   '../controlador/niveles_seguriC.php?buscar_ruc=true',
+//         type:  'post',
+//         dataType: 'json',
+//         beforeSend: function () { 
+//           $('#myModal_espera').modal('show'); 
+//           $('#list_empre').html('<tr class="text-center"><td colspan="6"> No encontrado... </td></tr>');
+//           $('#txt_enti').val('');
+//         },
+//         success:  function (response) { 
+//           if(response == -1)
+//            {
+//             Swal.fire({
+//                 //position: 'top-end',
+//                 type: 'info',
+//                 title: 'RUC no encontrado!',
+//                 showConfirmButton: true
+//                 //timer: 2500
+//                 });
+//               $('#myModal_espera').modal('hide'); 
+            
+//            }else
+//            {
+
+//             // $('#txt_enti').val(response.entidad[0]['Nombre_Entidad']);
+//             var empresa = '';
+//             console.log(response);
+//             $.each(response, function(i,item){
+//               if(i==0)
+//               {
+//              empresa+="<tr><td><input type='radio' name='radio_usar' value='"+item.ID_Empresa+"-"+item.Entidad+"-"+item.Item+"' checked></td><td>"+item.emp+"</td><td>"+item.Item+"</td><td>"+item.ruc+"</td><td>"+item.Estado+"</td><td><i><b><u>"+item.Entidad+"</u></b></i></td><td><i><b><u>"+item.Ruc_en+"</u></b></i></td></tr>";
+//               }else
+//               {
+//                  empresa+="<tr><td><input type='radio' name='radio_usar' value='"+item.ID_Empresa+"-"+item.Entidad+"-"+item.Item+"'></td><td>"+item.emp+"</td><td>"+item.Item+"</td><td>"+item.ruc+"</td><td>"+item.Estado+"</td><td><i><b><u>"+item.Entidad+"</u></b></i></td><td><i><b><u>"+item.Ruc_en+"</u></b></i></td></tr>";
+
+//               }
+//             });
+
+//            $('#list_empre').html(empresa);
+//              $('#myModal_espera').modal('hide'); 
+//            }
+//         }
+//       });
+
+// }
+
+function marcar_all(item)
+{
+  
+  var parametros = 
+  {
+    'item':item,
+    'modulo':'',
+    'entidad':$('#ddl_entidad').val(),
+    'usuario':$('#ddl_usuarios').val(),
+    'check':$('#rbl_'+item+'_T').prop('checked'),
+  }
+    $.ajax({
+        data:  {parametros:parametros},
+        url:   '../controlador/niveles_seguriC.php?acceso_todos=true',
         type:  'post',
         dataType: 'json',
         beforeSend: function () { 
           $('#myModal_espera').modal('show'); 
-          $('#list_empre').html('<tr class="text-center"><td colspan="6"> No encontrado... </td></tr>');
-          $('#txt_enti').val('');
         },
         success:  function (response) { 
-          if(response == -1)
-           {
-            Swal.fire({
-                //position: 'top-end',
-                type: 'info',
-                title: 'RUC no encontrado!',
-                showConfirmButton: true
-                //timer: 2500
-                });
-              $('#myModal_espera').modal('hide'); 
-            
-           }else
-           {
-
-            // $('#txt_enti').val(response.entidad[0]['Nombre_Entidad']);
-            var empresa = '';
-            console.log(response);
-            $.each(response, function(i,item){
-              if(i==0)
-              {
-             empresa+="<tr><td><input type='radio' name='radio_usar' value='"+item.ID_Empresa+"-"+item.Entidad+"-"+item.Item+"' checked></td><td>"+item.emp+"</td><td>"+item.Item+"</td><td>"+item.ruc+"</td><td>"+item.Estado+"</td><td><i><b><u>"+item.Entidad+"</u></b></i></td><td><i><b><u>"+item.Ruc_en+"</u></b></i></td></tr>";
-              }else
-              {
-                 empresa+="<tr><td><input type='radio' name='radio_usar' value='"+item.ID_Empresa+"-"+item.Entidad+"-"+item.Item+"'></td><td>"+item.emp+"</td><td>"+item.Item+"</td><td>"+item.ruc+"</td><td>"+item.Estado+"</td><td><i><b><u>"+item.Entidad+"</u></b></i></td><td><i><b><u>"+item.Ruc_en+"</u></b></i></td></tr>";
-
-              }
-            });
-
-           $('#list_empre').html(empresa);
-             $('#myModal_espera').modal('hide'); 
+          if(response == 1)
+           {  
+             usuario_empresa();
+            $('#myModal_espera').modal('hide');             
            }
         }
       });
 
-}
-function usar_busqueda()
+    if($('#rbl_'+item+'_T').prop('checked')==false)
+    {
+      var id = $('#ddl_usuarios').val();
+      var texto = $('select[name="ddl_usuarios"] option:selected').text();
+      cargar_empresas();
+      $('#ddl_usuarios').append($('<option>',{value: id, text:texto,selected: true }));
+      usuario_empresa();
+    }
+  }
+ 
+
+function marcar_acceso(item,modulo)
 {
-  var entidad =  $("input[name=radio_usar]").val();
- 
-       var datos = entidad.split('-');
-       $('#ddl_entidad').append($('<option>',{value: datos[0], text:datos[1],selected: true }));      
-       cargar_empresas();
-       $('#myModal_ruc').modal('hide');
-       setTimeout(function(){
-       $('#emp_'+datos[2]).attr('checked',true); 
-       empresa_select(datos[2]);   
-       }, 1500);
- 
+  var parametros = 
+  {
+    'item':item,
+    'modulo':modulo,
+    'entidad':$('#ddl_entidad').val(),
+    'usuario':$('#ddl_usuarios').val(),
+    'check':$('#rbl_'+modulo+'_'+item).prop('checked'),
+  }
+    $.ajax({
+        data:  {parametros:parametros},
+        url:   '../controlador/niveles_seguriC.php?acceso_todos=true',
+        type:  'post',
+        dataType: 'json',
+        beforeSend: function () { 
+          $('#myModal_espera').modal('show'); 
+        },
+        success:  function (response) { 
+          if(response == 1)
+           {
+              usuario_empresa();
+              $('#myModal_espera').modal('hide');      
+            
+           }
+        }
+      }); 
+}
+
+function activo(id)
+{
+  var emp = $('#txt_empresas').val();
+  emp = emp.slice(0,-1).split(',');
+  if(emp.length ==1)
+  {
+   $('#txt_modal_conten').val(id);
+  }
 }
 </script>
 
@@ -592,7 +727,7 @@ function usar_busqueda()
 	<div class="col-sm-4">    
    <b>Usuario</b> <br>
     <div class="input-group">
-        <select class="form-control input" id="ddl_usuarios" onchange="buscar_permisos();"  style="width:50%"></select>
+        <select class="form-control input" id="ddl_usuarios"  name="ddl_usuarios" onchange="buscar_permisos();"  style="width:50%"></select>
         <div class="input-group-btn">
           <button type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#myModal"><span class="fa fa-plus"></span> Nuevo</button>
         </div>
@@ -640,33 +775,22 @@ function usar_busqueda()
 		</div>
 	</div>      
  </div>
+
+
  <div class="row">
- 	<div class="col-sm-6">
- 		<div class="panel panel-default">
- 			<input type="text" name="" id="txt_empresas" hidden="">
-			 <div class="panel-heading" style="padding: 5px"><b>Lista de empresas</b></div>
-			 <div class="panel-body">
-			 	<form id="empresas" style="height: 300px;overflow-y: scroll;"><!-- 
- 			       <label class="checkbox-inline"><input type="checkbox" name="modulos[]" value="01"><b>Activo</b></label><br>
- 			      <label class="checkbox-inline"><input type="checkbox" name="modulos[]" value="03"><b>Activo</b></label> -->
- 				</form>
-			 </div>
-	    </div> 
+  <div class="col-sm-12">
+    <div class="panel panel-default">      
+       <div class="panel-heading" style="padding: 5px"><b>Lista de empresas</b></div>
+       <div class="panel-body">
+        <div class="row table-responsive" id="tbl_modulos" style="overflow-x: auto;">
+          
+        </div>      
+       </div>
+      </div> 
       <ul class="nav nav-tabs" id="tabs_titulo">
-    </ul> 		
- 	</div>
- 	<div class="col-sm-6">
- 		<div class="panel panel-default">
-			 <div class="panel-heading" style="padding: 5px"><b>Modulos</b></div>
-			 <div class="panel-body" id="modu">
-			 	<div>No a seleccionado ninguna empresa</div>
-			 	<!-- <ul class="nav nav-tabs" id="tabs_titulo">
-			 	</ul> -->
- 		    </div>
- 		</div>
- 	</div>
- </div>  
-</div><br>
+    </ul>     
+  </div>   
+ </div>
 
 <div id="myModal" class="modal fade" role="dialog">
   <div class="modal-dialog">

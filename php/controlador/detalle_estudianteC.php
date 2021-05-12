@@ -857,21 +857,23 @@ if (!file_exists('../../img/img_estudiantes/'.$datos[0]['Archivo_Foto']))
   	$correo1= $datos[0]['Email_R'].','.$datos[0]['Email_M'].','.$datos[0]['Email_P'];
     //print_r($correo1);
     //print_r($email_conexion);
+    // print_r($this->empresa);die();
 
   	$this->email->enviar_email($archivos,$correo1,$cuerpo_correo,$titulo_correo,$correo_apooyo,$nombre,$email_conexion,$email_pass);
      
-  	  $correo2 = $this->empresa[0]['Mail_Colegio'].',asesorcomercial.viclaz@gmail.com,orlandoquintero45@gmail.com,ejfc_omoshiroi@hotmail.com';
+  	  $correo2 = $this->empresa[0]['Mail_Colegio'].',ejfc_omoshiroi@hotmail.com';
 
    // print_r($correo2);
-  	if($this->email->enviar_email($archivos,$correo2,$cuerpo_correo,$titulo_correo,$correo_apooyo,$nombre,$email_conexion,$email_pass))
-    {
+  	// if(
+  		$this->email->enviar_email($archivos,$correo2,$cuerpo_correo,$titulo_correo,$correo_apooyo,$nombre,$email_conexion,$email_pass);
+    // {
 
-      $correo3 = $empresaGeneral[0]['Email_Contabilidad'].',asesorcomercial.viclaz@gmail.com,orlandoquintero45@gmail.com,ejfc_omoshiroi@hotmail.com';
+      $correo3 = $empresaGeneral[0]['Email_Contabilidad'].',ejfc_omoshiroi@hotmail.com';
 
     //print_r($correo3);
       return $this->email->enviar_email($archivosC,$correo3,$cuerpo_correo,$titulo_correo,$correo_apooyo,$nombre1,$email_conexion,$email_pass);
 
-    }
+    // }
 
   }
 

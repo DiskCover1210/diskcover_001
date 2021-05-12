@@ -90,7 +90,7 @@ class niveles_seguriM
 	{
 		$cid = Conectar::conexion('MYSQL');
 		$sql = "SELECT  ID,CI_NIC,Nombre_Usuario,Usuario,Clave FROM acceso_usuarios WHERE SUBSTRING(CI_NIC,1,6)  <> 'ACCESO' AND  Nombre_Usuario LIKE '%".$query."%' AND ID_Empresa='".$entidad."'";
-		 $datos=[];
+		 $datos[]=array('id'=>'0','text'=>'TODOS','CI'=>'0','usuario'=>'TODOS','clave'=>'0');
 		 // print_r($sql);die();
 		 if($cid)
 		 {
@@ -110,9 +110,9 @@ class niveles_seguriM
 	function acceso_empresas($entidad,$empresas,$usuario)
 	{
 		$cid = Conectar::conexion('MYSQL');
-		$sql = "SELECT * FROM acceso_empresas WHERE  ID_Empresa = ".$entidad." AND CI_NIC = '".$usuario."'";
+		$sql = "SELECT * FROM acceso_empresas WHERE  ID_Empresa = ".$entidad." AND Item='".$empresas."' AND CI_NIC = '".$usuario."'";
 		 $datos=[];
-		 // print_r($sql);
+		 // print_r($sql);die();
 		 if($cid)
 		 {
 		 	// print_r($sql);
@@ -163,9 +163,9 @@ class niveles_seguriM
 	function guardar_acceso_empresa($modulos,$entidad,$empresas,$usuario)
 	{	
 	    $cid = Conectar::conexion('MYSQL');
-	    $delet = $this->delete_modulos($entidad,$empresas,$usuario);
-	    if($delet==1)
-	    {
+	    // $delet = $this->delete_modulos($entidad,$empresas,$usuario);
+	    // if($delet==1)
+	    // {
 	    $regis = $this->acceso_empresas_($entidad,$empresas,$usuario);
 	    $modulo = explode(',',$modulos);
 	    $valor = '';
@@ -210,7 +210,7 @@ class niveles_seguriM
 	    }
 	    return 1;
 	  }
-	}
+	// }
 
 
 	}
@@ -231,10 +231,20 @@ class niveles_seguriM
 	   }
 
 	}
-	function delete_modulos($entidad,$empresas,$usuario)
+	function delete_modulos($entidad,$empresas=false,$usuario,$modulo=false)
 	{
 		$cid = Conectar::conexion('MYSQL');
-		$sql = "DELETE FROM acceso_empresas WHERE  ID_Empresa = ".$entidad." AND Item='".$empresas."' AND CI_NIC = '".$usuario."'";
+		$sql = "DELETE FROM acceso_empresas WHERE  ID_Empresa = ".$entidad." ";
+		if($empresas)
+		{
+			$sql.=" AND Item='".$empresas."'";
+		}
+			$sql.=" AND CI_NIC = '".$usuario."'";
+		if($modulo)
+		{
+			 $sql.=" AND Modulo='".$modulo."'";
+		}
+		// print_r($sql);die();
 		 if($cid)
 		 {
 		 	 $resultado = mysqli_query($cid, $sql);
@@ -383,6 +393,43 @@ class niveles_seguriM
 		 }
 		 return $entidad;
 
+	}
+
+	// function usuario_empresas($entidad,$usuario)
+	// { 
+	// 	$cid = Conectar::conexion('MYSQL');	  
+	// 	$sql="SELECT DISTINCT Item FROM acceso_empresas WHERE ID_Empresa = '".$entidad."' AND CI_NIC = '".$usuario."' ORDER BY Item";
+	// 	$empresa = array();
+
+	// 	 if($cid)
+	// 	 {
+	// 	 	$consulta=$cid->query($sql) or die($cid->error);
+	// 	 	while($filas=$consulta->fetch_assoc())
+	// 		{
+	// 			$empresa[] =$filas;			
+	// 		}
+			
+	// 	 }
+	// 	 return $empresa;
+	// }
+
+	function accesos_modulos($entidad,$usuario)
+	{
+
+		$cid = Conectar::conexion('MYSQL');	  
+		$sql="SELECT Item,Modulo FROM acceso_empresas WHERE ID_Empresa = '".$entidad."' AND CI_NIC = '".$usuario."'";
+		 $empresa = array();
+
+		 if($cid)
+		 {
+		 	$consulta=$cid->query($sql) or die($cid->error);
+		 	while($filas=$consulta->fetch_assoc())
+			{
+				$datos[] =$filas;			
+			}
+		 }
+		 // print_r($datos);die();
+	      return $datos;
 	}
 	
 }

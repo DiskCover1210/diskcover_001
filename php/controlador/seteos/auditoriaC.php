@@ -88,35 +88,35 @@ class auditoriaC
 	{
 		// print_r($parametros);die();
 		$datos = $this->modelo->tabla_registros($parametros['ent'],$parametros['emp'],$parametros['usu'],$parametros['mod'],$parametros['des'],$parametros['has'],$parametros['numReg']);
-		$tr='';
-		if(count($datos)>0)
-		{
-		foreach ($datos as $key => $value) {
-			 $ent = $this->modelo->entidades(false,$value['RUC']);
-			 $ent = explode('_', $ent[0]['id']);
-			$empresas = $this->modelo->empresas($ent[1],false,$value['Item']);
-			$tam_en = '100px';
-			$tam_nom = '100px';
-			$tam_ta = '100px';
-			// print_r($empresas);die();
+		// $tr='';
+		// if(count($datos)>0)
+		// {
+		// foreach ($datos as $key => $value) {
+		// 	 $ent = $this->modelo->entidades(false,$value['RUC']);
+		// 	 $ent = explode('_', $ent[0]['id']);
+		// 	$empresas = $this->modelo->empresas($ent[1],false,$value['Item']);
+		// 	$tam_en = '100px';
+		// 	$tam_nom = '100px';
+		// 	$tam_ta = '100px';
+		// 	// print_r($empresas);die();
 
-			$tr.='<tr>
-						<td  width="95px">'.$value['Fecha'].'</td>
-						<td  width="50px">'.$value['Hora'].'</td>
-						<td  width="150px">'.$value['enti'].'</td>
-						<td  width="150px">'.$value['IP_Acceso'].'</td>
-						<td  width="95px">'.$value['Aplicacion'].'</td>
-						<td width = "150px">'.$value['Tarea'].'</td>
-						<td width="150px">'.$empresas[0]['text'].'</td>
-						<td  width="150px">'.$value['nom'].'</td>
-					</tr>';
-		}
-	   }else
-	   {
-	   	 $tr.='<tr><td colspan="7">NO SE ENCONTRARON REGISTROS...</td></tr>';
-	   }
+		// 	$tr.='<tr>
+		// 				<td  width="95px">'.$value['Fecha'].'</td>
+		// 				<td  width="50px">'.$value['Hora'].'</td>
+		// 				<td  width="150px">'.$value['enti'].'</td>
+		// 				<td  width="150px">'.$value['IP_Acceso'].'</td>
+		// 				<td  width="95px">'.$value['Aplicacion'].'</td>
+		// 				<td width = "150px">'.$value['Tarea'].'</td>
+		// 				<td width="150px">'.$empresas[0]['text'].'</td>
+		// 				<td  width="150px">'.$value['nom'].'</td>
+		// 			</tr>';
+		// }
+	 //   }else
+	 //   {
+	 //   	 $tr.='<tr><td colspan="7">NO SE ENCONTRARON REGISTROS...</td></tr>';
+	 //   }
 
-		return $tr;
+		return $datos;
 
 	}
 

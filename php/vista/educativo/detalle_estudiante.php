@@ -1,6 +1,9 @@
 
 <?php
-
+$mod = '';
+   if(isset($_GET['mod'])){
+   	$mod = $_GET['mod'];
+   }
     if(!isset($_SESSION)) 
 	 		session_start();
 	 	if (!empty($_SERVER['HTTPS']) && ('on' == $_SERVER['HTTPS'])) 
@@ -28,6 +31,20 @@
 <script type="text/javascript">
 
 $(document).ready(function() {  
+
+	var mod='<?php echo $mod; ?>'; 
+	if(mod!='educativo')
+	{
+		$('#home_t').css('display','none');
+		$('#menu2_t').css('display','none');
+		$('#menu3_t').css('display','none');
+		$('#home').css('display','none');
+		$('#menu2').css('display','none');
+		$('#menu3').css('display','none');
+		$( "#menu4_t" ).addClass( "active" );
+		$('#menu4').css('display','block');
+		$( "#menu4" ).removeClass( "fade" );
+	}
 
 
    provincias();
@@ -377,7 +394,7 @@ function lista_cursos()
 			{
 				Swal.fire({
 				 type: 'error',
-				 title: 'Clave incorrecta',
+				 title: 'El usuario esta registrado pero su Clave incorrecta',
 				 //text: 'the quantity entered is outside the order range!'
           });
 			}else
@@ -1418,10 +1435,10 @@ function lista_cursos()
 
 
   <ul class="nav nav-tabs">
-    <li class="active"><a data-toggle="tab" href="#home">Matricula</a></li>
-    <li><a data-toggle="tab" href="#menu2">Familiares</a></li>
-    <li><a data-toggle="tab" href="#menu3">Representante</a></li>
-    <li><a data-toggle="tab" href="#menu4">Facturas emitidas</a></li>
+    <li class="active" id="home_t"><a data-toggle="tab" href="#home">Matricula</a></li>
+    <li id="menu2_t"><a data-toggle="tab" href="#menu2">Familiares</a></li>
+    <li id="menu3_t"><a data-toggle="tab" href="#menu3">Representante</a></li>
+    <li id="menu4_t"><a data-toggle="tab" href="#menu4">Facturas emitidas</a></li>
     <div class="text-right">
      <input type="" name="txt_op" id="txt_op" hidden=""><!-- 
   	 <button type="button" onclick="abrir_modal()">modal</button> -->

@@ -95,55 +95,43 @@ class auditoriaM
 
 	function tabla_registros($entidad = false,$empresa=false,$CodigoU=false,$aplicacion=false,$desde=false,$hasta=false,$numReg = 50)
 	{
-		$cid = Conectar::conexion('MYSQL');
-		$sql = "SELECT IP_Acceso,Nombre_Usuario as 'nom',RUC,A.Fecha,Hora,Aplicacion,Tarea,Item,Nombre_Entidad as 'enti' 
-		FROM acceso_pcs A
-		INNER JOIN entidad E ON A.RUC = E.RUC_CI_NIC 
-		INNER JOIN acceso_usuarios AC ON A.CodigoU = AC.CI_NIC ";
-		if($entidad)
-		{
-		  $sql.=" and RUC='".$entidad."' ";
-		}
-		if($empresa)
-		{
-		  $sql.=" and A.Item ='".$empresa."' ";
-		}
-		if($CodigoU)
-		{
-		  $sql.=" and A.CodigoU ='".$CodigoU."' ";
-		}
-		if($aplicacion)
-		{
-		  $sql.=" and Aplicacion ='".$aplicacion."' ";
-		}
+		$query = false;
+		$cid = $this->conn;
+		$sql="SELECT *
+		   FROM Clientes 
+		   WHERE T <> '.' ";
+		   if($query != '')
+		   {
+		   	$sql.=" AND Cliente LIKE '%".$query."%'";
+		   }
+		  $sql.=" ORDER BY Cliente OFFSET 0 ROWS FETCH NEXT 25 ROWS ONLY;";
+		  // print_r($sql);die();
+  //       $stmt = sqlsrv_query($cid, $sql);
+	 //    $result = array();	
+	 //   while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_ASSOC) ) 
+	 //   {
+		// $result[] = $row;
+	 //   }
 
-		$sql.=" AND A.Fecha BETWEEN ";
-		if($desde)
-		{
-			$sql.=" '".$desde."' ";
-		}
-		$sql.=" AND";
-		if($hasta)
-		{
-			$sql.=" '".$desde."'";
-		}
-
-		if($numReg!='T')
-		{
-		  $sql.=' LIMIT 0, '.$numReg.' ';
-		}
+	   // return $result;
 
 		 // print_r($sql);die();
-		 $datos=array();
-		 if($cid)
-		 {
-		 	$consulta=$cid->query($sql) or die($cid->error);
-		 	while($filas=$consulta->fetch_assoc())
-			{
-				$datos[] =$filas;			
-			}
-		 }
-	    return $datos;
+		  $botones[0] = array(
+		  	'boton'=>'Ver factura',  //nombre del title y de la funcion onclick -- los espacion se remplazan por (_)
+		  	'icono'=>'<i class="fa fa-trash"></i>', //icono del boton
+		  	'tipo'=>'primary', // default,primary,danger,success, info -- color del boton boopstrap
+		  	'id'=>'ID' // campos de la consulta sql para agregart en funcion onclick -- funcion('','','')
+		  );		  
+		  $check[0] = array(
+		  	'boton'=>'Ver factura', //nombre del title y de la funcion onclick -- los espacion se remplazan por (_)
+		  	'id'=>'ID,CI_RUC,Sexo',  // campos de la consulta sql para agregart en funcion onclick -- funcion('','','')
+		  	'text_visible'=>false //titulo de header visible o no (true /false)
+		  );
+		  $image=array();
+		  $tabla = 'Clientes';
+		  $titulo ='balance de comprobacion';
+	return  grilla_generica_new($sql,$tabla,$titulo,$botones,$check,$image,$border=1,$sobreado=1,$head_fijo =1,$tamaño_tabla=300);
+		
 	}
 
 	function imprimir_excel($stmt1)

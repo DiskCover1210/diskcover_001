@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<iva>
+	<TipoIDInformante>R</TipoIDInformante>
+	<IdInformante>0702164179001</IdInformante>
+	<razonSocial>LA COFRADIA DEL VINO</razonSocial>
+	<Anio>2020</Anio>
+	<Mes>04</Mes>
+	<numEstabRuc>1</numEstabRuc>
+	<totalVentas>4.40</totalVentas>
+	<codigoOperativo>IVA</codigoOperativo>
+	<compras/>
+	<ventas>
+		<detalleVentas>
+			<tpIdCliente>04</tpIdCliente>
+			<idCliente>18473408</idCliente>
+			<parteRelVtas>NO</parteRelVtas>
+			<tipoComprobante>18</tipoComprobante>
+			<tipoEmision>F</tipoEmision>
+			<numeroComprobantes>1</numeroComprobantes>
+			<baseNoGraIva>0.00</baseNoGraIva>
+			<baseImponible>0.00</baseImponible>
+			<baseImpGrav>4.40</baseImpGrav>
+			<montoIva>0.60</montoIva>
+			<montoIce>0.00</montoIce>
+			<valorRetIva>0.00</valorRetIva>
+			<valorRetRenta>0.00</valorRetRenta>
+			<formasDePago>
+				<formaPago>00</formaPago>
+			</formasDePago>
+		</detalleVentas>
+	</ventas>
+	<ventasEstablecimiento>
+		<ventaEst>
+			<codEstab>001</codEstab>
+			<ventasEstab>0.48</ventasEstab>
+		</ventaEst>
+	</ventasEstablecimiento>
+</iva>

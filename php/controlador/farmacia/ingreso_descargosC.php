@@ -10,7 +10,6 @@ $_SESSION['INGRESO']['modulo_']='99';
  */
 $controlador = new ingreso_descargosC();
 // sp_Reindexar_Periodo();
-// mayorizar_inventario_sp();
 if(isset($_GET['paciente']))
 {
 	$query = '';
@@ -108,11 +107,13 @@ class ingreso_descargosC
 	private $modelo;
 	private $paciente;
 	private $decargos;
+	public $cods_negativos = '';
 	function __construct()
 	{
 		$this->modelo = new ingreso_descargosM();
 		$this->paciente = new pacienteM();
 		$this->descargos = new descargosM();
+		mayorizar_inventario_sp();
 	}
 	function buscar_paciente($query)
 	{
@@ -302,8 +303,6 @@ class ingreso_descargosC
 				}
 			}
 
-
-			// print_r($costo);die();
 			$d =  dimenciones_tabl(strlen($value['A_No']));
 			$d1 =  dimenciones_tabl(strlen($value['Fecha_Fab']->format('Y-m-d')));
 			$d2 =  dimenciones_tabl(strlen($value['CODIGO_INV']));
@@ -345,7 +344,7 @@ class ingreso_descargosC
   				</tr>';
 			
 		}
-		$tr.='<tr><td colspan="2"><button type="button" class="btn btn-primary" onclick="generar_factura(\''.$fecha.'\')" id="btn_comprobante"><i class="fa fa-file-text-o"></i> Gernerar comprobante</button></td><td colspan="4"></td><td class="text-right">Total:</td><td><input type="text" class="form-control input-sm" value="'.$subtotal.'"></td><td colspan="2"></td></tr>';
+		$tr.='<tr><td colspan="2"><button type="button" class="btn btn-primary" onclick="generar_factura(\''.$fecha.'\')" id="btn_comprobante"><i class="fa fa-file-text-o"></i> Generar comprobante</button></td><td colspan="4"></td><td class="text-right">Total:</td><td><input type="text" class="form-control input-sm" value="'.$subtotal.'"></td><td colspan="2"></td></tr>';
 		// print_r($tr);die();
 		if($num!=0)
 		{
@@ -472,11 +471,33 @@ class ingreso_descargosC
 	}
 	function generar_factura($orden,$ruc,$area,$nombre,$fecha)
 	{
+		$negativos = '';
+		$datos = $this->modelo->cargar_pedidos($orden,$area,$fecha);
+		foreach ($datos as $key => $value) 
+		{
+			$costo =  $this->modelo->costo_venta($value['CODIGO_INV']);
+			$nega = 0;
+			if(empty($costo))
+			{
+				$costo[0]['Costo'] = 0;
+				$costo[0]['Existencia'] = 0;
+			}else
+			{
+				$exis = number_format($costo[0]['Existencia']-$value['CANTIDAD'],2);
+				if($exis<0)
+				{
+					$negativos.=$value['CODIGO_INV'].',';
+				}
+			}
+		}
+		$negativos = substr($negativos,0,-1);
 		// if($this->modelo->misma_fecha($orden,$ruc)==-1)
 		// {
 		// 	return array('resp'=>-3,'com'=>'');
 		// }
-		$asientos_SC = $this->modelo->datos_asiento_SC($orden,$fecha);
+		$asientos_SC = $this->modelo->datos_asiento_SC($orden,$fecha,$negativos);
+
+		// print_r($asientos_SC);die();
 
 		// print_r($asientos_SC);die();
 
@@ -511,7 +532,7 @@ class ingreso_descargosC
 		// print_r('expression');die();
 
 		//asientos para el debe
-		$asiento_debe = $this->modelo->datos_asiento_debe($orden,$fecha);
+		$asiento_debe = $this->modelo->datos_asiento_debe($orden,$fecha,$negativos);
 		$fecha = $asiento_debe[0]['fecha']->format('Y-m-d');
 		
 		foreach ($asiento_debe as $key => $value) 
@@ -535,7 +556,7 @@ class ingreso_descargosC
 		}
 
         // asiento para el haber
-		$asiento_haber  = $this->modelo->datos_asiento_haber($orden,$fecha);
+		$asiento_haber  = $this->modelo->datos_asiento_haber($orden,$fecha,$negativos);
 		foreach ($asiento_haber as $key => $value) {
 			$cuenta = $this->modelo->catalogo_cuentas($value['cuenta']);			
 				$parametros_haber = array(
@@ -585,9 +606,9 @@ class ingreso_descargosC
                 // die();
                 if($resp==$num_comprobante)
                 {
-                	if($this->ingresar_trans_kardex_salidas($orden,$num_comprobante,$fecha,$area,$ruc,$nombre)==1)
+                	if($this->ingresar_trans_kardex_salidas($orden,$num_comprobante,$fecha,$area,$ruc,$nombre,$negativos)==1)
                 	{
-                		$resp = $this->modelo->eliminar_aiseto_K($orden,$fecha);
+                		$resp = $this->modelo->eliminar_aiseto_K($orden,$fecha,$negativos);
                 		if($resp==1)
                 		{
                 			return array('resp'=>1,'com'=>$num_comprobante);
@@ -612,20 +633,23 @@ class ingreso_descargosC
 			}
 		}else
 		{
-			return array('resp'=>-1,'com'=>'No coinciden');
+			$this->modelo->eliminar_asieto();
+			$this->modelo->eliminar_aiseto_sc($fecha);
+			return array('resp'=>-1,'com'=>'No coinciden','debe'=>$debe,'haber'=>$haber);
 
 		}
 
 	}
 
-	function ingresar_trans_kardex_salidas($orden,$comprobante,$fechaC,$area,$ruc,$nombre)
+	function ingresar_trans_kardex_salidas($orden,$comprobante,$fechaC,$area,$ruc,$nombre,$negativos)
     {
-		$datos_K = $this->modelo->cargar_pedidos($orden,$area,$fechaC);
+		$datos_K = $this->modelo->cargar_pedidos($orden,$area,$fechaC,$negativos);
 		// print_r($datos_K);
 		// $comprobante = explode('.',$comprobante);
 		// $comprobante = explode('-',trim($comprobante[1]));
 		$comprobante = $comprobante;
 		$resp = 1;
+		$lista = '';
 		foreach ($datos_K as $key => $value) {
 		   $datos_inv = $this->modelo->lista_hijos_id($value['CODIGO_INV']);
 		   // print_r($datos_inv.'-'.$datos_inv[0]['id']);die();
@@ -683,8 +707,13 @@ class ingreso_descargosC
 		     {
 		     	$resp = 0;
 		     }
+		     $lista.="'".$value['CODIGO_INV']."',"; 
 	}
-
+	$lista = substr($lista,0,-1);
+	if($this->modelo->actualizo_trans_kardex($lista) == -1)
+	{
+		$resp = 0;
+	}
                 		// print_r($resp);die();
 	return $resp;
 

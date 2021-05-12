@@ -460,7 +460,7 @@ require_once("panel.php");
           <div class="table-responsive">
             <table>
               <tr>
-                <td he><b>Total Debe</b></td>
+                <td><b>Total Debe</b></td>
                 <td id="debe"></td>
                 <td><b>Total Haber</b></td>
                 <td id="haber"></td>
@@ -478,5 +478,4 @@ require_once("panel.php");
             </table>
           </div>          
         </div>        
-    </div> 
-
+    </div>  

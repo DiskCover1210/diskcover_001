@@ -28,7 +28,6 @@ require_once("../controlador/panel.php");
 				}else if($num == 1)
 				{
 					$html='<script>$("#myModal_espera").modal("show"); window.location="panel.php?mos='.$empresa[0]['ID'].'-'.$empresa[0]['Item'].'&mos1='.$empresa[0]['Empresa'].'&mos3='.$empresa[0]['Item'].'"</script>';
-					// print_r($_SESSION);die();
 					echo $html;
 				}else
 				{

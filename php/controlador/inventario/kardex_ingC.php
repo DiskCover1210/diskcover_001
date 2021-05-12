@@ -174,7 +174,16 @@ if(isset($_GET['Documento_Modificado']))
    $parametros = $_POST['parametros'];
   echo  json_encode($controlador->Documento_Modificado($parametros));
 }
-
+if(isset($_GET['validar_autorizacion']))
+{
+   $parametros = $_POST['parametros'];
+  echo  json_encode($controlador->validar_autorizacion($parametros));
+}
+if(isset($_GET['validar_numero']))
+{
+   $parametros = $_POST['parametros'];
+  echo  json_encode($controlador->validar_numero($parametros));
+}
 
 class kardex_ingC
 {
@@ -1114,6 +1123,37 @@ class kardex_ingC
          {
           return -1;
          }
+     }
+
+     function validar_autorizacion($parametros)
+     {
+       // print_r($parametros);die();
+      $n = strlen($parametros['auto']);
+      if($n<10)
+      {
+        $ce = str_repeat('0',10-$n);
+        $parametros['auto'] = $ce.$parametros['auto'];
+
+      }
+        if($parametros['auto'] !=  ReadSetDataNum("RE_SERIE_".$parametros['serie'], True, False))
+        {
+          $titulo = "SECUENCIAL DE RETENCION";
+          $mensajes = "Número de Retención: ".$parametros['serie']."-".$parametros['auto']." no esta en orden secuencial. QUIERE PROCESARLA?";
+          // If BoxMensaje = vbYes Then Co.RetSecuencial = False
+          return array('titulo'=>$titulo,'mensaje'=>$mensajes);
+      }
+     }
+     function validar_numero($parametros)
+     {
+      $RetNueva = True;
+      $datos = $this->modelo->existe_numero($parametros['uno'],$parametros['dos'],$parametros['ret']);
+      if(count($datos)>0)
+      {
+        return 1;
+      }else
+      {
+        return -1;
+      }
      }
 }
 ?>

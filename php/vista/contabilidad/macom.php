@@ -25,10 +25,6 @@
 			 <div class="box" style='margin-bottom: 5px;'>
 			  <div class="box-header">
 					<h4 class="box-title">
-						<a class="btn btn-default"  data-toggle="tooltip" title="Salir del modulo" href="panel.php?sa=s">
-							<i ><img src="../../img/png/salir.png" class="user-image" alt="User Image"
-							style='font-size:20px; display:block; height:100%; width:100%;'></i> 
-						</a>
 						<a id='l1' class="btn btn-default"  data-toggle="tooltip" title="Procesar balance de Comprobación"
 						href="contabilidad.php?mod=contabilidad&acc=bacsg&acc1=Balance de Comprobacion/Situación/General&ti=BALANCE DE COMPROBACIÓN&Opcb=1&Opcen=0&b=1">
 							<i ><img src="../../img/png/pbc.png" class="user-image" alt="User Image"
@@ -78,7 +74,10 @@
 							<i ><img src="../../img/png/table_excel.png" class="user-image" alt="User Image"
 							style='font-size:20px; display:block; height:100%; width:100%;'></i> 
 						</a>
-						
+							<a class="btn btn-default"  data-toggle="tooltip" title="Salir del modulo" href="contabilidad.php?mod=contabilidad">
+							<i ><img src="../../img/png/salir.png" class="user-image" alt="User Image"
+							style='font-size:20px; display:block; height:100%; width:100%;'></i> 
+						</a>
 						
 					  <!--<a data-toggle="collapse" data-parent="#accordion" href="#collapseOne">
 						Collapsible Group Item #1
@@ -95,14 +94,14 @@
 	<div class="box-body">
 		<div class="box table-responsive">
             <div class="box-header">
-              <!--<h3 class="box-title">Striped Full Width Table</h3>-->
+              <!--<h3 class="box-title">Striped Full Width Table</h3>
 			  <table>
 				<tr>
 					<td>
 						<div class="loader1"></div>
 					</td>
 				</tr>
-			  </table>
+			  </table>-->
 			<?php
 					
 					?>
@@ -127,11 +126,11 @@
 						echo "No hay soporte para cURL";
 					}
 					//sp_Mayorizar_Cuentas($_SESSION['INGRESO']['Opc'],$_SESSION['INGRESO']['Sucursal'],$_SESSION['INGRESO']['item'],$_SESSION['INGRESO']['periodo'],'1');
-					sp_Mayorizar_Cuentas($_SESSION['INGRESO']['Opc'],$_SESSION['INGRESO']['Sucursal'],$_SESSION['INGRESO']['item'],$_SESSION['INGRESO']['periodo'],null);
+					sp_Mayorizar_Cuentas($_SESSION['INGRESO']['Opc'],$_SESSION['INGRESO']['Sucursal'],$_SESSION['INGRESO']['item'],$_SESSION['INGRESO']['periodo']);
 					//$url= url();
 					//die();
 					//consultamos errores
-							$texto = sp_errores($_SESSION['INGRESO']['item'],$_SESSION['INGRESO']['modulo'],$_SESSION['INGRESO']['Id']);
+							$texto = sp_errores($_SESSION['INGRESO']['item'],$_SESSION['INGRESO']['modulo_'],$_SESSION['INGRESO']['Id']);
 							if(count($texto)>0)
 							{
 								//para el overflow
@@ -197,11 +196,13 @@
 								</div>
 								
 								<script>
-									$(".loader1").hide();
+									//$(".loader1").hide();
+									$('#myModal_espera').modal('show');
 									$(function() { 
 										$("#myModal").modal();
 										//$("#dialog").dialog(); 
 									});
+									$('#myModal_espera').modal('hide');
 									function copiar()
 									{
 										var codigoACopiar = document.getElementById('texto');
@@ -292,7 +293,7 @@
 											 //location.href ="contabilidad.php?mod=contabilidad";
 										  }
 										});*/
-								  $(".loader1").hide();
+								 // $(".loader1").hide();
 								  <?php
 										//
 										//die();

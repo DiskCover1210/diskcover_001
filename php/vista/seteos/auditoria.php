@@ -291,7 +291,7 @@ function reporte_excel()
 	</div>
 </form>
 	<div class="row"><br>
-		<div class="table responsive">
+		<div class="table responsive" id="tbl_tabla">
 			<table class="table table-hover">
 				<thead>
 					<th >FECHA</th>

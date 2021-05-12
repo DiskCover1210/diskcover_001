@@ -684,7 +684,7 @@ class contabilidad_model{
 			$sql=$sql." AND Codigo <> '.' ";
 		}
 		$sql=$sql." ORDER BY Codigo ";
-		// echo $sql;
+		//echo $sql.' '.$_SESSION['INGRESO']['IP_VPN_RUTA'];
 		$stmt = sqlsrv_query( $this->dbs, $sql);
 		if( $stmt === false)  
 		{  
@@ -2124,102 +2124,147 @@ class contabilidad_model{
 	function sp_Procesar_BalanceSQL($opc,$sucursal,$item,$periodo,$fechai,$fechaf,$bm,$cc)
 	{
 
-			// echo $opc.'-'.$sucursal.'-'.$fechai.'-'.$fechaf.'-'.$bm.'-'.$cc.'-'.$item.'-'.$periodo;
+		//echo $filtro.' gg ';
+		/*
+			$server = "...the server address..."; 
+			
+			$options = array("UID"=>"...the username...","PWD"=>"...the password...", "Database" => "...the database..." ); 
+			$conn = sqlsrv_connect($server, $options); 
+			if ($conn === false) {die("".print_r(sqlsrv_errors(), true));}
+			$tsql_callSP = "{call ...the stored proc...( ?, ?)}";
+			$params = array( array("...first value in...", SQLSRV_PARAM_IN),
+			array("...second value in...", SQLSRV_PARAM_IN) );
+			$stmt3 = sqlsrv_query( $conn, $tsql_callSP, $params); 
+			if( $stmt3 === false ) 
+			{ echo "Error in executing statement 3.\n"; 
+				die( print_r( sqlsrv_errors(), true));
+			} 
+			print_r( $stmt3); 
+			//attempting to print the return but all i get is Resource id #3 
+			echo "test echo"; 
+			sqlsrv_free_stmt( $stmt3); 
+			sqlsrv_close( $conn);
+		*/
+		//echo $opc.' '.$sucursal.' '.$item.' '.$periodo.' '.$fechai.' '.$fechaf.' '.$bm;
+		//die();
+		//EXEC dbo.sp_Procesar_Balance  '003','.','20190101','20191231',0,0,0
+		//echo $fechai.' '.$fechaf;
 
-      $fechai='20190101';
-      $fechaf='20191231';
-      $opc=0;
-      $sucursal=1;
-      $bm=0;
-      $cc='00';
-
-
-		 $cid=cone_ajax();
-      $parametros = array(
-      array(&$_SESSION['INGRESO']['item'], SQLSRV_PARAM_IN,SQLSRV_PHPTYPE_STRING(SQLSRV_ENC_CHAR), SQLSRV_SQLTYPE_VARCHAR),
-      array(&$_SESSION['INGRESO']['periodo'], SQLSRV_PARAM_IN,SQLSRV_PHPTYPE_STRING(SQLSRV_ENC_CHAR), SQLSRV_SQLTYPE_VARCHAR),
-      array(&$fechai, SQLSRV_PARAM_IN,SQLSRV_PHPTYPE_STRING(SQLSRV_ENC_CHAR), SQLSRV_SQLTYPE_VARCHAR),
-      array(&$fechaf, SQLSRV_PARAM_IN,SQLSRV_PHPTYPE_STRING(SQLSRV_ENC_CHAR), SQLSRV_SQLTYPE_VARCHAR),
-      array(&$opc, SQLSRV_PARAM_IN),
-      array(&$sucursal, SQLSRV_PARAM_IN),
-      array(&$bm, SQLSRV_PARAM_IN),
-      array(&$cc, SQLSRV_PARAM_IN,SQLSRV_PHPTYPE_STRING(SQLSRV_ENC_CHAR), SQLSRV_SQLTYPE_VARCHAR)
-      );
-      //compos del SP de la base 
-      // $sql="EXEC sp_Procesar_Balance @Item=?,@Periodo=?,@FechaDesde=?,@FechaHasta=?,@EsCoop=?, @ConSucursal=?, @EsBalanceMes=?,@CentroCostos=? ";
-      // print_r($sql);
-      // print_r($parametros);
-      // die();
-      $sql="EXEC sp_Procesar_Balance '".$_SESSION['INGRESO']['item']."','".$_SESSION['INGRESO']['periodo']."','".$fechai."','".$fechaf."',".$opc.",".$sucursal.",".$bm.",'".$cc."' ";
-       print_r($sql);
-      // print_r($parametros);
-      die();
-      $stmt = sqlsrv_query($cid, $sql);
-      // $stmt = sqlsrv_prepare($cid, $sql, $parametros);
-      if ($stmt===false) {
-   
-         echo "Error en consulta PA.\n";         
-         $respuesta = -1;
-         die( print_r( sqlsrv_errors(), true));
-         return $respuesta;  
-       die;
-      }
-      $respuesta = 1;
-      return $respuesta;
-
-
+			// print_r('expression');die();
+			// print_r($cc);die();
+		$tsql_callSP = "{call sp_Procesar_Balance(?,?,?,?,?,?,?,?)}";
+		/*$params = array(
+        array($opc, SQLSRV_PARAM_IN),
+        array($sucursal, SQLSRV_PARAM_IN),
+        array($item, SQLSRV_PARAM_IN),
+        array($periodo, SQLSRV_PARAM_IN),
+		array($fechai, SQLSRV_PARAM_IN),
+        array($fechaf, SQLSRV_PARAM_IN),
+        array($bm, SQLSRV_PARAM_IN));*/
+		/*
+		@Item AS VARCHAR(3), @Periodo AS VARCHAR(10), @FechaDesde AS VARCHAR(10), @FechaHasta AS VARCHAR(10), 
+		@EsCoop AS BIT, @ConSucursal AS BIT, @EsBalanceMes AS BIT, @CentroCostos AS VARCHAR(5) AS
+	*/
+		$params = array(
+        array($item, SQLSRV_PARAM_IN),
+        array($periodo, SQLSRV_PARAM_IN),
+        array($fechai, SQLSRV_PARAM_IN),
+        array($fechaf, SQLSRV_PARAM_IN),
+		array($opc, SQLSRV_PARAM_IN),
+        array($sucursal, SQLSRV_PARAM_IN),
+        array($bm, SQLSRV_PARAM_IN),
+		array($cc, SQLSRV_PARAM_IN));
+		$procedure_params = array(
+		array(&$opc, SQLSRV_PARAM_IN),
+		array(&$sucursal, SQLSRV_PARAM_IN),
+		array(&$item, SQLSRV_PARAM_IN),
+		array(&$periodo, SQLSRV_PARAM_IN),
+		array(&$fechai, SQLSRV_PARAM_IN),
+		array(&$fechaf, SQLSRV_PARAM_IN),
+		array(&$bm, SQLSRV_PARAM_IN),
+		array(&$cc, SQLSRV_PARAM_IN)
+		);
+		/*
+			insert into Tabla_temp_spk (spk, cantidad,	camp1 ,	camp2 ,	camp3 ,	camp4 ,	camp5 ,	camp6 ,	camp7 ,
+			camp8 ,	camp9 ,	camp10)
+			values('sp_Procesar_Balance','7','0','0','002','.','20190101','20190228','0','','','');
+		*/
 		
-	// 	$tsql_callSP = "{call sp_Procesar_Balance(?,?,?,?,?,?,?,?)}";
-	// 	/*$params = array(
- //        array($opc, SQLSRV_PARAM_IN),
- //        array($sucursal, SQLSRV_PARAM_IN),
- //        array($item, SQLSRV_PARAM_IN),
- //        array($periodo, SQLSRV_PARAM_IN),
-	// 	array($fechai, SQLSRV_PARAM_IN),
- //        array($fechaf, SQLSRV_PARAM_IN),
- //        array($bm, SQLSRV_PARAM_IN));*/
-	// 	/*
-	// 	@Item AS VARCHAR(3), @Periodo AS VARCHAR(10), @FechaDesde AS VARCHAR(10), @FechaHasta AS VARCHAR(10), 
-	// 	@EsCoop AS BIT, @ConSucursal AS BIT, @EsBalanceMes AS BIT, @CentroCostos AS VARCHAR(5) AS
-	// */
-	// 	$params = array(
- //        array($item, SQLSRV_PARAM_IN),
- //        array($periodo, SQLSRV_PARAM_IN),
- //        array($fechai, SQLSRV_PARAM_IN),
- //        array($fechaf, SQLSRV_PARAM_IN),
-	// 	array($opc, SQLSRV_PARAM_IN),
- //        array($sucursal, SQLSRV_PARAM_IN),
- //        array($bm, SQLSRV_PARAM_IN),
-	// 	array($cc, SQLSRV_PARAM_IN));
-	// 	$procedure_params = array(
-	// 	array(&$opc, SQLSRV_PARAM_IN),
-	// 	array(&$sucursal, SQLSRV_PARAM_IN),
-	// 	array(&$item, SQLSRV_PARAM_IN),
-	// 	array(&$periodo, SQLSRV_PARAM_IN),
-	// 	array(&$fechai, SQLSRV_PARAM_IN),
-	// 	array(&$fechaf, SQLSRV_PARAM_IN),
-	// 	array(&$bm, SQLSRV_PARAM_IN),
-	// 	array(&$cc, SQLSRV_PARAM_IN)
-	// 	);
+		/*$sucursal=0;
+		$item='002';
+		$periodo='.';
+		$fechai='20190101';
+		$fechaf='20190130';
+		$bm=0;
+		$sql = "EXEC DiskCover_Prismanet.dbo.sp_Procesar_Balance 0, {$sucursal}, '{$item}', '{$periodo}', '{$fechai}', '{$fechaf}', {$bm};";
+		$stmt = sqlsrv_query($this->dbs, $sql);*/
 		
-	// 	if ($stmt = sqlsrv_prepare($this->dbs, $tsql_callSP, $params)) {
-	// 		//echo "Statement prepared.<br><br>\n";  
-
-	// 	} else {  
-	// 		echo "Statement could not be prepared.\n";  
-	// 		die(print_r(sqlsrv_errors(), true));  
-	// 	} 
-
-	// 	if( sqlsrv_execute( $stmt ) === false ) {
-
-	// 		die( print_r( sqlsrv_errors(), true));
-
-	// 	}else{
-
-	// 		//print_r(sqlsrv_fetch_array($stmt));
-	// 		// print_r("ejecutos");
-	// 	}
+		/*sleep(3);
+		$sql = $sql = "USE DiskCover_Prismanet;
+		EXEC dbo.sp_Procesar_Balance {$opc}, {$sucursal}, '{$item}', '{$periodo}', '{$fechai}', '{$fechaf}', {$bm};";
+		$stmt = sqlsrv_query($this->dbs, $sql);
 		
+		$sql = $sql = "USE DiskCover_Prismanet;
+		EXEC dbo.sp_Procesar_Balance {$opc}, {$sucursal}, '{$item}', '{$periodo}', '{$fechai}', '{$fechaf}', {$bm};";
+		$stmt = sqlsrv_query($this->dbs, $sql);
+		if (!$stmt) {
+			echo 'Your code is fail.';
+		}
+		else {
+			echo 'Success!';
+		}*/
+		/*$sql = "EXEC sp_Procesar_Balance  ?, ?, ?, ?, ?, ?, ?";
+		$stmt = sqlsrv_prepare($this->dbs, $sql, array(&$opc, &$sucursal, &$item, &$periodo, &$fechai, &$fechaf, &$bm));
+		//foreach($someArray as $key => $var3) {
+			if(sqlsrv_execute($stmt) === false) {
+				echo 'mucho fail.';
+			}
+		//}*/
+		// EXEC the procedure, {call stp_Create_Item (@Item_ID = ?, @Item_Name = ?)} seems to fail with various errors in my experiments
+		//$sql = "EXEC sp_Procesar_Balance @EsCoop = ?, @ConSucursal = ?,@Item = ?, @Periodo = ?,@FechaDesde = ?, @FechaHasta = ?,@EsBalanceMes = ?";
+		
+	   // $sql = "EXEC sp_Procesar_Balance ".$opc.", ".$sucursal.",'".$item."', '".$periodo."','".$fechai."', '".$fechaf."',".$bm."";
+		//echo $sql;
+		/*if ($stmt = sqlsrv_prepare($this->dbs, $sql, $procedure_params)) {
+			echo "Statement prepared.<br><br>\n";  
+
+		} else {  
+			echo "Statement could not be prepared.\n";  
+			die(print_r(sqlsrv_errors(), true));  
+		} */
+		if ($stmt = sqlsrv_prepare($this->dbs, $tsql_callSP, $params)) {
+			//echo "Statement prepared.<br><br>\n";  
+
+		} else {  
+			echo "Statement could not be prepared.\n";  
+			die(print_r(sqlsrv_errors(), true));  
+		} 
+
+		if( sqlsrv_execute( $stmt ) === false ) {
+
+			die( print_r( sqlsrv_errors(), true));
+
+		}else{
+
+			//print_r(sqlsrv_fetch_array($stmt));
+			//print_r("ejecuto");
+		}
+		/*$stmt3 = sqlsrv_query( $this->dbs, $sql);
+		if( $stmt3 === false )
+		{
+			echo "Error en consulta de procesar balance.\n";
+			die( print_r( sqlsrv_errors(), true));
+		}*/
+		
+		 /* Display any warnings. */  
+		// DisplayWarnings();  
+		/*$stmt3 = sqlsrv_query( $this->dbs, $tsql_callSP, $params);
+		if( $stmt3 === false )
+		{
+			echo "Error en consulta de procesar balance.\n";
+			die( print_r( sqlsrv_errors(), true));
+		}*/
+		//echo $stmt;
 		
 	}
 	//procesar balance mysql
@@ -2421,7 +2466,7 @@ class contabilidad_model{
  	       where (TC = 'CC')
           AND Item = '".$_SESSION['INGRESO']['item']."' 
           AND Periodo = '".$_SESSION['INGRESO']['periodo']."'
-          AND LEN(Codigo)=2 order by Codigo "; 
+          AND LEN(Codigo)=2 order by Detalle "; 
           // print_r($sql);die();     
 
         $stmt = sqlsrv_query($cid, $sql);
@@ -2437,7 +2482,8 @@ class contabilidad_model{
 	   return $result;
 	}function sp_Reporte_Analitico_Mensual($tipo,$desde,$hasta)
     {
-      $cid=cone_ajax();
+      $conn = new Conectar();
+      $cid=$conn->conexion();
       $parametros = array(
       array(&$tipo, SQLSRV_PARAM_IN),
       array(&$_SESSION['INGRESO']['item'], SQLSRV_PARAM_IN),
@@ -2466,8 +2512,8 @@ class contabilidad_model{
      function Reporte_Analitico_Mensual_gilla($tipo,$query)
      {
          
-         // $conn = new Conectar();
-         $cid=cone_ajax();
+         $conn = new Conectar();
+         $cid=$conn->conexion();
          $sql=$query." FROM Reporte_Analitico_Mensual
          WHERE Item = '".$_SESSION['INGRESO']['item']."'
          AND Periodo = '".$_SESSION['INGRESO']['periodo']."'

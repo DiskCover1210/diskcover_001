@@ -46,7 +46,7 @@ class ingreso_descargosM
 	   }
        return $datos;
 	}
-		function costo_venta($codigo_inv)
+	function costo_venta($codigo_inv)
 	{
 		$cid = $this->conn;
 		$sql = "SELECT  SUM(Entrada-Salida) as 'Existencia' 
@@ -114,15 +114,25 @@ class ingreso_descargosM
 	  }
 	}
 
-	function cargar_pedidos($orden,$SUBCTA,$fecha=false)
+	function cargar_pedidos($orden,$SUBCTA,$fecha=false,$diferente=false)
 	{
      $cid = $this->conn;
     // 'LISTA DE CODIGO DE ANEXOS
-     $sql = "SELECT * FROM Asiento_K WHERE ORDEN = '".$orden."' AND SUBCTA = '".$SUBCTA."'";
+     $sql = "SELECT * 
+     FROM Asiento_K 
+     WHERE ORDEN = '".$orden."' 
+     AND SUBCTA = '".$SUBCTA."'";
      if($fecha)
      {
-     	$sql.="AND Fecha_Fab = '".$fecha."'";
+     	$sql.=" AND Fecha_Fab = '".$fecha."'";
      }
+     if($diferente)
+     {
+     	$diferente = explode(',',$diferente);
+     	foreach ($diferente as $key => $value) {
+     		$sql.=" AND Codigo_Inv <>'".$value."' ";
+     	}
+     }  
      $sql.=" ORDER BY A_No DESC";
         // print_r($sql);die();
         $stmt = sqlsrv_query($cid, $sql);
@@ -305,11 +315,24 @@ class ingreso_descargosM
 		return $resp;
 	}
 
-	function datos_asiento_haber($orden,$fecha)
+	function datos_asiento_haber($orden,$fecha,$diferente=false)
 	{
      $cid = $this->conn;
     // 'LISTA DE CODIGO DE ANEXOS
-     $sql = "SELECT SUM(VALOR_TOTAL) as 'total',CTA_INVENTARIO as 'cuenta',Fecha_Fab as 'fecha',TC FROM Asiento_K  WHERE Item = '".$_SESSION['INGRESO']['item']."' AND ORDEN = '".$orden."' AND DH = '2' AND Fecha_Fab = '".$fecha."' GROUP BY Codigo_B,ORDEN,CTA_INVENTARIO,Fecha_Fab,TC,SUBCTA";
+     $sql = "SELECT SUM(VALOR_TOTAL) as 'total',CTA_INVENTARIO as 'cuenta',Fecha_Fab as 'fecha',TC 
+             FROM Asiento_K  
+             WHERE Item = '".$_SESSION['INGRESO']['item']."' 
+             AND ORDEN = '".$orden."' 
+             AND DH = '2' 
+             AND Fecha_Fab = '".$fecha."'";
+             if($diferente)
+             	{
+             		$diferente = explode(',',$diferente);
+             		foreach ($diferente as $key => $value) {
+             			$sql.=" AND Codigo_Inv <>'".$value."' ";
+             			}
+             	}   
+        $sql.=" GROUP BY Codigo_B,ORDEN,CTA_INVENTARIO,Fecha_Fab,TC,SUBCTA";
           // print_r($sql);die();
         $stmt = sqlsrv_query($cid, $sql);
         $datos =  array();
@@ -325,11 +348,23 @@ class ingreso_descargosM
 	   }
        return $datos;
 	}
-	function datos_asiento_debe($orden,$fecha)
+	function datos_asiento_debe($orden,$fecha,$diferente=false)
 	{
       $cid = $this->conn;
       // 'LISTA DE CODIGO DE ANEXOS
-     $sql = "SELECT SUM(VALOR_TOTAL) as 'total',CONTRA_CTA as 'cuenta',SUBCTA,Fecha_Fab as 'fecha',TC FROM Asiento_K  WHERE Item = '".$_SESSION['INGRESO']['item']."' AND DH = '2' and ORDEN = '".$orden."' AND Fecha_Fab = '".$fecha."' GROUP BY Codigo_B,ORDEN,CONTRA_CTA,Fecha_Fab,TC,SUBCTA";
+     $sql = "SELECT SUM(VALOR_TOTAL) as 'total',CONTRA_CTA as 'cuenta',SUBCTA,Fecha_Fab as 'fecha',TC 
+     FROM Asiento_K  
+     WHERE Item = '".$_SESSION['INGRESO']['item']."' 
+     AND DH = '2' and ORDEN = '".$orden."' 
+     AND Fecha_Fab = '".$fecha."'";
+     if($diferente)
+     {
+     	$diferente = explode(',',$diferente);
+     	foreach ($diferente as $key => $value) {
+     		$sql.=" AND Codigo_Inv <>'".$value."' ";
+     	}
+     }   
+     $sql.=" GROUP BY Codigo_B,ORDEN,CONTRA_CTA,Fecha_Fab,TC,SUBCTA";
           // print_r($sql);die();
         $stmt = sqlsrv_query($cid, $sql);
         $datos =  array();
@@ -1222,11 +1257,23 @@ order by CP.Codigo_Inv,CP.Producto,CP.TC,CP.Valor_Total,CP.Unidad,CP.Cta_Inventa
 
 	}
 
-	function datos_asiento_SC($orden,$fecha)
+	function datos_asiento_SC($orden,$fecha,$diferente=false)
 	{
      $cid = $this->conn;
     // 'LISTA DE CODIGO DE ANEXOS
-     $sql = "SELECT SUM(VALOR_TOTAL) as 'total',CONTRA_CTA,SUBCTA,Fecha_Fab,TC FROM Asiento_K  WHERE Item = '".$_SESSION['INGRESO']['item']."' AND ORDEN = '".$orden."' AND Fecha_Fab = '".$fecha."'  GROUP BY CONTRA_CTA,Fecha_Fab,TC,SUBCTA";
+     $sql = "SELECT SUM(VALOR_TOTAL) as 'total',CONTRA_CTA,SUBCTA,Fecha_Fab,TC 
+     FROM Asiento_K  
+     WHERE Item = '".$_SESSION['INGRESO']['item']."' 
+     AND ORDEN = '".$orden."' 
+     AND Fecha_Fab = '".$fecha."'";
+     if($diferente)
+     {
+     	$diferente = explode(',',$diferente);
+     	foreach ($diferente as $key => $value) {
+     		$sql.=" AND Codigo_Inv <>'".$value."' ";
+     	}
+     }  
+     $sql.="GROUP BY CONTRA_CTA,Fecha_Fab,TC,SUBCTA";
           // print_r($sql);die();
         $stmt = sqlsrv_query($cid, $sql);
         $datos =  array();
@@ -1534,10 +1581,22 @@ order by CP.Codigo_Inv,CP.Producto,CP.TC,CP.Valor_Total,CP.Unidad,CP.Cta_Inventa
 	
 	}
 	
-    function eliminar_aiseto_K($orden,$fecha)
+    function eliminar_aiseto_K($orden,$fecha,$diferente=false)
 	{
 		 $cid=$this->conn;
-		$sql = "DELETE Asiento_K WHERE Item='".$_SESSION['INGRESO']['item']."' AND DH='2' AND ORDEN ='".$orden."' AND Fecha_Fab ='".$fecha."'";
+		$sql = "DELETE Asiento_K 
+		WHERE Item='".$_SESSION['INGRESO']['item']."' 
+		AND DH='2' 
+		AND ORDEN ='".$orden."' 
+		AND Fecha_Fab ='".$fecha."'";
+		if($diferente)
+             	{
+             		$diferente = explode(',',$diferente);
+             		foreach ($diferente as $key => $value) {
+             			$sql.=" AND Codigo_Inv <>'".$value."' ";
+             			}
+             	}   
+
 		// print_r($sql);die();
 		$stmt = sqlsrv_query($cid, $sql);
 	    if( $stmt === false)  
@@ -1578,6 +1637,29 @@ order by CP.Codigo_Inv,CP.Producto,CP.TC,CP.Valor_Total,CP.Unidad,CP.Cta_Inventa
 	   	 return 1;
 	   }
 
+
+	}
+
+	function actualizo_trans_kardex($lista)
+	{
+		$cid = $this->conn;
+		$sql = "UPDATE Trans_Kardex 
+		SET Procesado = 0 
+		WHERE Item = '".$_SESSION['INGRESO']['item']."' 
+		AND Periodo = '".$_SESSION['INGRESO']['periodo']."' 
+		AND Codigo_Inv  in (".$lista.")"; 
+		$stmt = sqlsrv_query($cid, $sql);      
+	    if( $stmt === false)  
+	      {  
+		     echo "Error en consulta PA.\n";  
+		     return -1;
+		     die( print_r( sqlsrv_errors(), true));  
+	      }
+	      else{
+	      	return 1;
+	      }      
+        // print_r($sql);die();
+	   
 
 	}
 

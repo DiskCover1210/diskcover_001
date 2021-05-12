@@ -48,6 +48,7 @@
   
   $(document).ready(function () {
     $('#tit_sel').html('<i class="fa  fa-trash"></i>');
+    $('#fecha1').focus();
     numero_comprobante();
     cargar_totales_aseintos();
     autocoplet_bene();
@@ -58,7 +59,40 @@
     cargar_tablas_tab4();
     cargar_tablas_retenciones();
     cargar_tablas_sc();
-          });
+
+
+    $( "#codigo" ).autocomplete({
+      source: function( request, response ) {
+                
+            $.ajax({
+                url: '../controlador/contabilidad/incomC.php?cuentasTodos=true',
+                type: 'get',
+                dataType: "json",
+                data: {
+                    q1: request.term
+                },
+                success: function( data ) {
+                  // console.log(data);
+                    response( data );
+                }
+            });
+        },
+        select: function (event, ui) {
+            $('#codigo').val(ui.item.value); // display the selected text
+            // $('#cuentar'). (ui.item.value); // save selected id to input
+            $('#cuentar').append($('<option>',{value: ui.item.value, text:ui.item.label,selected: true }));
+            abrir_modal_cuenta();
+            return false;
+        },
+        focus: function(event, ui){
+            $( "#codigo" ).val( ui.item.value);
+            return false;
+        },
+    });
+
+
+
+  });
 
    function autocoplet_bene(){
       $('#beneficiario1').select2({
@@ -186,6 +220,8 @@
 
     function reset_1(concepto,tipo)
     {
+      // $('#fecha1').select();
+      $('#fecha1').focus();
       var sel = $('#tipoc').val();
       $('#'+sel).removeClass("active");
       if (tipo=='CD') 
@@ -399,11 +435,11 @@
     }
 
     function abrir_modal_cuenta()
-    {
-      var codigo = $('#cuentar').val();
-      tipo_cuenta(codigo);
-      $('#codigo').val($('#cuentar').val());
+    {      
       $('#modal_cuenta').modal('show');
+      var codigo = $('#cuentar').val();      
+      $('#codigo').val(codigo);     
+      tipo_cuenta(codigo);
     }
 
     function tipo_cuenta(codigo)
@@ -420,16 +456,20 @@
             $("#txt_subcta").val(response.subcta);
             $("#txt_tipopago").val(response.tipopago);
             $("#txt_moneda_cta").val(response.moneda);
-            // $("#txt_moneda").val(response.moneda);
             if(response.subcta =='BA')
             {
               $('#panel_banco').css('display','block');
+               $('#modal_cuenta').on('shown.bs.modal', function (){
+                  $('#txt_efectiv').select();
+                });
             }else{
               $('#panel_banco').css('display','none');
+               $('#modal_cuenta').on('shown.bs.modal', function (){
+                  $('#txt_moneda').select();
+                });
             }
       }
         });
-
     }
     function restingir(campo)
     {
@@ -459,7 +499,7 @@
     function cambia_foco()
     {
       $('#modal_cuenta').modal('hide');
-      $('#va').focus();
+      $('#va').select();
     }
 
     function cargar_tablas_contabilidad()
@@ -469,7 +509,7 @@
           // data:  {parametros:parametros},
           url:   '../controlador/contabilidad/incomC.php?tabs_contabilidad=true',
           type:  'post',
-          // dataType: 'json',
+          dataType: 'json',
             success:  function (response) {    
             $('#contabilidad').html(response);      
           }
@@ -483,7 +523,7 @@
           // data:  {parametros:parametros},
           url:   '../controlador/contabilidad/incomC.php?tabs_sc=true',
           type:  'post',
-          // dataType: 'json',
+          dataType: 'json',
             success:  function (response) {    
             $('#subcuentas').html(response);      
           }
@@ -498,9 +538,9 @@
           // data:  {parametros:parametros},
           url:   '../controlador/contabilidad/incomC.php?tabs_retencion=true',
           type:  'post',
-          // dataType: 'json',
+          dataType: 'json',
             success:  function (response) {    
-            $('#retenciones').html(response);      
+            $('#retenciones').html(response.b+response.r);      
           }
         });
 
@@ -513,7 +553,7 @@
           // data:  {parametros:parametros},
           url:   '../controlador/contabilidad/incomC.php?tabs_tab4=true',
           type:  'post',
-          // dataType: 'json',
+          dataType: 'json',
             success:  function (response) {    
             $('#ac_av_ai_ae').html(response);      
           }
@@ -670,6 +710,7 @@
            var opc_mult = $('#con').val();
            var src ="../vista/modales.php?FCompras=true&mod=&prv="+prv+"&ben="+ben+"&fec="+fec+"&opc_mult="+opc_mult+"#";
            $('#frame').attr('src',src).show();
+
            $('#frame').css('height','605px').show();
            $('#modal_subcuentas').modal('show');
           break;
@@ -910,8 +951,8 @@
                                <div class="input-group">
                                  <div class="input-group-addon input-sm">
                                    <b>BENEFICIARIO:</b>
-                                 </div>                           
-                              <select id="beneficiario1" name='beneficiario1' class='input-sm' onchange="benefeciario_selec()">
+                                 </div>                        
+                              <select id="beneficiario1" name='beneficiario1' class='form-control input-sm' onchange="benefeciario_selec()">
                                 <option value="">Seleccione beneficiario</option>                                
                               </select>
                               <input type="hidden" name="beneficiario2" id="beneficiario2" value='' />
@@ -968,7 +1009,7 @@
                             <div class="btn_f input-sm col-sm-12 text-center">
                               <b>VALOR TOTAL:</b>
                             </div>
-                                <input type="text" class="form-control input-sm" id="VT" name='VT' placeholder="0.00" style="text-align:right;" onKeyPress='return soloNumerosDecimales(event)' maxlength='20' size='33'>
+                                <input type="text" class="form-control input-sm" id="VT" name='VT' placeholder="0.00" style="text-align:right;" onKeyPress='return soloNumerosDecimales(event)' maxlength='20' size='33' readonly="">
                           </div>
                         </div>
                       </div>
@@ -1064,7 +1105,7 @@
                         </div>                      
                       </div>
 
-                      <div class="row " style="padding-bottom: 5px; padding-top: 5px;">
+                      <div class="row " style="padding-bottom: 5px;"><br> 
                         <div class="col-md-12 col-sm-12 col-xs-12">
                                <div class="input-group">
                                  <div class="input-group-addon input-sm">
@@ -1089,7 +1130,7 @@
                                  <div class="btn_f input-sm col-md-12 text-center">
                                   <b>DIGITE LA CLAVE O SELECCIONE LA CUENTA:</b>
                                  </div>
-                                 <select id="cuentar" class="input-sm" onchange="abrir_modal_cuenta()">
+                                 <select id="cuentar" class=" form-control input-sm" onchange="abrir_modal_cuenta()">
                                   <option value="">Seleccione una cuenta</option>   
                                  </select>
                                    <!--  <input type="text" class="xs" id="cuenta" name='cuenta' placeholder="cuenta" maxlength='70' size='153'/>
@@ -1117,7 +1158,7 @@
                       </div>
                       <div class="row">
                           <div class="col-xs-12 ">
-                            <div class="panel-heading" style="padding: 10px 15px 0px 0px;">
+                            <div class="panel-heading">
                               <ul class="nav nav-tabs">
                                 <li class="active"><a href="#contabilidad" data-toggle="tab">4. Contabilización</a></li>
                                 <li><a href="#subcuentas" data-toggle="tab">5. Subcuentas</a></li>
@@ -1125,10 +1166,14 @@
                                 <li><a href="#ac_av_ai_ae" data-toggle="tab">7. AC-AV-AI-AE</a></li>
                               </ul>
                             </div>
-                            <div class="panel-body">
+                            <div class="panel-body" style="padding-top: 2px;">
                               <div class="tab-content">
                                 <div class="tab-pane fade in active" id="contabilidad">
-                                                                   
+                                  <?php 
+                                    // $balance=ListarAsientoTem(null,null,'1','0,1,clave');
+                                    // ListarTotalesTem(null,null,'1','0,1,clave');
+                                  ?>
+                                  
                                 </div>
                                 <div class="tab-pane fade" id="subcuentas">Default 2</div>
                                 <div class="tab-pane fade" id="retenciones">Default 3</div>
@@ -1215,7 +1260,7 @@
         </div>
       </div>
       <div class="modal-footer">
-          <button type="button" class="btn btn-primary" onclick="subcuenta_frame();">Guardar</button>
+          <button type="button" class="btn btn-primary" onclick="subcuenta_frame();">Aceptar</button>
           <!-- <button type="button" class="btn btn-default" data-dismiss="modal" aria-label="Close">Cerrar</button> -->
         </div>
     </div>

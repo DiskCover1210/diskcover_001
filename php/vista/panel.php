@@ -48,16 +48,17 @@ if(isset($_GET['mos']))
 		//echo $cod[0];
 		if($cod[0]!='')
 		{
+
+		    $emp = empresa_sin_creenciales_sqlserver($cod[0]);
+			crear_variables_session($emp);
+			$_SESSION['INGRESO']['accesoe'] = getAccesoEmpresas();
 			//echo $cod[0].' -- ';
 			//die();
 			//$('#selector').css('cursor', 'wait');
 			$empresa=getEmpresasId($cod[0]);
 			if(empty($empresa))
 			{
-				$emp = empresa_sin_creenciales_sqlserver($cod[0]);
-				crear_variables_session($emp);
-				$usuario=getUsuario();
-				
+			   $usuario=getUsuario();				
 			   $_SESSION['INGRESO']['CodigoU']=$usuario[0]['CI_NIC'];
 			   $_SESSION['INGRESO']['Nombre_Completo']=$usuario[0]['Nombre_Usuario'];
 			   $_SESSION['INGRESO']['accesoe'] = getAccesoEmpresas();
@@ -138,8 +139,9 @@ if(isset($_GET['mos']))
 						$usuario=getUsuario();
 						$_SESSION['INGRESO']['CodigoU']=$usuario[0]['CodigoU'];
 						$_SESSION['INGRESO']['Nombre_Completo']=$usuario[0]['Nombre_Completo'];
-						//verificamos en acceso si puede ingresar a esa empresa
-						$_SESSION['INGRESO']['accesoe']='0';
+						// //verificamos en acceso si puede ingresar a esa empresa
+						// $_SESSION['INGRESO']['accesoe'] = getAccesoEmpresas();
+						// $_SESSION['INGRESO']['accesoe']='0';
 						//$_SESSION['INGRESO']['modulo'][0]='0';
 						//$permiso=getAccesoEmpresas();
 					}
@@ -346,7 +348,6 @@ if(isset($_GET['mos']))
 <!-- AdminLTE for demo purposes -->
 <script src="../../lib/dist/js/demo.js"></script>
 
-
 <script src="../../lib/dist/js/jquery-ui.js"></script>
   <link rel="stylesheet" href="../../lib/dist/css/jquery-ui.css">
 
@@ -361,6 +362,16 @@ if(isset($_GET['mos']))
   <script type="text/javascript" src="../../lib/dist/js/typeahead.js"></script>
   <link rel="stylesheet" href="../../lib/dist/css/sweetalert2.min.css">
   <link rel="shortcut icon" href="../../img/jpg/logo.jpg" />
+  <style>
+       .ui-autocomplete {
+            max-height: 200px;
+            overflow-y: auto;
+            /* prevent horizontal scrollbar */
+            overflow-x: hidden;
+            /* add padding to account for vertical scrollbar */
+            padding-right: 20px;
+        } 
+</style>
 
   
   <style type="text/css">

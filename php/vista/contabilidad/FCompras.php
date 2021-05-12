@@ -423,12 +423,12 @@ function contracuenta()
                                         <div class="col-sm-12">
                                             <div class="col-sm-2"  style="padding-left: 0px;padding-right: 0px">
                                              <b>Emision</b>
-                                                <input type="date" name="" class="form-control input-sm" value="<?php echo date('Y-m-d') ?>" id="MBFechaEmi">
+                                                <input type="date" name="" class="form-control input-sm" value="<?php echo date('Y-m-d') ?>" id="MBFechaEmi" onblur="cambiar_fecha()">
                                             </div>
                                             <div class="col-sm-2"  style="padding-left: 0px;padding-right: 0px">
                                                 <b>Registro</b>
-                                                <input type="date" name="" class="form-control input-sm" value="<?php echo date('Y-m-d') ?>" id="MBFechaRegis">
-                                            </div>
+                                                <input type="date" name="" class="form-control input-sm" value="<?php echo date('Y-m-d') ?>" id="MBFechaRegis" onblur="validar_fecha()">
+                                            </div>                                            
                                          <div class="col-sm-2" style="padding-left: 0px;padding-right: 0px">
                                                 <b>Caducidad</b>
                                                 <input type="date" name="" class="form-control input-sm" value="<?php echo date('Y-m-d') ?>" id="MBFechaCad">
@@ -655,12 +655,28 @@ function contracuenta()
                                       </div>
                                       <div class="col-sm-2">
                                         Numero
-                                        <input type="text" class="form-control input-sm" name="TxtNumTresComRet" id="TxtNumTresComRet" onblur="validar_num_retencion()" onkeyup="solo_9_numeros(this.id)" placeholder="000000001">
+                                        <input type="text" class="form-control input-sm" name="TxtNumTresComRet" id="TxtNumTresComRet" onblur="validar_num_retencion()" onkeyup="solo_9_numeros(this.id)" placeholder="000000001" tabindex="-1">
+                                        <input type="hidden" name="val_num" id="val_num" value="0">
                                       </div>
                                       <div class="col-sm-4">
                                         Autorizacion
-                                        <input type="text" name="" class="form-control input-sm" id="TxtNumUnoAutComRet" >
+                                        <input type="text" name="" class="form-control input-sm" id="TxtNumUnoAutComRet" onblur="validar_autorizacion()" >
                                       </div>
+                                      <script type="text/javascript">                                              
+                                              function cambiar_fecha()
+                                              {
+                                                $('#MBFechaRegis').val($('#MBFechaEmi').val());
+                                              }
+                                              function validar_fecha(){
+                                              var fr = new Date($('#MBFechaRegis').val());
+                                              var fe = new Date($('#MBFechaEmi').val());
+                                              if(fr>fe)
+                                              {
+                                                Swal.fire('La Fecha de Registro debe ser mayor o igual que la Fecha de Emisión','','info');
+                                                $('#MBFechaRegis').val($('#MBFechaEmi').val());
+                                              }
+                                            }
+                                            </script>
                                       <div class="col-sm-4">
                                         <div class="row">
                                           <div class="col-sm-4"><br>

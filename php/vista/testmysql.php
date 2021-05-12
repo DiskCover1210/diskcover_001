@@ -187,14 +187,14 @@ require_once("../../lib/phpmailer/PHPMailerAutoload.php");
 
 			$permiso=getAccesoEmpresas();
 		}
-		// if($_SESSION['INGRESO']['RUCEnt']=='0590031984001' AND $_SESSION['INGRESO']['Tipo_Usuario']!='user') 
-		// {
-		// 	?>
-		// 	<script>
-		// 	location.href="logout.php";
-		// 	</script>
-		// 	<?php
-		// }
+		if($_SESSION['INGRESO']['RUCEnt']=='0590031984001' AND $_SESSION['INGRESO']['Tipo_Usuario']!='user') 
+		{
+			?>
+			<script>
+			location.href="logout.php";
+			</script>
+			<?php
+		}
 	}
 	//para saber si hay accion y colocar menus
 	if (isset($_SESSION['INGRESO']['accion'])) 

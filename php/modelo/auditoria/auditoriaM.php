@@ -80,13 +80,14 @@ class auditoriaM
 
 		$sql.="ORDER BY Empresa";
 		// print_r($sql);die();
-		  $datos=[];
+		  $datos[]=array('id'=>'0','text'=>'TODOS');;
 		 if($cid)
 		 {
 		 	$consulta=$cid->query($sql) or die($cid->error);
 		 	while($filas=$consulta->fetch_assoc())
 			{
-				$datos[]=['id'=>$filas['Item'],'text'=>utf8_encode($filas['Empresa'])];				
+				// $datos[]=['id'=>$filas['Item'],'text'=>utf8_encode($filas['Empresa'])];		
+				$datos[]=['id'=>$filas['Item'],'text'=>$filas['Empresa']];				
 			}
 		 }
 
@@ -125,7 +126,7 @@ class auditoriaM
 		$sql.=" AND";
 		if($hasta)
 		{
-			$sql.=" '".$desde."'";
+			$sql.=" '".$hasta."'";
 		}
 
 		if($numReg!='T')

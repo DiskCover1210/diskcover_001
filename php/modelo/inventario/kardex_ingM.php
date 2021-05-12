@@ -1276,5 +1276,27 @@ function cuentas_todos($query)
 		return $result;
 	}
 
+	function existe_numero($numUno,$numDos,$retencion)
+	{
+		$cid = $this->conn;
+		$sql= "SELECT * 
+            FROM Trans_Air 
+            WHERE Tipo_Trans = 'C' 
+            AND Item = '".$_SESSION['INGRESO']['item']."' 
+            AND Periodo = '".$_SESSION['INGRESO']['periodo']."' 
+            AND EstabRetencion = '".$numUno."' 
+            AND PtoEmiRetencion = '".$numDos."' 
+            AND SecRetencion = ".$retencion." ";
+		// print_r($sql);die();
+		 $stmt = sqlsrv_query($cid, $sql);
+		 $result = array();
+		 while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_ASSOC) ) 
+		 	{
+		 		$result[] = $row;
+		 	}
+		return $result;
+
+	}
+
 }
 ?>

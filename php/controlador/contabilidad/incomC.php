@@ -35,11 +35,17 @@ if(isset($_GET['cuentas_banco']))
 if(isset($_GET['cuentasTodos']))
 {
 	$query = '';
+    $tipo = '';
 	if(isset($_GET['q']))
 	{
 		$query = $_GET['q'];
 	}
-	echo json_encode($controlador->cuentas_Todos($query));
+    if(isset($_GET['q1']))
+    {
+        $query = $_GET['q1'];
+        $tipo = '1';
+    }
+	echo json_encode($controlador->cuentas_Todos($query,$tipo));
 }
 
 if(isset($_GET['asientoB']))
@@ -58,11 +64,11 @@ if(isset($_GET['EliAsientoBTodos']))
 }
 if(isset($_GET['tabs_contabilidad']))
 {
-	echo json_decode($controlador->cargar_tablas());
+	echo json_encode($controlador->cargar_tablas());
 }
 if(isset($_GET['tabs_sc']))
 {
-	echo json_decode($controlador->cargar_tablas_sc());
+	echo json_encode($controlador->cargar_tablas_sc());
 }
 if(isset($_GET['tabs_sc_modal']))
 {
@@ -72,11 +78,11 @@ if(isset($_GET['tabs_sc_modal']))
 
 if(isset($_GET['tabs_retencion']))
 {
-	echo json_decode($controlador->cargar_tablas_retencion());
+	echo json_encode($controlador->cargar_tablas_retencion());
 }
 if(isset($_GET['tabs_tab4']))
 {
-	echo json_decode($controlador->cargar_tablas_tab4());
+	echo json_encode($controlador->cargar_tablas_tab4());
 }
 if(isset($_GET['subcuentas']))
 {
@@ -205,13 +211,19 @@ class incomC
 
 	}
 
-	function cuentas_Todos($query)
+	function cuentas_Todos($query,$tipo)
 	{
-		$datos = $this->modelo->cuentas_todos($query);
+		$datos = $this->modelo->cuentas_todos($query,$tipo);
 		$cuenta = array();
 		foreach ($datos as $key => $value) {
-			$cuenta[] = array('id'=>$value['Codigo'],'text'=>utf8_encode($value['Nombre_Cuenta']));
+            if($tipo=='')
+            {
+                $cuenta[] = array('id'=>$value['Codigo'],'text'=>utf8_encode($value['Nombre_Cuenta']));
 			// $cuenta[] = array('id'=>$value['Codigo'],'text'=>$value['Nombre_Cuenta']);//para produccion
+            }else
+            {                
+                $cuenta[] = array('value'=>$value['Codigo'],'label'=>utf8_encode($value['Nombre_Cuenta']));
+            }
 		}
 		return $cuenta;
 
@@ -293,7 +305,7 @@ class incomC
 		$b= $this->modelo->DG_AC();
 		$r= $this->modelo->DG_asientoR();		
 
-		return $b.$r;
+		return array('b'=>$b,'r'=>$r);
 	}
 	function cargar_tablas_tab4()
 	{
@@ -390,7 +402,7 @@ class incomC
      function modal_ingresar_asiento($parametros)
      {
      	$valor = $this->modelo->DG_asientos_SC_total();
-     	$cuenta = $this->modelo->cuentas_todos($parametros['cta']); 
+     	$cuenta = $this->modelo->cuentas_todos($parametros['cta'],''); 
         $parametros_asiento = array(
 				"va" => round($valor[0]['total'],2),
 				"dconcepto1" => '.',

@@ -71,7 +71,7 @@ class auditoriaC
 	{
 		$modulos = $this->modelo->modulos_todo($query);
 		// print_r($modulos);die();
-		$mod = array();
+		$mod[] = array('id'=>'0','text'=>'TODOS');
 		foreach ($modulos as $key => $value) {
 			$mod[]=array('id'=>$value['aplicacion'],'text'=>$value['aplicacion']);
 		}

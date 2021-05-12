@@ -1,4 +1,5 @@
-<?php  require_once("panel.php"); $num_ped = '';$cod=''; $area = ''; $pro=''; if(isset($_GET['num_ped'])){$num_ped =$_GET['num_ped'];} if(isset($_GET['cod'])){$cod =$_GET['cod'];} if(isset($_GET['area'])){$area1 = explode('-', $_GET['area']); $area =$area1[0];$pro=$area1[1]; } $_SESSION['INGRESO']['modulo_']='99'; date_default_timezone_set('America/Guayaquil'); ?>
+<?php  require_once("panel.php"); $num_ped = '';$cod=''; $area = ''; $pro=''; if(isset($_GET['num_ped'])){$num_ped =$_GET['num_ped'];} if(isset($_GET['cod'])){$cod =$_GET['cod'];} if(isset($_GET['area'])){$area1 = explode('-', $_GET['area']); $area =$area1[0];$pro=$area1[1]; } $_SESSION['INGRESO']['modulo_']='99'; date_default_timezone_set('America/Guayaquil'); 
+      unset($_SESSION['NEGATIVOS']['CODIGO_INV']);?>
 <script type="text/javascript">
    $( document ).ready(function() {
     autocoplet_paci();
@@ -601,11 +602,11 @@
   function generar_factura(fecha)
   {
 
-    if($('#txt_neg').val()=='true')
-    {
-      Swal.fire('','Tiene Stocks en negativos Ingrese el producto faltante.','info'); 
-      return false;
-    }
+    // if($('#txt_neg').val()=='true')
+    // {
+    //   Swal.fire('','Tiene Stocks en negativos Ingrese el producto faltante.','info'); 
+    //   return false;
+    // }
 
     $('#myModal_espera').modal('show');    
     var orden = $('#txt_pedido').val();

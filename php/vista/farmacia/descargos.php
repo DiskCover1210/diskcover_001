@@ -1,5 +1,5 @@
 <?php  require_once("panel.php"); 
-$cod = ''; $ci =''; if(isset($_GET['cod'])){$cod = $_GET['cod'];} if(isset($_GET['ci'])){$ci = $_GET['ci'];}?>
+$cod = ''; $ci =''; if(isset($_GET['cod'])){$cod = $_GET['cod'];} if(isset($_GET['ci'])){$ci = $_GET['ci'];}  unset($_SESSION['NEGATIVOS']);?>
 <script type="text/javascript">
    $( document ).ready(function() {
     cargar_pedidos();
@@ -25,6 +25,7 @@ $cod = ''; $ci =''; if(isset($_GET['cod'])){$cod = $_GET['cod'];} if(isset($_GET
         'desde':desde,
         'hasta':$('#txt_hasta').val(),
         'busfe':f,
+        'nega':$('#rbl_negativos').prop('checked'),
       }    
      // console.log(parametros);
      $.ajax({
@@ -32,6 +33,9 @@ $cod = ''; $ci =''; if(isset($_GET['cod'])){$cod = $_GET['cod'];} if(isset($_GET
       url:   '../controlador/farmacia/descargosC.php?cargar_pedidos=true',
       type:  'post',
       dataType: 'json',
+      beforeSend: function () {
+                $("#tbl_body").html('<tr class="text-center"><td colspan="7"><img src="../../img/gif/loader4.1.gif" width="25%"></td></tr>');
+             },
       success:  function (response) { 
         if(response)
         {
@@ -444,6 +448,11 @@ function reporte_excel()
     </ul>
     <div class="tab-content">
       <div id="home" class="tab-pane fade in active">
+        <div class="row">
+          <div class="col-sm-12 text-right">
+            <label><input type="checkbox" name="rbl_negativos" id="rbl_negativos" onclick="cargar_pedidos()"> Mostrar pedidos en negativo?</label>
+          </div>          
+        </div>
         <div class="row">
            <div class="table-responsive">      
              <table class="table table-hover">

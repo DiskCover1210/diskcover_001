@@ -50,7 +50,7 @@ while( $obj = sqlsrv_fetch_object( $stmt))
 	$tabla[$i]['tabla']=$obj->Item;
 	$i++;
 	$sql="update Lista_Empresas set IP_VPN_RUTA='".$server."',Tipo_Base='SQL SERVER',Usuario_DB='".$user."',
-`Contraseña_DB`='".$password."',Puerto='1433',Base_Datos='".$database."' where ID_Empresa=".$ID_Empresa." AND Item='".$obj->Item."'";
+`Contrasena_DB`='".$password."',Puerto='1433',Base_Datos='".$database."' where ID_Empresa=".$ID_Empresa." AND Item='".$obj->Item."'";
     //echo $sql;
 	if ($conexion->query($sql) === TRUE) {
 		//echo " ha sido creado".'<br>';

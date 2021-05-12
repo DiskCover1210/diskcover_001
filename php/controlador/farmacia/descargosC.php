@@ -13,7 +13,7 @@ if(isset($_GET['pedido']))
 }
 
 if(isset($_GET['cargar_pedidos']))
-{
+{	
 	$parametros = $_POST['parametros'];
 	echo json_encode($controlador->cargar_pedidos($parametros));
 }
@@ -99,11 +99,33 @@ class ingreso_descargosC
 
 	function cargar_pedidos($parametros)
 	{
+		if ($parametros['nega']=='true') {
+		if(!isset($_SESSION['NEGATIVOS']['CODIGO_INV']))
+		{
+		$nega = $this->ordenes_negativas($parametros['codigo'],$parametros['tipo'],$parametros['query'],$parametros['desde'],$parametros['hasta'],$parametros['busfe']);
+	    }else
+	    {
+	    	$nega = $_SESSION['NEGATIVOS']['CODIGO_INV'] ;
+	    }
+	   }
 		// print_r($parametros);die();
 		$datos = $this->modelo->pedido_paciente($parametros['codigo'],$parametros['tipo'],$parametros['query'],$parametros['desde'],$parametros['hasta'],$parametros['busfe']);
 		$tr='';
-		// print_r($datos);die();
-		foreach ($datos as $key => $value) {
+		// print_r($datos);die();		
+		foreach ($datos as $key => $value) {			
+			$bur = '';
+
+		if ($parametros['nega']=='true') {
+		
+			foreach ($nega as $key1 => $value1) {
+				if($value1['ORDEN'] == $value['ORDEN'])
+				{
+						$bur = '<i class="fa fa-circle-o text-red"></i>';
+						break;
+				}
+			}
+		} 
+			
 			$item = $key+1;
 			$d =  dimenciones_tabl(strlen($item));
 			$d2 =  dimenciones_tabl(strlen($value['ORDEN']));
@@ -115,7 +137,7 @@ class ingreso_descargosC
 			$tr.='<tr>
   					<td width="'.$d.'">'.$item.'</td>
   					<td width="'.$d2.'">'.$value['ORDEN'].'</td>
-  					<td width="'.$d3.'">'.$value['nombre'].'</td>
+  					<td width="'.$d3.'">'.$bur.' '.$value['nombre'].'</td>
   					<td width="'.$d4.'">'.$value['subcta'].'</td>
   					<td width="'.$d5.'">'.$value['importe'].'</td>
   					<td width="'.$d6.'">'.$value['Fecha_Fab']->format('Y-m-d').'</td>
@@ -135,6 +157,32 @@ class ingreso_descargosC
 			$tabla = array('num_lin'=>0,'tabla'=>'<tr><td colspan="7" class="text-center"><b><i>Sin registros...<i></b></td></tr>');
 			return $tabla;		
 		}
+
+	}
+
+	function ordenes_negativas($codigo_b,$tipo,$query,$desde,$hasta ,$busfe)
+	{
+		$datos = $this->modelo->productos_procesados($codigo_b,$tipo,$query,$desde,$hasta,$busfe);
+		$negativos = '';
+		foreach ($datos as $key => $value) 
+		{
+			$costo =  costo_venta($value['CODIGO_INV']);
+			$nega = 0;
+			if(!empty($costo))
+			{
+				$exis = number_format($costo[0]['Existencia']-$value['CANTIDAD'],2);
+				if($exis<0)
+				{
+					$negativos.="'".$value['CODIGO_INV']."',";
+				}
+			}
+		}
+		$negativos = substr($negativos,0,-1);
+		$datos = $this->modelo->ordenes_producto_nega($codigo_b,$tipo,$query,$desde,$hasta,$busfe,$negativos);
+	    $_SESSION['NEGATIVOS']['CODIGO_INV']  = $datos;
+		return $datos;
+
+		// print_r($datos);die();
 
 	}
 
