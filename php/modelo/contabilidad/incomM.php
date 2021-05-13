@@ -345,7 +345,7 @@ class incomM
        AND T_No = ".$_SESSION['INGRESO']['modulo_']." ";
    
 	   $botones[0] = array('boton'=>'eliminar', 'icono'=>'<i class="fa fa-trash"></i>', 'tipo'=>'danger', 'id'=>'IdProv,ventas' );
-	   $tbl = grilla_generica_new($sql,'Asiento_Ventas','tbl_av',$titulo=false,$botones,$check=false,$imagen=false,1,1,1,10);
+	   $tbl = grilla_generica_new($sql,'Asiento_Ventas','tbl_av',$titulo=false,$botones,$check=false,$imagen=false,1,1,1,30);
 	   return $tbl;
     }
 
@@ -371,7 +371,7 @@ class incomM
 			// 	 grilla_generica($stmt,null,null,1,null,null,null,false,$button);
 			// }
         $botones[0] = array('boton'=>'eliminar', 'icono'=>'<i class="fa fa-trash"></i>', 'tipo'=>'danger', 'id'=>'Codigo,expo' );
-	   $tbl = grilla_generica_new($sql,'Asiento_Exportaciones',$id_tabla ='tbl_ae',$titulo=false,$botones,$check=false,$imagen=false,1,1,1,10);
+	   $tbl = grilla_generica_new($sql,'Asiento_Exportaciones',$id_tabla ='tbl_ae',$titulo=false,$botones,$check=false,$imagen=false,1,1,1,30);
 	   return $tbl;
     }
 
@@ -398,7 +398,7 @@ class incomM
 			// 	 grilla_generica($stmt,null,null,1,null,null,null,false,$button);
 			// }
          $botones[0] = array('boton'=>'eliminar', 'icono'=>'<i class="fa fa-trash"></i>', 'tipo'=>'danger', 'id'=>'CodSustento,inpor' );
-	   $tbl = grilla_generica_new($sql,'Asiento_Importaciones',$id_tabla ='tbl_ai',$titulo=false,$botones,$check=false,$imagen=false,1,1,1,10);
+	   $tbl = grilla_generica_new($sql,'Asiento_Importaciones',$id_tabla ='tbl_ai',$titulo=false,$botones,$check=false,$imagen=false,1,1,1,30);
 	   return $tbl;
 
     }

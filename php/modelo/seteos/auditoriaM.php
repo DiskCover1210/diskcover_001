@@ -116,17 +116,22 @@ class auditoriaM
 	   // return $result;
 
 		 // print_r($sql);die();
+
+
 		  $botones[0] = array(
 		  	'boton'=>'Ver factura',  //nombre del title y de la funcion onclick -- los espacion se remplazan por (_)
 		  	'icono'=>'<i class="fa fa-trash"></i>', //icono del boton
 		  	'tipo'=>'primary', // default,primary,danger,success, info -- color del boton boopstrap
 		  	'id'=>'ID' // campos de la consulta sql para agregart en funcion onclick -- funcion('','','')
-		  );		  
+		  );	  
+
+
 		  $check[0] = array(
 		  	'boton'=>'Ver factura', //nombre del title y de la funcion onclick -- los espacion se remplazan por (_)
 		  	'id'=>'ID,CI_RUC,Sexo',  // campos de la consulta sql para agregart en funcion onclick -- funcion('','','')
 		  	'text_visible'=>false //titulo de header visible o no (true /false)
 		  );
+		  
 		  $image=array();
 		  $tabla = 'Clientes';
 		  $titulo ='balance de comprobacion';

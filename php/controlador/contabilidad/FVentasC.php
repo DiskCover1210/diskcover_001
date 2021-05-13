@@ -117,33 +117,33 @@ class FVentasC
   }
    function Cargar_DataGrid($Trans_No)
   {
-    $datos = $this->modelo->Cargar_DataGrid($Trans_No);
-    $html = '';
-    foreach ($datos as $key => $value) {
-      $html.='<tr>
-                <td>'.$value["CodRet"].'</td>
-                <td>'.$value["Detalle"].'</td>
-                <td>'.round($value["BaseImp"],2, PHP_ROUND_HALF_ODD).'</td>
-                <td>'.round($value["Porcentaje"],2, PHP_ROUND_HALF_ODD).'</td>
-                <td>'.round($value["ValRet"],2, PHP_ROUND_HALF_ODD).'</td>
-                <td>'.$value["EstabRetencion"].'</td>
-                <td>'.$value["PtoEmiRetencion"].'</td>
-                <td>'.$value["SecRetencion"].'</td>
-                <td>'.$value["AutRetencion"].'</td>
-                <td>'.$value["FechaEmiRet"]->format('Y-m-d').'</td>
-                <td>'.$value["Cta_Retencion"].'</td>
-                <td>'.$value["EstabFactura"].'</td>
-                <td>'.$value["PuntoEmiFactura"].'</td>
-                <td>'.$value["Factura_No"].'</td>
-                <td>'.$value["IdProv"].'</td>
-                <td>'.$value["Item"].'</td>
-                <td>'.$value["CodigoU"].'</td>
-                <td>'.$value["A_No"].'</td>
-                <td>'.$value["T_No"].'</td>
-                <td>'.$value["Tipo_Trans"].'</td>              
-              </tr>';
-    }
-    return $html;
+    return $datos = $this->modelo->Cargar_DataGrid($Trans_No);
+    // $html = '';
+    // foreach ($datos as $key => $value) {
+    //   $html.='<tr>
+    //             <td>'.$value["CodRet"].'</td>
+    //             <td>'.$value["Detalle"].'</td>
+    //             <td>'.round($value["BaseImp"],2, PHP_ROUND_HALF_ODD).'</td>
+    //             <td>'.round($value["Porcentaje"],2, PHP_ROUND_HALF_ODD).'</td>
+    //             <td>'.round($value["ValRet"],2, PHP_ROUND_HALF_ODD).'</td>
+    //             <td>'.$value["EstabRetencion"].'</td>
+    //             <td>'.$value["PtoEmiRetencion"].'</td>
+    //             <td>'.$value["SecRetencion"].'</td>
+    //             <td>'.$value["AutRetencion"].'</td>
+    //             <td>'.$value["FechaEmiRet"]->format('Y-m-d').'</td>
+    //             <td>'.$value["Cta_Retencion"].'</td>
+    //             <td>'.$value["EstabFactura"].'</td>
+    //             <td>'.$value["PuntoEmiFactura"].'</td>
+    //             <td>'.$value["Factura_No"].'</td>
+    //             <td>'.$value["IdProv"].'</td>
+    //             <td>'.$value["Item"].'</td>
+    //             <td>'.$value["CodigoU"].'</td>
+    //             <td>'.$value["A_No"].'</td>
+    //             <td>'.$value["T_No"].'</td>
+    //             <td>'.$value["Tipo_Trans"].'</td>              
+    //           </tr>';
+    // }
+    // return $html;
   }
 
    function grabacion($parametros)

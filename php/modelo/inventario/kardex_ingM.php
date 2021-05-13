@@ -1119,7 +1119,7 @@ function dtaAsiento_sc($Trans_No){
             AND Tipo_Trans = 'C'
             ORDER BY CodRet ";
             // print_r($sql);die();
-       $stmt = sqlsrv_query($cid, $sql);
+              $stmt = sqlsrv_query($cid, $sql);
         $datos =  array();
 	   if( $stmt === false)  
 	   {  
@@ -1132,7 +1132,9 @@ function dtaAsiento_sc($Trans_No){
 		//$datos[]=['Codigo'=>$row['Codigo'],'Detalle_Conceptos'=>utf8_encode($row['Detalle_Conceptos'])];	
 		  $datos[] = $row;
 	   }
-	   return $datos;
+
+       $tbl = grilla_generica_new($sql,'Asiento_Air',$id_tabla = 'tbl_airV',$titulo=false,$botones=false,$check=false,$imagen=false,1,1,1,40);
+	   return array('datos'=>$datos,'tbl'=>$tbl);
    }
 
 

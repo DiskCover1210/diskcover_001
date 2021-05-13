@@ -19,7 +19,7 @@ if(isset($_GET['fec']))
 <script type="text/javascript">
   $(document).ready(function()
   {
-    
+    $('#ChRetB').focus();    
     $('#myModal_espera').modal('show');
     familias();
     contracuenta();
@@ -347,7 +347,7 @@ function contracuenta()
           <div class="col-sm-12">
             <ul class="nav nav-tabs">
                <li class="nav-item active">
-                 <a class="nav-link" data-toggle="tab" href="#home">Comprobante de compra</a>
+                 <a class="nav-link" data-toggle="tab" href="#home">Comprobante de compra: FORMULARIO 104</a>
                </li>
                <li class="nav-item">
                  <a class="nav-link" data-toggle="tab" href="#menu1">Conceptos AIR</a>
@@ -389,7 +389,7 @@ function contracuenta()
                         <div class="col-sm-12">
                             <div class="box box-info">
                                 <div class="box-header" style="padding:0px">
-                                    <h3 class="box-title"><b>INGRESE LOS DATOS DE LA FACTURA, NOTA DE VENTA, ETC_________________FORMULARIO 104</b></h3>
+                                    <h3 class="box-title"><b>INGRESE LOS DATOS DE LA FACTURA, NOTA DE VENTA, ETC</b></h3>
                                 </div>
                                 <div class="box-body">
                                     <div class="row">
@@ -713,35 +713,8 @@ function contracuenta()
                         </div>            
                   </div>
                   <div class="row">
-                    <div class="table-responsive">
-                      <table class="table table-striped table-hover">
-                        <thead>
-                          <th>CodRet</th>
-                          <th>Detalle</th>
-                          <th>BaseImp</th>
-                          <th>Porcentaje</th>
-                          <th>ValRet</th>
-                          <th>EstabRetencion</th>
-                          <th>PtoEmiRetencion</th>
-                          <th>SecRetencion</th>
-                          <th>AutoRetencion</th>
-                          <th>FechaEmiRet</th>
-                          <th>Cta_Retencion</th>
-                          <th>EstabFactura</th>
-                          <th>PuntoEmiFactura</th>
-                          <th>Factura_No</th>
-                          <th>IdProv</th>
-                          <th>Item</th>
-                          <th>codigoU</th>
-                          <th>A_No</th>
-                          <th>T_No</th>
-                          <th>Tipo_Trans</th>
-                        </thead>
-                        <tbody id="tbl_retencion">
-                          
-                        </tbody>
-                        
-                      </table>
+                    <div class="table-responsive" id="tbl_retencion">
+                     
                     </div>
                   </div>
                   <div class="row">

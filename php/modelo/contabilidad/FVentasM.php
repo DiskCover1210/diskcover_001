@@ -212,20 +212,8 @@ class FVentasM
             AND Tipo_Trans = 'V'
             ORDER BY CodRet ";
             // print_r($sql);die();
-       $stmt = sqlsrv_query($cid, $sql);
-        $datos =  array();
-	   if( $stmt === false)  
-	   {  
-		 echo "Error en consulta PA.\n";  
-		 return '';
-		 die( print_r( sqlsrv_errors(), true));  
-	   }
-	    while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_ASSOC) ) 
-	   {
-		//$datos[]=['Codigo'=>$row['Codigo'],'Detalle_Conceptos'=>utf8_encode($row['Detalle_Conceptos'])];	
-		  $datos[] = $row;
-	   }
-	   return $datos;
+       $tbl = grilla_generica_new($sql,'Asiento_Air',$id_tabla = 'tbl_air',$titulo=false,$botones=false,$check=false,$imagen=false,1,1,1,100);
+     return $tbl;
    }
 
    function delete_asiento_venta($Trans_No)

@@ -18,8 +18,8 @@ if(isset($_GET['fec']))
 <script src="../../lib/dist/js/FVentas.js"></script>
 <script type="text/javascript">
   $(document).ready(function()
-  {
-  	
+  {    
+    $('#ChRetB').focus();    	
     $('#myModal_espera').modal('show');
   	  var fecha = '<?php echo $fec;?>';
       var ben = '<?php echo $ben;?>';
@@ -86,11 +86,11 @@ if(isset($_GET['fec']))
                 <input type="text" class="form-control input-sm" name="" id="LblNumIdent" readonly="">
               </div>
             </div>
-          </div><br>
+          </div>
           <div class="col-sm-12">
             <ul class="nav nav-tabs">
                <li class="nav-item active">
-                 <a class="nav-link" data-toggle="tab" href="#home">COMPROBANTE DE VENTA</a>
+                 <a class="nav-link" data-toggle="tab" href="#home">COMPROBANTE DE VENTA: FORMULARIO 104</a>
                </li>
                <li class="nav-item">
                  <a class="nav-link" data-toggle="tab" href="#menu1">INSERTAR CONCEPTO AIR</a>
@@ -105,7 +105,7 @@ if(isset($_GET['fec']))
                    			<b>INGRESE LOS DATOS DE LA FACTURA, NOTA DE VENTA, ETC</b>
                    		</div>
                    		<div class="col-sm-2">
-                   			<b>FORMULARIO 104</b>
+                   			<b></b>
                    		</div>
                    	</div>
                    	<div class="row">
@@ -266,10 +266,10 @@ if(isset($_GET['fec']))
                   	</div>                  	
                   </div>
                </div>
-               <div class="tab-pane modal-body fade" id="menu1">
-                  <div class="row"><br>
+               <div class="tab-pane modal-body fade" style="padding-top: 2px" id="menu1">
+                  <div class="row">
                         <div class="col-sm-12">
-                            <div class="box box-info">
+                            <div class="box box-info" style="margin-bottom: 2px;">
                                 <div class="box-header" style="padding:0px">
                                     <h3 class="box-title"><b>INGRESE LOS DATOS DE LA RETENCION_________________FORMULARIO 103</b></h3>
                                 </div>
@@ -336,8 +336,8 @@ if(isset($_GET['fec']))
                         </div>            
                   </div>
                   <div class="row">
-                    <div class="table-responsive">
-                      <table class="table table-striped table-hover">
+                    <div class="table-responsive" id="tbl_retencion">
+                      <!-- <table class="table table-striped table-hover">
                         <thead>
                           <th>CodRet</th>
                           <th>Detalle</th>
@@ -364,7 +364,7 @@ if(isset($_GET['fec']))
                           
                         </tbody>
                         
-                      </table>
+                      </table> -->
                     </div>
                   </div>
                   <div class="row">
