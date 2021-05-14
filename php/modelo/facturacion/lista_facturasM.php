@@ -53,7 +53,7 @@ class lista_facturasM
    {
    	$cid = $this->conn;
 		
-		$sql ="SELECT T,TC,Serie,Autorizacion,Factura,Fecha,SubTotal,Con_IVA,IVA,Descuento+Descuento2 as Descuentos,Total_MN as Total,Saldo_MN as Saldo,RUC_CI,TB,Razon_Social,ID FROM Facturas 
+		$sql ="SELECT T,TC,Serie,Autorizacion,Factura,Fecha,SubTotal,Con_IVA,IVA,Descuento+Descuento2 as Descuentos,Total_MN as Total,Saldo_MN as Saldo,RUC_CI,TB,Razon_Social,CodigoC,ID FROM Facturas 
 		WHERE CodigoC ='".$codigo."'
 		AND Item = '".$_SESSION['INGRESO']['item']."'
 		AND Periodo =  '".$_SESSION['INGRESO']['periodo']."' ORDER BY Fecha DESC"; 
@@ -73,7 +73,7 @@ class lista_facturasM
 	   }
 
       
-       $botones[0] = array('boton'=>'Ver factura','icono'=>'<i class="fa fa-eye"></i>', 'tipo'=>'default', 'id'=>'Factura,Serie,RUC_CI');
+       $botones[0] = array('boton'=>'Ver factura','icono'=>'<i class="fa fa-eye"></i>', 'tipo'=>'default', 'id'=>'Factura,Serie,CodigoC');
        // $botones[1] = array('boton'=>'Generar PDF','icono'=>'<i class="fa fa-file-pdf-o"></i>', 'tipo'=>'primary', 'id'=>'ID');
        // $botones[2] = array('boton'=>'Generar EXCEL','icono'=>'<i class="fa fa-file-excel-o"></i>', 'tipo'=>'info', 'id'=>'ID');
 
@@ -109,7 +109,7 @@ class lista_facturasM
 		 return '';
 		 die( print_r( sqlsrv_errors(), true));  
 	   }
-// print_r($sql);die();
+// print_r($sql1);die();
 	   $datos_fac = array();	
 	   while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_ASSOC) ) 
 	   {
@@ -131,6 +131,10 @@ class lista_facturasM
 		//echo $row[0];
 	   }
         $datos_cli_edu=$this->cliente_matri($ci);
+        if(empty($datos))
+        {
+        	$datos_cli_edu = null;
+        }
 	   if($datos_cli_edu != '')
 	   {
 	   		 imprimirDocEle_fac($datos_fac,$detalle_fac,$datos_cli_edu,'matr',$id,null,'factura',null,null);
@@ -148,6 +152,8 @@ class lista_facturasM
    	$cid=$this->conn;
 	   $sql = "SELECT * FROM Clientes_Matriculas WHERE Item = '".$_SESSION['INGRESO']['item']."'
 		AND Periodo =  '".$_SESSION['INGRESO']['periodo']."' and Codigo = '".$codigo."'";
+
+		// print_r($sql);die();
 	   $stmt = sqlsrv_query($cid, $sql);
 	    if( $stmt === false)  
 	      {  
