@@ -131,11 +131,8 @@ class lista_facturasM
 		//echo $row[0];
 	   }
         $datos_cli_edu=$this->cliente_matri($ci);
-        if(empty($datos))
-        {
-        	$datos_cli_edu = null;
-        }
-	   if($datos_cli_edu != '')
+
+	   if($datos_cli_edu != '' && !empty($datos_cli_edu))
 	   {
 	   		 imprimirDocEle_fac($datos_fac,$detalle_fac,$datos_cli_edu,'matr',$id,null,'factura',null,null);
 	   }else
@@ -146,6 +143,31 @@ class lista_facturasM
 	   }
 
    }
+
+    function Cliente($cod)
+   {
+   	$cid=$this->conn;
+	   $sql = "SELECT * from Clientes WHERE  Codigo= '".$cod."'";
+	   $stmt = sqlsrv_query($cid, $sql);
+	    if( $stmt === false)  
+	      {  
+		     echo "Error en consulta PA.\n";  
+		     return '';
+		     die( print_r( sqlsrv_errors(), true));  
+	      }
+
+	    $result = array();	
+	    while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_ASSOC)) 
+	      {
+	    	$result[] = $row;
+		    //echo $row[0];
+	      }
+
+	     // $result =  encode($result);
+	      // print_r($result);
+	      return $result;
+   }
+   
 
    function cliente_matri($codigo)
    {
