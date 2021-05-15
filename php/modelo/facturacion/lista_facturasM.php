@@ -12,6 +12,20 @@ class lista_facturasM
 	{
 		$this->conn = cone_ajax();
 	}
+
+	function ingresar_update($datos,$tabla,$campoWhere=false)
+	{
+		// print_r($datos);die();
+		if ($campoWhere) {
+			$resp = update_generico($datos,$tabla,$campoWhere);			
+		  return $resp;
+			
+		}else{
+	      $resp = insert_generico($tabla,$datos);
+	      return $resp;
+	  }
+	}
+
  
    function facturas_emitidas_excel($codigo,$reporte_Excel=false)
    {
@@ -53,8 +67,10 @@ class lista_facturasM
    {
    	$cid = $this->conn;
 		
-		$sql ="SELECT T,TC,Serie,Autorizacion,Factura,Fecha,SubTotal,Con_IVA,IVA,Descuento+Descuento2 as Descuentos,Total_MN as Total,Saldo_MN as Saldo,RUC_CI,TB,Razon_Social,CodigoC,ID FROM Facturas 
-		WHERE CodigoC ='".$codigo."'
+		$sql ="SELECT T,TC,Serie,Autorizacion,Factura,Fecha,SubTotal,Con_IVA,IVA,Descuento+Descuento2 as Descuentos,Total_MN as Total,Saldo_MN as Saldo,RUC_CI,TB,Razon_Social,CodigoC,ID 
+		FROM Facturas 
+		WHERE CodigoC ='".$codigo."' 
+		 AND CodigoC <> ''
 		AND Item = '".$_SESSION['INGRESO']['item']."'
 		AND Periodo =  '".$_SESSION['INGRESO']['periodo']."' ORDER BY Fecha DESC"; 
 		  $stmt = sqlsrv_query($cid, $sql);
@@ -144,10 +160,30 @@ class lista_facturasM
 
    }
 
-    function Cliente($cod)
+    function Cliente($cod,$grupo = false,$query=false,$clave=false)
    {
    	$cid=$this->conn;
-	   $sql = "SELECT * from Clientes WHERE  Codigo= '".$cod."'";
+	   $sql = "SELECT * from Clientes WHERE FA=1 ";
+	   if($cod){
+	   	$sql.=" and Codigo= '".$cod."'";
+	   }
+	   if($grupo)
+	   {
+	   	$sql.=" and Grupo= '".$grupo."'";
+	   }
+	   if($query)
+	   {
+	   	$sql.=" and Cliente +' '+ CI_RUC like '%".$query."%'";
+	   }
+	   if($clave)
+	   {
+	   	$sql.=" and Clave= '".$clave."'";
+	   }
+
+	   $sql.=" ORDER BY ID OFFSET 0 ROWS FETCH NEXT 25 ROWS ONLY;";
+		
+
+	   // print_r($sql);die();
 	   $stmt = sqlsrv_query($cid, $sql);
 	    if( $stmt === false)  
 	      {  
@@ -195,6 +231,57 @@ class lista_facturasM
 	      // print_r($result);
 	      return $result;
    }
+
+   function grupos($query)
+   {
+   	 $cid=$this->conn;
+	   $sql = "SELECT DISTINCT Grupo FROM Clientes WHERE FA = '1' AND Grupo <>'.' ";
+	   if($query)
+	   {
+	   	 $sql.=' AND Grupo LIKE "%'.$query.'%" ';
+	   }
+		// print_r($sql);die();
+	   $stmt = sqlsrv_query($cid, $sql);
+	    if( $stmt === false)  
+	      {  
+		     echo "Error en consulta PA.\n";  
+		     return '';
+		     die( print_r( sqlsrv_errors(), true));  
+	      }
+
+	    $result = array();	
+	    while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_ASSOC)) 
+	      {
+	    	$result[] = $row;
+	      }
+	      // print_r($result);
+	      return $result;
+   }
+
+    function Empresa_data()
+   {
+   	$cid=$this->conn;
+	   $sql = "SELECT * FROM Empresas where Item='".$_SESSION['INGRESO']['item']."'";
+	   $stmt = sqlsrv_query($cid, $sql);
+	    if( $stmt === false)  
+	      {  
+		     echo "Error en consulta PA.\n";  
+		     return '';
+		     die( print_r( sqlsrv_errors(), true));  
+	      }
+
+	    $result = array();	
+	    while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_ASSOC)) 
+	      {
+	    	$result[] = $row;
+		    //echo $row[0];
+	      }
+
+	     // $result =  encode($result);
+	      // print_r($result);
+	      return $result;
+   }
+
 
   
 }

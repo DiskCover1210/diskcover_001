@@ -1,6 +1,7 @@
 <?php
 require_once(dirname(__DIR__,2)."/modelo/facturacion/lista_facturasM.php");
 require(dirname(__DIR__,3).'/lib/fpdf/cabecera_pdf.php');
+require(dirname(__DIR__,3).'/lib/phpmailer/enviar_emails.php');
 //require_once(dirname(__DIR__,2)."/vista/appr/modelo/modelomesa.php");
 
 $controlador = new lista_facturasC();
@@ -23,23 +24,64 @@ if(isset($_GET['imprimir_excel']))
 	$parametros= $_GET;
 	$controlador->imprimir_excel($parametros);	
 }
+if(isset($_GET['grupos']))
+{
+	$query = '';
+	if(isset($_GET['q']))
+	{
+		$query = $_GET['q'];
+	}
+	echo json_encode($controlador->grupos($query));
+}
+if(isset($_GET['clientes']))
+{
+	$query = '';
+	$grupo = $_GET['g'];
+	if(isset($_GET['q']))
+	{
+		$query = $_GET['q'];
+	}
+	echo json_encode($controlador->clientes_x_grupo($query,$grupo));
+}
+if(isset($_GET['clientes_datos']))
+{
+	$parametros = $_POST['parametros'];
+	echo json_encode($controlador->clientes_datos($parametros));
+}
+
+if(isset($_GET['validar']))
+{
+	$parametros = $_POST['parametros'];
+	echo json_encode($controlador->validar_cliente($parametros));
+}
+
+if(isset($_GET['enviar_mail']))
+{
+	$parametros = $_POST['parametros'];
+	echo json_encode($controlador->enviar_mail($parametros));
+}
 
 class lista_facturasC
 {
 	private $modelo;
+    private $email;
+    private $pdf;
 	public function __construct(){
         $this->modelo = new lista_facturasM();
 		$this->pdf = new cabecera_pdf();
+		$this->email = new enviar_emails();
+		$this->empresaGeneral = $this->modelo->Empresa_data();
         //$this->modelo = new MesaModel();
     }
 
 
     function tabla_facturas($parametros)
     {
+
+    	// print_r($parametros);die();
     	$codigo = $parametros['ci'];
     	$tbl = $this->modelo->facturas_emitidas_tabla($codigo);
     	return $tbl['tbl'];
-    	// print_r($parametros);die();
     }
     function ver_fac_pdf($cod,$ser,$ci)
     {
@@ -49,7 +91,7 @@ class lista_facturasC
     function imprimir_pdf($parametros)
     {
     	// print_r($parametros);die();
-    	$codigo = $parametros['txt_ci'];
+    	$codigo = $parametros['ddl_cliente'];
     	$tbl = $this->modelo->facturas_emitidas_tabla($codigo);
 
   // 	    $desde = str_replace('-','',$parametros['txt_desde']);
@@ -106,7 +148,117 @@ class lista_facturasC
   	}
 	 $this->modelo->imprimir_excel($reg);
   }
- 
+
+  function grupos($query)
+  {
+  	$datos = $this->modelo->grupos($query);
+  	$res[] = array('id'=>'.','text'=>'TODOS');
+  	foreach ($datos as $key => $value) {
+  		$res[] = array('id'=>$value['Grupo'],'text'=>$value['Grupo']);
+  	}
+  	return $res;
+  }
+
+  function clientes_x_grupo($query,$grupo)
+  {
+  	if($grupo=='.'){$grupo= '';}
+  	$cod ='';
+  	$datos = $this->modelo->Cliente($cod,$grupo,$query);
+  	$res = array();
+  	foreach ($datos as $key => $value) {
+  		$res[] = array('id'=>$value['Codigo'],'text'=>$value['Cliente'].'  CI:'.$value['CI_RUC'],'email'=>$value['Email']);
+  	}
+  	return $res;
+  }
+  function validar_cliente($parametros)
+  {
+  	$dato = $this->modelo->Cliente($parametros['cli'],false,false,$parametros['cla']);
+  	if(empty($dato))
+  	{
+  		return -1;
+  	}else
+  	{
+  		return 1;
+  	}
+
+  } 
+
+   function clientes_datos($parametros)
+  {
+    $grupo='';
+  	if($parametros['gru']!='.'){$grupo= $parametros['gru'];}
+  	$query ='';
+  	$datos = $this->modelo->Cliente($parametros['ci'],$grupo,$query);
+  	return $datos;
+  }
+  function enviar_mail($parametros)
+  {
+    $empresaGeneral = array_map(array($this, 'encode1'), $this->empresaGeneral);
+
+  	$nueva_Clave = generate_clave(8);
+  	$datos[0]['campo']='Clave';
+  	$datos[0]['dato']=$nueva_Clave;
+
+  	$where[0]['campo'] = 'Codigo';
+  	$where[0]['valor'] = $parametros['ci'];
+  	$where[0]['tipo'] = 'string';
+
+  	$email_conexion = $empresaGeneral[0]['Email_Conexion'];
+    $email_pass =  $empresaGeneral[0]['Email_Contraseña'];
+    // print_r($empresaGeneral[0]);die();
+  	$correo_apooyo="info@diskcoversystem.com"; //correo que saldra ala do del emisor
+  	$cuerpo_correo = 'Se a generado una clave temporar para que usted pueda ingresar:'. $nueva_Clave;
+  	$titulo_correo = 'EMAIL DE RECUPERACION DE CLAVE';
+  	$archivos = false;
+  	$correo = $parametros['ema'];
+  	// print_r($correo);die();
+  	$resp = $this->modelo->ingresar_update($datos,'Clientes',$where);  	
+  	
+  	if($resp==1)
+  	{
+  		if($this->email->recuperar_clave($archivos,$correo,$cuerpo_correo,$titulo_correo,$correo_apooyo,'Email de recuperacion',$email_conexion,$email_pass)==1){
+  			return 1;
+  		}else
+  		{
+  			return -1;
+  		}
+  	}else
+  	{
+  		return -1;
+  	}
+  }
+
+
+ function encode1($arr) {
+    $new = array(); 
+    foreach($arr as $key => $value) {
+      if(!is_object($value))
+      {
+      	if($key=='Archivo_Foto')
+      		{
+      			if (!file_exists('../../img/img_estudiantes/'.$value)) 
+      				{
+      					$value='';
+      					//$new[utf8_encode($key)] = utf8_encode($value);
+      					$new[$key] = $value;
+      				}
+      		} 
+         if($value == '.')
+         {
+         	$new[$key] = '';
+         }else{
+         	//$new[utf8_encode($key)] = utf8_encode($value);
+         	$new[$key] = $value;
+         }
+      }else
+        {
+          //print_r($value);
+          $new[$key] = $value->format('Y-m-d');          
+        }
+     }
+     return $new;
+    }
+
         
 }
 ?>

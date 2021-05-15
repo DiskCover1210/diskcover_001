@@ -51,6 +51,19 @@ function ip()
 
 }
 
+// clave aleatoria 
+function generate_clave($strength = 16) {
+  $permitted_chars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    $input_length = strlen($permitted_chars);
+    $random_string = '';
+    for($i = 0; $i < $strength; $i++) {
+        $random_character = $permitted_chars[mt_rand(0, $input_length - 1)];
+        $random_string .= $random_character;
+    }
+ 
+    return $random_string;
+}
+
 //Configuración del algoritmo de encriptación
 
 //Debes cambiar esta cadena, debe ser larga y unica
@@ -7818,6 +7831,8 @@ if($titulo)
 
 //cuerpo de la consulta
   $colum = 0;
+  if(!empty($datos))
+  {
   foreach ($datos as $key => $value) {
      $tbl.='<tr>';
      //crea botones
@@ -7920,7 +7935,10 @@ if($titulo)
          }
 
          $colum=0;  
-      }          
+      }
+    }else
+    {      
+    }          
           
   $tbl.='</tbody>
       </table>
