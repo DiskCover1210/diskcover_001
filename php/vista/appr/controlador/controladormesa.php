@@ -136,7 +136,7 @@ class MesaCon
 			<script>
 				Swal.fire({
 					type: 'error',
-					title: 'debe configurar serie a cual facturar',
+					title: 'debe configurar la serie de facturaracion',
 					text: ''
 				}).then((result) => {
 					if (result.value) {
@@ -149,6 +149,7 @@ class MesaCon
 			<?php
 		}
 		$todos_mesa = $this->modelo->cargar_mesas();
+		// print_r($todos_mesa);
 		foreach ($todos_mesa as $key => $value) 
 		{
 			if($value['Estado']==0 OR $value['Estado']==null)

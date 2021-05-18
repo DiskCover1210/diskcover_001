@@ -93,7 +93,7 @@
     }
     function generar_excel()
 	{		
-	  var cod = $('#txt_ci').val();
+	  var cod = $('#ddl_cliente').val();
 	   var url = '../controlador/detalle_estudianteC.php?imprimir_excel=true&codigo='+cod;
 	   window.open(url);
 

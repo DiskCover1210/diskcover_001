@@ -13,7 +13,7 @@ ini_set('display_errors', '1');
 include("../chequear_seguridad.php"); 
 require_once("../../controlador/panelr.php");
 //enviar correo
-require_once("../../../lib/phpmailer/PHPMailerAutoload.php");
+require_once("../../../lib/phpmailer/antiguo/PHPMailerAutoload.php");
 ?>
 <!DOCTYPE html>
 <html>
@@ -102,6 +102,8 @@ require_once("../../../lib/phpmailer/PHPMailerAutoload.php");
 	<script>
 	$(document).ready(function () {
 	$('.sidebar-menu').tree()
+
+
 	})
 	</script>
 	<script>
@@ -127,6 +129,36 @@ require_once("../../../lib/phpmailer/PHPMailerAutoload.php");
 </head>
 <!-- class="hold-transition skin-blue sidebar-mini" -->
 <body class="skin-blue sidebar-mini sidebar-collapse" id='cargar'>
+	<?php 
+	if(isset($_SESSION['INGRESO']['IP_VPN_RUTA']) && $_SESSION['INGRESO']['Tipo_Base'] =='SQL SERVER') 
+		
+{
+	
+}else
+{
+	echo "<script>
+	$(document).ready(function () {
+	
+
+		Swal.fire({
+				  type: 'error',
+				  title: 'Asegurese de tener credeciales de SQLSERVER',
+				  text: '',
+				  allowOutsideClick:false,
+				}).then((result) => {
+				  if (result.value) {
+					location.href='../panel.php#';
+				  } 
+				});
+
+	$('#pdfcom1').css('display','none');
+
+	})
+			
+			</script>";
+}
+
+	?>
 <!-- Site wrapper -->
 <div class="wrapper">
 
