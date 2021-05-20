@@ -5527,7 +5527,7 @@ function update_generico($datos,$tabla,$campoWhere)
 }
 
 
-//FUNCION DE IONSERTAR GENERICO
+//FUNCION DE INSERTAR GENERICO
 function insert_generico($tabla=null,$datos=null)
 {
 	$conn = new Conectar();
@@ -5730,7 +5730,9 @@ function insert_generico($tabla=null,$datos=null)
       // return -1;
 			echo "Error en consulta PA.\n";  
 			die( print_r( sqlsrv_errors(), true));  
-		}
+		}else{
+      return 1;
+    }
 		
 		  // cerrarSQLSERVERFUN($cid);
 		
@@ -7591,8 +7593,8 @@ function crear_variables_session($empresa)
   }
 
   function SinEspaciosDer($texto = ""){
-    $resultado = substr(strrchr($texto, " "), 1);
-    return $resultado;
+    $resultado = explode(" ", $texto);
+    return $resultado[1];
   }
 
   function SinEspaciosIzq($texto = ""){
@@ -8059,7 +8061,6 @@ function datos_tabla($tabla,$campo=false)
     $cuenta = [];
     $auxCodigoCta = intval(substr($CodigoCta, 0,1));
     if ($auxCodigoCta >= 1) {
-      echo "entra";
       $sql = "SELECT Codigo, Cuenta, TC, ME, DG, Tipo_Pago
             FROM Catalogo_Cuentas
             WHERE Codigo = '".$CodigoCta."' 
@@ -8124,15 +8125,9 @@ function datos_tabla($tabla,$campo=false)
     $sql = "SELECT *
           FROM Asiento_F 
           WHERE Item = '".$_SESSION['INGRESO']['item']."'
-          AND CodigoU = '".$codigoCliente."' ";
+          AND CodigoU = '".$_SESSION['INGRESO']['CodigoU']."' ";
     $datos = sqlsrv_query( $cid, $sql);
     while ($value = sqlsrv_fetch_array( $datos, SQLSRV_FETCH_ASSOC)) {
-      $cuenta['Codigo_Catalogo'] = $value['Codigo'];
-      $cuenta['Cuenta'] = $value['Cuenta'];
-      $cuenta['SubCta'] = $value['TC'];
-      $cuenta['Moneda_US'] = $value['ME'];
-      $cuenta['TipoCta'] = $value['DG'];
-      $cuenta['TipoPago'] = $value['Tipo_Pago'];
       $TFA['Descuento'] += $value['Total_Desc'];
       $TFA['Descuento2'] += $value['Total_Desc2'];
       $TFA['Total_IVA'] += $value['Total_IVA'];
@@ -8149,9 +8144,10 @@ function datos_tabla($tabla,$campo=false)
     $TFA['Con_IVA'] = round($TFA['Con_IVA'],2);
     $TFA['Sin_IVA'] = round($TFA['Sin_IVA'],2);
     $TFA['Servicio'] = round(($TFA['Sin_IVA'] + $TFA['Con_IVA'] - $TFA['Descuento'] - $TFA['Descuento2']) 
-    * $Porc_Serv,2);
+    * $_SESSION['INGRESO']['Porc_Serv'],2);
     $TFA['SubTotal'] = $TFA['Sin_IVA'] + $TFA['Con_IVA'] - $TFA['Descuento'] - $TFA['Descuento2'];
     $TFA['Total_MN'] = $TFA['Sin_IVA'] + $TFA['Con_IVA'] - $TFA['Descuento'] - $TFA['Descuento2'] + $TFA['Total_IVA'] + $TFA['Servicio'];
+    return $TFA;
   }
 
   function Existe_Factura($TFA){
@@ -8168,7 +8164,7 @@ function datos_tabla($tabla,$campo=false)
             AND Serie = '".$TFA['Serie']."' 
             AND Item = '".$_SESSION['INGRESO']['item']."' 
             AND Periodo = '".$_SESSION['INGRESO']['periodo']."'";
-    $datos = sqlsrv_query( $cid, $sql);
+    $stmt = sqlsrv_query( $cid, $sql);
     $rows_affected = sqlsrv_rows_affected( $stmt);
     if ($rows_affected > 0) {
       $Respuesta = true;
@@ -8181,16 +8177,15 @@ function datos_tabla($tabla,$campo=false)
     //conexion
     $conn = new Conectar();
     $cid=$conn->conexion();
-    $nombrec= $datos1['nombrec'];
-    $ruc= $datos1['ruc'];
-    $email= $datos1['email'];
-    $ser= $datos1['ser'];
+    $nombrec= $datos1['Cliente'];
+    $ruc= $datos1['TextCI'];
+    $email= $datos1['TxtEmail'];
+    $ser= $datos1['Serie'];
     $ser1=explode("_", $ser);
-    $n_fac= $datos1['n_fac'];
+    $n_fac= $datos1['FacturaNo'];
     $me= $datos1['me'];
-    $total_total_= $datos1['total_total_'];
-    $total_abono= $datos1['total_abono']; 
-    $propina_a= $datos1['propina_a'];
+    $total_total_= $datos1['Total'];
+    $total_abono= $datos1['Total_Abonos']; 
     $fecha_actual = date("Y-m-d"); 
     $hora = date("H:i:s");
     $fechaEntera = strtotime($fecha_actual);
@@ -8221,8 +8216,7 @@ function datos_tabla($tabla,$campo=false)
       $sql="SELECT   Codigo, CxC
       FROM   Catalogo_Lineas
       WHERE   (Periodo = '".$_SESSION['INGRESO']['periodo']."') AND 
-      (Item = '".$_SESSION['INGRESO']['item']."') AND (Serie = '".$ser1[2]."') AND (Fact = 'FA')";
-      //echo $sql;
+      (Item = '".$_SESSION['INGRESO']['item']."') AND (Serie = '".$ser."') AND (Fact = 'FA')";
       $stmt = sqlsrv_query($cid, $sql);
       if( $stmt === false)  
       {  
@@ -8240,7 +8234,7 @@ function datos_tabla($tabla,$campo=false)
                  Cant_Hab, Tipo_Hab, Codigo_Barra, Serie_NC, Autorizacion_NC, Fecha_NC, Secuencial_NC, Fecha_V, Cant_Bonif, Lote_No, Fecha_Fab, Fecha_Exp, Modelo, Procedencia, Serie_No, Porc_IVA, Cantidad_NC, Total_Desc_NC, 
                  ID
           FROM            Detalle_Factura
-          WHERE        (Factura = '".$n_fac."') AND (Serie = '".$ser1[2]."') AND (Item = '".$_SESSION['INGRESO']['item']."') AND (Periodo = '".$_SESSION['INGRESO']['periodo']."')
+          WHERE        (Factura = '".$n_fac."') AND (Serie = '".$ser."') AND (Item = '".$_SESSION['INGRESO']['item']."') AND (Periodo = '".$_SESSION['INGRESO']['periodo']."')
          ";
               
       //echo $sql;
@@ -8325,7 +8319,7 @@ function datos_tabla($tabla,$campo=false)
           $dato[14]['campo']='Periodo';
           $dato[14]['dato']=$_SESSION['INGRESO']['periodo'];  
           $dato[15]['campo']='Serie';
-          $dato[15]['dato']=$ser1[2]; 
+          $dato[15]['dato']=$ser; 
           $dato[16]['campo']='Mes_No';
           $dato[16]['dato']=$mes; 
           //$dato[17]['campo']='C';
@@ -8347,7 +8341,7 @@ function datos_tabla($tabla,$campo=false)
           $dato[18]['campo']='Autorizacion';
           $dato[18]['dato']=$_SESSION['INGRESO']['RUC'];
           $total_iva=$total_iva+$row[7];
-          $this->insert_generico("Detalle_Factura",$dato);
+          insert_generico("Detalle_Factura",$dato);
           if($row[7]==0)
           {
             $total_siniva=$row[9]+$total_siniva;
@@ -8373,6 +8367,10 @@ function datos_tabla($tabla,$campo=false)
            CodigoC,Banco,Cheque,CodigoU
            ,Item,Serie,Tipo_Cta ,Fecha_Aut_NC,Fecha_Aut,Ejecutivo)
         */
+        $cod_cue='.';
+        $TC='.';
+        $cuenta='.';
+        $tipo_pago='.';
         while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_NUMERIC) ) 
         {
           //datos de la cuenta
@@ -8387,10 +8385,6 @@ function datos_tabla($tabla,$campo=false)
              echo "Error en consulta PA.\n";  
              die( print_r( sqlsrv_errors(), true));  
           }
-          $cod_cue='.';
-          $TC='.';
-          $cuenta='.';
-          $tipo_pago='.';
           while( $row1 = sqlsrv_fetch_array( $stmt1, SQLSRV_FETCH_NUMERIC) ) 
           {
             $cod_cue=$row1[1];
@@ -8505,7 +8499,7 @@ function datos_tabla($tabla,$campo=false)
            ,0
            ,'".$hora."'
            ,'X'
-           ,'".$ser1[2]."'
+           ,'".$ser."'
            ,'".$fecha_actual."'
            ,0
            ,'".$fecha_actual."'
@@ -8521,7 +8515,7 @@ function datos_tabla($tabla,$campo=false)
            ,".$_SESSION['INGRESO']['porc']."
           )";
         //echo $query;
-        
+        $propina_a = 0;
         $dato[0]['campo']='C';
         $dato[0]['dato']=1;
         $dato[1]['campo']='T';
@@ -8569,7 +8563,7 @@ function datos_tabla($tabla,$campo=false)
         $dato[22]['campo']='X';
         $dato[22]['dato']='X';
         $dato[23]['campo']='Serie';
-        $dato[23]['dato']=$ser1[2];
+        $dato[23]['dato']=$ser;
         $dato[24]['campo']='Vencimiento';
         $dato[24]['dato']=$fecha_actual;
         $dato[25]['campo']='P';
@@ -8600,11 +8594,11 @@ function datos_tabla($tabla,$campo=false)
         $dato[37]['dato']=$propina_a; 
         $dato[38]['campo']='Autorizacion';
         $dato[38]['dato']=$_SESSION['INGRESO']['RUC'];
-        $this->insert_generico("Facturas",$dato);
+        insert_generico("Facturas",$dato);
         $n_fac++;
         //incrementar contador de facturas
         $sql="UPDATE Codigos set Numero='".$n_fac."'
-        WHERE  (Concepto = 'FA_SERIE_".$ser1[2]."') AND (Item = '".$_SESSION['INGRESO']['item']."') 
+        WHERE  (Concepto = 'FA_SERIE_".$ser."') AND (Item = '".$_SESSION['INGRESO']['item']."') 
         AND (Periodo = '".$_SESSION['INGRESO']['periodo']."')";
         //echo $sql;
         $stmt1 =sqlsrv_query( $cid, $sql);
@@ -8668,55 +8662,97 @@ function datos_tabla($tabla,$campo=false)
     //conexion
     $conn = new Conectar();
     $cid=$conn->conexion();
-
-  $nombrec= $datos1['nombrec'];
-  $ruc= $datos1['ruc'];
-  $email= $datos1['email'];
-  $ser= $datos1['ser'];
-  $n_fac= $datos1['n_fac'];
-  $abo= $datos1['abo'];
-  $abo1=explode("-", $abo);
-  $compro_a= $datos1['compro_a'];
-  $monto_a= $datos1['monto_a'];
-  $me= $datos1['me'];
-  $fecha_actual = date("Y-m-d"); 
-  
-  $sql="SELECT * FROM Clientes WHERE  (CI_RUC= '".$ruc."') ";
-  $stmt = sqlsrv_query($cid, $sql);
-  if( $stmt === false)  
-  {  
-     echo "Error en consulta PA.\n";  
-     die( print_r( sqlsrv_errors(), true));  
-  }
-  $row_count=0;
-  $ii=0;
-  $Result = array();
-  while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_NUMERIC) ) 
-  {
-    $codigo=$row[2];
-  }
-  
-  $dato[0]['campo']='Periodo';
-  $dato[0]['dato']=$_SESSION['INGRESO']['periodo'];
-  $dato[1]['campo']='Item';
-  $dato[1]['dato']=$_SESSION['INGRESO']['item'];
-  $dato[2]['campo']='CodigoC';
-  $dato[2]['dato']=$codigo;
-  $dato[3]['campo']='Fecha';
-  $dato[3]['dato']=$fecha_actual;
-  $dato[4]['campo']='Abono';
-  $dato[4]['dato']=$monto_a;
-  $dato[5]['campo']='CodigoU';
-  $dato[5]['dato']=$_SESSION['INGRESO']['CodigoU'];
-  $dato[6]['campo']='HABIT';
-  $dato[6]['dato']=$me;
-  $dato[7]['campo']='Cta';
-  $dato[7]['dato']=$abo1[0];
-  $dato[8]['campo']='Comprobante';
-  $dato[8]['dato']=$compro_a;
-  $insert_generico("Asiento_Abonos",$dato);
-  cerrarSQLSERVERFUN($cid);
-    $resp = $this->modelo->agregar_abono($_POST);
+    $DiarioCaja = ReadSetDataNum("Recibo_No", True, True);
+    
+    if ($TA['T'] == "" || $TA['T'] == G_NINGUNO || $TA['T'] == "A") {
+      $TA['T'] = G_NORMAL;
+    }
+    if ($TA['Cta_CxP'] == "" || $TA['Cta_CxP'] == G_NINGUNO) {
+      $TA['Cta_CxP'] = $TA['Cta_CxP'];
+    }
+    if ($TA['CodigoC'] == "" || $TA['CodigoC'] == G_NINGUNO) {
+      $TA['CodigoC'] = $TA['CodigoC'];
+    }
+    if ($TA['Comprobante'] == "") {
+      $TA['Comprobante'] = G_NINGUNO;
+    }
+    if ($TA['Codigo_Inv'] == "") {
+      $TA['Codigo_Inv'] = G_NINGUNO;
+    }
+    if ($TA['Fecha'] == G_NINGUNO) {
+      $TA['Fecha'] = date('Y-m-d');
+    }
+    if ($TA['Serie'] == G_NINGUNO) {
+      $TA['Serie'] = "001001";
+    }
+    if ($TA['Autorizacion'] == G_NINGUNO) {
+      $TA['Autorizacion'] = "1234567890";
+    }
+    if ($TA['Cheque'] == G_NINGUNO && $DiarioCaja > 0 ) {
+      $TA['Cheque'] = str_pad($DiarioCaja,7,"0", STR_PAD_LEFT);
+    }
+    if ($DiarioCaja > 0 ) {
+      $TA['Recibo_No'] = str_pad($DiarioCaja,10,"0", STR_PAD_LEFT); 
+    }else{
+      $TA['Recibo_No'] = "0000000000";
+    }
+    $Tipo_Cta = Leer_Cta_Catalogo($TA['Cta']);
+      
+    $dato[0]['campo'] = 'T';
+    $dato[0]['dato'] = $TA['T'];
+    $dato[1]['campo']='TP';
+    $dato[1]['dato'] = $TA['TP'];
+    $dato[2]['campo']='Fecha';
+    $dato[2]['dato'] = $TA['Fecha'];
+    $dato[3]['campo'] = 'Recibo_No';
+    $dato[3]['dato'] = $TA['Recibo_No'];
+    $dato[4]['campo'] = 'Tipo_Cta';
+    $dato[4]['dato'] = $TA['TP'];
+    $dato[5]['campo'] = 'Cta';
+    $dato[5]['dato'] = $TA['Cta'];
+    $dato[6]['campo'] = 'Cta_CxP';
+    $dato[6]['dato'] = $TA['Cta_CxP'];
+    $dato[7]['campo'] = 'Factura';
+    $dato[7]['dato'] = $TA['Factura'];
+    $dato[8]['campo'] = 'CodigoC';
+    $dato[8]['dato'] = $TA['CodigoC'];
+    $dato[9]['campo'] = 'Abono';
+    $dato[9]['dato'] = $TA['Abono'];
+    $dato[10]['campo'] = 'Banco';
+    $dato[10]['dato'] = $TA['Banco'];
+    $dato[11]['campo'] = 'Cheque';
+    $dato[11]['dato'] = $TA['Cheque'];
+    $dato[12]['campo'] = 'Codigo_Inv';
+    $dato[12]['dato'] = $TA['Codigo_Inv'];
+    $dato[13]['campo'] = 'Comprobante';
+    $dato[13]['dato'] = $TA['Comprobante'];
+    $dato[14]['campo'] = 'Serie';
+    $dato[14]['dato'] = $TA['Serie'];
+    $dato[15]['campo'] = 'Autorizacion';
+    $dato[15]['dato'] = $TA['Autorizacion'];
+    $dato[16]['campo'] = 'Item';
+    $dato[16]['dato'] = $_SESSION['INGRESO']['item'];
+    $dato[17]['campo'] = 'CodigoU';
+    $dato[17]['dato'] = $_SESSION['INGRESO']['CodigoU'];
+    $dato[18]['campo'] = 'Cod_Ejec';
+    $dato[18]['dato'] = $_SESSION['INGRESO']['CodigoU'];
+    if ($TA['Banco'] == "NOTA DE CREDITO") {
+      $dato[19]['campo'] = 'Serie_NC';
+      $dato[19]['dato'] = $TA['Serie_NC'];
+      $dato[20]['campo'] = 'Autorizacion_NC';
+      $dato[20]['dato'] = $TA['Autorizacion_NC'];
+      $dato[21]['campo'] = 'Secuencial_NC';
+      $dato[21]['dato'] = $TA['Nota_Credito'];
+    }
+      /*
+       If .Banco = "NOTA DE CREDITO" Then
+           Control_Procesos "A", "Anulación por " & .Banco & " de " & .TP & " No. " & .Serie & "-" & Format$(.Factura, "000000000")
+       Else
+           Control_Procesos "P", "Abono de " & .TP & " No. " & .Serie & "-" & Format$(.Factura, "000000000") & ", Por: " & Format$(.Abono, "#,##0.00")
+       End If
+      */
+    $resp = insert_generico("Trans_Abonos",$dato);
+    cerrarSQLSERVERFUN($cid);
     if($resp==1)
     {
       echo "<script type='text/javascript'>

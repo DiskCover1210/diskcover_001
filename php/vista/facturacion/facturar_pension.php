@@ -155,15 +155,17 @@
           for (var indice in datos) {
             subtotal = (parseFloat(datos[indice].valor) + (parseFloat(datos[indice].valor) * parseFloat(datos[indice].iva) / 100)) - parseFloat(datos[indice].descuento) - parseFloat(datos[indice].descuento2);
             var tr = `<tr>
-              <td><input type="checkbox" id="checkbox`+clave+`" onclick="totalFactura('checkbox`+clave+`','`+subtotal+`','`+datos[indice].iva+`','`+datos[indice].descuento+`')" name="`+datos[indice].mes+`"></td>
-              <td>`+datos[indice].mes+`</td>
-              <td>`+datos[indice].codigo+`</td>
-              <td>`+datos[indice].periodo+`</td>
-              <td>`+datos[indice].producto+`</td>
+              <td><input type="checkbox" id="checkbox`+clave+`" onclick="totalFactura('checkbox`+clave+`','`+subtotal+`','`+datos[indice].iva+`','`+datos[indice].descuento+`','`+datos.length+`')" name="`+datos[indice].mes+`"></td>
+              <td><input type ="text" id="Mes`+clave+`" value ="`+datos[indice].mes+`" disabled/></td>
+              <td><input type ="text" id="Codigo`+clave+`" value ="`+datos[indice].codigo+`" disabled/></td>
+              <td><input type ="text" id="Periodo`+clave+`" value ="`+datos[indice].periodo+`" disabled/></td>
+              <td><input type ="text" id="Producto`+clave+`" value ="`+datos[indice].producto+`" disabled/></td>
               <td><input size="10px" type ="text" id="valor`+clave+`" value ="`+parseFloat(datos[indice].valor).toFixed(2)+`" disabled/></td>
               <td><input size="10px" type ="text" id="descuento`+clave+`" value ="`+parseFloat(datos[indice].descuento).toFixed(2)+`" disabled/></td>
               <td><input size="10px" type ="text" id="descuento2`+clave+`" value ="`+parseFloat(datos[indice].descuento2).toFixed(2)+`" disabled/></td>
               <td><input size="10px" type ="text" id="subtotal`+clave+`" value ="`+parseFloat(subtotal).toFixed(2)+`" disabled/></td>
+              <input size="10px" type ="hidden" id="CodigoL`+clave+`" value ="`+datos[indice].CodigoL+`"/>
+              <input size="10px" type ="hidden" id="Iva`+clave+`" value ="`+datos[indice].iva+`"/>
             </tr>`;
             $("#cuerpo").append(tr);
             clave++;
@@ -213,8 +215,7 @@
     });
   }
 
-  function totalFactura(id,valor,iva,descuento1){
-    console.log(valor);
+  function totalFactura(id,valor,iva,descuento1,datos){
     valor = parseFloat(valor);
     descuento1 = parseFloat(descuento1);
     var checkBox = document.getElementById(id);
@@ -227,7 +228,6 @@
       }
       descuento += descuento1;
       total += valor;
-      console.log(total);
     } else {
       if (iva == 0) {
         total0 -= valor;  
@@ -236,16 +236,47 @@
       }
       descuento -= descuento1;
       total -= valor;
-      console.log(total);
     }
-
+    datosLineas = [];
+    for (var i = 1; i <= datos; i++) {
+      datosId = 'checkbox'+i;
+      datosCheckBox = document.getElementById(datosId);
+      if (datosCheckBox.checked == true) {
+        datosLineas[i-1] = {
+          'Codigo' : $("#Codigo"+i).val(),
+          'CodigoL' : $("#CodigoL"+i).val(),
+          'Producto' : $("#Producto"+i).val(),
+          'Precio' : $("#valor"+i).val(),
+          'Total_Desc' : $("#descuento"+i).val(),
+          'Total_Desc2' : $("#descuento2"+i).val(),
+          'Iva' : $("#Iva"+i).val(),
+          'Total' : $("#subtotal"+i).val(),
+          'MiMes' : $("#Mes"+i).val(),
+          'Periodo' : $("#Periodo"+i).val(),
+        };
+      }
+    }
+    codigoCliente = $("#codigoCliente").val();
     $("#total12").val(parseFloat(total12).toFixed(2));
     $("#descuento").val(parseFloat(descuento).toFixed(2));
     $("#iva12").val(parseFloat(iva12).toFixed(2));
     $("#total").val(parseFloat(total).toFixed(2));
     $("#total0").val(parseFloat(total0).toFixed(2));
     $("#valorBanco").val(parseFloat(total).toFixed(2));
-    $("#saldoTotal").val(parseFloat(total).toFixed(2));
+    $("#saldoTotal").val(parseFloat(0).toFixed(2));
+
+    $.ajax({
+      type: "POST",
+      url: '../controlador/facturacion/facturar_pensionC.php?guardarLineas=true',
+      data: {
+        'codigoCliente' : codigoCliente,
+        'datos' : datosLineas,
+      }, 
+      success: function(data)
+      {
+        
+      }
+    });    
   }
 
   function calcularDescuento(){
@@ -282,8 +313,8 @@
     total = $("#total").val();
     efectivo = $("#efectivo").val();
     abono = $("#abono").val();
-    saldo = total - efectivo - abono;
-    console.log(saldo);
+    banco = $("#valorBanco").val();
+    saldo = total - banco - efectivo - abono;
     $("#saldoTotal").val(saldo.toFixed(2));
   }
 
@@ -305,9 +336,12 @@
       TxtDirS = $("#direccion1").val();
       TextCheque = $("#valorBanco").val();
       DCBanco = $("#cuentaBanco").val();
+      chequeNo = $("#chequeNo").val();
       TxtEfectivo = $("#efectivo").val();
       TxtNC = $("#cuentaNC").val();
       DCNC = $("#abono").val();
+      Fecha = $("#fechaEmision").val();
+      Total = $("#total").val();
       codigoCliente = $("#codigoCliente").val();
       var confirmar = confirm("Esta seguro que desea guardar \n La factura No."+TextFacturaNo);
       if (confirmar == true) {
@@ -317,11 +351,13 @@
           data: {
             'update' : update,
             'DCLinea' : DCLinea,
+            'Total' : Total,
             'TextRepresentante' : TextRepresentante,
             'TxtDireccion' : TxtDireccion,
             'TxtTelefono' : TxtTelefono,
             'TextFacturaNo' : TextFacturaNo,
             'TxtGrupo' : TxtGrupo,
+            'chequeNo' : chequeNo,
             'TextCI' : TextCI,
             'TD_Rep' : TD_Rep,
             'TxtEmail' : TxtEmail,
@@ -331,6 +367,7 @@
             'DCBanco' : DCBanco,
             'TxtEfectivo' : TxtEfectivo,
             'TxtNC' : TxtNC,
+            'Fecha' : Fecha,
             'DCNC' : DCNC, 
           }, 
           success: function(data)
@@ -388,11 +425,10 @@
       <div class="panel-body">
         <div class="row">
           <div class="col-md-2">
+            <input type="hidden" id="Autorizacion">
+            <input type="hidden" id="Cta_CxP">
             <select class="form-control input-sm" name="DCLinea" id="DCLinea">
-              <option>Gerencia</option>
-              <?php 
-                $catalogo = $facturar->getCa
-              ?>
+              
             </select>
           </div>
           <div class="col-sm-2 text-right">
@@ -494,7 +530,7 @@
               overflow: auto;
               display: block;
           ">
-            <table class="table table-responsive table-bordered thead-dark" id="customers">
+            <table class="table table-responsive table-borfed thead-dark" id="customers">
               <thead>
                 <tr>
                   <th></th>
@@ -605,7 +641,7 @@
             <b>Valor Banco</b>
           </div>
           <div class="col-sm-2">
-            <input type="text" name="valorBanco" id="valorBanco" class="form-control input-sm red text-right">
+            <input type="text" name="valorBanco" id="valorBanco" onkeyup="calcularSaldo();" class="form-control input-sm red text-right">
           </div>
         </div>
         <div class="row">

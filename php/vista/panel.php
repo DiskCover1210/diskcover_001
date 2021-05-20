@@ -78,6 +78,7 @@ if(isset($_GET['mos']))
 				$_SESSION['INGRESO']['periodo']='.';
 				$_SESSION['INGRESO']['Razon_Social']=$valor['Razon_Social'];
 				$_SESSION['INGRESO']['Fecha_ce']=$valor['Fecha_CE'];
+				$_SESSION['INGRESO']['Porc_Serv']= round($valor['Servicio'] / 100,2) ;
 				//echo $_SESSION['INGRESO']['IP_VPN_RUTA'];
 				//obtenemos el resto de inf. de la empresa tales como correo direccion
 				

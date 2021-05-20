@@ -159,14 +159,25 @@ class facturar_pensionM
 		return $rows_affected;
     }
 
-    public function getAsiento($codigoCliente){
+    public function deleteAsiento($codigoCliente){
+      $sql = "DELETE
+            FROM Asiento_F
+            WHERE Item = '".$_SESSION['INGRESO']['item']."' 
+            AND Codigo_Cliente = '".$codigoCliente."' 
+            AND CodigoU = '". $_SESSION['INGRESO']['CodigoU'] ."' ";
+      $stmt = sqlsrv_query( $this->dbs, $sql);
+      //$stmt = sqlsrv_prepare($this->dbs, $sql);
+      return $stmt;
+    }
+
+    public function getAsiento(){
     	$sql = "SELECT * 
        			FROM Asiento_F
        			WHERE Item = '".$_SESSION['INGRESO']['item']."' 
-       			AND CodigoU = '".$codigoCliente."'
+       			AND CodigoU = '".$_SESSION['INGRESO']['CodigoU']."'
        			ORDER BY A_No ";
-       	$stmt = sqlsrv_query( $this->dbs, $sql);
-		return $stmt;
+      $stmt = sqlsrv_query( $this->dbs, $sql);
+		  return $stmt;
     }
 }
 
