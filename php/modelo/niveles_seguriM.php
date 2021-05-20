@@ -34,7 +34,7 @@ class niveles_seguriM
 	function entidades($valor)
 	{
 		$cid = Conectar::conexion('MYSQL');
-		$sql ="SELECT Nombre_Entidad,ID_Empresa FROM entidad  WHERE RUC_CI_NIC <> '.' AND Nombre_Entidad LIKE '%".$valor."%' 
+		$sql ="SELECT Nombre_Entidad,ID_Empresa,RUC_CI_NIC FROM entidad  WHERE RUC_CI_NIC <> '.' AND Nombre_Entidad LIKE '%".$valor."%' 
 		    ORDER BY Nombre_Entidad";
 		  $datos=[];
 		 if($cid)
@@ -43,7 +43,7 @@ class niveles_seguriM
 		 	while($filas=$consulta->fetch_assoc())
 			{
 				// $datos[]=['id'=>$filas['ID_Empresa'],'text'=>utf8_encode($filas['Nombre_Entidad'])];	
-				$datos[]=['id'=>$filas['ID_Empresa'],'text'=>$filas['Nombre_Entidad']];				
+				$datos[]=['id'=>$filas['ID_Empresa'],'text'=>$filas['Nombre_Entidad'],'RUC'=>$filas['RUC_CI_NIC']];				
 			}
 		 }
 
@@ -89,7 +89,11 @@ class niveles_seguriM
 	function usuarios($entidad,$query)
 	{
 		$cid = Conectar::conexion('MYSQL');
-		$sql = "SELECT  ID,CI_NIC,Nombre_Usuario,Usuario,Clave FROM acceso_usuarios WHERE SUBSTRING(CI_NIC,1,6)  <> 'ACCESO' AND  Nombre_Usuario LIKE '%".$query."%' AND ID_Empresa='".$entidad."'";
+		$sql = "SELECT  ID,CI_NIC,Nombre_Usuario,Usuario,Clave,Email FROM acceso_usuarios WHERE SUBSTRING(CI_NIC,1,6)  <> 'ACCESO' AND  Nombre_Usuario LIKE '%".$query."%' ";
+		if($entidad)
+		{
+			$sql.="AND ID_Empresa='".$entidad."'";
+		}
 		 $datos[]=array('id'=>'0','text'=>'TODOS','CI'=>'0','usuario'=>'TODOS','clave'=>'0');
 		 // print_r($sql);die();
 		 if($cid)
@@ -98,7 +102,7 @@ class niveles_seguriM
 		 	while($filas=$consulta->fetch_assoc())
 			{
 				// $datos[]=['id'=>$filas['CI_NIC'],'text'=>utf8_encode($filas['Nombre_Usuario']),'CI'=>$filas['CI_NIC'],'usuario'=>$filas['Usuario'],'clave'=>$filas['Clave']];
-				$datos[]=['id'=>$filas['CI_NIC'],'text'=>$filas['Nombre_Usuario'],'CI'=>$filas['CI_NIC'],'usuario'=>$filas['Usuario'],'clave'=>$filas['Clave']];					
+				$datos[]=['id'=>$filas['CI_NIC'],'text'=>$filas['Nombre_Usuario'],'CI'=>$filas['CI_NIC'],'usuario'=>$filas['Usuario'],'clave'=>$filas['Clave'],$filas['Email']];					
 			}
 		 }
 
@@ -146,7 +150,7 @@ class niveles_seguriM
 	function datos_usuario($entidad,$usuario)
 	{
 		$cid = Conectar::conexion('MYSQL');
-		$sql = "SELECT Usuario,Clave,Nivel_1 as 'n1',Nivel_2 as 'n2',Nivel_3 as 'n3',Nivel_4 as 'n4',Nivel_5 as 'n5',Nivel_6 as 'n6',Nivel_7 as 'n7',Supervisor,Cod_Ejec FROM acceso_usuarios WHERE  ID_Empresa = ".$entidad." AND CI_NIC = '".$usuario."'";
+		$sql = "SELECT Usuario,Clave,Nivel_1 as 'n1',Nivel_2 as 'n2',Nivel_3 as 'n3',Nivel_4 as 'n4',Nivel_5 as 'n5',Nivel_6 as 'n6',Nivel_7 as 'n7',Supervisor,Cod_Ejec,Email FROM acceso_usuarios WHERE  ID_Empresa = ".$entidad." AND CI_NIC = '".$usuario."'";
 		 $datos=array();
 		 if($cid)
 		 {
@@ -214,10 +218,10 @@ class niveles_seguriM
 
 
 	}
-	function update_acceso_usuario($niveles,$usuario,$clave,$entidad,$CI_NIC)
+	function update_acceso_usuario($niveles,$usuario,$clave,$entidad,$CI_NIC,$email)
 	{
 	   $cid = Conectar::conexion('MYSQL');
-	   $sql = "UPDATE acceso_usuarios SET Nivel_1 =".$niveles['1'].", Nivel_2 =".$niveles['2'].", Nivel_3 =".$niveles['3'].", Nivel_4 =".$niveles['4'].",Nivel_5 =".$niveles['5'].", Nivel_6=".$niveles['6'].", Nivel_7=".$niveles['7'].", Supervisor = ".$niveles['super'].", Usuario = '".$usuario."',Clave = '".$clave."' WHERE ID_Empresa = '".$entidad."' AND CI_NIC = '".$CI_NIC."';";
+	   $sql = "UPDATE acceso_usuarios SET Nivel_1 =".$niveles['1'].", Nivel_2 =".$niveles['2'].", Nivel_3 =".$niveles['3'].", Nivel_4 =".$niveles['4'].",Nivel_5 =".$niveles['5'].", Nivel_6=".$niveles['6'].", Nivel_7=".$niveles['7'].", Supervisor = ".$niveles['super'].", Usuario = '".$usuario."',Clave = '".$clave."',Email='".$email."' WHERE ID_Empresa = '".$entidad."' AND CI_NIC = '".$CI_NIC."';";
 	   if($cid)
 	   {
 	   	 $resultado = mysqli_query($cid, $sql);
