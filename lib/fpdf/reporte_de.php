@@ -2433,19 +2433,19 @@ prisma_net@hotmail.es; para Transferencia o Depósitos hacer en El Banco Pichinc
 
 	if($matri != null)
 	{
-	if($educativo[0]['Telefono_RS'] != '.' && $educativo[0]['Telefono_RS'] != '')
+	if(isset($educativo[0]['Telefono_RS']) && $educativo[0]['Telefono_RS'] != '.' && $educativo[0]['Telefono_RS'] != '')
 	{	
 	$arr=array('Telefono: '.$educativo[0]['Telefono_RS']);
 	$pdf->Row($arr,10);
 	$pdf->SetWidths(array(140));
     }
-    if($educativo[0]['Lugar_Trabajo_R'] != '.' && $educativo[0]['Lugar_Trabajo_R'] != '')
+    if(isset( $educativo[0]['Lugar_Trabajo_R']) && $educativo[0]['Lugar_Trabajo_R'] != '.' && $educativo[0]['Lugar_Trabajo_R'] != '')
 	{
 	$arr=array('Direccion: '.$educativo[0]['Lugar_Trabajo_R']);
 	$pdf->Row($arr,10);
 	$pdf->SetWidths(array(140));
     }
-     if($educativo[0]['Email_R'] != '.' && $educativo[0]['Email_R'] != '')
+     if( isset($educativo[0]['Email_R']) && $educativo[0]['Email_R'] != '.' && $educativo[0]['Email_R'] != '')
 	{	
 	$arr=array('Emial: '.$educativo[0]['Email_R']);
 	$pdf->Row($arr,10);

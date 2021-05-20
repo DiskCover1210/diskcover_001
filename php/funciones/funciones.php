@@ -51,6 +51,19 @@ function ip()
 
 }
 
+// clave aleatoria 
+function generate_clave($strength = 16) {
+  $permitted_chars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    $input_length = strlen($permitted_chars);
+    $random_string = '';
+    for($i = 0; $i < $strength; $i++) {
+        $random_character = $permitted_chars[mt_rand(0, $input_length - 1)];
+        $random_string .= $random_character;
+    }
+ 
+    return $random_string;
+}
+
 //Configuración del algoritmo de encriptación
 
 //Debes cambiar esta cadena, debe ser larga y unica
@@ -7663,8 +7676,8 @@ function grilla_generica_new($sql,$tabla,$id_tabla=false,$titulo=false,$botones=
 
  if($head_fijo)
  {
- $tbl.='#'.$id_tabla.' tbody { display:block; height:'.$tamaño_tabla.'px;  overflow-y:auto;  width:fit-content;}
-  #'.$id_tabla.' thead,tbody tr {    display:table;  width:100%;  table-layout:fixed;  } 
+ $tbl.='#'.$id_tabla.' tbody { display:block; height:'.$tamaño_tabla.'px;  overflow-y:auto; width:fit-content;}
+  #'.$id_tabla.' thead,tbody tr {    display:table;  width:100%;  table-layout:fixed; } 
   #'.$id_tabla.' thead { width: calc( 100% - 1.2em )/* scrollbar is average 1em/16px width, remove it from thead width */}
   /*thead tr {    display:table;  width:98.5%;  table-layout:fixed;  }*/ ';
  } 
@@ -7709,8 +7722,8 @@ if($titulo)
       $medida = '300px';
     }else{
       if(($value['CHARACTER_MAXIMUM_LENGTH']<=10 && strlen($value['COLUMN_NAME'])>2))
-      {
-        $medida = dimenciones_tabl(strlen($value['COLUMN_NAME']));
+      {        
+        $medida = dimenciones_tabl(strlen($value['COLUMN_NAME']));       
       }else
       {
         $med_nom = str_replace('px','', dimenciones_tabl(strlen($value['COLUMN_NAME'])));
@@ -7726,7 +7739,18 @@ if($titulo)
     }
    }else
    {
-     $medida = dimenciones_tabl(strlen($value['COLUMN_NAME']));
+    if($value['DATA_TYPE']=='datetime')
+        {
+          $medida = '100px';
+        }else if($value['DATA_TYPE']=='int')
+        {
+          $medida ='70px';
+        }
+        else{
+        $medida = dimenciones_tabl(strlen($value['COLUMN_NAME']));
+       }
+    // print_r('expression');die();
+     // $medida = dimenciones_tabl(strlen($value['COLUMN_NAME']));
    }
    //fin de dimenciones
    //alinea dependiendo el tipo de dato que sea
@@ -7745,7 +7769,7 @@ if($titulo)
           break;
         case 'datetime':       
           $alineado = 'text-left'; 
-          $medida = dimenciones_tabl(strlen($value['COLUMN_NAME']));
+          // $medida = dimenciones_tabl(strlen($value['COLUMN_NAME']));
           // $medida ='100px';
         break;
       } 
@@ -7809,6 +7833,8 @@ if($titulo)
 
 //cuerpo de la consulta
   $colum = 0;
+  if(!empty($datos))
+  {
   foreach ($datos as $key => $value) {
      $tbl.='<tr>';
      //crea botones
@@ -7897,14 +7923,24 @@ if($titulo)
                   $tbl.='<td style="width:'.$medida.'" class="'.$alineado.'">'.utf8_encode($value1).'</td>';  
               }else
               {
+                if(is_int($value1))
+                {
+
+                 $tbl.='<td style="width:'.$medida.'" class="'.$alineado.'">'.$value1.'</td>';
+                }else
+                {                  
                  $tbl.='<td style="width:'.$medida.'" class="'.$alineado.'">'.number_format($value1,$num_decimales).'</td>'; 
+                }
               }    
              }
             $colum+=1;    
          }
 
          $colum=0;  
-      }          
+      }
+    }else
+    {      
+    }          
           
   $tbl.='</tbody>
       </table>

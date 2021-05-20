@@ -45,8 +45,8 @@ MESA PB4
 			AND Codigo_Inv like 'MS.%'
 			ORDER BY Codigo_Inv";
 		
-	//echo $sql;
-	//die();
+	// echo $sql;
+	// die();
 	$stmt = sqlsrv_query($cid, $sql);
 	if( $stmt === false)  
 	{  
@@ -60,6 +60,8 @@ MESA PB4
 		
 		$Result[] = $row;
 	 } 
+
+	 // print_r($Result);
 	cerrarSQLSERVERFUN($cid);
 	return $Result;
 }
@@ -1195,8 +1197,9 @@ function factura_serie()
 		FROM Empresas
 		WHERE (Item = '".$_SESSION['INGRESO']['item']."')
 		";
-	//echo $sql;
-	//die();
+	// echo $sql;
+		// print_r($_SESSION['INGRESO']);
+	// die();
 	$stmt = sqlsrv_query( $cid, $sql);
 	if( $stmt === false)  
 	{  

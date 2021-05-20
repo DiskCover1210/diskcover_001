@@ -4,47 +4,14 @@ ini_set('display_errors', '1');
 include("../chequear_seguridad.php"); 
 require_once("../../controlador/panelr.php");
 //enviar correo
-require_once("../../../lib/phpmailer/PHPMailerAutoload.php");
+require_once("../../../lib/phpmailer/antiguo/PHPMailerAutoload.php");
 
 include('controlador/controladormesa.php');
 //require('modelo/modelomesa.php');
 //facturacion
 
-//variables para autorizar
-$IP_VPN_RUTA = $_SESSION['INGRESO']['IP_VPN_RUTA'];
-$Base_Datos = $_SESSION['INGRESO']['Base_Datos'];
-$Usuario_DB = $_SESSION['INGRESO']['Usuario_DB'];
-$Contraseña_DB = $_SESSION['INGRESO']['Contraseña_DB'];
-$Tipo_Base = $_SESSION['INGRESO']['Tipo_Base'];
-$Puerto = $_SESSION['INGRESO']['Puerto'];
-$ruta_cer=$_SESSION['INGRESO']['Ruta_Certificado'];
-$clave_cer=$_SESSION['INGRESO']['Clave_Certificado'];
-$ambiente=$_SESSION['INGRESO']['Ambiente'];
-$nom_com=$_SESSION['INGRESO']['Nombre_Comercial'];
-$raz_soc=$_SESSION['INGRESO']['Razon_Social'];
-$ruc = $_SESSION['INGRESO']['RUC'];
-$dir = $_SESSION['INGRESO']['Direccion'];
 
-//Encripta información:
-$IP_VPN_RUTA = $encriptar($IP_VPN_RUTA);
-$Base_Datos = $encriptar($Base_Datos);
-$Usuario_DB = $encriptar($Usuario_DB);
-$Contraseña_DB = $encriptar($Contraseña_DB);
-$Tipo_Base = $encriptar($Tipo_Base);
-$Puerto = $encriptar($Puerto);
-$ruta_cer = $encriptar($ruta_cer);
-$clave_cer = $encriptar($clave_cer);
-$ambiente = $encriptar($ambiente);
-$nom_com = $encriptar($nom_com);
-$raz_soc = $encriptar($raz_soc);
-$ruc = $encriptar($ruc);
-$dir = $encriptar($dir);
-$item = $encriptar($_SESSION['INGRESO']['item']);
-$periodo = $encriptar($_SESSION['INGRESO']['periodo']);
-//tipo documkento
-$cod_doc = $encriptar('01');
-$tc=$encriptar('FA');
-$_SESSION['INGRESO']['modulo_']='02';
+// print_r($_SESSION['INGRESO']);die();
 
 ?>
 <!DOCTYPE html>
@@ -180,6 +147,69 @@ $_SESSION['INGRESO']['modulo_']='02';
 </head>
 <!-- class="hold-transition skin-blue sidebar-mini" -->
 <body class="skin-blue sidebar-mini sidebar-collapse" id='cargar'>
+	<?php 
+
+	if(isset($_SESSION['INGRESO']['IP_VPN_RUTA']) && $_SESSION['INGRESO']['Tipo_Base'] =='SQL SERVER') 
+{
+
+//variables para autorizar
+$IP_VPN_RUTA = $_SESSION['INGRESO']['IP_VPN_RUTA'];
+$Base_Datos = $_SESSION['INGRESO']['Base_Datos'];
+$Usuario_DB = $_SESSION['INGRESO']['Usuario_DB'];
+$Contraseña_DB = $_SESSION['INGRESO']['Contraseña_DB'];
+$Tipo_Base = $_SESSION['INGRESO']['Tipo_Base'];
+$Puerto = $_SESSION['INGRESO']['Puerto'];
+$ruta_cer=$_SESSION['INGRESO']['Ruta_Certificado'];
+$clave_cer=$_SESSION['INGRESO']['Clave_Certificado'];
+$ambiente=$_SESSION['INGRESO']['Ambiente'];
+$nom_com=$_SESSION['INGRESO']['Nombre_Comercial'];
+$raz_soc=$_SESSION['INGRESO']['Razon_Social'];
+$ruc = $_SESSION['INGRESO']['RUC'];
+$dir = $_SESSION['INGRESO']['Direccion'];
+
+//Encripta información:
+$IP_VPN_RUTA = $encriptar($IP_VPN_RUTA);
+$Base_Datos = $encriptar($Base_Datos);
+$Usuario_DB = $encriptar($Usuario_DB);
+$Contraseña_DB = $encriptar($Contraseña_DB);
+$Tipo_Base = $encriptar($Tipo_Base);
+$Puerto = $encriptar($Puerto);
+$ruta_cer = $encriptar($ruta_cer);
+$clave_cer = $encriptar($clave_cer);
+$ambiente = $encriptar($ambiente);
+$nom_com = $encriptar($nom_com);
+$raz_soc = $encriptar($raz_soc);
+$ruc = $encriptar($ruc);
+$dir = $encriptar($dir);
+$item = $encriptar($_SESSION['INGRESO']['item']);
+$periodo = $encriptar($_SESSION['INGRESO']['periodo']);
+//tipo documkento
+$cod_doc = $encriptar('01');
+$tc=$encriptar('FA');
+$_SESSION['INGRESO']['modulo_']='02';
+}else
+{
+	echo "<script>
+	$(document).ready(function () {
+	
+				Swal.fire({
+				  type: 'error',
+				  title: 'Asegurese de tener credeciales de SQLSERVER',
+				  text: '',
+				  allowOutsideClick:false,
+				}).then((result) => {
+				  if (result.value) {
+					location.href='../panel.php#';
+				  } 
+				});
+				$('#mesas').css('display','none')
+	})
+			</script>";
+}
+
+
+	?>
+
 <!-- Site wrapper -->
 <div class="wrapper">
 
@@ -297,6 +327,8 @@ $_SESSION['INGRESO']['modulo_']='02';
      	<div class="row">
      		<div id="mesas">
      		<?php $con = new MesaCon();
+     		// echo "<script>alert('sss')</script>";
+     		// print_r($_SESSION['INGRESO']);
      		echo $con->cargar_todas_mesas();  ?> 
      		</div>    	
     	</div>

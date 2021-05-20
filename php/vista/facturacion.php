@@ -56,6 +56,10 @@ if(isset($_SESSION['INGRESO']['IP_VPN_RUTA']) && $_SESSION['INGRESO']['Tipo_Base
 						{
 							require_once("facturacion/facturar_pension.php");
 						}
+						if ($_SESSION['INGRESO']['accion']=='facturarLista') 
+						{
+							require_once("facturacion/lista_facturas.php");
+						}
 					}else
 					{
 						echo "<div class='box-body'><img src='../../img/modulo_facturacion.png' width='100%'></div>";

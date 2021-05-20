@@ -207,7 +207,7 @@
 											<?php select_option_mysql('entidad','ID_Empresa','Nombre_Entidad',' 1=1 ORDER BY Nombre_Entidad '); ?>
 										</select> -->
 										<select class="form-control" name="entidad" id='entidad' onChange="return buscar('ciudad');">
-											<option value='0'>Seleccione Entidad</option>
+											<option value=''>Seleccione Entidad</option>
 										</select>
 									</div>
 								</div>
