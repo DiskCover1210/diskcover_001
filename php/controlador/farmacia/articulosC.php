@@ -547,7 +547,8 @@ class articulosC
 
 // print_r($datos);die();
 		   $resp = $this->modelo->ingresar_asiento_K($datos);
-		   if($resp =='')
+		   // print_r($resp);die();
+		   if($resp ==null)
 		   {
 		   	return 1;
 		   }else
@@ -873,7 +874,7 @@ class articulosC
 		    $datos[25]['dato'] =$value['Serie_No'];
 
 
-		    // print_r($datos);die();
+		    // print_r($this->ing_descargos->insertar_trans_kardex($datos));die();
 		     if($this->ing_descargos->insertar_trans_kardex($datos)!="")
 		     {
 		     	$resp = 0;

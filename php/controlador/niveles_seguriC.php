@@ -381,10 +381,10 @@ class niveles_seguriC
 //hay que cambiar esas variables de conexion y pass 
     $datos = $this->modelo->entidades($parametros['entidad']);
 
-  	$email_conexion = 'ejfc19omoshiroi@gmail.com'; //$empresaGeneral[0]['Email_Conexion'];
-    $email_pass =  '1722214507ja'; //$empresaGeneral[0]['Email_Contraseña'];
+  	$email_conexion = 'info@diskcoversystem.com'; //$empresaGeneral[0]['Email_Conexion'];
+    $email_pass =  'info2021diskCover'; //$empresaGeneral[0]['Email_Contraseña'];
     // print_r($empresaGeneral[0]);die();
-  	$correo_apooyo="info@diskcoversystem.com"; //correo que saldra ala do del emisor
+  	$correo_apooyo="credenciales@diskcoversystem.com"; //correo que saldra ala do del emisor
   	$cuerpo_correo = '
   	Estimado(a) '.$parametros['usuario'].' sus credenciales de acceso:
   	 <br>
@@ -417,7 +417,7 @@ QUITO - ECUADOR</pre>');
   	
   	// if($resp==1)
   	// {
-  		if($this->email->enviar_credenciales_gmail($archivos,$correo,$cuerpo_correo,$titulo_correo,$correo_apooyo,'Credenciales de acceso al sistema DiskCover System',$email_conexion,$email_pass,$html=1)==1){
+  		if($this->email->enviar_credenciales($archivos,$correo,$cuerpo_correo,$titulo_correo,$correo_apooyo,'Credenciales de acceso al sistema DiskCover System',$email_conexion,$email_pass,$html=1)==1){
   			return 1;
   		}else
   		{

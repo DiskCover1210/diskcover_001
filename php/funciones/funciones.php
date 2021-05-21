@@ -5737,15 +5737,20 @@ function insert_generico($tabla=null,$datos=null)
 		// print_r($cam2.$v2);
 		// die();
 		$stmt = sqlsrv_query( $cid, $cam2.$v2);
-		// echo  $cam2.$v2 ;die();
+    // if($tabla == 'Trans_Kardex')
+    // {
+		// echo  $cam2.$v2 ;
+    // }
 		if( $stmt === false)  
 		{  
       // return -1;
 			echo "Error en consulta PA.\n";  
 			die( print_r( sqlsrv_errors(), true));  
-		}else{
-      return 1;
-    }
+		}
+    // no colocar return 1  en el sistema se esta comparando con null
+      // else{
+  //     return 1;
+  //   }
 		
 		  // cerrarSQLSERVERFUN($cid);
 		

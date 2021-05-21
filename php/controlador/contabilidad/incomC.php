@@ -1,6 +1,6 @@
 <?php 
 include(dirname(__DIR__,2).'/modelo/contabilidad/incomM.php');
-// include(dirname(__DIR__,1).'/modelo/contabilidad/incomM.php');
+include(dirname(__DIR__,2).'/comprobantes/SRI/autorizar_sri.php');
 /**
  * 
  */
@@ -35,17 +35,28 @@ if(isset($_GET['cuentas_banco']))
 if(isset($_GET['cuentasTodos']))
 {
 	$query = '';
+    $ti='';
     $tipo = '';
 	if(isset($_GET['q']))
 	{
 		$query = $_GET['q'];
+         if(count($query)>1)
+        {
+            $query = $query['term'];
+            if($query =='*')
+            {
+                $query = '';
+            }
+        }else{$query ='';}
+
+        $ti = $_GET['tip'];
 	}
     if(isset($_GET['q1']))
     {
         $query = $_GET['q1'];
         $tipo = '1';
     }
-	echo json_encode($controlador->cuentas_Todos($query,$tipo));
+	echo json_encode($controlador->cuentas_Todos($query,$tipo,$ti));
 }
 
 if(isset($_GET['asientoB']))
@@ -166,14 +177,20 @@ if(isset($_GET['num_comprobante']))
     // print_r($parametros);die();
     echo json_encode(numero_comprobante1($parametros['tip'],true,false,$parametros['fecha']));
 }
-
+if(isset($_GET['generar_xml']))
+{
+    $parametros = $_POST['parametros'];
+    echo json_encode($controlador->SRI_Crear_Clave_Acceso_Retenciones($parametros));
+}
 
 class incomC
 {
-	private $modelo;	
+	private $modelo;
+    private $sri;	
 	function __construct()
 	{
 		$this->modelo = new incomM();
+        $this->sri = new autorizacion_sri();
 	}
 
 	function cargar_beneficiario($query)
@@ -211,9 +228,9 @@ class incomC
 
 	}
 
-	function cuentas_Todos($query,$tipo)
+	function cuentas_Todos($query,$tipo,$tipoCta)
 	{
-		$datos = $this->modelo->cuentas_todos($query,$tipo);
+		$datos = $this->modelo->cuentas_todos($query,$tipo,$tipoCta);
 		$cuenta = array();
 		foreach ($datos as $key => $value) {
             if($tipo=='')
@@ -402,7 +419,7 @@ class incomC
      function modal_ingresar_asiento($parametros)
      {
      	$valor = $this->modelo->DG_asientos_SC_total();
-     	$cuenta = $this->modelo->cuentas_todos($parametros['cta'],''); 
+     	$cuenta = $this->modelo->cuentas_todos($parametros['cta'],'',''); 
         $parametros_asiento = array(
 				"va" => round($valor[0]['total'],2),
 				"dconcepto1" => '.',
@@ -626,6 +643,72 @@ class incomC
                break;
        }
        return $this->modelo->eliminar_registros($tabla,$Codigo);
+     }
+
+     function SRI_Crear_Clave_Acceso_Retenciones($parametros)
+     {
+        $datos = $this->modelo->retencion_compras($parametros['numero'],$parametros['comp']);
+        if(count($datos)>0)
+        {
+          $TFA[0]["Serie_R"] = $datos[0]["Serie_Retencion"];
+          $TFA[0]["Retencion"] = $datos[0]["SecRetencion"];
+          $TFA[0]["Autorizacion_R"] = $datos[0]["AutRetencion"];
+          $TFA[0]["Autorizacion"] = $datos[0]["Autorizacion"];
+          $TFA[0]["Fecha"] = $datos[0]["FechaRegistro"];
+          $TFA[0]["Vencimiento"] = $datos[0]["FechaRegistro"];
+          $TFA[0]["Serie"] = $datos[0]["Establecimiento"].$datos[0]["PuntoEmision"];
+          $TFA[0]["Factura"] = $datos[0]["Secuencial"];
+          $TFA[0]["Hora"] = date('H:m:s');
+          $TFA[0]["Cliente"] = $datos[0]["Cliente"];
+          $TFA[0]["CI_RUC"] = $datos[0]["CI_RUC"];
+          $TFA[0]["TD"] = $datos[0]["TD"];
+          $TFA[0]["DireccionC"] = $datos[0]["Direccion"];
+          $TFA[0]["TelefonoC"] = $datos[0]["Telefono"];
+          $TFA[0]["EmailC"] = $datos[0]["Email"];
+          $CodSustento = $datos[0]["CodSustento"];
+
+          $TFA[0]["Ruc"] = $datos[0]["CI_RUC"];
+          $TFA[0]["TipoComprobante"] = '0'.$datos[0]["TipoComprobante"];
+
+          // Validar_Porc_IVA $TFA[0]["Fecha"];
+          
+         // 'Algoritmo Modulo 11 para la clave de la retencion
+         // '& Format$(TFA.Vencimiento, "ddmmyyyy")
+          $len= strlen($TFA[0]["Retencion"]);
+          // $rete = '';
+          if($len<9)
+          {
+            $num_ce = 9-$len;
+            $retencion = str_repeat('0',$num_ce);
+            $rete = $TFA[0]["Retencion"].$retencion;
+          }
+          // print_r($rete);die();
+          $TFA[0]["ClaveAcceso"] = date("ddmmyyyy", strtotime($TFA[0]['Fecha']->format('Y-m-d')))."07".$parametros['ruc'].$_SESSION['INGRESO']['Ambiente'].$TFA[0]["Serie_R"].$rete."123456781";
+          $TFA[0]["ClaveAcceso"] = str_replace('.','1', $TFA[0]['ClaveAcceso']);
+          $this->sri->generar_xml_retencion($TFA);
+
+        }
+
+     }
+
+     function Digito_Verificador_Modulo11($CadenaNumerica)
+     {
+        $Mod_11 = 2;
+        $Total_Mod_11 = 0;
+        $CadenaNumerica = str_replace('.','1', $CadenaNumerica);
+        for ($i=strlen($CadenaNumerica); $i<1; $i--) 
+        {
+            $Numero = intval(substr($CadenaNumerica, $i, 1)) * $Mod_11;
+            $Total_Mod_11 = $Total_Mod_11 + $Numero;
+            $Mod_11 = $Mod_11 + 1;
+            if($Mod_11 > 7){$Mod_11 = 2;}
+        }
+        $Mod_11 = $Total_Mod_11.$Mod_11;
+        $Mod_11 = 11 - $Mod_11;
+        if($Mod_11 == 10){$Mod_11 = 1;}
+        if($Mod_11 == 11){$Mod_11 = 0;}
+        // Digito_Verificador_Modulo11 = CStr($Mod_11)
+        return $Mod_11;
      }
 }
 ?>
