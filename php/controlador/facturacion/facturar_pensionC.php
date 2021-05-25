@@ -50,6 +50,7 @@ class facturar_pensionC
 
 	public function __construct(){
         $this->facturacion = new facturar_pensionM();
+        $this->autorizar_sri = new autorizacion_sri();
         //$this->modelo = new MesaModel();
     }
 
@@ -203,7 +204,6 @@ class facturar_pensionC
       if (Existe_Factura($FA)) {
         
       }
-
       $SaldoPendiente = 0;
       $DiarioCaja = ReadSetDataNum("Recibo_No", True, True);
       if ($FA['Nuevo_Doc']) {
@@ -309,32 +309,24 @@ class facturar_pensionC
       $TA['Autorizacion'] = $FA['Autorizacion'];
       $TA['CodigoC'] = $FA['codigoCliente'];
 
-      $TxtEfectivo['Text'] = "0.00";
+      $TxtEfectivo = "0.00";
       if (strlen($FA['Autorizacion']) >= 13) {
         /*if (!$No_Autorizar) {
         }*/
-        SRI_Crear_Clave_Acceso_Facturas($FA, False, True);
+        //print_r("expression");
+        //generar_xml();
         $FA['Desde'] = $FA['Factura'];
         $FA['Hasta'] = $FA['Factura'];
-        Imprimir_Facturas_CxC(FacturasPension, FA, True, False, True, True);
-        SRI_Generar_PDF_FA(FA, True);
+        //Imprimir_Facturas_CxC(FacturasPension, FA, True, False, True, True);
+        //SRI_Generar_PDF_FA(FA, True);
       }
-
-      $TA['Autorizacion'] = $FA['Autorizacion'];
-      Actualiza_Estado_Factura($TA);
-      Facturas_Impresas($FA);
-       
-      $sql = "SELECT * 
-              FROM Asiento_F 
-              WHERE Item = '".NumEmpresa."' 
-              AND CodigoU = '".$codigoCliente."' ";
-      $TextInteres = "0.00";
-      $TextCheque = "0.00";
-      $TxtEfectivo = "0.00";
-      $TxtNC = "0.00";
-      $TxtSaldoFavor = "0.00";
-      ListaDeClientes();
-      $Nuevo = false;
+      $FA['serie'] = $FA['Serie'];
+      $FA['num_fac'] = $FA['Factura'];
+      $FA['tc'] = $FA['TC'];
+      $FA['cod_doc'] = '01';
+      $resultado = $this->autorizar_sri->Autorizar($FA);
+      echo json_encode($resultado);
+      exit();
     }
 	}
 

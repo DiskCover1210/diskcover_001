@@ -238,11 +238,12 @@
       total -= valor;
     }
     datosLineas = [];
+    key = 0;
     for (var i = 1; i <= datos; i++) {
       datosId = 'checkbox'+i;
       datosCheckBox = document.getElementById(datosId);
       if (datosCheckBox.checked == true) {
-        datosLineas[i-1] = {
+        datosLineas[key] = {
           'Codigo' : $("#Codigo"+i).val(),
           'CodigoL' : $("#CodigoL"+i).val(),
           'Producto' : $("#Producto"+i).val(),
@@ -254,8 +255,10 @@
           'MiMes' : $("#Mes"+i).val(),
           'Periodo' : $("#Periodo"+i).val(),
         };
+        key++;
       }
     }
+    console.log(datosLineas);
     codigoCliente = $("#codigoCliente").val();
     $("#total12").val(parseFloat(total12).toFixed(2));
     $("#descuento").val(parseFloat(descuento).toFixed(2));
@@ -319,64 +322,139 @@
   }
 
   function guardarPension(){
+    
     validarDatos = $("#total").val();
     if (validarDatos <= 0 ) {
       alert('Ingrese los datos necesarios para guardar la factura');
     }else{
-      var update = confirm("¿Desea actualizar los datos del cliente?");
-      TextRepresentante = $("#persona").val();
-      DCLinea = $("#DCLinea").val();
-      TxtDireccion = $("#direccion").val();
-      TxtTelefono = $("#telefono").val();
-      TextFacturaNo = $("#factura").val();
-      TxtGrupo = $("#grupo").val();
-      TextCI = $("#ci_ruc").val();
-      TD_Rep = $("#tdCliente").val();
-      TxtEmail = $("#email").val();
-      TxtDirS = $("#direccion1").val();
-      TextCheque = $("#valorBanco").val();
-      DCBanco = $("#cuentaBanco").val();
-      chequeNo = $("#chequeNo").val();
-      TxtEfectivo = $("#efectivo").val();
-      TxtNC = $("#cuentaNC").val();
-      DCNC = $("#abono").val();
-      Fecha = $("#fechaEmision").val();
-      Total = $("#total").val();
-      codigoCliente = $("#codigoCliente").val();
-      var confirmar = confirm("Esta seguro que desea guardar \n La factura No."+TextFacturaNo);
-      if (confirmar == true) {
-        $.ajax({
-          type: "POST",
-          url: '../controlador/facturacion/facturar_pensionC.php?guardarPension=true',
-          data: {
-            'update' : update,
-            'DCLinea' : DCLinea,
-            'Total' : Total,
-            'TextRepresentante' : TextRepresentante,
-            'TxtDireccion' : TxtDireccion,
-            'TxtTelefono' : TxtTelefono,
-            'TextFacturaNo' : TextFacturaNo,
-            'TxtGrupo' : TxtGrupo,
-            'chequeNo' : chequeNo,
-            'TextCI' : TextCI,
-            'TD_Rep' : TD_Rep,
-            'TxtEmail' : TxtEmail,
-            'TxtDirS' : TxtDirS,
-            'codigoCliente' : codigoCliente,
-            'TextCheque' : TextCheque,
-            'DCBanco' : DCBanco,
-            'TxtEfectivo' : TxtEfectivo,
-            'TxtNC' : TxtNC,
-            'Fecha' : Fecha,
-            'DCNC' : DCNC, 
-          }, 
-          success: function(data)
-          {
-            
+      var update = false;
+      //var update = confirm("¿Desea actualizar los datos del cliente?");
+      Swal.fire({
+        title: 'Esta seguro?',
+        text: "¿Desea actualizar los datos del cliente?",
+        type: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Si!'
+      }).then((result) => {
+        if (result.value==true) {
+          update = true;
+        }else{
+          update = false;
+        }
+        TextRepresentante = $("#persona").val();
+        DCLinea = $("#DCLinea").val();
+        TxtDireccion = $("#direccion").val();
+        TxtTelefono = $("#telefono").val();
+        TextFacturaNo = $("#factura").val();
+        TxtGrupo = $("#grupo").val();
+        TextCI = $("#ci_ruc").val();
+        TD_Rep = $("#tdCliente").val();
+        TxtEmail = $("#email").val();
+        TxtDirS = $("#direccion1").val();
+        TextCheque = $("#valorBanco").val();
+        DCBanco = $("#cuentaBanco").val();
+        chequeNo = $("#chequeNo").val();
+        TxtEfectivo = $("#efectivo").val();
+        TxtNC = $("#cuentaNC").val();
+        DCNC = $("#abono").val();
+        Fecha = $("#fechaEmision").val();
+        Total = $("#total").val();
+        codigoCliente = $("#codigoCliente").val();
+        //var confirmar = confirm("Esta seguro que desea guardar \n La factura No."+TextFacturaNo);
+        Swal.fire({
+          title: 'Esta seguro?',
+          text: "Esta seguro que desea guardar \n La factura No."+TextFacturaNo,
+          type: 'warning',
+          showCancelButton: true,
+          confirmButtonColor: '#3085d6',
+          cancelButtonColor: '#d33',
+          confirmButtonText: 'Si!'
+        }).then((result) => {
+          if (result.value==true) {
+            $('#myModal_espera').modal('show');
+            $.ajax({
+            type: "POST",
+            url: '../controlador/facturacion/facturar_pensionC.php?guardarPension=true',
+            data: {
+              'update' : update,
+              'DCLinea' : DCLinea,
+              'Total' : Total,
+              'TextRepresentante' : TextRepresentante,
+              'TxtDireccion' : TxtDireccion,
+              'TxtTelefono' : TxtTelefono,
+              'TextFacturaNo' : TextFacturaNo,
+              'TxtGrupo' : TxtGrupo,
+              'chequeNo' : chequeNo,
+              'TextCI' : TextCI,
+              'TD_Rep' : TD_Rep,
+              'TxtEmail' : TxtEmail,
+              'TxtDirS' : TxtDirS,
+              'codigoCliente' : codigoCliente,
+              'TextCheque' : TextCheque,
+              'DCBanco' : DCBanco,
+              'TxtEfectivo' : TxtEfectivo,
+              'TxtNC' : TxtNC,
+              'Fecha' : Fecha,
+              'DCNC' : DCNC, 
+            }, 
+            success: function(response)
+            {
+              
+              $('#myModal_espera').modal('hide');
+              if (response) {
+
+                response = JSON.parse(response);
+                if(response.respuesta == '3')
+                {
+                  Swal.fire({
+                       type: 'error',
+                       title: 'Este documento electronico ya esta autorizado',
+                       text: ''
+                     });
+
+                  }else if(response.respuesta == '1')
+                  {
+                    Swal.fire({
+                       type: 'success',
+                       title: 'Este documento electronico fue autorizado',
+                       text: ''
+                     });
+                    //imprimir_ticket_fac(mesa,ci,factura,serie);
+                  }else if(response.respuesta == '2')
+                  {
+                    Swal.fire({
+                       type: 'info',
+                       title: 'XML devuelto',
+                       text: ''
+                     });
+                    descargar_archivos(response.url,response.ar);
+
+                  }
+                  else
+                  {
+                    Swal.fire({
+                       type: 'info',
+                       title: 'Error por: '+response,
+                       text: ''
+                     });
+
+                  }
+              }else{
+                Swal.fire({
+                       type: 'info',
+                       title: 'La factura ya se autorizada',
+                       text: ''
+                     });
+              }
+            }
+            });
           }
-        });
-      }
+        })
+      })
     }
+    
   }
 
 </script>

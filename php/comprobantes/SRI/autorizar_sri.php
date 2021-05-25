@@ -41,6 +41,12 @@ class autorizacion_sri
 
 	function Autorizar($parametros)
 	{
+		/*
+			retorna entre 1 2 3
+			1 Este documento electronico autorizado
+			2 XML devuelto
+			3 Este documento electronico ya esta autorizado
+		*/
 		$cabecera['ambiente']=$_SESSION['INGRESO']['Ambiente'];
 	    $cabecera['ruta_ce']=$_SESSION['INGRESO']['Ruta_Certificado'];
 	    $cabecera['clave_ce']=$_SESSION['INGRESO']['Clave_Certificado'];
@@ -781,12 +787,11 @@ class autorizacion_sri
 	    $compro=$fecha.$tc.$ruc.'1'.$serie.$numero.$nume.$emi.$dig;
 
         //verificamos si existe una carpeta de la entidad si no existe las creamos
-	    $carpeta_entidad = "../entidades/entidad_".$entidad;
+	    $carpeta_entidad = dirname(__DIR__)."/entidades/entidad_".$entidad;
 	    $carpeta_autorizados = "";		  
         $carpeta_generados = "";
         $carpeta_firmados = "";
         $carpeta_no_autori = "";
-
 	if(file_exists($carpeta_entidad))
 	{
 		$carpeta_comprobantes = $carpeta_entidad.'/CE_'.$empresa;
@@ -1161,10 +1166,9 @@ class autorizacion_sri
  	    $url_generados=dirname(__DIR__).'/entidades/entidad_'.$entidad."/CE_".$entidad.'/Generados/';
  	    $url_firmados =dirname(__DIR__).'/entidades/entidad_'.$entidad."/CE_".$entidad.'/Firmados/';
  	    $certificado_1 = dirname(__DIR__).'/certificados/';
-
-       if(file_exists($certificado_1.$p12))
+ 	    if(file_exists($certificado_1.$p12))
        {
- 		exec("java -jar ".$firmador." ".$nom_doc.".xml ".$url_generados." ".$url_firmados." ".$certificado_1." ".$p12." ".$pass, $f);
+        		exec("java -jar ".$firmador." ".$nom_doc.".xml ".$url_generados." ".$url_firmados." ".$certificado_1." ".$p12." ".$pass, $f);
  	   }else
  	   {
  	   	$respuesta = array('1'=>'No se han encontrado Certificados');
@@ -1174,7 +1178,7 @@ class autorizacion_sri
  		$quijoteCliente =  dirname(__DIR__).'/SRI/firmar/QuijoteLuiClient-1.2.jar';
  	    $url_No_autorizados =dirname(__DIR__).'/entidades/entidad_'.$entidad."/CE_".$entidad.'/No_autorizados/';
  	    $url_autorizado =dirname(__DIR__).'/entidades/entidad_'.$entidad."/CE_".$entidad.'/Autorizados';
-
+ 	   
  		if(count($f)<6)
  		{
  			exec("java -jar ".$quijoteCliente." ".$nom_doc.".xml".
@@ -1198,7 +1202,7 @@ class autorizacion_sri
  			}else
  			{
  				$respuesta = array('1'=>$error);
- 				// print_r($respuesta);die();
+ 				//print_r($respuesta);die();
  				return $respuesta;
  			}             
         }
