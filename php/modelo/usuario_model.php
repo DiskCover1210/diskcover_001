@@ -73,8 +73,6 @@ class usuario_model{
 			//echo "<script type='text/javascript'>window.location='".$uri."/diskcover/nuevo/index.php?men=".$this->Mensaje."'</script>";
 		//echo $this->Mensaje;		  
 		}else{
-			//echo $this->Mensaje;	
-			//die();
 			if($this->ValidarUser()==false){
 				$this->Mensaje=$this->Mensaje;
 				  if (!empty($_SERVER['HTTPS']) && ('on' == $_SERVER['HTTPS'])) {
@@ -99,7 +97,6 @@ class usuario_model{
 					echo "<script type='text/javascript'>window.location='".$uri.$_SERVER["REQUEST_URI"]."/../../../php/vista/login.php?men=".$this->Mensaje."'</script>";
 					//echo "<script type='text/javascript'>window.location='".$uri."/diskcover/nuevo/index.php?men=".$this->Mensaje."'</script>";
 				}else{
-					
 					//por lo es correcto el logeo realizamos la redireccion
 					if (!empty($_SERVER['HTTPS']) && ('on' == $_SERVER['HTTPS'])) {
 						$uri = 'https://';
@@ -114,7 +111,6 @@ class usuario_model{
 					// window.location=\"".$uri."/wp-admin/admin.php\";
 					// </script>";
 					// print_r($_SESSION['INGRESO']);
-					// die();
 
 					if($_SESSION['INGRESO']['Accesos'] == 1)
 					{
@@ -127,7 +123,7 @@ class usuario_model{
 					// echo "<script type='text/javascript'>window.location='".$uri.$_SERVER["REQUEST_URI"]."/../../../php/vista/panel.php'</script>";
 					//echo "<script type='text/javascript'>window.location='".$uri.$_SERVER["REQUEST_URI"]."/diskcover_php/vista/panel.php'</script>";
 				} 
-			}        
+			}
 		}
 	}
 	private function ValidarEntidad(){
@@ -142,7 +138,6 @@ class usuario_model{
 			// echo $query; die();
 					
 			$consulta=$this->db->query($query) or die($this->db->error);
-			
 			//Realizamos un bucle para ir obteniendo los resultados
 			while($filas=$consulta->fetch_assoc()){
 				$this->ID_Entidad=$filas['ID_Empresa'];
@@ -177,7 +172,7 @@ class usuario_model{
 		 $retornar=false;
 		 $mailfilter =filter_var($this->Mail);//filtramos el correo
 		 // Validamos el formato  de correo electronico utilizando expresiones 
-	   // regulares:"/[a-zAZ0-9\_\-]+\@[a-zA-Z0-9]+\.[a-zA-Z0-9]/"
+	   // regulares:"/[a-zAZ0-9\_\-]+\@[a-zA-Z0-9]+\.[a-zA-Z0-9]/"	
 	   if ($mailfilter){  
 			// Creamos una query sencilla
 			$query = "SELECT * 
@@ -229,6 +224,7 @@ class usuario_model{
 					  AND Clave = '".$this->Contrasena."'";
 					  
 					  //"AND ID_Empresa = ".$this->ID_Entidad." LIMIT 1;";
+
 			// Ejecutamos la query
 			//echo $query;
 			//die();
