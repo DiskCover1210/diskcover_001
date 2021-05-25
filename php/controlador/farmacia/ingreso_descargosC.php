@@ -423,8 +423,6 @@ class ingreso_descargosC
 		   $resp = $this->modelo->ingresar_asiento_K($datos);
 		   $num = $num_ped;
 		   return  $respuesta = array('ped'=>$num,'resp'=>$resp);
-	
-	    // print_r($resp);die();
 		
 	}
 	function lista_entrega()

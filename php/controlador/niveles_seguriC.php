@@ -1,5 +1,6 @@
 <?php 
 require(dirname(__DIR__).'/modelo/niveles_seguriM.php');
+require(dirname(__DIR__,2).'/lib/phpmailer/enviar_emails.php');
 /**
  * 
  */
@@ -68,14 +69,22 @@ if(isset($_GET['acceso_todos']))
 	echo json_encode($controlador->accesos_todos($parametros));
 	// echo json_encode($controlador->usuario_empresa($parametros['entidad'],$parametros['usuario']));
 }
+if(isset($_GET['enviar_email']))
+{
+	$parametros=$_POST['parametros'];
+	echo json_encode($controlador->enviar_email($parametros));
+	// echo json_encode($controlador->usuario_empresa($parametros['entidad'],$parametros['usuario']));
+}
 
 class niveles_seguriC
 {
 	private $modelo;
+	private $email;
 	
 	function __construct()
 	{
-		$this->modelo = new niveles_seguriM();		
+		$this->modelo = new niveles_seguriM();	
+		$this->email = new enviar_emails();	
 	}
 	function entidades($valor)
 	{
@@ -100,6 +109,7 @@ class niveles_seguriC
 	// }
 	function usuarios($parametros)
 	{
+		$parametros['entidad'] = '';
 		$usuarios = $this->modelo->usuarios($parametros['entidad'],$parametros['query']);
 		// print_r($usuarios);die();
 		return $usuarios;
@@ -210,7 +220,7 @@ class niveles_seguriC
 		// $insert = $this->modelo->guardar_acceso_empresa($modulos,$parametros['entidad'],$empresa,$parametros['CI_usuario']);
 
 
-		$update = $this->modelo->update_acceso_usuario($niveles,$parametros['usuario'],$parametros['pass'],$parametros['entidad'],$parametros['CI_usuario']);
+		$update = $this->modelo->update_acceso_usuario($niveles,$parametros['usuario'],$parametros['pass'],$parametros['entidad'],$parametros['CI_usuario'],$parametros['email']);
 		if($update == 1)
 		{
 			return 1;
@@ -354,6 +364,101 @@ class niveles_seguriC
 
 		}
 	}
+
+  function enviar_email($parametros)
+  {
+  	// print_r($parametros);die();
+    // $empresaGeneral = array_map(array($this, 'encode1'), $this->empresaGeneral);
+
+  	// $nueva_Clave = generate_clave(8);
+  	// $datos[0]['campo']='Clave';
+  	// $datos[0]['dato']=$nueva_Clave;
+
+  	// $where[0]['campo'] = 'Codigo';
+  	// $where[0]['valor'] = $parametros['ci'];
+  	// $where[0]['tipo'] = 'string';
+
+//hay que cambiar esas variables de conexion y pass 
+    $datos = $this->modelo->entidades($parametros['entidad']);
+
+  	$email_conexion = 'info@diskcoversystem.com'; //$empresaGeneral[0]['Email_Conexion'];
+    $email_pass =  'info2021diskCover'; //$empresaGeneral[0]['Email_Contraseña'];
+    // print_r($empresaGeneral[0]);die();
+  	$correo_apooyo="credenciales@diskcoversystem.com"; //correo que saldra ala do del emisor
+  	$cuerpo_correo = '
+  	Estimado(a) '.$parametros['usuario'].' sus credenciales de acceso:
+  	 <br>
+  	<h3>Usuario:</h3>'.$parametros['usuario'].'<br>
+  	<h3>Clave:</h3>'.$parametros['clave'].' <br>
+
+    De la entidad '.$parametros['entidad'].' con CI/RUC: '.$datos[0]['RUC'].' <br>'.utf8_decode('
+    <pre>
+-----------------------------------
+SERVIRLES ES NUESTRO COMPROMISO, DISFRUTARLO ES EL SUYO.
+
+
+Este correo electrónico fue generado automáticamente del Sistema Financiero Contable DiskCover System a usted porque figura como correo electrónico alternativo de Oblatas de San Francisco de Sales.
+Nosotros respetamos su privacidad y solamente se utiliza este correo electrónico para mantenerlo informado sobre nuestras ofertas, promociones y comunicados. No compartimos, publicamos o vendemos su información personal fuera de nuestra empresa. Para obtener más información, comunicate a nuestro Centro de Atención al Cliente Teléfono: 052310304. Este mensaje fue recibido por: DiskCover Sytem.
+
+Por la atención que se de al presente quedo de usted.
+
+
+Esta dirección de correo electrónico no admite respuestas. En caso de requerir atención personalizada por parte de un asesor de servicio al cliente de DiskCover System, Usted podrá solicitar ayuda mediante los canales de atención al cliente oficiales que detallamos a continuación: Telefonos: (+593) 02-321-0051/098-652-4396/099-965-4196/098-910-5300.
+Emails: prisma_net@hotmail.es/diskcover@msn.com.
+
+www.diskcoversystem.com
+QUITO - ECUADOR</pre>');
+
+  	$titulo_correo = 'Credenciales de acceso al sistema DiskCover System';
+  	$archivos = false;
+  	$correo = $parametros['email'];
+  	// print_r($correo);die();
+  	// $resp = $this->modelo->ingresar_update($datos,'Clientes',$where);  	
+  	
+  	// if($resp==1)
+  	// {
+  		if($this->email->enviar_credenciales($archivos,$correo,$cuerpo_correo,$titulo_correo,$correo_apooyo,'Credenciales de acceso al sistema DiskCover System',$email_conexion,$email_pass,$html=1)==1){
+  			return 1;
+  		}else
+  		{
+  			return -1;
+  		}
+  	// }else
+  	// {
+  		// return -1;
+  	// }
+  }
+
+
+ // function encode1($arr) {
+ //    $new = array(); 
+ //    foreach($arr as $key => $value) {
+ //      if(!is_object($value))
+ //      {
+ //      	if($key=='Archivo_Foto')
+ //      		{
+ //      			if (!file_exists('../../img/img_estudiantes/'.$value)) 
+ //      				{
+ //      					$value='';
+ //      					//$new[utf8_encode($key)] = utf8_encode($value);
+ //      					$new[$key] = $value;
+ //      				}
+ //      		} 
+ //         if($value == '.')
+ //         {
+ //         	$new[$key] = '';
+ //         }else{
+ //         	//$new[utf8_encode($key)] = utf8_encode($value);
+ //         	$new[$key] = $value;
+ //         }
+ //      }else
+ //        {
+ //          //print_r($value);
+ //          $new[$key] = $value->format('Y-m-d');          
+ //        }
+ //     }
+ //     return $new;
+ //    }
 
 }
 ?>

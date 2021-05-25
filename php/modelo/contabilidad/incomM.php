@@ -78,7 +78,7 @@ class incomM
 		return $result;
 	}
 
-	function cuentas_todos($query,$tipo)
+	function cuentas_todos($query,$tipo,$tipocta)
 	{
 		$cid = $this->conn;
 		$sql="SELECT Codigo+Space(19-LEN(Codigo))+' -- '+TC+Space(3-LEN(TC))+' -- '+cast( Clave as varchar(5))+' '
@@ -97,6 +97,10 @@ class incomM
 			   		$sql.="AND Codigo+Space(19-LEN(Codigo))+' '+TC+Space(3-LEN(TC))+' '+cast( Clave as varchar(5))+' '
 					+Space(5-LEN(cast( Clave as varchar(5))))+' '+Cuenta LIKE '".$query."%'";
 
+			   	}
+			   	if($tipocta)
+			   	{
+			   		$sql.=" AND TC = '".$tipocta."'";
 			   	}
 			   	$sql.="ORDER BY Codigo";
 		// print_r($sql);die();
@@ -679,6 +683,61 @@ class incomM
 		  return 1;
 
     }
+    function retencion_compras($numero,$tipoCom)
+    {
+    	$cid = $this->conn;
+        $sql = "SELECT C.Cliente,C.CI_RUC,C.TD,C.Direccion,C.Telefono,C.Email,TC.* 
+        FROM Trans_Compras As TC, Clientes As C 
+        WHERE TC.Item = '".$_SESSION['INGRESO']['item']."' 
+        AND TC.Periodo = '".$_SESSION['INGRESO']['periodo']."' 
+        AND TC.Numero = ".$numero." 
+        AND TC.TP = '".$tipoCom."' 
+        AND LEN(TC.AutRetencion) = 13 
+        AND TC.IdProv = C.Codigo 
+        ORDER BY Serie_Retencion,SecRetencion ";
+        // print_r($sql);die();
+        $result = array();
+         $stmt = sqlsrv_query( $cid, $sql);
+		if( $stmt === false)  
+		{  
+			echo "Error en consulta PA.\n";  
+			die( print_r( sqlsrv_errors(), true));  
+		}
+	    while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_ASSOC) ) 
+		 {
+		 	$result[] = $row;
+		 }
+		  return $result;
+    }
+
+    function validar_porc_iva($FechaIVA)
+    {
+   // 'Carga la Tabla de Porcentaje IVA'
+    $cid = $this->conn;
+    if ($FechaIVA == "00/00/0000"){ $FechaIVA = date('Y-m-d');}
+     $sql = "SELECT * 
+           FROM Tabla_Por_ICE_IVA 
+           WHERE IVA <> 0 
+           AND Fecha_Inicio <= '".$FechaIVA."' 
+           AND Fecha_Final >= '".$FechaIVA."'
+           ORDER BY Porc ";
+         $stmt = sqlsrv_query($cid, $sql);
+		if( $stmt === false)  
+		{  
+			echo "Error en consulta PA.\n";  
+			die( print_r( sqlsrv_errors(), true));  
+		}
+	    while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_ASSOC) ) 
+		 {
+		 	$result[] = $row;
+		 }
+		 if(count($result)>0)
+		 {
+		 	$Porc_IVA = round($result[0]["Porc"] / 100, 2);
+		 	return $Porc_IVA;
+		 }
+	}
+    
 
 }
 ?>

@@ -766,8 +766,8 @@ class autorizacion_sri
     7 Código Numérico                       Numérico       8 
     8 Tipo de Emisión                       Tabla 2        1 
     9 Dígito Verificador (módulo 11 )       Numérico       1*/
-   function generar_xml($cabecera,$detalle)
-   {
+ function generar_xml($cabecera,$detalle)
+ {
    	    $entidad='001';
 	    $empresa=$cabecera['item'];
 	    $fecha = str_replace('/','',$cabecera['fechaem']);
@@ -1152,9 +1152,112 @@ class autorizacion_sri
 	  {
 	  	// print_r($ruta_G);die();
 	  	// return 's';
-	  }
+	  }	
+}
 
+function generar_xml_retencion($cabecera,$detalle=false)
+{
+
+	print_r($cabecera);die();
+	    $entidad=$_SESSION['INGRESO']['item'];
+	    $Ambiente = $_SESSION['INGRESO']["Ambiente"];
+	    $ContEspec = '';//Leer_Campo_Empresa("Codigo_Contribuyente_Especial") ojo hay que ver
+	    $Obligado_Conta = $_SESSION["INGRESO"]["Obligado_Conta"];
+	    // ' RETENCIONES COMPRAS
+
+	    $empresa=$_SESSION['INGRESO']['item'];
+	    $Fecha1 = explode("-", $cabecera[0]['Fecha']);
+		$fechaem=$Fecha1[2].'/'.$Fecha1[1].'/'.$Fecha1[0];
+	    $fecha = str_replace('/','',$fechaem);
+	    $ruc=$cabecera['ruc_principal'];
+	    $tc=$cabecera['cod_doc'];
+	    $serie=$cabecera[0]['Serie'];
+	    $numero=$this->generaCeros($cabecera['factura'], '9');
+	    $emi='1';
+	    $nume='12345678';
+	    $ambiente=$cabecera['ambiente'];
+	    $codDoc=$cabecera['cod_doc'];
 	
+	    $dig=$this->digito_verificadorf($ruc);
+
+	    $compro=$fecha.$tc.$ruc.$ambiente.$serie.$numero.$nume.$emi;
+	    $dig=$this->digito_verificador($compro);
+	    $compro=$fecha.$tc.$ruc.'1'.$serie.$numero.$nume.$emi.$dig;
+
+        //verificamos si existe una carpeta de la entidad si no existe las creamos
+	    $carpeta_entidad = "../entidades/entidad_".$entidad;
+	    $carpeta_autorizados = "";		  
+        $carpeta_generados = "";
+        $carpeta_firmados = "";
+        $carpeta_no_autori = "";
+
+	if(file_exists($carpeta_entidad))
+	{
+		$carpeta_comprobantes = $carpeta_entidad.'/CE_'.$empresa;
+		if(file_exists($carpeta_comprobantes))
+		{
+		  $carpeta_autorizados = $carpeta_comprobantes."/Autorizados";		  
+		  $carpeta_generados = $carpeta_comprobantes."/Generados";
+		  $carpeta_firmados = $carpeta_comprobantes."/Firmados";
+		  $carpeta_no_autori = $carpeta_comprobantes."/No_autorizados";
+
+			if(!file_exists($carpeta_autorizados))
+			{
+				mkdir($carpeta_entidad."/CE_".$empresa."/Autorizados", 0777);
+			}
+			if(!file_exists($carpeta_generados))
+			{
+				 mkdir($carpeta_entidad.'/CE_'.$empresa.'/Generados', 0777);
+			}
+			if(!file_exists($carpeta_firmados))
+			{
+				 mkdir($carpeta_entidad.'/CE_'.$empresa.'/Firmados', 0777);
+			}
+			if(!file_exists($carpeta_no_autori))
+			{
+				 mkdir($carpeta_entidad.'/CE_'.$empresa.'/No_autorizados', 0777);
+			}
+		}else
+		{
+			mkdir($carpeta_entidad.'/CE_'.$empresa, 0777);
+			mkdir($carpeta_entidad."/CE_".$empresa."/Autorizados", 0777);
+		    mkdir($carpeta_entidad.'/CE_'.$empresa.'/Generados', 0777);
+		    mkdir($carpeta_entidad.'/CE_'.$empresa.'/Firmados', 0777);
+		    mkdir($carpeta_entidad.'/CE_'.$empresa.'/No_autorizados', 0777);
+		}
+	}else
+	{
+		   mkdir($carpeta_entidad, 0777);
+		   mkdir($carpeta_entidad.'/CE_'.$empresa, 0777);
+		   mkdir($carpeta_entidad."/CE_".$empresa."/Autorizados", 0777);
+		   mkdir($carpeta_entidad.'/CE_'.$empresa.'/Generados', 0777);
+		   mkdir($carpeta_entidad.'/CE_'.$empresa.'/Firmados', 0777);
+		   mkdir($carpeta_entidad.'/CE_'.$empresa.'/No_autorizados', 0777);	    
+	}
+		
+
+	if(file_exists($carpeta_autorizados.'/'.$compro.'.xml'))
+	{
+		$respuesta = array('1'=>'Autorizado');
+		return $respuesta;
+	}
+
+
+	  $xml = new DOMDocument( "1.0", "UTF-8" );
+        $xml->formatOutput = true;
+        $xml->preserveWhiteSpace = false; 
+
+      $ruta_G = dirname(__DIR__).'/entidades/entidad_'.$entidad."/CE_".$entidad.'/Generados';
+	if($archivo = fopen($ruta_G.'/retencion001.xml',"w+b"))
+	  {
+	  	fwrite($archivo,$xml->saveXML());
+	  	 // $respuesta =  $this->firmar_documento($compro,$entidad,$cabecera['clave_ce'],$cabecera['ruta_ce']);
+	     // return $respuesta;
+	  }else
+	  {
+	  	// print_r($ruta_G);die();
+	  	// return 's';
+	  }
 }
 
 

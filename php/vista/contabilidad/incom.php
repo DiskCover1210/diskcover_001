@@ -204,8 +204,9 @@
         placeholder: 'Seleccione cuenta',
         ajax: {
           url:   '../controlador/contabilidad/incomC.php?cuentasTodos=true',
+          data: function (term, page) { return {q: term,  tip:$('#codigo').val() ,  page_limit: 10 }},
           dataType: 'json',
-          delay: 250,
+          delay: 250,          
           processResults: function (data) {
             console.log(data);
             return {
@@ -289,6 +290,30 @@
             $("#div_tabla").load(" #div_tabla");
             $('#tit_sel').html('<i class="fa  fa-trash"></i>');
             $('#myModal_espera').modal('hide');
+            } 
+          }
+        });
+
+    }
+
+
+      function xml()
+    {
+      var parametros = 
+      {
+        'ruc':'1768152560',
+        'numero':'10000168',
+        'comp':'CD'
+      }
+       $.ajax({
+          data:  {parametros:parametros},
+          url:   '../controlador/contabilidad/incomC.php?generar_xml=true',
+          type:  'post',
+          dataType: 'json',
+            success:  function (response) { 
+            if(response == 1)
+            {
+            
             } 
           }
         });
@@ -1130,7 +1155,7 @@
                                  <div class="btn_f input-sm col-md-12 text-center">
                                   <b>DIGITE LA CLAVE O SELECCIONE LA CUENTA:</b>
                                  </div>
-                                 <select id="cuentar" class=" form-control input-sm" onchange="abrir_modal_cuenta()">
+                                 <select id="cuentar" class=" form-control input-sm" onchange="abrir_modal_cuenta()" onfocus="cargar_cuenta()">
                                   <option value="">Seleccione una cuenta</option>   
                                  </select>
                                    <!--  <input type="text" class="xs" id="cuenta" name='cuenta' placeholder="cuenta" maxlength='70' size='153'/>
@@ -1185,7 +1210,8 @@
                         <div class="row ">
                           <div class="col-sm-6">
                              <button type="button"  class="btn btn-primary" id='grabar1' onclick="validar_comprobante()">Guardar</button>
-                             <button type="button"  class="btn btn-danger" id='cancelar'>Cancelar</button>                            
+                             <button type="button"  class="btn btn-danger" id='cancelar'>Cancelar</button>
+                             <button type="button"  class="btn btn-danger" id='' onclick="xml()">xml</button>                            
                           </div>
                           <div class="col-sm-6">
                             <div class="col-sm-4">

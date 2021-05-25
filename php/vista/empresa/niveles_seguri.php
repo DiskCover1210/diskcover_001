@@ -206,6 +206,7 @@ require_once("panel.php");
     			 	}else { $('#rbl_super').prop('checked',false); }
     			 	$('#txt_usuario').val(response.Usuario);
     			 	$('#txt_pass').val(response.Clave)
+            $('#txt_email').val(response.Email)
     			 	
     			 }
     		}
@@ -373,6 +374,7 @@ function guardar()
  		'super':$('#rbl_super').prop('checked'),
  		'usuario':$('#txt_usuario').val(),
  		'pass':$('#txt_pass').val(),
+    'email':$('#txt_email').val(),
  		'modulos':modulos,
     'empresas':empresas,
  		'entidad':$('#ddl_entidad').val(),
@@ -655,6 +657,45 @@ function activo(id)
    $('#txt_modal_conten').val(id);
   }
 }
+
+function enviar_email()
+{
+  var email  = $('#txt_email').val();
+  if(email == '.' || email =='')
+  {
+      Swal.fire('Campo de email vacio','','info');
+    return false;
+  }
+  var parametros = 
+  {
+    'nick':$('#txt_usuario').val(),
+    'clave':$('#txt_pass').val(),
+    'email':email,
+    'entidad':$('select[name="ddl_entidad"] option:selected').text(),
+    'ruc':$('#ddl_entidad').val(),
+    'usuario':$('select[name="ddl_usuarios"] option:selected').text(), 
+  }
+    $.ajax({
+        data:  {parametros:parametros},
+        url:   '../controlador/niveles_seguriC.php?enviar_email=true',
+        type:  'post',
+        dataType: 'json',
+        beforeSend: function () { 
+          $('#myModal_espera').modal('show'); 
+        },
+        success:  function (response) { 
+          if(response == 1)
+           {
+             Swal.fire('Email enviado,Se guardara el correo','','success');
+             guardar();
+            
+           }else
+           {
+             Swal.fire('No se pudo enviar','asegurese que su correo sea el correcto','error');
+           }
+        }
+      }); 
+}
 </script>
 
 <div class="container">
@@ -710,14 +751,26 @@ function activo(id)
        <img src="../../img/png/lock.png" >
      </button>
    </div>
-   
+   <div class="col-xs-2 col-md-1 col-sm-1 col-lg-1">
+     <button title="Bloquear"  class="btn btn-default" onclick="" data-toggle="dropdown" aria-expanded="false">
+       <img src="../../img/png/email.png" >
+       <span class="fa fa-caret-down"></span>
+     </button>
+     <ul class="dropdown-menu">
+       <li><a href="#" onclick="">Enviar credenciales masivos</a></li>
+       <!-- <li><a href="#" data-toggle="modal" data-target="#myModal_ruc" >Redactar email</a></li> -->
+        <!-- <li><a href="#">Something else here</a></li> -->
+       <!-- <li class="divider"></li> -->
+       <!-- <li><a href="#">Recupera</a></li> -->
+     </ul>
+   </div>
  </div>
 </div>
  <div class="row">
 	<div class="col-sm-4">
    	<b>Entidad</b> <br>
       <div class="input-group" style="display: flex; width: 90%;">
-         <select class="form-control" id="ddl_entidad" onchange="cargar_empresas();" style="display: none;"><option value="">Seleccione entidad</option></select>
+         <select class="form-control" id="ddl_entidad" name="ddl_entidad" onchange="cargar_empresas();" style="display: none;"><option value="">Seleccione entidad</option></select>
        <div class="input-group-btn">
           <button type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#myModal_ruc"><span class="fa fa-search"></span> RUC</button>
        </div>
@@ -736,12 +789,21 @@ function activo(id)
 	<div class="col-sm-4">
 		<div class="col-sm-6">
 			<b>Usuario</b> <br>
-			<input type="input" name="txt_usuario" class="form-control" id="txt_usuario">
+			<input type="input" name="txt_usuario" class="form-control input-sm" id="txt_usuario">
 		</div>
 		<div class="col-sm-6">
 			<b>Clave</b> <br>
-			<input type="input" name="txt_pass" class="form-control" id="txt_pass">	
-		</div>	
+			<input type="input" name="txt_pass" class="form-control input-sm" id="txt_pass">	
+		</div>
+    <div class="col-sm-12">
+      <b>Email</b><br>
+      <div class="input-group">
+        <input type="input" name="txt_email" class="form-control input-sm" id="txt_email"> 
+        <div class="input-group-btn">
+          <button type="button" class="btn btn-primary btn-xs" onclick="enviar_email()"><span class="fa fa-send-o"></span> Enviar correo</button>
+        </div>
+      </div> 
+    </div>	
 	</div>
 	<div class="col-sm-12"><br>
 		<div class="panel panel-default">
