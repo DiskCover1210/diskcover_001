@@ -1,5 +1,7 @@
 <?php 
 require_once(dirname(__DIR__,2)."/db/db.php");
+require_once(dirname(__DIR__,2)."/funciones/funciones.php");
+
 date_default_timezone_set('America/Guayaquil');
 
 @session_start(); 
@@ -1153,7 +1155,7 @@ class autorizacion_sri
 function generar_xml_retencion($cabecera,$detalle=false)
 {
 
-	print_r($cabecera);die();
+	// print_r($cabecera);die();
 	    $entidad=$_SESSION['INGRESO']['item'];
 	    $Ambiente = $_SESSION['INGRESO']["Ambiente"];
 	    $ContEspec = '';//Leer_Campo_Empresa("Codigo_Contribuyente_Especial") ojo hay que ver
@@ -1161,17 +1163,17 @@ function generar_xml_retencion($cabecera,$detalle=false)
 	    // ' RETENCIONES COMPRAS
 
 	    $empresa=$_SESSION['INGRESO']['item'];
-	    $Fecha1 = explode("-", $cabecera[0]['Fecha']);
+	    $Fecha1 = explode("-",$cabecera[0]['Fecha']->format('Y-m-d'));
 		$fechaem=$Fecha1[2].'/'.$Fecha1[1].'/'.$Fecha1[0];
 	    $fecha = str_replace('/','',$fechaem);
-	    $ruc=$cabecera['ruc_principal'];
-	    $tc=$cabecera['cod_doc'];
+	    $ruc=$cabecera[0]['CI_RUC'];
+	    $tc=$cabecera[0]['TipoComprobante'];
 	    $serie=$cabecera[0]['Serie'];
-	    $numero=$this->generaCeros($cabecera['factura'], '9');
+	    $numero=$this->generaCeros($cabecera[0]['Factura'], '9');
 	    $emi='1';
 	    $nume='12345678';
-	    $ambiente=$cabecera['ambiente'];
-	    $codDoc=$cabecera['cod_doc'];
+	    $ambiente=$_SESSION['INGRESO']["Ambiente"];
+	    $codDoc=$cabecera[0]['TipoComprobante'];
 	
 	    $dig=$this->digito_verificadorf($ruc);
 
@@ -1180,11 +1182,13 @@ function generar_xml_retencion($cabecera,$detalle=false)
 	    $compro=$fecha.$tc.$ruc.'1'.$serie.$numero.$nume.$emi.$dig;
 
         //verificamos si existe una carpeta de la entidad si no existe las creamos
-	    $carpeta_entidad = "../entidades/entidad_".$entidad;
+	    $carpeta_entidad = dirname(__DIR__,1)."/entidades/entidad_".$entidad;
 	    $carpeta_autorizados = "";		  
         $carpeta_generados = "";
         $carpeta_firmados = "";
         $carpeta_no_autori = "";
+        $ContEspec = Leer_Campo_Empresa('Codigo_Contribuyente_Especial');
+        // print_r($carpeta_entidad);die();
 
 	if(file_exists($carpeta_entidad))
 	{
@@ -1238,14 +1242,236 @@ function generar_xml_retencion($cabecera,$detalle=false)
 	}
 
 
-	  $xml = new DOMDocument( "1.0", "UTF-8" );
+	  $xml = new DOMDocument( "1.0", "UTF-8");
         $xml->formatOutput = true;
         $xml->preserveWhiteSpace = false; 
 
-      $ruta_G = dirname(__DIR__).'/entidades/entidad_'.$entidad."/CE_".$entidad.'/Generados';
+	    $xml_inicio = $xml->createElement( "comprobanteRetencion" );
+        $xml_inicio->setAttribute( "id", "comprobante" );
+        $xml_inicio->setAttribute( "version", "1.1.0" );
+        //informacion de cabecera
+	    $xml_infotributaria = $xml->createElement("infoTributaria");
+	    $xml_ambiente = $xml->createElement("ambiente",$ambiente);
+	    $xml_tipoEmision = $xml->createElement("tipoEmision","1");
+	    $xml_razonSocial = $xml->createElement("razonSocial",$_SESSION['INGRESO']['Razon_Social']);
+	    $xml_nombreComercial = $xml->createElement("nombreComercial",$_SESSION['INGRESO']['Nombre_Comercial']);
+	    $xml_ruc = $xml->createElement("ruc",$ruc);
+	    $xml_codDoc = $xml->createElement("codDoc",'07');
+	    $xml_estab = $xml->createElement("estab",substr($cabecera[0]['Serie_R'], 0,3));
+	    $xml_ptoEmi = $xml->createElement("ptoEmi",substr($cabecera[0]['Serie_R'], 3,3));
+	    $xml_secuencial = $xml->createElement("secuencial",$this->generaCeros($cabecera[0]['Retencion'],9));
+	    $xml_dirMatriz = $xml->createElement("dirMatriz",$_SESSION['INGRESO']['Direccion']);
+
+
+        $xml_infotributaria->appendChild($xml_ambiente);
+        $xml_infotributaria->appendChild($xml_tipoEmision);
+        $xml_infotributaria->appendChild($xml_razonSocial);
+        $xml_infotributaria->appendChild($xml_nombreComercial);
+        $xml_infotributaria->appendChild($xml_ruc);
+        $xml_infotributaria->appendChild($xml_codDoc);
+        $xml_infotributaria->appendChild($xml_estab);
+        $xml_infotributaria->appendChild($xml_ptoEmi);
+        $xml_infotributaria->appendChild($xml_secuencial);
+        $xml_infotributaria->appendChild($xml_dirMatriz);
+
+        // $xml->appendChild($xml_infotributaria);
+
+        $xml_inicio->appendChild($xml_infotributaria);
+        //fin de cabecera
+
+
+	    $xml_infoCompRetencion = $xml->createElement( "infoCompRetencion");
+	    $xml_fechaEmision = $xml->createElement( "fechaEmision",$cabecera[0]['Fecha']->format('d/m/Y'));
+	    $xml_dirEstablecimiento = $xml->createElement( "dirEstablecimiento",strtoupper($_SESSION['INGRESO']['Direccion']));
+	    if(strlen($ContEspec)>1){
+	    	$xml_contribuyenteEspecial = $xml->createElement( "contribuyenteEspecial",$ContEspec);
+	        $xml_infoCompRetencion->appendChild($xml_contribuyenteEspecial);
+	    }
+
+	    $xml_obligadoContabilidad = $xml->createElement( "obligadoContabilidad",$_SESSION['INGRESO']['Obligado_Conta']);
+	    switch ($cabecera[0]['TD']) {
+	    	case 'R':
+	    		if($cabecera[0]['CI_RUC']=="9999999999999"){$cabecera[0]['TD'] = '07';}else{$cabecera[0]['TD']='04';}
+	    		break;
+	    	case 'C':
+	    		$cabecera[0]['TD'] = '05';
+	    		break;
+	    	case 'P':
+	    		$cabecera[0]['TD'] = '06';
+	    		break;
+	    }
+	    $xml_tipoIdentificacionSujetoRetenido = $xml->createElement( "tipoIdentificacionSujetoRetenido",$cabecera[0]['TD']);
+	    $xml_razonSocialSujetoRetenido = $xml->createElement( "razonSocialSujetoRetenido",$cabecera[0]['Cliente']);
+	    $xml_identificacionSujetoRetenido = $xml->createElement( "identificacionSujetoRetenido",$cabecera[0]['CI_RUC']);
+	    $xml_periodoFiscal = $xml->createElement( "periodoFiscal",$cabecera[0]['Fecha']->format('m/Y'));
+
+
+	    $xml_infoCompRetencion->appendChild($xml_fechaEmision);
+	    $xml_infoCompRetencion->appendChild($xml_dirEstablecimiento);
+	    $xml_infoCompRetencion->appendChild($xml_obligadoContabilidad);
+	    $xml_infoCompRetencion->appendChild($xml_tipoIdentificacionSujetoRetenido);
+	    $xml_infoCompRetencion->appendChild($xml_razonSocialSujetoRetenido);
+	    $xml_infoCompRetencion->appendChild($xml_identificacionSujetoRetenido);
+	    $xml_infoCompRetencion->appendChild($xml_periodoFiscal);
+
+        $xml_inicio->appendChild($xml_infoCompRetencion);
+
+
+	    $xml_impuestos = $xml->createElement("impuestos");
+	    if($detalle[0]['Porc_Bienes']>0)
+	    {
+	    	$xml_impuesto = $xml->createElement("impuesto");
+	    	$xml_codigo = $xml->createElement("codigo",'2');
+	    	switch ($detalle[0]['Porc_Bienes']) {
+	    		case '10': $xml_codigoRetencion = $xml->createElement("codigoRetencion",'9');
+	    			break;
+	    		case '30':$xml_codigoRetencion = $xml->createElement("codigoRetencion",'1');
+	    			break;
+	    		case '70':$xml_codigoRetencion = $xml->createElement("codigoRetencion",'2');
+	    			break;
+	    		case '100':$xml_codigoRetencion = $xml->createElement("codigoRetencion",'3');
+	    			break;
+	    	}
+	    	$Total = $detalle[0]["MontoIvaBienes"];
+            $Retencion = intval($detalle[0]["Porc_Bienes"]);
+            $Valor = number_format(($Total * ($Retencion / 100)), 2);
+
+	    	$xml_baseImponible = $xml->createElement("baseImponible",$Total);
+	    	$xml_porcentajeRetener = $xml->createElement("porcentajeRetener",$Retencion);
+	    	$xml_valorRetenido = $xml->createElement("valorRetenido",$Valor);
+	    	$xml_codDocSustento = $xml->createElement("codDocSustento",$cabecera[0]['TipoComprobante']);
+	    	$xml_numDocSustento = $xml->createElement("numDocSustento", $cabecera[0]['Serie'].$this->generaCeros($cabecera[0]['Factura'],9));
+	    	$xml_fechaEmisionDocSustento = $xml->createElement("fechaEmisionDocSustento",$cabecera[0]['Fecha']->format('Y/m/d'));
+
+	    	$xml_impuesto->appendChild($xml_codigo);
+	    	$xml_impuesto->appendChild($xml_codigoRetencion);
+	    	$xml_impuesto->appendChild($xml_baseImponible);
+	    	$xml_impuesto->appendChild($xml_porcentajeRetener);
+	    	$xml_impuesto->appendChild($xml_codDocSustento);
+	    	$xml_impuesto->appendChild($xml_numDocSustento);
+	    	$xml_impuesto->appendChild($xml_fechaEmisionDocSustento);
+
+
+            $xml->appendChild($xml_impuesto);
+            $xml_impuestos->appendChild($xml_impuesto);
+
+	    }
+	     if($detalle[0]['Porc_Servicios']>0)
+	    {
+	    	$xml_impuesto = $xml->createElement("impuesto");
+	    	$xml_codigo = $xml->createElement("codigo",'2');
+	    	switch ($detalle[0]['Porc_Servicios']) {
+	    		case '10': $xml_codigoRetencion = $xml->createElement("codigoRetencion",'10');
+	    			break;
+	    		case '30':$xml_codigoRetencion = $xml->createElement("codigoRetencion",'1');
+	    			break;
+	    		case '70':$xml_codigoRetencion = $xml->createElement("codigoRetencion",'2');
+	    			break;
+	    		case '100':$xml_codigoRetencion = $xml->createElement("codigoRetencion",'3');
+	    			break;
+	    	}
+	    	$Total = $detalle[0]["MontoIvaServicios"];
+            $Retencion = intval($detalle[0]["Porc_Servicios"]);
+            $Valor = number_format(($Total * ($Retencion / 100)), 2);
+
+	    	$xml_baseImponible = $xml->createElement("baseImponible",$Total);
+	    	$xml_porcentajeRetener = $xml->createElement("porcentajeRetener",$Retencion);
+	    	$xml_valorRetenido = $xml->createElement("valorRetenido",$Valor);
+	    	$xml_codDocSustento = $xml->createElement("codDocSustento",$cabecera[0]['TipoComprobante']);
+	    	$xml_numDocSustento = $xml->createElement("numDocSustento", $cabecera[0]['Serie'].$this->generaCeros($cabecera[0]['Factura'],9));
+	    	$xml_fechaEmisionDocSustento = $xml->createElement("fechaEmisionDocSustento",$cabecera[0]['Fecha']->format('Y/m/d'));
+
+	    	$xml_impuesto->appendChild($xml_codigo);
+	    	$xml_impuesto->appendChild($xml_codigoRetencion);
+	    	$xml_impuesto->appendChild($xml_baseImponible);
+	    	$xml_impuesto->appendChild($xml_porcentajeRetener);
+	    	$xml_impuesto->appendChild($xml_codDocSustento);
+	    	$xml_impuesto->appendChild($xml_numDocSustento);
+	    	$xml_impuesto->appendChild($xml_fechaEmisionDocSustento);
+
+
+            $xml->appendChild($xml_impuesto);
+	        $xml_impuestos->appendChild($xml_impuesto);
+
+	    }
+        $xml_inicio->appendChild($xml_impuestos);
+
+        //fin de xml retencion
+        $xml_infoAdicional = $xml->createElement("infoAdicional");
+
+       
+        if (strlen($cabecera[0]['DireccionC']) > 1){ 
+        	 $xml_campoAdicional = $xml->createElement("campoAdicional",$cabecera[0]['DireccionC']);
+        	 $xml_campoAdicional->setAttribute( "nombre", "Direccion");
+        	 $xml_infoAdicional->appendChild($xml_campoAdicional);
+
+        	}
+         if (strlen($cabecera[0]['TelefonoC']) > 1){ 
+        	 $xml_campoAdicional = $xml->createElement("campoAdicional",$cabecera[0]['TelefonoC']);
+        	 $xml_campoAdicional->setAttribute( "nombre", "Telefono");
+        	$xml_infoAdicional->appendChild($xml_campoAdicional);
+        	}
+         if( strlen($cabecera[0]['EmailC']) > 1){ 
+        	 $xml_campoAdicional = $xml->createElement("campoAdicional",$cabecera[0]['EmailC']);
+        	 $xml_campoAdicional->setAttribute( "nombre", "Email");
+        	$xml_infoAdicional->appendChild($xml_campoAdicional);
+        	}
+
+        	 $xml_campoAdicional = $xml->createElement("campoAdicional",$cabecera[0]['TP'].'-'.$this->generaCeros($cabecera[0]['Numero'],9));
+        	 $xml_campoAdicional->setAttribute( "nombre", "comprobante No");
+        	 $xml_infoAdicional->appendChild($xml_campoAdicional);
+             $AgenteRetencion ='ssss'; 
+         if ($AgenteRetencion<>'.'){ 
+        	 $xml_campoAdicional = $xml->createElement("campoAdicional",$AgenteRetencion);
+        	 $xml_campoAdicional->setAttribute( "nombre", "Agente de Retención");
+        	 $xml_infoAdicional->appendChild($xml_campoAdicional);
+        	}
+        	$MicroEmpresa = 's';
+         if ($MicroEmpresa<>'.'){ 
+        	 $xml_campoAdicional = $xml->createElement("campoAdicional");
+        	 $xml_campoAdicional->setAttribute( "nombre", "Contribuyente Régimen Microempresas");
+        	 $xml_infoAdicional->appendChild($xml_campoAdicional);
+        	}
+
+        	$xml_inicio->appendChild($xml_infoAdicional);
+        	$xml->appendChild($xml_inicio);
+
+ /*       	
+                
+                If AgenteRetencion <> Ninguno Then Insertar_Campo_XML "<campoAdicional nombre=""Agente de Retención"">" & AgenteRetencion & "</campoAdicional>"
+                If MicroEmpresa <> Ninguno Then Insertar_Campo_XML "<campoAdicional nombre=""Contribuyente Régimen Microempresas""> </campoAdicional>"
+
+        $xml->appendChild($xml_infoAdicional);
+
+
+
+/*
+
+           'FIN DE XML DE RETENCION
+            'MsgBox AgenteRetencion & vbCrLf & MicroEmpresa
+             Insertar_Campo_XML CerrarXML("impuestos")
+             Insertar_Campo_XML AbrirXML("infoAdicional")
+                If Len(TFA.DireccionC) > 1 Then Insertar_Campo_XML "<campoAdicional nombre=""Direccion"">" & TFA.DireccionC & "</campoAdicional>"
+                If Len(TFA.TelefonoC) > 1 Then Insertar_Campo_XML "<campoAdicional nombre=""Telefono"">" & TFA.TelefonoC & "</campoAdicional>"
+                If Len(TFA.EmailC) > 1 Then Insertar_Campo_XML "<campoAdicional nombre=""Email"">" & TFA.EmailC & "</campoAdicional>"
+                Insertar_Campo_XML "<campoAdicional nombre=""Comprobante No"">" & TFA.TP & "-" & Format$(TFA.Numero, "0000000000") & "</campoAdicional>"
+                If AgenteRetencion <> Ninguno Then Insertar_Campo_XML "<campoAdicional nombre=""Agente de Retención"">" & AgenteRetencion & "</campoAdicional>"
+                If MicroEmpresa <> Ninguno Then Insertar_Campo_XML "<campoAdicional nombre=""Contribuyente Régimen Microempresas""> </campoAdicional>"
+             Insertar_Campo_XML CerrarXML("infoAdicional")
+             Insertar_Campo_XML CerrarXML("comprobanteRetencion")
+
+
+*/
+
+     $ruta_G = dirname(__DIR__).'/entidades/entidad_'.$entidad."/CE_".$entidad.'/Generados';
 	if($archivo = fopen($ruta_G.'/retencion001.xml',"w+b"))
 	  {
 	  	fwrite($archivo,$xml->saveXML());
+
+	print_r($cabecera);
+	print_r($_SESSION);
+	print_r($detalle); die();
+	  	die();
 	  	 // $respuesta =  $this->firmar_documento($compro,$entidad,$cabecera['clave_ce'],$cabecera['ruta_ce']);
 	     // return $respuesta;
 	  }else
