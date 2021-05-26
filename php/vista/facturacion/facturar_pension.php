@@ -51,7 +51,12 @@
 </style>
 
 <script type="text/javascript">
-  
+  $('body').on("keydown", function(e) { 
+    if ( e.which === 27) {
+      document.getElementById("DCLinea").focus();
+      e.preventDefault();
+    }
+  });
   var total = 0;
   var total0 = 0;
   var total12 = 0;
@@ -325,7 +330,11 @@
     
     validarDatos = $("#total").val();
     if (validarDatos <= 0 ) {
-      alert('Ingrese los datos necesarios para guardar la factura');
+      Swal.fire({
+        type: 'info',
+        title: 'Ingrese los datos necesarios para guardar la factura',
+        text: ''
+      });
     }else{
       var update = false;
       //var update = confirm("¿Desea actualizar los datos del cliente?");
@@ -417,10 +426,12 @@
                   }else if(response.respuesta == '1')
                   {
                     Swal.fire({
-                       type: 'success',
-                       title: 'Este documento electronico fue autorizado',
-                       text: ''
-                     });
+                      type: 'success',
+                      title: 'Este documento electronico fue autorizado',
+                      text: ''
+                    }).then(() => {
+                      location.reload();
+                    });
                     //imprimir_ticket_fac(mesa,ci,factura,serie);
                   }else if(response.respuesta == '2')
                   {
@@ -429,7 +440,7 @@
                        title: 'XML devuelto',
                        text: ''
                      });
-                    descargar_archivos(response.url,response.ar);
+                    //descargar_archivos(response.url,response.ar);
 
                   }
                   else
@@ -443,10 +454,10 @@
                   }
               }else{
                 Swal.fire({
-                       type: 'info',
-                       title: 'La factura ya se autorizada',
-                       text: ''
-                     });
+                  type: 'info',
+                  title: 'La factura ya se autorizo',
+                  text: ''
+                });
               }
             }
             });
@@ -505,7 +516,7 @@
           <div class="col-md-2">
             <input type="hidden" id="Autorizacion">
             <input type="hidden" id="Cta_CxP">
-            <select class="form-control input-sm" name="DCLinea" id="DCLinea">
+            <select class="form-control input-sm" name="DCLinea" id="DCLinea" tabindex="1">
               
             </select>
           </div>
@@ -513,13 +524,13 @@
             <label>Fecha emisión</label>
           </div>
           <div class="col-sm-2">
-            <input type="date" name="fechaEmision" id="fechaEmision" class="form-control input-sm" value="<?php echo date('Y-m-d'); ?>" onchange="catalogoLineas();">
+            <input tabindex="2" type="date" name="fechaEmision" id="fechaEmision" class="form-control input-sm" value="<?php echo date('Y-m-d'); ?>" onchange="catalogoLineas();">
           </div>
           <div class="col-sm-2 text-right">
             <label>Fecha vencimiento</label>
           </div>
           <div class="col-sm-2">
-            <input type="date" name="fechaVencimiento" id="fechaVencimiento" class="form-control input-sm" value="<?php echo date('Y-m-d'); ?>" onchange="catalogoLineas();">
+            <input type="date" tabindex="3" name="fechaVencimiento" id="fechaVencimiento" class="form-control input-sm" value="<?php echo date('Y-m-d'); ?>" onchange="catalogoLineas();">
           </div>
           <div class=" col-sm-2">
             <label class="red">Factura No.</label>
@@ -530,16 +541,16 @@
             <label class="text-right">Cliente/Alumno(C)</label>
           </div>
           <div class="col-sm-6">
-            <select class="form-control input-sm" id="cliente" name="cliente" >
+            <select class="form-control input-sm" id="cliente" name="cliente" tabindex="5">
               <option value="">Seleccione un cliente</option>
             </select>
             <input type="hidden" name="codigoCliente" id="codigoCliente">
           </div>
           <div class="col-sm-2">
-            <input type="input" class="form-control input-sm" id="grupo" name="grupo">   
+            <input type="input" class="form-control input-sm" id="grupo" name="grupo" tabindex="6">
           </div>
           <div class=" col-sm-2">
-            <input type="input" class="form-control input-sm text-right" name="factura" id="factura" value="<?php echo $codigo; ?>">
+            <input tabindex="7" type="input" class="form-control input-sm text-right" name="factura" id="factura" value="<?php echo $codigo; ?>">
           </div>
         </div>
         <div class="row">
@@ -547,30 +558,30 @@
             <label>Dirección</label>
           </div>
           <div class="col-sm-6">
-            <input type="input" class="form-control input-sm" name="direccion" id="direccion">
+            <input tabindex="8" type="input" class="form-control input-sm" name="direccion" id="direccion">
           </div>
           <div class="col-sm-2 text-center justify-content-center align-items-center">
-            <input style="width: 50px" type="text" name="codigoBanco" class="form-control input-sm text-center justify-content-center align-items-center" value="538">
+            <input style="width: 50px" type="text" name="codigoBanco" class="form-control input-sm text-center justify-content-center align-items-center" value="538" readonly>
           </div>
           <div class="col-sm-1">
-            <label class="online-radio"><input type="radio" name="rbl_radio" id="rbl_no" checked="" style="margin-right: 2px;">Con mes</label>  
+            <label class="online-radio"><input tabindex="4" type="checkbox" name="rbl_radio" id="rbl_no" checked="" style="margin-right: 2px;">Con mes</label>  
           </div>
         </div>
         <div class="row">
           <div class="col-sm-2 text-right">
-            <label>Persona Natural</label>
+            <label>Razón social</label>
           </div>
           <div class="col-sm-5">
-            <input type="input" class="form-control input-sm" name="persona" id="persona">
+            <input tabindex="9" type="input" class="form-control input-sm" name="persona" id="persona">
           </div>
           <div class="col-sm-1 text-right">
             <label>CI/R.U.C</label>
           </div>
           <div class="col-sm-1 text-right">
-            <input type="input" class="form-control input-sm" name="tdCliente" id="tdCliente">
+            <input tabindex="10" type="input" class="form-control input-sm" name="tdCliente" id="tdCliente" readonly>
           </div>
           <div class=" col-sm-2">
-            <input type="input" class="form-control input-sm" name="ci" id="ci_ruc">   
+            <input tabindex="10" type="input" class="form-control input-sm" name="ci" id="ci_ruc">   
           </div>
         </div>
         <div class="row">
@@ -578,13 +589,13 @@
             <label>Dirección</label>
           </div>
           <div class="col-sm-5">
-            <input type="input" class="form-control input-sm" name="direccion" id="direccion1">
+            <input tabindex="11" type="input" class="form-control input-sm" name="direccion" id="direccion1">
           </div>
           <div class="col-sm-1 text-right">
             <label>Telefono</label>
           </div>
           <div class=" col-sm-2">
-            <input type="input" class="form-control input-sm" name="telefono" id="telefono">
+            <input tabindex="12" type="input" class="form-control input-sm" name="telefono" id="telefono">
           </div>
           <div class="col-sm-2">
             <label>Código interno</label>
@@ -595,10 +606,10 @@
             <label>Email</label>
           </div>
           <div class="col-sm-8">
-            <input type="input" class="form-control input-sm" name="email" id="email">
+            <input tabindex="13" type="input" class="form-control input-sm" name="email" id="email">
           </div>
           <div class=" col-sm-2">
-            <input type="input" class="form-control input-sm" name="codigo" id="codigo">
+            <input type="input" class="form-control input-sm" name="codigo" id="codigo" tabindex="26">
           </div>
         </div>
         <br>
@@ -608,7 +619,7 @@
               overflow: auto;
               display: block;
           ">
-            <table class="table table-responsive table-borfed thead-dark" id="customers">
+            <table class="table table-responsive table-borfed thead-dark" id="customers" tabindex="14">
               <thead>
                 <tr>
                   <th></th>
@@ -633,8 +644,7 @@
             <label>Bancos/Tarjetas</label>
           </div>
           <div class="col-sm-6">
-            <select class="form-control input-sm" name="cuentaBanco" id="cuentaBanco">
-              <option>Seleccione Banco/Tarjeta</option>
+            <select class="form-control input-sm" name="cuentaBanco" id="cuentaBanco" tabindex="15">
               <?php
                 $cuentas = $facturar->getCatalogoCuentas();
                 foreach ($cuentas as $cuenta) {
@@ -647,7 +657,7 @@
             <label class="form-control input-sm" id="saldo">Saldo a favor</label>
           </div>
           <div class="col-sm-2">
-            <input type="input" id="saldoFavor" class="form-control input-sm text-right black saldo_input" name="saldoFavor">
+            <input type="input" id="saldoFavor" class="form-control input-sm text-right black saldo_input" name="saldoFavor" tabindex="24">
           </div>
         </div>
         <div class="row">
@@ -655,8 +665,7 @@
             <label>Notas de crédito</label>
           </div>
           <div class="col-sm-6">
-            <select class="form-control input-sm" name="cuentaNC" id="cuentaNC">
-              <option>Seleccione nota de crédito</option>
+            <select class="form-control input-sm" name="cuentaNC" id="cuentaNC" tabindex="16">
               <?php
                 $cuentas = $facturar->getNotasCredito();
                 foreach ($cuentas as $cuenta) {
@@ -677,7 +686,7 @@
             <label>Cheque / Deposito del banco</label>
           </div>
           <div class="col-sm-5">
-            <input type="text" name="cheque" class="form-control input-sm" value=".">
+            <input type="text" name="cheque" class="form-control input-sm" value="." tabindex="17">
           </div>
           <div class="col-sm-4 text-center">
             <input type="text" name="codigoB" class="red1 form-control input-sm" id="codigoB" style="color: white" value="Código del banco: " />
@@ -694,10 +703,7 @@
             <b>Cheque No.</b>
           </div>
           <div class="col-sm-2">
-            <input type="text" name="chequeNo" id="chequeNo" class="form-control input-sm text-right">
-          </div>
-          <div class="col-sm-4 text-center">
-            <input type="text" class="form-control input-sm" id="codigoB"/>
+            <input type="text" name="chequeNo" id="chequeNo" class="form-control input-sm text-right" tabindex="18">
           </div>
         </div>
         <div class="row">
@@ -719,13 +725,13 @@
             <b>Valor Banco</b>
           </div>
           <div class="col-sm-2">
-            <input type="text" name="valorBanco" id="valorBanco" onkeyup="calcularSaldo();" class="form-control input-sm red text-right">
+            <input tabindex="19" type="text" name="valorBanco" id="valorBanco" onkeyup="calcularSaldo();" class="form-control input-sm red text-right">
           </div>
         </div>
         <div class="row">
           <div class="col-sm-2 text-right">
             <b>Desc x P P</b>
-            <button type="button" class="btn" data-toggle="modal" data-target="#myModal">%</button>
+            <button tabindex="25" type="button" class="btn" data-toggle="modal" data-target="#myModal">%</button>
           </div>
           <div class="col-sm-2">
             <input type="text" name="descuentop" id="descuentop" class="form-control input-sm red text-right" readonly>
@@ -734,7 +740,7 @@
             <b>Efectivo</b>
           </div>
           <div class="col-sm-2">
-            <input type="text" name="efectivo" id="efectivo" onkeyup="calcularSaldo();" class="form-control input-sm red text-right">
+            <input tabindex="20" type="text" name="efectivo" id="efectivo" onkeyup="calcularSaldo();" class="form-control input-sm red text-right">
           </div>
         </div>
         <div class="row">
@@ -748,7 +754,7 @@
             <b>Abono N/C</b>
           </div>
           <div class="col-sm-2">
-            <input type="text" name="abono" id="abono" onkeyup="calcularSaldo();" class="form-control input-sm red text-right">
+            <input tabindex="21" type="text" name="abono" id="abono" onkeyup="calcularSaldo();" class="form-control input-sm red text-right">
           </div>
         </div>
         <div class="row">
@@ -766,12 +772,12 @@
           </div>
           <div class=" col-sm-4 col-sm-offset-8">
             <div class="col-sm-2 col-sm-offset-4">
-              <a title="Guardar" class="btn btn-default">
+              <a title="Guardar" class="btn btn-default" tabindex="22">
                 <img src="../../img/png/save.png" width="25" height="30" onclick="guardarPension();">
               </a>
             </div>
             <div class="col-xs-2 col-md-2 col-sm-2 col-lg-1">
-              <a  href="./farmacia.php?mod=Farmacia#" title="Salir de modulo" class="btn btn-default">
+              <a  href="./farmacia.php?mod=Farmacia#" title="Salir de modulo" class="btn btn-default" tabindex="23">
                 <img src="../../img/png/salire.png" width="25" height="30">
               </a>
             </div>
