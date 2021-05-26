@@ -135,7 +135,7 @@ class usuario_model{
 			$query = "SELECT *
 					  FROM entidad
 					  WHERE RUC_CI_NIC = '".$this->Entidad."';";
-			// echo $query;
+			// echo $query; die();
 					
 			$consulta=$this->db->query($query) or die($this->db->error);
 			//Realizamos un bucle para ir obteniendo los resultados
@@ -177,8 +177,10 @@ class usuario_model{
 			// Creamos una query sencilla
 			$query = "SELECT * 
 					  FROM acceso_usuarios 
-					  WHERE Usuario = '".$this->Mail."' ;";
+					  WHERE Usuario = '".$this->Mail."'";
+					  //"AND ID_Empresa = ".$this->ID_Entidad.";";
 			// Ejecutamos la query
+					  // print_r($query);die();
 			$consulta=$this->db->query($query) or die($this->db->error);
 			// Realizamos un bucle para ir obteniendo los resultados
 			$this->Mail='';
@@ -219,7 +221,10 @@ class usuario_model{
 			$query = "SELECT * 
 					  FROM acceso_usuarios 
 					  WHERE Usuario = '".$this->Mail."' 
-					  AND Clave = '".$this->Contrasena."' LIMIT 1;";
+					  AND Clave = '".$this->Contrasena."'";
+					  
+					  //"AND ID_Empresa = ".$this->ID_Entidad." LIMIT 1;";
+
 			// Ejecutamos la query
 			//echo $query;
 			//die();
