@@ -66,7 +66,7 @@ if(isset($_GET['mos']))
 
 			foreach ($empresa as &$valor) 
 			{
-				// print_r($valor['Fecha']);die();
+				//print_r($valor);die();
 				$_SESSION['INGRESO']['IP_VPN_RUTA']=$valor['IP_VPN_RUTA'];
 				$_SESSION['INGRESO']['Base_Datos']=$valor['Base_Datos'];
 				$_SESSION['INGRESO']['Usuario_DB']=$valor['Usuario_DB'];
@@ -83,7 +83,7 @@ if(isset($_GET['mos']))
 				//obtenemos el resto de inf. de la empresa tales como correo direccion
 				
 				$empresa_d=getEmpresasDE($_SESSION['INGRESO']['item'],$_SESSION['INGRESO']['noempr']);
-				// print_r($empresa_d);die();
+				$_SESSION['INGRESO']['No_Autorizar']=$empresa_d[0]['No_Autorizar'];
 				$_SESSION['INGRESO']['Direccion']=$empresa_d[0]['Direccion'];
 				$_SESSION['INGRESO']['Telefono1']=$empresa_d[0]['Telefono1'];
 				$_SESSION['INGRESO']['FAX']=$empresa_d[0]['FAX'];

@@ -128,6 +128,20 @@ class facturar_pensionM
 		return $rows_affected;
     }
 
+    public function updateClientesFacturacion1($Valor,$Anio1,$Codigo1,$Codigo,$Codigo3,$Codigo2){
+      $sql = "UPDATE Clientes_Facturacion 
+              SET Valor = Valor - ".$Valor." 
+              WHERE Item = '".$_SESSION['INGRESO']['item']."' 
+              AND Periodo = '".$Anio1."' 
+              AND Codigo_Inv = '".$Codigo1."' 
+              AND Codigo = '".$Codigo."' 
+              AND Credito_No = '".$Codigo3."' 
+              AND Mes = '".$Codigo2."' ";
+      $stmt = sqlsrv_query( $this->dbs, $sql);
+      $rows_affected = sqlsrv_rows_affected( $stmt);
+      return $rows_affected;
+    }
+
     public function updateClientesMatriculas($TextRepresentante,$TextCI,$TD_Rep,$TxtTelefono,$TxtDireccion,$TxtEmail,$TxtGrupo,$codigoCliente){
         $sql = "UPDATE Clientes_Matriculas
                 	SET Representante = '".$TextRepresentante."', 

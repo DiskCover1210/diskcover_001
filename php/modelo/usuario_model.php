@@ -582,7 +582,6 @@ class usuario_model{
 			FROM Empresas 
 			where Item='".$_SESSION['INGRESO']['item']."' ";
 		}
-		//echo $sql;
 		$stmt = false;
 		if($this->dbs!='')
 		{
@@ -673,7 +672,8 @@ class usuario_model{
 				$empresa[$i]['LeyendaFA']=$obj->LeyendaFA;	
 				$empresa[$i]['RUC']=$obj->RUC;
 				$empresa[$i]['Gerente']=$obj->Gerente;	
-				$empresa[$i]['Cotizacion']=$obj->Cotizacion;					
+				$empresa[$i]['Cotizacion']=$obj->Cotizacion;
+				$empresa[$i]['No_Autorizar']=$obj->No_Autorizar;					
 							
 				//IVA ACTUAL
 				$sql="SELECT ROUND((Porc/100), 2) AS porc FROM Tabla_Por_ICE_IVA WHERE IVA <> '0' 

@@ -228,16 +228,9 @@ class facturar_pensionC
       $Codigo = $value["Codigo_Cliente"];
       $Codigo1 = $value["CODIGO"];
       $Codigo2 = $value["Mes"];
-      $Codigo3 = $value["HABIT"];
+      $Codigo3 = ".";
       $Anio1 = $value["TICKET"];
-      $sSQL = "UPDATE Clientes_Facturacion 
-              SET Valor = Valor - ".$Valor." 
-              WHERE Item = '".$_SESSION['INGRESO']['item']."' 
-              AND Periodo = '".$Anio1."' 
-              AND Codigo_Inv = '".$Codigo1."' 
-              AND Codigo = '".$Codigo."' 
-              AND Credito_No = '".$Codigo3."' 
-              AND Mes = '".$Codigo2."' ";
+      $this->facturacion->updateClientesFacturacion1($Valor,$Anio1,$Codigo1,$Codigo,$Codigo3,$Codigo2);
       //Grabamos el numero de factura
       Grabar_Factura($FA);
 
