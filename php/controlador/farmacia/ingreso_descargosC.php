@@ -725,7 +725,8 @@ function areas($codigo)
 function editar_procedimiento($parametros)
 {
 	    $campoWhere[0]['campo']='ORDEN';
-		$campoWhere[0]['valor']=$parametros['ped'];
+		  $campoWhere[0]['valor']=$parametros['ped'];
+		  $campoWhere[0]['tipo'] ='string';
 
 		$datos[0]['campo']='Detalle';
 		$datos[0]['dato']=$parametros['text'];

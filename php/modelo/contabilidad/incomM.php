@@ -187,7 +187,7 @@ class incomM
 			WHERE 
 			Item = '".$_SESSION['INGRESO']['item']."' 
 			AND CodigoU = '".$_SESSION['INGRESO']['Id']."' ";
-			$ta='asi_b';
+			$ta='Asiento_B';
 		}
 		else
 		{
@@ -199,9 +199,9 @@ class incomM
 					AND CodigoU = '".$_SESSION['INGRESO']['Id']."' ";
 			
 			$sql=$sql." ORDER BY A_No ";
-			$ta='asi';
+			$ta='Asiento';
 		}
-		//echo $sql;
+		// echo $sql;
 		$stmt = sqlsrv_query( $cid, $sql);
 		if( $stmt === false)  
 		{  
@@ -209,8 +209,16 @@ class incomM
 			 die( print_r( sqlsrv_errors(), true));  
 		}
 		$camne=array();
-		$tabla =  grilla_generica($stmt,$ti,NULL,$b,$ch,$ta);
-		return $tabla;
+		$botones[0] = array('boton'=>'validarc', 'icono'=>'<i class="fa fa-trash"></i>', 'tipo'=>'danger', 'id'=>'CTA_BANCO,CHEQ_DEP' );
+	    $tbl = grilla_generica_new($sql,$ta,'',$titulo=false,$botones,$check=false,$imagen=false,1,1,1,100);
+			 // print_r($tbl);die();
+		return $tbl;
+
+
+
+
+		// $tabla =  grilla_generica($stmt,$ti,NULL,$b,$ch,$ta);
+		// return $tabla;
 	}
 
 	function ListarAsientoScSQL($ti,$Opcb,$b,$ch)

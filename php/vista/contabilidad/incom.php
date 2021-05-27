@@ -59,6 +59,7 @@
     cargar_tablas_tab4();
     cargar_tablas_retenciones();
     cargar_tablas_sc();
+    ListarAsientoB();
 
 
     $( "#codigo" ).autocomplete({
@@ -162,40 +163,82 @@
 
     function cargar_cuenta_efectivo()
     {
-      $('#conceptoe').select2({
-        placeholder: 'Seleccione cuenta efectivo',
-        ajax: {
-          url:   '../controlador/contabilidad/incomC.php?cuentas_efectivo=true',
-          dataType: 'json',
-          delay: 250,
-          processResults: function (data) {
-            console.log(data);
-            return {
-              results: data
-            };
-          },
-          cache: true
-        }
-      });
+      var opcion = '';
+      $.ajax({
+      // data:  {parametros:parametros},
+       url:   '../controlador/contabilidad/incomC.php?cuentas_efectivo=true',
+      type:  'post',
+      dataType: 'json',
+        success:  function (response) {
+          // console.log(response);
+          $.each(response,function(i,item){
+            if(i==0)
+            {
+              ini = item.id;
+            }
+            opcion+='<option value="'+item.id+'">'+item.text+'</option>';
+          })
+          $('#conceptoe').html(opcion);
+          $('#conceptoe').val(ini);
+                    // console.log(response);
+      }
+    }); 
+
+      // $('#conceptoe').select2({
+      //   placeholder: 'Seleccione cuenta efectivo',
+      //   ajax: {
+      //     url:   '../controlador/contabilidad/incomC.php?cuentas_efectivo=true',
+      //     dataType: 'json',
+      //     delay: 250,
+      //     processResults: function (data) {
+      //       console.log(data);
+      //       return {
+      //         results: data
+      //       };
+      //     },
+      //     cache: true
+      //   }
+      // });
     }       
 
      function cargar_cuenta_banco()
     {
-      $('#conceptob').select2({
-        placeholder: 'Seleccione cuenta banco',
-        ajax: {
-          url:   '../controlador/contabilidad/incomC.php?cuentas_banco=true',
-          dataType: 'json',
-          delay: 250,
-          processResults: function (data) {
-            console.log(data);
-            return {
-              results: data
-            };
-          },
-          cache: true
-        }
-      });
+      var opcion = '';
+      $.ajax({
+      // data:  {parametros:parametros},
+      url:   '../controlador/contabilidad/incomC.php?cuentas_banco=true',
+      type:  'post',
+      dataType: 'json',
+        success:  function (response) {
+          // console.log(response);
+          $.each(response,function(i,item){
+            if(i==0)
+            {
+              ini = item.id;
+            }
+            opcion+='<option value="'+item.id+'">'+item.text+'</option>';
+          })
+          $('#conceptob').html(opcion);
+          $('#conceptob').val(ini);
+                    // console.log(response);
+      }
+    }); 
+
+      // $('#conceptob').select2({
+      //   placeholder: 'Seleccione cuenta banco',
+      //   ajax: {
+      //     url:   '../controlador/contabilidad/incomC.php?cuentas_banco=true',
+      //     dataType: 'json',
+      //     delay: 250,
+      //     processResults: function (data) {
+      //       console.log(data);
+      //       return {
+      //         results: data
+      //       };
+      //     },
+      //     cache: true
+      //   }
+      // });
     }
 
      function cargar_cuenta()
@@ -287,8 +330,8 @@
             success:  function (response) { 
             if(response == 1)
             {
-            $("#div_tabla").load(" #div_tabla");
-            $('#tit_sel').html('<i class="fa  fa-trash"></i>');
+            
+              ListarAsientoB();
             $('#myModal_espera').modal('hide');
             } 
           }
@@ -301,8 +344,8 @@
     {
       var parametros = 
       {
-        'ruc':'1768152560',
-        'numero':'10000168',
+        'ruc':'1190068753',
+        'numero':'9000147',
         'comp':'CD'
       }
        $.ajax({
@@ -381,13 +424,12 @@
             success:  function (response) { 
             if(response == 1)
             {
-              Swal.fire({
-        type: 'success',
-        title: 'Agregado',
-        text: 'ingresado!'
-            });
-            $("#div_tabla").load(" #div_tabla");
-            $('#tit_sel').html('<i class="fa  fa-trash"></i>');
+        //       Swal.fire({
+        // type: 'success',
+        // title: 'Agregado',
+        // text: 'ingresado!'
+        //     });           
+              ListarAsientoB();
             }  else
             {
               Swal.fire({
@@ -400,16 +442,13 @@
         });
     }
 
-    function validarc(id,ta)
+    function validarc(cta,cheque)
     {     
-      if(document.getElementById(id).checked)
-    {
-      var val = document.getElementById(id).value;
-      var partes = val.split('--');
+      
       var parametros = 
       {
-        'cta':partes[0],
-        'cheque':partes[1],
+        'cta':cta,
+        'cheque':cheque,
       }
       Swal.fire({
                  title: 'Esta seguro?',
@@ -421,16 +460,15 @@
                  confirmButtonText: 'Si!'
                }).then((result) => {
                  if (result.value==true) {
-                  eliminar(parametros);
+                  Eliminar(parametros);
                  }else
                  {
                   document.getElementById(id).checked = false;
                  }
                })
-      }
     }
 
-    function eliminar(parametros)
+    function Eliminar(parametros)
     {
        $.ajax({
           data:  {parametros:parametros},
@@ -445,8 +483,8 @@
         title: 'Eliminado',
         text: 'Registro eliminado!'
             });
-            $("#div_tabla").load(" #div_tabla");
-            $('#tit_sel').html('<i class="fa  fa-trash"></i>');
+              ListarAsientoB();
+              //
             }  else
             {
               Swal.fire({
@@ -597,9 +635,9 @@
             success:  function (response) { 
 
             console.log(response);     
-            $('#txt_diferencia').val(response.diferencia);  
-            $('#txt_debe').val(response.debe);  
-            $('#txt_haber').val(response.haber);  
+            $('#txt_diferencia').val(response.diferencia.toFixed(2));  
+            $('#txt_debe').val(response.debe.toFixed(2));  
+            $('#txt_haber').val(response.haber.toFixed(2));  
           }
         });
 
@@ -649,7 +687,10 @@
       // },
       success:  function (response) {
         cargar_tablas_contabilidad();
-        cargar_totales_aseintos();                            
+        cargar_totales_aseintos();
+        $('#codigo').val('');      
+        $('#cuentar').empty();
+        $('#va').val('0.00');                            
       }
     });
     }
@@ -919,6 +960,21 @@
     });
   }
 
+  function ListarAsientoB()
+  {
+     $.ajax({
+          // data:  {parametros:parametros},
+          url:   '../controlador/contabilidad/incomC.php?ListarAsientoB=true',
+          type:  'post',
+          dataType: 'json',
+            success:  function (response) { 
+
+            // console.log(response);     
+            $('#div_tabla').html(response);  
+          }
+        });
+  }
+
 </script>
 
   <div class="box-body">
@@ -1105,9 +1161,7 @@
                         <div class="row" id='ineg3' >
                           <div class="col-md-8">
                             <div id="div_tabla">
-                              <?php  
-                                $balance=ListarAsientoTem(null,'1','1','0,2,clave');
-                              ?>                              
+                             
                             </div>
                             <input type="hidden" id='reg1' name='reg1'  value='' />
                           </div>
@@ -1169,7 +1223,7 @@
                                   <b>VALOR:</b>
                                  </div>
                                    <input type="text" class="form-control input-sm" id="va" name='va' 
-                              placeholder="0.00" style="text-align:right;" onKeyPress='return soloNumerosDecimales(event)' onblur="ingresar_asiento()">
+                              placeholder="0.00" style="text-align:right;" onKeyPress='return soloNumerosDecimales(event)' onblur="ingresar_asiento()" value="0.00">
                                </div>
                         </div>
                       </div>
@@ -1239,7 +1293,7 @@
 </div>
 
 <div class="modal fade" id="modal_cuenta" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true" data-keyboard="false" data-backdrop="static">
-  <div class="modal-dialog modal-dialog-centered modal-sm" role="document">
+  <div class="modal-dialog modal-dialog-centered modal-sm" role="document" style="margin-right: 50px; margin-top: 200px;">
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title" id="exampleModalLongTitle"></h5>

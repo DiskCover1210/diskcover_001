@@ -23,6 +23,10 @@ if(isset($_GET['cuentas_efectivo']))
 	}
 	echo json_encode($controlador->cuentas_efectivo($query));
 }
+if(isset($_GET['ListarAsientoB']))
+{
+	echo json_encode($controlador->ListarAsientoB());
+}
 if(isset($_GET['cuentas_banco']))
 {
 	$query = '';
@@ -668,6 +672,8 @@ class incomC
           $CodSustento = $datos[0]["CodSustento"];
 
           $TFA[0]["Ruc"] = $datos[0]["CI_RUC"];
+          $TFA[0]["TP"] = $parametros['comp'];
+          $TFA[0]["Numero"] = $parametros['numero'];
           $TFA[0]["TipoComprobante"] = '0'.$datos[0]["TipoComprobante"];
 
           // Validar_Porc_IVA $TFA[0]["Fecha"];
@@ -685,30 +691,17 @@ class incomC
           // print_r($rete);die();
           $TFA[0]["ClaveAcceso"] = date("ddmmyyyy", strtotime($TFA[0]['Fecha']->format('Y-m-d')))."07".$parametros['ruc'].$_SESSION['INGRESO']['Ambiente'].$TFA[0]["Serie_R"].$rete."123456781";
           $TFA[0]["ClaveAcceso"] = str_replace('.','1', $TFA[0]['ClaveAcceso']);
-          $this->sri->generar_xml_retencion($TFA);
+          $this->sri->generar_xml_retencion($TFA,$datos);
 
         }
 
      }
-
-     function Digito_Verificador_Modulo11($CadenaNumerica)
+     function ListarAsientoB()
      {
-        $Mod_11 = 2;
-        $Total_Mod_11 = 0;
-        $CadenaNumerica = str_replace('.','1', $CadenaNumerica);
-        for ($i=strlen($CadenaNumerica); $i<1; $i--) 
-        {
-            $Numero = intval(substr($CadenaNumerica, $i, 1)) * $Mod_11;
-            $Total_Mod_11 = $Total_Mod_11 + $Numero;
-            $Mod_11 = $Mod_11 + 1;
-            if($Mod_11 > 7){$Mod_11 = 2;}
-        }
-        $Mod_11 = $Total_Mod_11.$Mod_11;
-        $Mod_11 = 11 - $Mod_11;
-        if($Mod_11 == 10){$Mod_11 = 1;}
-        if($Mod_11 == 11){$Mod_11 = 0;}
-        // Digito_Verificador_Modulo11 = CStr($Mod_11)
-        return $Mod_11;
+     	$Opcb = 1;
+     	$tbl = $this->modelo->ListarAsientoTemSQL('',$Opcb,false,false);
+     	return $tbl;
      }
+
 }
 ?>

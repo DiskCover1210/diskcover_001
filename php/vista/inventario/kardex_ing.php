@@ -593,7 +593,6 @@ function contracuenta()
                                 </div>
                                 <div class="col-sm-9">
                                     <select class="form-control input-sm" id="DCRetIBienes">
-                                        <option>Seleccione Tipo Retencion</option>
                                     </select>
                                 </div>
                             </div>
@@ -602,7 +601,7 @@ function contracuenta()
                                     <label class="radio-inline" onclick="habilitar_servicios()"><input type="checkbox" name="ChRetS" id="ChRetS">Servicios</label>
                                 </div>
                                 <div class="col-sm-9">
-                                    <select class="form-control input-sm" id="DCRetISer">
+                                    <select class="form-control input-sm" id="DCRetISer" onblur="alert('s');">
                                         <option>Seleccione Tipo Retencion</option>
                                     </select>
                                 </div>
@@ -667,7 +666,7 @@ function contracuenta()
                             </div>
                             <div class="col-sm-2">
                                 <br>
-                                <button class="btn btn-default text-center" onclick="cambiar_air()"><i class="fa fa-arrow-right"></i><br>AIR</button>
+                                <button type="button" id="btn_air" class="btn btn-default text-center" onclick="cambiar_air()"><i class="fa fa-arrow-right"></i><br>AIR</button>
                             </div>
                     </div>
 
@@ -1087,8 +1086,6 @@ function contracuenta()
 
   </div>
 </div>
-
-
 
 <!-- partial:index.partial.html -->
 

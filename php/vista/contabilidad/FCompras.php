@@ -325,7 +325,7 @@ function contracuenta()
                     </div>
                 </div>
                 <div class="col-sm-4 text-center">
-                  <button class="btn btn-default"> <img src="../../img/png/grabar.png"  onclick="validar_formulario();"><br> Guardar</button>
+                  <button class="btn btn-default" id="btn_g"> <img src="../../img/png/grabar.png"  onclick="validar_formulario();"><br> Guardar</button>
                   <button class="btn btn-default"  data-dismiss="modal" onclick="limpiar_retencaion()"> <img src="../../img/png/bloqueo.png" ><br> Cancelar</button>
                 </div>            
             </div>
@@ -381,7 +381,7 @@ function contracuenta()
                             </div>
                             <div class="col-sm-2">
                                 <br>
-                                <button class="btn btn-default text-center" onclick="cambiar_air()"><i class="fa fa-arrow-right"></i><br>AIR</button>
+                                <button class="btn btn-default text-center" onclick="cambiar_air()" id="btn_air"><i class="fa fa-arrow-right"></i><br>AIR</button>
                             </div>
                     </div>
 
@@ -720,7 +720,7 @@ function contracuenta()
                   <div class="row">
                     <div class="col-sm-12 text-right">
                       <b>Total Retencion</b>
-                      <input type="text" class="input-sm" name="">
+                      <input type="text" class="input-sm" name="" id="txt_total_retencion">
                     </div>
                   </div>        
                </div>

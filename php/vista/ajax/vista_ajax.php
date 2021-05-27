@@ -4211,8 +4211,7 @@ function validarUser(){
 		{
 			//$_POST['MesNo']=0;
 			$sql="SELECT * FROM acceso_usuarios 
-			WHERE Usuario='".$_POST['user']."' AND ID_Empresa='".$_SESSION['INGRESO']['ID_Empresa']." AND ID_Empresa<>0'
-			";
+			WHERE Usuario='".$_POST['user']."'";
 			//echo $sql;
 			// die();
 			$consulta=$cid->query($sql) or die($cid->error);
@@ -4250,7 +4249,7 @@ function validarUser(){
 					
 					Swal.fire({
 					  type: 'error',
-					  title: 'este usuario no pertenece a: ".$_SESSION['INGRESO']['Nombre_Entidad']."',
+					  title: 'Este usuario no esta registrado en la base de datos',
 					  text: 'No se pudo realizar sesion(4)'
 					});
 					

@@ -120,7 +120,6 @@ require_once("panel.php");
   	if($('#ddl_usuarios').val()!='')
   	{
   		usuario();
-      usuario_empresa();
   	}    
   }
 
@@ -145,6 +144,7 @@ require_once("panel.php");
               // console.log(item);
                var ind = item.split('_');
                $('#'+item).prop('checked',true);
+               // console.log('#indice_'+ind[2]);
                $('#indice_'+ind[2]).css('display','initial');  
             })
              // console.log(response);
@@ -209,6 +209,8 @@ require_once("panel.php");
             $('#txt_email').val(response.Email)
     			 	
     			 }
+
+      usuario_empresa();
     		}
     	});
 
