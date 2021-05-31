@@ -99,7 +99,7 @@ include(dirname(__DIR__,2).'/db/variables_globales.php');//
  	
  	$sql.="WHERE T.Fecha BETWEEN '".$desde."' and '".$hasta."' AND T.T = '".G_NORMAL."' AND T.Periodo = '".$_SESSION['INGRESO']['periodo']."' ";
 
-    if($OpcUno == 'true')
+    if($OpcUno == 'true' && $cuentaini =='' && $cuentafin=='')
     {
        $sql.=" AND T.Cta = '".$DCCtas."'";
     }else
@@ -129,7 +129,7 @@ include(dirname(__DIR__,2).'/db/variables_globales.php');//
   }
   $sql.= "ORDER BY T.Cta,T.Fecha,T.TP,T.Numero,Debe DESC,Haber,T.ID ";
  // print_r($DCAgencia);print_r($CheckAgencia);
-//   print_r($sql);
+  // print_r($sql);
 // die();
     $stmt = sqlsrv_query($cid, $sql);
 	   if( $stmt === false)  
@@ -175,7 +175,7 @@ function consultar_cuentas_datos($OpcUno,$PorConceptos,$cuentaini,$cuentafin,$de
  	
  	$sql.="WHERE T.Fecha BETWEEN '".$desde."' and '".$hasta."' AND T.T = '".G_NORMAL."' AND T.Periodo = '".$_SESSION['INGRESO']['periodo']."' ";
 
-    if($OpcUno == 'true')
+    if($OpcUno == 'true' && $cuentaini == '' && $cuentafin=='')
     {
        $sql.=" AND T.Cta = '".$DCCtas."'";
     }else

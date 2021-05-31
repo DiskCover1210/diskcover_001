@@ -41,6 +41,9 @@
     {
       min-height: 500px;
     }
+    #select2-cuentar-results .select2-results__option {
+    white-space: pre;
+    }
 </style>
 
 
@@ -646,8 +649,8 @@
     function ingresar_asiento()
     {
     var partes= $('#cuentar option:selected').text();
-    var partes = partes.split('--');
-    var dconcepto1 = partes[3].trim();
+    var partes = partes.split('-');
+    var dconcepto1 = partes[1].trim();
     var codigo = $("#codigo").val();
     var efectivo_as = $("#txt_efectiv").val();
     var chq_as = $("#txt_cheq_dep").val();

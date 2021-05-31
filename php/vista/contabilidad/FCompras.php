@@ -720,7 +720,7 @@ function contracuenta()
                   <div class="row">
                     <div class="col-sm-12 text-right">
                       <b>Total Retencion</b>
-                      <input type="text" class="input-sm" name="" id="txt_total_retencion">
+                      <input type="text" class="input-sm" name="" id="txt_total_retencion" readonly="">
                     </div>
                   </div>        
                </div>

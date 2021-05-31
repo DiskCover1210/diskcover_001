@@ -77,6 +77,7 @@ class mayor_auxiliarC
 
   function consultar_cuentas($parametros)
   {
+  	// print_r($parametros);die();
   	$desde = str_replace('-','',$parametros['desde']);
     $hasta = str_replace('-','',$parametros['hasta']);		
   	$datos = $this->modelo->consultar_cuentas_($parametros['OpcUno'],$parametros['PorConceptos'],$parametros['txt_CtaI'],$parametros['txt_CtaF'],$desde,$hasta,$parametros['DCCtas'],$parametros['CheckAgencia'],$parametros['DCAgencia'],$parametros['CheckUsu'],$parametros['DCUsuario']);

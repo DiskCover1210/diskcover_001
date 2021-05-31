@@ -955,7 +955,13 @@ class kardex_ingC
 
   function Cargar_DataGrid($Trans_No)
   {
-   return $datos = $this->modelo->Cargar_DataGrid($Trans_No);
+   $datos = $this->modelo->Cargar_DataGrid($Trans_No);
+   $total = 0;
+   foreach ($datos['datos'] as $key => $value) {
+      $total+=$value['ValRet'];
+   }
+   return array('tbl'=>$datos['tbl'],'total'=>$total);
+
     // $html = '';
     // foreach ($datos as $key => $value) {
     //   $html.='<tr>

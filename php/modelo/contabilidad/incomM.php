@@ -81,8 +81,8 @@ class incomM
 	function cuentas_todos($query,$tipo,$tipocta)
 	{
 		$cid = $this->conn;
-		$sql="SELECT Codigo+Space(19-LEN(Codigo))+' -- '+TC+Space(3-LEN(TC))+' -- '+cast( Clave as varchar(5))+' '
-					+Space(5-LEN(cast( Clave as varchar(5))))+' -- '+
+		$sql="SELECT Codigo+Space(19-LEN(Codigo))+'   '+TC+Space(3-LEN(TC))+'   '+cast( Clave as varchar(5))+'  '
+					+Space(5-LEN(cast( Clave as varchar(5))))+'  -'+
 					Cuenta As Nombre_Cuenta,Codigo,Cuenta,TC 
 			   FROM Catalogo_Cuentas 
 			   WHERE DG = 'D' 
