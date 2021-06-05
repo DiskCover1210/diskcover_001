@@ -1180,7 +1180,6 @@ if(isset($_GET['mos']))
 			}	
 				?>	
    	  <?php
-			
 			if (!isset($_SESSION['INGRESO']['empresa'])) 
 			{
 				include('select_empresa.php');
@@ -1201,6 +1200,7 @@ if(isset($_GET['mos']))
 						break;
 					}					
 				}
+				
 
 				if($todo == true)
 				  {

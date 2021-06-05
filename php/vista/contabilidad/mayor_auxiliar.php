@@ -172,7 +172,8 @@
 			     var spiner = '<div class="text-center"><img src="../../img/gif/proce.gif" width="100" height="100"></div>'			
 				 $('#tabla_').html(spiner);
 			},*/
-				success:  function (response) {				
+				success:  function (response) {
+				console.log(response);		
 				$.each(response.agencia, function(i, item){
 					agencia+='<option value="'+response.agencia[i].Item+'">'+response.agencia[i].NomEmpresa+'</option>';
 				});				

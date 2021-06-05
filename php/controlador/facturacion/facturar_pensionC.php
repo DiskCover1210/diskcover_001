@@ -1,6 +1,11 @@
 <?php
 require_once(dirname(__DIR__,2)."/modelo/facturacion/facturar_pensionM.php");
 require_once(dirname(__DIR__,2)."/comprobantes/SRI/autorizar_sri.php");
+require_once(dirname(__DIR__,3)."/lib/excel/plantilla.php");
+if(!class_exists('cabecera_pdf'))
+{
+  require(dirname(__DIR__,3).'/lib/fpdf/cabecera_pdf.php');
+}
 
 $controlador = new facturar_pensionC();
 if(isset($_GET['cliente']))
@@ -21,6 +26,21 @@ if(isset($_GET['catalogo']))
 if(isset($_GET['catalogoProducto']))
 {
 	$controlador->getCatalogoProductos();
+}
+
+if(isset($_GET['historiaCliente']))
+{
+  $controlador->historiaCliente();
+}
+
+if(isset($_GET['historiaClienteExcel']))
+{
+  $controlador->historiaClienteExcel();
+}
+
+if(isset($_GET['historiaClientePDF']))
+{
+  $controlador->historiaClientePDF();
 }
 
 if(isset($_GET['saldoFavor']))
@@ -46,11 +66,13 @@ if(isset($_GET['guardarLineas']))
 class facturar_pensionC
 {
 	private $facturacion;
+  private $pdf;
 
 
 	public function __construct(){
         $this->facturacion = new facturar_pensionM();
         $this->autorizar_sri = new autorizacion_sri();
+        $this->pdf = new cabecera_pdf();
         //$this->modelo = new MesaModel();
     }
 
@@ -87,6 +109,64 @@ class facturar_pensionC
 		echo json_encode($catalogo);
 		exit();
 	}
+
+  public function historiaCliente(){
+    $codigoCliente = $_POST['codigoCliente'];
+    if ($codigoCliente == "") {
+      $codigoCliente = G_NINGUNO;
+    }
+    $datos = $this->facturacion->historiaCliente($codigoCliente);
+    $historia = [];
+    while ($value = sqlsrv_fetch_array( $datos, SQLSRV_FETCH_ASSOC)) {
+      $historia[] = array('TD'=> utf8_encode($value['TD']),'Fecha'=> utf8_encode($value['Fecha']->format('Y-m-d')),'Serie'=> utf8_encode($value['Serie']),'Factura'=> utf8_encode($value['Factura']),'Detalle'=> utf8_encode($value['Detalle']), 'Anio'=> utf8_encode($value['Anio']),'Mes'=> utf8_encode($value['Mes']),'Total'=> utf8_encode($value['Total']),'Abonos'=> utf8_encode($value['Abonos']),'Mes_No'=> utf8_encode($value['Mes_No']),'No'=> utf8_encode($value['No']) );
+    }
+    echo json_encode($historia);
+    exit();
+  }
+
+  public function historiaClienteExcel(){
+    $codigoCliente = $_REQUEST['codigoCliente'];
+    if ($codigoCliente == "") {
+      $codigoCliente = G_NINGUNO;
+    }
+    $datos = $this->facturacion->historiaCliente($codigoCliente);
+    historiaClienteExcel($datos);
+  }
+
+  public function historiaClientePDf(){
+    $codigoCliente = $_REQUEST['codigoCliente'];
+    if ($codigoCliente == "") {
+      $codigoCliente = G_NINGUNO;
+    }
+    $datos = $this->facturacion->historiaCliente($codigoCliente);
+
+    $titulo = 'Reporte historial';
+    $parametros['desde'] = false;
+    $parametros['hasta'] = false;
+    $sizetable = 8;
+    $mostrar = false;
+    $tablaHTML = array();
+
+
+    $tablaHTML[0]['medidas'] = array(8,18,10,15,60,10,20,15,15,10,10);
+    $tablaHTML[0]['alineado'] = array('L','L','L','L','L','L','L','L','L','L','L');
+    $tablaHTML[0]['datos'] = array('TD','Fecha','Serie','Factura','Detalle','Año','Mes','Total','Abonos','Mes No','No');
+    $tablaHTML[0]['borde'] = 1;
+    $tablaHTML[0]['estilo'] = 'B';
+
+    $count = 1;
+     while ($value = sqlsrv_fetch_array( $datos, SQLSRV_FETCH_ASSOC)) {
+      $tablaHTML[$count]['medidas'] = $tablaHTML[0]['medidas'];
+      $tablaHTML[$count]['alineado'] = array('L','L','L','L','L','L','R','R','R','R','R');
+      $tablaHTML[$count]['datos'] = array($value['TD'],$value['Fecha']->format('Y-m-d'),$value['Serie'],$value['Factura'],$value['Detalle'], $value['Anio'],$value['Mes'],$value['Total'],$value['Abonos'],$value['Mes_No'],$value['No']);
+      $tablaHTML[$count]['borde'] = $tablaHTML[0]['borde'];
+      $count+=1;
+      # code...
+    }
+
+
+    $this->pdf->cabecera_reporte_MC($titulo,$tablaHTML,$contenido=false,$image=false,$parametros['desde'],$parametros['hasta'],$sizetable,$mostrar,25);
+  }
 
 	public function getCatalogoCuentas(){
 		$datos = $this->facturacion->getCatalogoCuentas();

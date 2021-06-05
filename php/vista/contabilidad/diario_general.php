@@ -197,10 +197,10 @@ require_once("panel.php");
         success:  function (response){
         if(response)
         {
-          $('#debe').html(addCommas(response.debe.toFixed(2)));
-          $('#haber').html(addCommas(response.haber.toFixed(2)));
-          $('#debe_me').html(addCommas(response.debe_me.toFixed(2)));          
-          $('#haber_me').html(addCommas(response.haber_me.toFixed(2)));
+          $('#debe').val(addCommas(response.debe.toFixed(2)));
+          $('#haber').val(addCommas(response.haber.toFixed(2)));
+          $('#debe_me').val(addCommas(response.debe_me.toFixed(2)));          
+          $('#haber_me').val(addCommas(response.haber_me.toFixed(2)));
 
         }       
          
@@ -391,21 +391,21 @@ require_once("panel.php");
             <div class="col-sm-1  col-xs-3">
                 <label class="radio-inline"><input type="radio" name="OpcP" id="OpcCD" onchange="consultar_datos();"><b>Diario</b></label>
             </div>
-            <div class="col-sm-2  col-xs-6">
+            <div class="col-sm-1  col-xs-6">
                 <label class="radio-inline"><input type="radio" name="OpcP" id="OpcND" onchange="consultar_datos();"><b>Notas de debito</b></label>
             </div>
-            <div class="col-sm-2  col-xs-6">
+            <div class="col-sm-1  col-xs-6">
               <label class="radio-inline"><input type="radio" name="OpcP" id="OpcNC" onchange="consultar_datos();"><b>Notas de credito</b></label>
             </div>
             <div class="col-sm-1  col-xs-3">
                 <label class="radio-inline"><input type="radio" name="OpcP" id="OpcA" onchange="consultar_datos();"><b>Anulado</b></label>
             </div>
-            <div class="col-sm-2  col-xs-6">
+            <div class="col-sm-2  col-xs-6 text-right">
               <label class="radio-inline"><input type="checkbox" name="CheckNum" id="CheckNum" onchange="mostrar_campos();"><b> Desde el No: </b></label>                      
             </div>
-            <div class="col-sm-1" id="campos" style="display: none">
-              <input type="text" style="width:30px;" name="TextNumNo" id="TextNumNo" value="0">
-              <input type="text" style="width:30px;" name="TextNumNo1" id="TextNumNo1" value="0"> 
+            <div class="col-sm-2" id="campos" style="display: none">
+              <input type="text" style="width:90px;" class="text-right" name="TextNumNo" id="TextNumNo" value="0">
+              <input type="text" style="width:90px;" class="text-right" name="TextNumNo1" id="TextNumNo1" value="0"> 
             </div>  
            </div>
         </div>                
@@ -461,17 +461,17 @@ require_once("panel.php");
             <table>
               <tr>
                 <td><b>Total Debe</b></td>
-                <td id="debe"></td>
+                <td><input type="text" id="debe" class="text-right rounded border border-primary" size="8" readonly/></td>
                 <td><b>Total Haber</b></td>
-                <td id="haber"></td>
+                <td><input type="text" id="haber" class="text-right rounded border border-primary" size="8" readonly/></td>
                 <td><b>Debe - Haber</b></td>
                 <td></td>
               </tr>
               <tr>
                 <td><b>Total Debe ME</b></td>
-                <td id="debe_me"></td>
+                <td ><input type="text" id="debe_me" class="text-right rounded border border-primary" size="8" readonly/></td>
                 <td><b>Total Haber ME</b></td>
-                <td id="haber_me"></td>
+                <td><input type="text" id="haber_me" class="text-right rounded border border-primary" size="8" readonly/></td>
                 <td><b>Debe - Haber ME</b></td>
                 <td></td>
               </tr>
