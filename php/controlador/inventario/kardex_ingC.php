@@ -184,6 +184,11 @@ if(isset($_GET['validar_numero']))
    $parametros = $_POST['parametros'];
   echo  json_encode($controlador->validar_numero($parametros));
 }
+if(isset($_GET['leercodigo']))
+{
+   $parametros = $_POST['parametros'];
+  echo  json_encode($controlador->codigo_proveedor($parametros['ruc']));
+}
 
 class kardex_ingC
 {
@@ -206,6 +211,11 @@ class kardex_ingC
 		$datos = $this->modelo->Producto($fami,$query,$opciones);
 		return $datos;
 	}
+  function  codigo_proveedor($CodigoCliente)
+  {
+    $datos = $this->modelo->codigo_proveedor($CodigoCliente);
+    return $datos[0]['Codigo'];    
+  }
   function producto_detalle($parametros)
   {
     $opciones = $this->ReadSetDataNum("PorCodigo", True, False); 

@@ -303,11 +303,22 @@ class incomM
        WHERE Item = '".$_SESSION['INGRESO']['item']. "'
        AND CodigoU = '".$_SESSION['INGRESO']['CodigoU']."'
        AND T_No = ".$_SESSION['INGRESO']['modulo_']." ";
+        $stmt = sqlsrv_query( $cid, $sql);
+			if( $stmt === false)  
+			{  
+				 echo "Error en consulta PA.\n";  
+				 die( print_r( sqlsrv_errors(), true));  
+			}
+		$datos = array();
+		 while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_ASSOC) ) 
+		 	{
+		 		$datos[] = $row;
+		 	}
  
        $botones[0] = array('boton'=>'eliminar', 'icono'=>'<i class="fa fa-trash"></i>', 'tipo'=>'danger', 'id'=>'CodRet,air');
 	   $tbl = grilla_generica_new($sql,'Asiento_Air',false,$titulo=false,$botones,$check=false,$imagen=false,1,1,1,100);
 			 // print_r($tbl);die();
-		return $tbl;
+		return array('tbl'=>$tbl,'datos'=>$datos);
     }
      function DG_asientoR_datos()
     {
@@ -601,6 +612,7 @@ class incomM
     { 
 
     	$cid = $this->conn;
+		$result = array();
     	$sql = "SELECT *
          FROM Asiento
          WHERE Item = '".$_SESSION['INGRESO']['item']."'
@@ -625,6 +637,7 @@ class incomM
     {
     	
     	$cid = $this->conn;
+		$result = array();
     	$sql = "SELECT *
          FROM Asiento_SC
          WHERE Item = '".$_SESSION['INGRESO']['item']."'
@@ -694,6 +707,7 @@ class incomM
     function retencion_compras($numero,$tipoCom)
     {
     	$cid = $this->conn;
+		$result = array();
         $sql = "SELECT C.Cliente,C.CI_RUC,C.TD,C.Direccion,C.Telefono,C.Email,TC.* 
         FROM Trans_Compras As TC, Clientes As C 
         WHERE TC.Item = '".$_SESSION['INGRESO']['item']."' 
@@ -745,7 +759,557 @@ class incomM
 		 	return $Porc_IVA;
 		 }
 	}
-    
+
+	function Asiento_Air_Com ($Autorizacion_R,$T_No)
+	{
+
+    $cid = $this->conn;
+    $result = array();
+	 if(strlen($Autorizacion_R) >= 13){
+      $sql = "SELECT * 
+             FROM Asiento_Air 
+             WHERE Item = '".$_SESSION['INGRESO']['item']."' 
+             AND CodigoU = '".$_SESSION['INGRESO']['CodigoU']."' 
+             AND T_No = ".$T_No." 
+             ORDER BY Tipo_Trans, A_No ";
+                $stmt = sqlsrv_query( $cid, $sql);
+		if( $stmt === false)  
+		{  
+			echo "Error en consulta PA.\n";  
+			die( print_r( sqlsrv_errors(), true));  
+		}
+	    while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_ASSOC) ) 
+		 {
+		 	$result[] = $row;
+		 }
+		 
+     }
+      return $result;
+	}
+	function Actualizar_Ctas_a_mayorizar($TP,$Numero)
+	{
+		$cid = $this->conn;
+		$result = array();
+		$sql = "SELECT Codigo_Inv
+        FROM Trans_Kardex
+        WHERE TP = '".$TP."'
+        AND Numero = ".$Numero."
+        AND Item = '".$_SESSION['INGRESO']['item']."'
+        AND Periodo = '".$_SESSION['INGRESO']['periodo']."' ";
+        $stmt = sqlsrv_query( $cid, $sql);
+		if( $stmt === false)  
+		{  
+			echo "Error en consulta PA.\n";  
+			die( print_r( sqlsrv_errors(), true));  
+		}
+	    while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_ASSOC) ) 
+		 {
+		 	$result[] = $row;
+		 }
+		  return $result;
+	}
+	function Actualiza_Procesado_Kardex($CodigoInv)
+	{
+		 if(strlen($CodigoInv) > 2){ 
+         $sql = "UPDATE Trans_Kardex
+               SET Procesado = 0
+               WHERE Item = '".$_SESSION['INGRESO']['item']."'
+               AND Periodo = '".$_SESSION['INGRESO']['periodo']."'
+               AND Codigo_Inv = '".$CodigoInv."' ";
+         $stmt = sqlsrv_query( $cid, $sql);
+		if( $stmt === false)  
+		{  
+			echo "Error en consulta PA.\n";  
+			die( print_r( sqlsrv_errors(), true));  
+		}
+       }
+	}
+
+	function EliminarComprobantes($TP,$Numero)
+	{
+       $sql = "DELETE  
+       FROM Comprobantes 
+       WHERE TP = '".$TP."' 
+       AND Numero = ".$Numero."  
+       AND Item = '".$_SESSION['INGRESO']['item']."' 
+       AND Periodo = '".$_SESSION['INGRESO']['periodo']."' ";
+
+       $sql2 = "DELETE  
+       FROM Transacciones 
+       WHERE TP = '".$TP."' 
+       AND Numero = ".$Numero."
+       AND Item = '".$_SESSION['INGRESO']['item']."'
+       AND Periodo = '".$_SESSION['INGRESO']['periodo']."' ";
+
+       $sql3 = "DELETE  
+       FROM Trans_SubCtas 
+       WHERE TP = '".$TP."' 
+       AND Numero = ".$Numero." 
+       AND Item = '".$_SESSION['INGRESO']['item']."' 
+       AND Periodo = '".$_SESSION['INGRESO']['periodo']."' ";
+
+
+       $sql4 = "DELETE  
+       FROM Trans_Kardex 
+       WHERE TP = '".$TP."' 
+       AND Numero = ".$Numero." 
+       AND Item = '".$_SESSION['INGRESO']['item']."'
+       AND Periodo = '".$_SESSION['INGRESO']['periodo']."' 
+       AND LEN(TC) <= 1 ";
+
+       $sql5 = "DELETE  
+       FROM Trans_Compras 
+       WHERE TP = '".$TP."' 
+       AND Numero = ".$Numero." 
+       AND Item = '".$_SESSION['INGRESO']['item']."' 
+       AND Periodo = '".$_SESSION['INGRESO']['periodo']."' ";
+
+       $sql6 = "DELETE  
+       FROM Trans_Air 
+       WHERE TP = '".$TP."' 
+       AND Numero = ".$Numero."
+       AND Item = '".$_SESSION['INGRESO']['item']."' 
+       AND Periodo = '".$_SESSION['INGRESO']['periodo']."' ";
+
+       $sql7 = "DELETE  
+       FROM Trans_Ventas 
+       WHERE TP = '".$TP."' 
+       AND Numero = ".$Numero." 
+       AND Item = '".$_SESSION['INGRESO']['item']."' 
+       AND Periodo = '".$_SESSION['INGRESO']['periodo']."' ";
+
+       $sql8 = "DELETE  
+       FROM Trans_Exportaciones 
+       WHERE TP = '".$TP."' 
+       AND Numero = ".$Numero." 
+       AND Item = '".$_SESSION['INGRESO']['item']."' 
+       AND Periodo = '".$_SESSION['INGRESO']['periodo']."' ";
+
+       $sql9 = "DELETE 
+       FROM Trans_Importaciones 
+       WHERE TP = '".$TP."' 
+       AND Numero = ".$Numero." 
+       AND Item = '".$_SESSION['INGRESO']['item']."' 
+       AND Periodo = '".$_SESSION['INGRESO']['periodo']."' ";
+  
+       $sql10 = "DELETE 
+       FROM Trans_Rol_Pagos 
+       WHERE TP = '".$TP."' 
+       AND Numero = ".$Numero." 
+       AND Item = '".$_SESSION['INGRESO']['item']."' 
+       AND Periodo = '".$_SESSION['INGRESO']['periodo']."' ";
+
+       $sqlT = $sql.$sql2.$sql3.$sql4.$sql5.$sql6.$sql7.$sql8.$sql9.$sql10;
+
+       // print_r($sqlT);die();
+       $cid = $this->conn;
+	   $stmt = sqlsrv_query( $cid,$sqlT );
+	   if( $stmt === false)  
+	    {  
+	 	   return -1;
+		   echo "Error en consulta PA.\n"; 
+		   die( print_r( sqlsrv_errors(), true));  
+	   }else
+	   {
+		  return 1;
+	   }
+
+	} 
+
+	function Por_Bodegas()
+	{
+
+       $cid = $this->conn;
+       $result = array();
+		$sql = "SELECT CodBod
+		FROM Catalogo_Bodegas
+        WHERE Item = '".$_SESSION['INGRESO']['item']."'
+        AND Periodo = '".$_SESSION['INGRESO']['periodo']."' ;";
+        $stmt = sqlsrv_query( $cid, $sql);
+		if( $stmt === false)  
+		{  
+			echo "Error en consulta PA.\n";  
+			die( print_r( sqlsrv_errors(), true));  
+		}
+	    while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_ASSOC) ) 
+		 {
+		 	$result[] = $row;
+		 }
+		  return $result;
+
+	}
+
+	function Grabamos_SubCtas($T_No)
+	{
+		
+       $cid = $this->conn;
+       $result = array();
+       $sql = "SELECT *
+       FROM Asiento_SC
+       WHERE Item = '".$_SESSION['INGRESO']['item']."' 
+       AND T_No = ".$T_No." 
+       AND CodigoU = '".$_SESSION['INGRESO']['CodigoU']."' 
+       ORDER BY TC,Cta,Codigo ";
+        $stmt = sqlsrv_query( $cid, $sql);
+		if( $stmt === false)  
+		{  
+			echo "Error en consulta PA.\n";  
+			die( print_r( sqlsrv_errors(), true));  
+		}
+	    while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_ASSOC) ) 
+		 {
+		 	$result[] = $row;
+		 }
+		  return $result;
+
+	}
+
+	function RETENCIONES_COMPRAS($T_No)
+	{
+		 $cid = $this->conn;
+       $result = array();
+		$sql = "SELECT *
+     FROM Asiento_Compras
+     WHERE Item = '".$_SESSION['INGRESO']['item']."'
+     AND CodigoU = '".$_SESSION['INGRESO']['CodigoU']."'
+     AND T_No = ".$T_No."
+     ORDER BY T_No ";
+     $cid = $this->conn;
+     $stmt = sqlsrv_query( $cid, $sql);
+		if( $stmt === false)  
+		{  
+			echo "Error en consulta PA.\n";  
+			die( print_r( sqlsrv_errors(), true));  
+		}
+	    while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_ASSOC) ) 
+		 {
+		 	$result[] = $row;
+		 }
+		  return $result;
+
+	}
+
+	function RETENCIONES_VENTAS($T_No)
+	{
+		 $cid = $this->conn;
+       $result = array();
+		$sql = "SELECT *
+     FROM Asiento_Ventas
+     WHERE Item = '".$_SESSION['INGRESO']['item']."'
+     AND CodigoU = '".$_SESSION['INGRESO']['CodigoU']."'
+     AND T_No = ".$T_No."
+     ORDER BY T_No DESC ";
+     $cid = $this->conn;
+     $stmt = sqlsrv_query( $cid, $sql);
+		if( $stmt === false)  
+		{  
+			echo "Error en consulta PA.\n";  
+			die( print_r( sqlsrv_errors(), true));  
+		}
+	    while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_ASSOC) ) 
+		 {
+		 	$result[] = $row;
+		 }
+		  return $result;
+	}
+	
+	function RETENCIONES_EXPORTACION($T_No)
+	{
+		 $cid = $this->conn;
+       $result = array();
+		$sql = "SELECT *
+     FROM Asiento_Exportaciones
+     WHERE Item = '".$_SESSION['INGRESO']['item']."'
+     AND CodigoU = '".$_SESSION['INGRESO']['CodigoU']."'
+     AND T_No = ".$T_No."
+     ORDER BY T_No DESC ";
+     $cid = $this->conn;
+     $stmt = sqlsrv_query( $cid, $sql);
+		if( $stmt === false)  
+		{  
+			echo "Error en consulta PA.\n";  
+			die( print_r( sqlsrv_errors(), true));  
+		}
+	    while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_ASSOC) ) 
+		 {
+		 	$result[] = $row;
+		 }
+		  return $result;
+	}
+
+	function  RETENCIONES_IMPORTACIONES($T_No)
+	{
+		 $cid = $this->conn;
+       $result = array();
+		$sql = "SELECT *
+     FROM Asiento_Importaciones
+     WHERE Item = '".$_SESSION['INGRESO']['item']."'
+     AND CodigoU = '".$_SESSION['INGRESO']['CodigoU']."'
+     AND T_No = ".$T_No."
+     ORDER BY T_No DESC ";
+     $cid = $this->conn;
+     $stmt = sqlsrv_query( $cid, $sql);
+		if( $stmt === false)  
+		{  
+			echo "Error en consulta PA.\n";  
+			die( print_r( sqlsrv_errors(), true));  
+		}
+	    while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_ASSOC) ) 
+		 {
+		 	$result[] = $row;
+		 }
+		  return $result;
+	}
+
+	function RETENCIONES_AIR($T_No)
+	{
+		 $cid = $this->conn;
+       $result = array();
+  $sql = "SELECT *
+     FROM Asiento_Air
+     WHERE Item = '".$_SESSION['INGRESO']['item']."'
+     AND CodigoU = '".$_SESSION['INGRESO']['CodigoU']."'
+     AND T_No = ".$T_No."
+     ORDER BY Tipo_Trans,A_No ";
+     $cid = $this->conn;
+     $stmt = sqlsrv_query( $cid, $sql);
+		if( $stmt === false)  
+		{  
+			echo "Error en consulta PA.\n";  
+			die( print_r( sqlsrv_errors(), true));  
+		}
+	    while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_ASSOC) ) 
+		 {
+		 	$result[] = $row;
+		 }
+		  return $result;
+   }
+
+   function Retencion_Rol_Pagos($T_No){
+   	 $cid = $this->conn;
+       $result = array();
+  $sql = "SELECT *
+     FROM Asiento_RP
+     WHERE Item = '".$_SESSION['INGRESO']['item']."'
+     AND CodigoU = '".$_SESSION['INGRESO']['CodigoU']."'
+     AND T_No = ".$T_No."
+     ORDER BY Codigo ";
+     $cid = $this->conn;
+     $stmt = sqlsrv_query( $cid, $sql);
+		if( $stmt === false)  
+		{  
+			echo "Error en consulta PA.\n";  
+			die( print_r( sqlsrv_errors(), true));  
+		}
+	    while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_ASSOC) ) 
+		 {
+		 	$result[] = $row;
+		 }
+		  return  array('res'=>$result,'smtp'=>$stmt);
+   }
+
+   function Grabamos_Inventarios($T_No)
+   {
+   	$cid = $this->conn;
+       $result = array();
+  $sql = "SELECT *
+     FROM Asiento_K
+     WHERE Item = '".$_SESSION['INGRESO']['item']."'
+     AND T_No = ".$T_No."
+     AND CodigoU = '".$_SESSION['INGRESO']['CodigoU']."' ";
+     $cid = $this->conn;
+     $stmt = sqlsrv_query( $cid, $sql);
+		if( $stmt === false)  
+		{  
+			echo "Error en consulta PA.\n";  
+			die( print_r( sqlsrv_errors(), true));  
+		}
+	    while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_ASSOC) ) 
+		 {
+		 	$result[] = $row;
+		 }
+		  return $result;
+   }
+
+   function  Grabamos_Prestamos($T_No)
+   {
+   	$cid = $this->conn;
+       $result = array();
+  $sql = "SELECT *
+     FROM Asiento_P
+     WHERE Item = '".$_SESSION['INGRESO']['item']."'
+     AND T_No = ".$T_No."
+     AND CodigoU = '".$_SESSION['INGRESO']['CodigoU']."' ";
+     $cid = $this->conn;
+     $stmt = sqlsrv_query( $cid, $sql);
+		if( $stmt === false)  
+		{  
+			echo "Error en consulta PA.\n";  
+			die( print_r( sqlsrv_errors(), true));  
+		}
+	    while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_ASSOC) ) 
+		 {
+		 	$result[] = $row;
+		 }
+		  return $result;
+   }
+
+   function Grabamos_Transacciones($T_No)
+   {
+   	$cid = $this->conn;
+       $result = array();
+  $sql = "SELECT *
+     FROM Asiento
+     WHERE Item = '".$_SESSION['INGRESO']['item']."'
+     AND T_No = ".$T_No."
+     AND CodigoU = '".$_SESSION['INGRESO']['CodigoU']."'
+     ORDER BY A_No,DEBE DESC,CODIGO ";
+     $cid = $this->conn;
+     $stmt = sqlsrv_query( $cid, $sql);
+		if( $stmt === false)  
+		{  
+			echo "Error en consulta PA.\n";  
+			die( print_r( sqlsrv_errors(), true));  
+		}
+	    while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_ASSOC) ) 
+		 {
+		 	$result[] = $row;
+		 }
+		  return $result;
+   }
+
+   function actualizar_email($email,$codigoB)
+   {
+   	$cid = $this->conn;
+   	$sql ="UPDATE Clientes
+   	      SET Email = '".$email."'
+   	      WHERE Codigo = '".$codigoB."' ";
+	  $stmt = sqlsrv_query( $cid, $sql);
+	  if( $stmt === false)  
+	   {  
+	 	  return -1;
+		  echo "Error en consulta PA.\n"; 
+		  die( print_r( sqlsrv_errors(), true));  
+	  }else
+	  {
+		 return 1;
+	  }
+   }
+
+   function cuentas_a_mayorizar($cta)
+   {
+   		$cid = $this->conn;
+   	    $sql = "UPDATE Transacciones 
+               SET Procesado = 0 
+               WHERE Item = '".$_SESSION['INGRESO']['item']."'
+               AND Periodo = '".$_SESSION['INGRESO']['periodo']."'
+               AND Cta = '".$cta."' ";
+               // print_r($sql);
+        $stmt = sqlsrv_query( $cid, $sql);
+	  if( $stmt === false)  
+	   {  
+	 	  return -1;
+		  echo "Error en consulta PA.\n"; 
+		  die( print_r( sqlsrv_errors(), true));  
+	  }else
+	  {
+		 return 1;
+	  }
+
+   }
+
+   function BorrarAsientos($Trans_No,$B_Asiento=false)
+   {   	
+   		$cid = $this->conn;
+   	$sql='';
+   	if($Trans_No <= 0){$Trans_No = 1;}
+  if($B_Asiento){
+     $sql.= "DELETE
+       FROM Asiento
+       WHERE Item = '".$_SESSION['INGRESO']['item']."'
+       AND CodigoU = '".$_SESSION['INGRESO']['CodigoU']."'
+       AND T_No = ".$Trans_No." ";
+  }
+  $sql.= "DELETE
+    FROM Asiento_SC
+    WHERE Item = '".$_SESSION['INGRESO']['item']."'
+    AND CodigoU = '".$_SESSION['INGRESO']['CodigoU']."'
+    AND T_No = ".$Trans_No." ";
+
+  $sql.= "DELETE
+    FROM Asiento_B
+    WHERE Item = '".$_SESSION['INGRESO']['item']."'
+    AND CodigoU = '".$_SESSION['INGRESO']['CodigoU']."'
+    AND T_No = ".$Trans_No." ";
+
+
+  $sql.= "DELETE
+    FROM Asiento_R
+    WHERE Item = '".$_SESSION['INGRESO']['item']."'
+    AND CodigoU = '".$_SESSION['INGRESO']['CodigoU']."'
+    AND T_No = ".$Trans_No." ";
+
+
+  $sql.= "DELETE
+    FROM Asiento_RP
+    WHERE Item = '".$_SESSION['INGRESO']['item']."'
+    AND CodigoU = '".$_SESSION['INGRESO']['CodigoU']."'
+    AND T_No = ".$Trans_No." ";
+
+
+  $sql.= "DELETE
+    FROM Asiento_K
+    WHERE Item = '".$_SESSION['INGRESO']['item']."'
+    AND CodigoU = '".$_SESSION['INGRESO']['CodigoU']."'
+    AND T_No = ".$Trans_No." ";
+
+  $sql.= "DELETE
+    FROM Asiento_P
+    WHERE Item = '".$_SESSION['INGRESO']['item']."'
+    AND CodigoU = '".$_SESSION['INGRESO']['CodigoU']."'
+    AND T_No = ".$Trans_No." ";
+
+  $sql.= "DELETE
+    FROM Asiento_Air
+    WHERE Item = '".$_SESSION['INGRESO']['item']."'
+    AND CodigoU = '".$_SESSION['INGRESO']['CodigoU']."'
+    AND T_No = ".$Trans_No." ";
+
+  $sql.= "DELETE
+    FROM Asiento_Compras
+    WHERE Item = '".$_SESSION['INGRESO']['item']."'
+    AND CodigoU = '".$_SESSION['INGRESO']['CodigoU']."'
+    AND T_No = ".$Trans_No." ";
+
+  $sql.= "DELETE
+    FROM Asiento_Exportaciones
+    WHERE Item = '".$_SESSION['INGRESO']['item']."'
+    AND CodigoU = '".$_SESSION['INGRESO']['CodigoU']."'
+    AND T_No = ".$Trans_No." ";
+
+  $sql.= "DELETE
+    FROM Asiento_Importaciones
+    WHERE Item = '".$_SESSION['INGRESO']['item']."'
+    AND CodigoU = '".$_SESSION['INGRESO']['CodigoU']."'
+    AND T_No = ".$Trans_No." ";
+
+  $sql.= "DELETE
+    FROM Asiento_Ventas
+    WHERE Item = '".$_SESSION['INGRESO']['item']."'
+    AND CodigoU = '".$_SESSION['INGRESO']['CodigoU']."'
+    AND T_No = ".$Trans_No." ";
+    // print_r($sql);die();
+     $stmt = sqlsrv_query( $cid, $sql);
+	  if( $stmt === false)  
+	   {  
+	 	  return -1;
+		  echo "Error en consulta PA.\n"; 
+		  die( print_r( sqlsrv_errors(), true));  
+	  }else
+	  {
+		 return 1;
+	  }
+   }
 
 }
 ?>
