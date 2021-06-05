@@ -606,7 +606,11 @@
           type:  'post',
           dataType: 'json',
             success:  function (response) {    
-            $('#retenciones').html(response.b+response.r);      
+            $('#retenciones').html(response.b+response.r);
+            // console.log(response.datos[0]);
+            $('#Autorizacion_R').val(response.datos[0].AutRetencion); 
+            $('#Serie_R').val(response.datos[0].PtoEmiRetencion+''+response.datos[0].PuntoEmiFactura); 
+            $('#Retencion').val(response.datos[0].SecRetencion);      
           }
         });
 
@@ -641,6 +645,7 @@
             $('#txt_diferencia').val(response.diferencia.toFixed(2));  
             $('#txt_debe').val(response.debe.toFixed(2));  
             $('#txt_haber').val(response.haber.toFixed(2));  
+            $('#txt_cta_modificar').val(response.Ctas_Modificar);  
           }
         });
 
@@ -850,6 +855,16 @@
       'concepto':concepto, //detalle de la transaccion realida
       'totalh': haber, //total del haber
       'num_com':com,
+      'CodigoB':$('#ruc').val(),
+      'Serie_R':$('#Serie_R').val(),
+      'Retencion':$('#Retencion').val(),
+      'Autorizacion_R':$('#Autorizacion_R').val(),
+      'Autorizacion_LC':$('#Autorizacion_LC').val(),
+      'TD':'C',
+      'bene':$('select[name="beneficiario1"] option:selected').text(),
+      'email':$('#email').val(),
+      'Cta_modificar':$('#txt_cta_modificar').val(),
+      'T':'N',
     }
     Swal.fire({
       title: "Esta seguro de Grabar el "+$('#num_com').text(),
@@ -1236,7 +1251,12 @@
                         <input type="hidden" name="txt_tipocta" id="txt_tipocta">
                         <input type="hidden" name="txt_subcta" id="txt_subcta">
                         <input type="hidden" name="txt_tipopago" id="txt_tipopago">
-                        <input type="hidden" name="txt_moneda_cta" id="txt_moneda_cta">                     
+                        <input type="hidden" name="txt_moneda_cta" id="txt_moneda_cta">   
+                        <input type="hidden" name="Serie_R" id="Serie_R" value=".">  
+                        <input type="hidden" name="Retencion" id="Retencion" value="."> 
+                        <input type="hidden" name="Autorizacion_R" id="Autorizacion_R" value=".">  
+                        <input type="hidden" name="Autorizacion_LC" id="Autorizacion_LC" value="."> 
+                        <input type="hidden" name="txt_cta_modificar" id="txt_cta_modificar" value="."> 
                       </div>
                       <div class="row">
                           <div class="col-xs-12 ">

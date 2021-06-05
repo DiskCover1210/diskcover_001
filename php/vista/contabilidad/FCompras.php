@@ -28,7 +28,7 @@ if(isset($_GET['fec']))
     marca();
     var ben = '<?php echo $ben;?>';
     var fecha = '<?php echo $fec;?>';
-    Ult_fact_Prove('<?php echo $prv; ?>');
+    codigo_beneficiario('<?php echo $prv; ?>');
     DCBenef_LostFocus(ben,'','');
     ddl_DCSustento(fecha);
     ddl_DCConceptoRet(fecha);
@@ -95,6 +95,28 @@ function contracuenta()
         }
       });
    
+
+  }
+
+  function codigo_beneficiario(ruc)
+  { 
+    var parametros =
+    {
+        'ruc':ruc,
+    }
+    $.ajax({
+      data:  {parametros:parametros},
+      url:   '../controlador/inventario/kardex_ingC.php?leercodigo=true',
+      type:  'post',
+      dataType: 'json',
+        success:  function (response) {
+            if (response.length !=0) 
+            {
+                Ult_fact_Prove(response);
+            }
+         
+      }
+    });  
 
   }
 

@@ -456,6 +456,26 @@ class kardex_ingM
 
 	}
 
+	function codigo_proveedor($ruc)
+	{
+
+     $cid = $this->conn;
+     $sql= "SELECT Codigo,Cliente FROM Clientes WHERE CI_RUC = '".$ruc."'";
+       $stmt = sqlsrv_query($cid, $sql);
+        $datos =  array();
+	   if( $stmt === false)  
+	   {  
+		 echo "Error en consulta PA.\n";  
+		 return '';
+		 die( print_r( sqlsrv_errors(), true));  
+	   }
+	    while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_ASSOC) ) 
+	   {
+		$datos[]=$row;	
+	   }
+       return $datos;
+	}
+
 function dtaAsiento_sc($Trans_No){
 
      $cid = $this->conn;
@@ -1299,6 +1319,29 @@ function cuentas_todos($query)
 		return $result;
 
 	}
+	function ultima_factura_proveedor($CodigoCliente)
+   {
+   		$cid = $this->conn;
+   	   $sql = "SELECT TOP 1 * 
+            FROM Trans_Compras 
+            WHERE IdProv = '".$CodigoCliente."' 
+            AND Item = '".$_SESSION['INGRESO']['item']."' 
+            ORDER BY Fecha DESC,Secuencial DESC ";
+               // print_r($sql);
+       $result = array();
+       $stmt = sqlsrv_query( $cid, $sql);
+		if( $stmt === false)  
+		{  
+			echo "Error en consulta PA.\n";  
+			die( print_r( sqlsrv_errors(), true));  
+		}
+	    while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_ASSOC) ) 
+		 {
+		 	$result[] = $row;
+		 }
+		  return $result;
+   }
+    
 
 }
 ?>
