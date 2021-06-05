@@ -66,6 +66,7 @@ if(isset($_GET['mos']))
 
 			foreach ($empresa as &$valor) 
 			{
+				$valor['Servicio'] = 0;
 				//print_r($valor);die();
 				$_SESSION['INGRESO']['IP_VPN_RUTA']=$valor['IP_VPN_RUTA'];
 				$_SESSION['INGRESO']['Base_Datos']=$valor['Base_Datos'];

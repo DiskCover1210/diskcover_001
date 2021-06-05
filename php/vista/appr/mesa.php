@@ -194,8 +194,8 @@ $_SESSION['INGRESO']['modulo_']='02';
 	
 				Swal.fire({
 				  type: 'error',
-				  title: 'Asegurese de tener credeciales de SQLSERVER',
-				  text: '',
+				   title: 'Comuniquese con el Administrador del Sistema, Para Activar el acceso a su base de dato',
+				  text: 'Asegurese de tener credeciales de SQLSERVER',
 				  allowOutsideClick:false,
 				}).then((result) => {
 				  if (result.value) {
