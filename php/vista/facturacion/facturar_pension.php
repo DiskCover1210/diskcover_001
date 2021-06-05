@@ -145,6 +145,13 @@
     $('#myModal_espera').modal('hide');
   }
 
+  function imprimir_ticket_fac(mesa,ci,fac,serie)
+  {
+    var html='<iframe style="width:100%; height:50vw;" src="../appr/controlador/imprimir_ticket.php?mesa='+mesa+'&tipo=FA&CI='+ci+'&fac='+fac+'&serie='+serie+'" frameborder="0" allowfullscreen></iframe>';
+    $('#contenido').html(html); 
+    $("#myModal").modal();
+  }
+
   function catalogoProductos(codigoCliente){
     $('#myModal_espera').modal('show');
     $.ajax({
@@ -184,6 +191,58 @@
       }
     });
     $('#myModal_espera').modal('hide');
+  }
+
+  function historiaCliente(){
+    codigoCliente = $('#codigoCliente').val();
+    $('#myModal_espera').modal('show');
+    
+    $.ajax({
+      type: "POST",                 
+      url: '../controlador/facturacion/facturar_pensionC.php?historiaCliente=true',
+      data: {'codigoCliente' : codigoCliente }, 
+      success: function(data)
+      {
+        $('#myModal_espera').modal('hide');
+        $('#myModalHistoria').modal('show');
+        if (data) {
+          datos = JSON.parse(data);
+          clave = 0;
+          $("#cuerpoHistoria").empty();
+          for (var indice in datos) {
+            var tr = `<tr>
+              <td><input size="1" type ="text" id="TD`+clave+`" value ="`+datos[indice].TD+`" disabled/></td>
+              <td><input size="7" type ="text" id="Fecha`+clave+`" value ="`+datos[indice].Fecha+`" disabled/></td>
+              <td><input size="6" type ="text" id="Serie`+clave+`" value ="`+datos[indice].Serie+`" disabled/></td>
+              <td><input size="6" type ="text" id="Factura`+clave+`" value ="`+datos[indice].Factura+`" disabled/></td>
+              <td><input size="70" type ="text" id="Detalle`+clave+`" value ="`+datos[indice].Detalle+`" disabled/></td>
+              <td><input size="2" class="text-right" type ="text" id="Anio`+clave+`" value ="`+datos[indice].Anio+`" disabled/></td>
+              <td><input size="10" type ="text" id="Mes`+clave+`" value ="`+datos[indice].Mes+`" disabled/></td>
+              <td><input size="6" class="text-right" size="10px" type ="text" id="Total`+clave+`" value ="`+parseFloat(datos[indice].Total).toFixed(2)+`" disabled/></td>
+              <td><input size="6" class="text-right" type ="text" id="Abonos`+clave+`" value ="`+parseFloat(datos[indice].Abonos).toFixed(2)+`" disabled/></td>
+              <td><input size="2" class="text-right" type ="text" id="Mes_No`+clave+`" value ="`+datos[indice].Mes_No+`" disabled/></td>
+              <td><input size="2" class="text-right" type ="text" id="No`+clave+`" value ="`+datos[indice].No+`" disabled/></td>
+            </tr>`;
+            $("#cuerpoHistoria").append(tr);
+            clave++;
+          }
+        }else{
+          console.log("No tiene datos");
+        }            
+      }
+    });
+  }
+
+  function historiaClienteExcel(){
+    codigoCliente = $('#codigoCliente').val();
+    url = '../controlador/facturacion/facturar_pensionC.php?historiaClienteExcel=true&codigoCliente='+codigoCliente;
+    window.open(url, '_blank');
+  }
+
+  function historiaClientePDF(){
+    codigoCliente = $('#codigoCliente').val();
+    url = '../controlador/facturacion/facturar_pensionC.php?historiaClientePDF=true&codigoCliente='+codigoCliente;
+    window.open(url, '_blank');
   }
 
   function saldoFavor(codigoCliente){
@@ -327,9 +386,15 @@
   }
 
   function guardarPension(){
-    
     validarDatos = $("#total").val();
-    if (validarDatos <= 0 ) {
+    saldoTotal = $("#saldoTotal").val();
+    if (saldoTotal > 0 ) {
+      Swal.fire({
+        type: 'info',
+        title: 'Debe pagar la totalidad de la factura',
+        text: ''
+      });
+    }else if (validarDatos <= 0 ) {
       Swal.fire({
         type: 'info',
         title: 'Ingrese los datos necesarios para guardar la factura',
@@ -430,9 +495,12 @@
                       title: 'Este documento electronico fue autorizado',
                       text: ''
                     }).then(() => {
+                      serie = DCLinea.split(" ");
+                      url = '../vista/appr/controlador/imprimir_ticket.php?mesa=0&tipo=FA&CI='+TextCI+'&fac='+TextFacturaNo+'&serie='+serie[1];
+                      window.open(url, '_blank');
                       location.reload();
+                      //imprimir_ticket_fac(0,TextCI,TextFacturaNo,serie[1]);
                     });
-                    //imprimir_ticket_fac(mesa,ci,factura,serie);
                   }else if(response.respuesta == '2')
                   {
                     Swal.fire({
@@ -477,6 +545,7 @@
           <img src="../../img/png/team.png" width="25" height="30">
         </a>
       </div>
+      <!--
       <div class="col-xs-2 col-md-2 col-sm-2 col-lg-1">
         <a href="./farmacia.php?mod=Farmacia&acc=pacientes&acc1=Visualizar%20paciente&b=1&po=subcu#" type="button" class="btn btn-default" id="imprimir_pdf" title="Pacientes">
           <img src="../../img/png/pacientes.png" width="25" height="30">
@@ -491,12 +560,14 @@
         <a href="./farmacia.php?mod=Farmacia&acc=articulos&acc1=Visualizar%20articulos&b=1&po=subcu#" title="Ingresar Articulosr"  class="btn btn-default" onclick="">
           <img src="../../img/png/bus.png" width="25" height="30">
         </a>
-      </div>  
+      </div>
+      -->  
       <div class="col-xs-2 col-md-2 col-sm-2 col-lg-1">
-        <a href="./farmacia.php?mod=Farmacia&acc=articulos&acc1=Visualizar%20articulos&b=1&po=subcu#" title="Ingresar Articulosr"  class="btn btn-default" onclick="">
+        <a title="Historia del cliente"  class="btn btn-default" onclick="historiaCliente();">
           <img src="../../img/png/document.png" width="25" height="30">
         </a>
       </div>
+      <!--
       <div class="col-xs-2 col-md-2 col-sm-2 col-lg-1">
         <a href="./farmacia.php?mod=Farmacia&acc=articulos&acc1=Visualizar%20articulos&b=1&po=subcu#" title="Ingresar Articulosr"  class="btn btn-default" onclick="">
           <img src="../../img/png/project.png" width="25" height="30">
@@ -506,7 +577,8 @@
         <a href="./farmacia.php?mod=Farmacia&acc=articulos&acc1=Visualizar%20articulos&b=1&po=subcu#" title="Ingresar Articulosr"  class="btn btn-default" onclick="">
           <img src="../../img/png/data.png" width="25" height="30">
         </a>
-      </div> 
+      </div>
+      --> 
     </div>
   </div>
   <div class="row">
@@ -792,7 +864,7 @@
   </div>
 </div>
 
-<!-- Modal -->
+<!-- Modal porcentaje-->
 <div id="myModal" class="modal fade" role="dialog">
   <div class="modal-dialog">
 
@@ -807,6 +879,70 @@
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-default" onclick="calcularDescuento();">Aceptar</button>
+        <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- Modal historia del cliente-->
+<div id="myModalHistoria" class="modal fade modal-xl" role="dialog">
+  <div class="modal-dialog modal-xl" style="width:1250px;height: 400px">
+
+    <!-- Modal content-->
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h4 class="modal-title">Historia del cliente</h4>
+      </div>
+      <div class="modal-body">
+        <div class="row">
+          <div class="col-sm-12" style="
+              height: 400px;
+              overflow: auto;
+              display: block;
+          ">
+            <table class="table table-responsive table-borfed thead-dark" id="customers" tabindex="14">
+              <thead>
+                <tr>
+                  <th>TD</th>
+                  <th>Fecha</th>
+                  <th>Serie</th>
+                  <th>Factura</th>
+                  <th>Detalle</th>
+                  <th>Año</th>
+                  <th>Mes</th>
+                  <th>Total</th>
+                  <th>Abonos</th>
+                  <th>Mes No</th>
+                  <th>No</th>
+                </tr>
+              </thead>
+              <tbody id="cuerpoHistoria">
+              </tbody>
+            </table>          
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <div class="col-xs-2 col-md-2 col-sm-2">
+          <a type="button" href="#" target="_blank" class="btn btn-default" onclick="historiaClientePDF();">
+            <img src="../../img/png/impresora.png">
+          </a>                           
+        </div>      
+        <div class="col-xs-2 col-md-2 col-sm-2">
+          <a type="button" href="#" target="_blank" class="btn btn-default" onclick="historiaClienteExcel();">
+            <img src="../../img/png/table_excel.png">
+          </a>                          
+        </div>
+        <div class="col-xs-2 col-md-2 col-sm-2">
+          <a type="button" href="#" target="_blank" class="btn btn-default" onclick="enviarHistoriaCliente();">
+            <img src="../../img/png/table_excel.png">
+          </a>                          
+        </div>
+        
+        
         <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
       </div>
     </div>

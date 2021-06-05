@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<factura id="comprobante" version="1.1.0">
+  <infoTributaria>
+    <ambiente>1</ambiente>
+    <tipoEmision>1</tipoEmision>
+    <razonSocial>DESARROLLO  COFRADIA</razonSocial>
+    <nombreComercial>DISKCOVER SYSTEM</nombreComercial>
+    <ruc>0702164179001</ruc>
+    <claveAcceso>2605202101070216417900110010010000140421234567818</claveAcceso>
+    <codDoc>01</codDoc>
+    <estab>001</estab>
+    <ptoEmi>001</ptoEmi>
+    <secuencial>000014042</secuencial>
+    <dirMatriz>JUAN DE DIOS MARTINEZ N36245 Y CARLOS JULIO AROSEMENA</dirMatriz>
+  </infoTributaria>
+  <infoFactura>
+    <fechaEmision>26/05/2021</fechaEmision>
+    <dirEstablecimiento>JUAN DE DIOS MARTINEZ N36245 Y CARLOS JULIO AROSEMENA</dirEstablecimiento>
+    <obligadoContabilidad>SI</obligadoContabilidad>
+    <tipoIdentificacionComprador>06</tipoIdentificacionComprador>
+    <razonSocialComprador>ABAD MOSQUERA EDITHSON MARCELO</razonSocialComprador>
+    <identificacionComprador>0701520546</identificacionComprador>
+    <totalSinImpuestos>2.2</totalSinImpuestos>
+    <totalDescuento>0</totalDescuento>
+    <totalConImpuestos>
+      <totalImpuesto>
+        <codigo>2</codigo>
+        <codigoPorcentaje>0</codigoPorcentaje>
+        <descuentoAdicional>0</descuentoAdicional>
+        <baseImponible>2.2</baseImponible>
+        <valor>0.00</valor>
+      </totalImpuesto>
+    </totalConImpuestos>
+    <propina>0</propina>
+    <importeTotal>2.2</importeTotal>
+    <moneda>DOLAR</moneda>
+  </infoFactura>
+  <detalles>
+    <detalle>
+      <codigoPrincipal>98.90</codigoPrincipal>
+      <descripcion>Servicio de Entreg</descripcion>
+      <unidadMedida>DOLAR</unidadMedida>
+      <cantidad>1.0000</cantidad>
+      <precioUnitario>2.2</precioUnitario>
+      <descuento>0</descuento>
+      <precioTotalSinImpuesto>2.2</precioTotalSinImpuesto>
+      <impuestos>
+        <impuesto>
+          <codigo>2</codigo>
+          <codigoPorcentaje>0</codigoPorcentaje>
+          <tarifa>0</tarifa>
+          <baseImponible>2.2</baseImponible>
+          <valor>0</valor>
+        </impuesto>
+      </impuestos>
+    </detalle>
+  </detalles>
+  <infoAdicional>
+    <campoAdicional nombre="Direccion">HOSPITAL DEL SURAAA</campoAdicional>
+    <campoAdicional nombre="Email">diskcover@gmail.commm</campoAdicional>
+    <campoAdicional nombre="Referencia">DINERS CLUB</campoAdicional>
+  </infoAdicional>
+</factura>

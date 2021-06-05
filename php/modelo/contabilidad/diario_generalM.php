@@ -41,20 +41,32 @@ ORDER BY Acceso_Sucursales.Item,Empresa";
   function llenar_usuario()
   {
   	$cid = $this->conn;
-  	
+  	$sql = "SELECT (Nombre_Completo +'  '+ Codigo) As CodUsuario,Codigo
+            FROM Comprobantes, Accesos
+            where Item ='001'
+            and Periodo='.'
+            AND Comprobantes.CodigoU = Accesos.Codigo
+            group by (Nombre_Completo +'  '+ Codigo) ,Codigo
+            union 
+            SELECT (Nombre_Completo +'  '+ Codigo) As CodUsuario,Codigo
+            FROM Facturas,Accesos
+            where Item ='001'
+            and Periodo='.'
+            AND Facturas.CodigoU = Accesos.Codigo
+            group by (Nombre_Completo +'  '+ Codigo),Codigo
+            order by Codigo";
   	$sql = "SELECT (Nombre_Completo +'  '+ Codigo) As CodUsuario,Codigo
        FROM Accesos 
        WHERE Codigo <> '*' 
        ORDER BY Nombre_Completo ";
-       $stmt = sqlsrv_query($cid, $sql);
-	    $result = array();	
-	   while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_ASSOC) ) 
-	   {
-		$result[] = $row;
-	   }
-	   return $result;
-
-  cerrarSQLSERVERFUN($cid);  	
+    $stmt = sqlsrv_query($cid, $sql);
+	  $result = array();	
+	  while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_ASSOC) ) 
+	  {
+		  $result[] = utf8_encode($row);
+	  }
+	  return $result;
+    //cerrarSQLSERVERFUN($cid);  	
   }
 
   function cargar_consulta_libro_tabla($FechaIni,$FechaFin,$DCAgencia,$DCUsuario,$TextNumNo,$TextNumNo1,$OpcCI,$OpcCE,$OpcCD,$OpcND,$OpcNC,$OpcA,$CheckAgencia,$CheckUsuario,$CheckNum)

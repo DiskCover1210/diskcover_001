@@ -141,15 +141,15 @@
 				// $('#myModal_espera').modal('show');
 			},
 				success:  function (response) {
-					$('#debe').text(addCommas(response.Debe));
-					$('#haber').text(addCommas(response.Haber));					
-					$('#saldo_ant').text(addCommas(response.SalAnt));
-					$('#saldo').text(addCommas(response.Saldo));
+					$('#debe').val(addCommas(response.Debe));
+					$('#haber').val(addCommas(response.Haber));					
+					$('#saldo_ant').val(addCommas(response.SalAnt));
+					$('#saldo').val(addCommas(response.Saldo));
 
-					$('#debe_').text(addCommas(response.Debe_ME));
-					$('#haber_').text(addCommas(response.Haber_ME));
-					$('#saldo_ant_').text(addCommas(response.SalAnt_));
-					$('#saldo_').text(addCommas(response.Saldo_ME));
+					$('#debe_').val(addCommas(response.Debe_ME));
+					$('#haber_').val(addCommas(response.Haber_ME));
+					$('#saldo_ant_').val(addCommas(response.SalAnt_));
+					$('#saldo_').val(addCommas(response.Saldo_ME));
 
 				console.log(response);
 			}
@@ -295,9 +295,43 @@
 	  	    </div>
 	  	    <div class="table-responsive">
 	  	    	<table>
-	  	    	 <tr><td width="125px"><b>Saldo Ant MN:</b></td><td id="saldo_ant" width="70px">0.00</td><td width="100px"><b>Debe MN:</b></td><td id="debe" width="70px">0.00</td><td width="100px"><b>Haber MN:</b></td><td id="haber" width="70px">0.00</td><td width="100px"><b>Saldo MN:</b></td><td id="saldo" width="70px">0.00</td></tr>
+	  	    	 <tr>
+	  	    	 	<td width="125px" class="text-right"><b>Saldo Ant MN:</b></td>
+	  	    	 	<td width="70px">
+	  	    	 		<input type="text" id="saldo_ant" class="text-right rounded border border-primary" size="8" readonly value="0.00" />
+	  	    	 	</td>
+	  	    	 	<td width="100px" class="text-right"><b>Debe MN:</b></td>
+	  	    	 	<td width="70px">
+	  	    	 		<input type="text" id="debe" class="text-right rounded border border-primary" size="8" readonly value="0.00" />
+	  	    	 	</td>
+	  	    	 	<td width="100px" class="text-right"><b>Haber MN:</b></td>
+	  	    	 	<td width="70px">
+	  	    	 		<input type="text" id="haber" class="text-right rounded border border-primary" size="8" readonly value="0.00" />
+	  	    	 	</td>
+	  	    	 	<td width="100px" class="text-right"><b>Saldo MN:</b></td>
+	  	    	 	<td width="70px">
+	  	    	 		<input type="text" id="saldo" class="text-right rounded border border-primary" size="8" readonly value="0.00"/>
+	  	    	 	</td>
+	  	    	 </tr>
 
-	  	    	 <tr><td width="125px"><b>Saldo Ant ME:</b></td><td id="saldo_ant_" width="70px">0.00</td><td width="100px"><b>Debe ME:</b></td><td id="debe_" width="70px">0.00</td><td width="100px"><b>Haber ME:</b></td><td id="haber_" width="70px">0.00</td><td width="100px"><b>Saldo ME:</b></td><td id="saldo_" width="70px">0.00</td></tr>
+	  	    	 <tr>
+	  	    	 	<td width="125px" class="text-right"><b>Saldo Ant ME:</b></td>
+	  	    	 	<td width="70px">
+	  	    	 		<input type="text" id="saldo_ant_" class="text-right rounded border border-primary" size="8" readonly value="0.00"/>
+	  	    	 	</td>
+	  	    	 	<td width="100px" class="text-right"><b>Debe ME:</b></td>
+	  	    	 	<td width="70px">
+	  	    	 		<input type="text" id="debe_" class="text-right rounded border border-primary" size="8" readonly value="0.00"/>
+	  	    	 	</td>
+	  	    	 	<td width="100px" class="text-right"><b>Haber ME:</b></td>
+	  	    	 	<td width="70px">
+	  	    	 		<input type="text" id="haber_" class="text-right rounded border border-primary" size="8" readonly value="0.00"/>
+	  	    	 	</td>
+	  	    	 	<td width="100px" class="text-right"><b>Saldo ME:</b></td>
+	  	    	 	<td width="70px">
+	  	    	 		<input type="text" id="saldo_" class="text-right rounded border border-primary" size="8" readonly value="0.00"/>
+	  	    	 	</td>
+	  	    	 </tr>
 	  	    	</table>	  	    	 	
 	  	    </div> 
 	  	</div>

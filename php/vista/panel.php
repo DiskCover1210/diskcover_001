@@ -66,7 +66,6 @@ if(isset($_GET['mos']))
 
 			foreach ($empresa as &$valor) 
 			{
-				//print_r($valor);die();
 				$_SESSION['INGRESO']['IP_VPN_RUTA']=$valor['IP_VPN_RUTA'];
 				$_SESSION['INGRESO']['Base_Datos']=$valor['Base_Datos'];
 				$_SESSION['INGRESO']['Usuario_DB']=$valor['Usuario_DB'];
@@ -1179,7 +1178,6 @@ if(isset($_GET['mos']))
 			}	
 				?>	
    	  <?php
-			
 			if (!isset($_SESSION['INGRESO']['empresa'])) 
 			{
 				include('select_empresa.php');
@@ -1200,6 +1198,7 @@ if(isset($_GET['mos']))
 						break;
 					}					
 				}
+				
 
 				if($todo == true)
 				  {
