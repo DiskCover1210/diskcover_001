@@ -55,10 +55,10 @@ ORDER BY Acceso_Sucursales.Item,Empresa";
             AND Facturas.CodigoU = Accesos.Codigo
             group by (Nombre_Completo +'  '+ Codigo),Codigo
             order by Codigo";
-  	$sql = "SELECT (Nombre_Completo +'  '+ Codigo) As CodUsuario,Codigo
+  	/*$sql = "SELECT (Nombre_Completo +'  '+ Codigo) As CodUsuario,Codigo
        FROM Accesos 
        WHERE Codigo <> '*' 
-       ORDER BY Nombre_Completo ";
+       ORDER BY Nombre_Completo ";*/
     $stmt = sqlsrv_query($cid, $sql);
 	  $result = array();	
 	  while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_ASSOC) ) 
