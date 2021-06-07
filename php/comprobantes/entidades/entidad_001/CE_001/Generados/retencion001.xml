@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<comprobanteRetencion id="comprobante" version="1.1.0">
+  <infoTributaria>
+    <ambiente>1</ambiente>
+    <tipoEmision>1</tipoEmision>
+    <razonSocial>DESARROLLO - COFRADIA</razonSocial>
+    <nombreComercial>DISKCOVER SYSTEM</nombreComercial>
+    <ruc>1190068753001</ruc>
+    <codDoc>07</codDoc>
+    <estab>001</estab>
+    <ptoEmi>090</ptoEmi>
+    <secuencial>000000670</secuencial>
+    <dirMatriz>JUAN DE DIOS MARTINEZ N36-245 Y CARLOS JULIO AROSEMENA</dirMatriz>
+  </infoTributaria>
+  <infoCompRetencion>
+    <fechaEmision>04/09/2019</fechaEmision>
+    <dirEstablecimiento>JUAN DE DIOS MARTINEZ N36-245 Y CARLOS JULIO AROSEMENA</dirEstablecimiento>
+    <obligadoContabilidad>SI</obligadoContabilidad>
+    <tipoIdentificacionSujetoRetenido>04</tipoIdentificacionSujetoRetenido>
+    <razonSocialSujetoRetenido>FUNDACION ALVAREZ</razonSocialSujetoRetenido>
+    <identificacionSujetoRetenido>1190068753001</identificacionSujetoRetenido>
+    <periodoFiscal>09/2019</periodoFiscal>
+  </infoCompRetencion>
+  <impuestos>
+    <impuesto>
+      <codigo>2</codigo>
+      <codigoRetencion>2</codigoRetencion>
+      <baseImponible>172.4300</baseImponible>
+      <porcentajeRetener>70</porcentajeRetener>
+      <codDocSustento>01</codDocSustento>
+      <numDocSustento>006001000000445</numDocSustento>
+      <fechaEmisionDocSustento>2019/09/04</fechaEmisionDocSustento>
+    </impuesto>
+  </impuestos>
+  <infoAdicional>
+    <campoAdicional nombre="Direccion">AV. DANIEL ALVAREZ BURNEO SN Y AV. ORILLAS DEL ZAM</campoAdicional>
+    <campoAdicional nombre="Telefono">000000000</campoAdicional>
+    <campoAdicional nombre="Email">terevivanco2013@gmail.com</campoAdicional>
+    <campoAdicional nombre="comprobante No">CD-009000147</campoAdicional>
+    <campoAdicional nombre="Agente de Retención">ssss</campoAdicional>
+    <campoAdicional nombre="Contribuyente Régimen Microempresas"/>
+  </infoAdicional>
+</comprobanteRetencion>

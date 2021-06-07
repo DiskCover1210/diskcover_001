@@ -220,7 +220,7 @@ class incomC
 
 	}
 
-	
+
 
 	function cuentas_banco($query)
 	{
@@ -535,7 +535,7 @@ class incomC
           $Email = $parametros['email'];
           $Ctas_Modificar = substr($parametros['Cta_modificar'], 0 ,-1);
 
-
+          // print_r($parametros);die();
      	 if (strlen($Autorizacion_LC) >= 13){$Autorizacion_LC = ReadSetDataNum("LC_SERIE_".$Serie_LC, True, True);}
 
      	 if(strlen($Autorizacion_R)>=13){
