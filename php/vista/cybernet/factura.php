@@ -1,7 +1,8 @@
 <?php
-  include "../controlador/facturacion/facturar_pensionC.php";
-  $facturar = new facturar_pensionC();
-  $codigo = ReadSetDataNum("FA_SERIE_001001", True, False);
+  include "../controlador/cybernet/facturaC.php";
+  $facturar = new facturaC();
+  $serie = $_SESSION['INGRESO']['Serie_FA'];
+  $codigo = ReadSetDataNum("FA_SERIE_".$serie , True, False);
 ?>
 <style type="text/css">
   #container1{
@@ -42,8 +43,6 @@
     font-weight: bold;
   }
   #customers th {
-    padding-top: 12px;
-    padding-bottom: 12px;
     text-align: left;
     background-color: #ddd;
     color: black;
@@ -59,16 +58,25 @@
   });
   $(document).ready(function () {
     autocomplete_cliente();
+    autocomplete_producto();
+    $("#nombreCliente").hide();
     //enviar datos del cliente
     $('#cliente').on('select2:select', function (e) {
       var data = e.params.data.data;
+      console.log(data);
       $('#email').val(data.email);
       $('#direccion').val(data.direccion);
       $('#telefono').val(data.telefono);
+      $('#ci_ruc').val(data.ci_ruc);
       $("#subtotal0").val(parseFloat(0.00).toFixed(2));
       $("#subtotal12").val(parseFloat(0.00).toFixed(2));
       $("#iva").val(parseFloat(0.00).toFixed(2));
       $("#total").val(parseFloat(0.00).toFixed(2));
+    });
+    $('#producto0').on('select2:select', function (e) {
+      var data = e.params.data.data;
+      $("#pvp0").val(parseFloat(data.pvp).toFixed(2));
+      console.log(data);
     });
   });
 
@@ -76,7 +84,7 @@
     $('#cliente').select2({
       placeholder: 'Seleccione un cliente',
       ajax: {
-        url:   '../controlador/facturacion/facturar_pensionC.php?cliente=true',
+        url:   '../controlador/cybernet/facturaC.php?cliente=true',
         dataType: 'json',
         delay: 250,
         processResults: function (data) {
@@ -89,155 +97,32 @@
     });
   }
 
-  function guardarPension(){
-    validarDatos = $("#total").val();
-    saldoTotal = $("#saldoTotal").val();
-    if (saldoTotal > 0 ) {
-      Swal.fire({
-        type: 'info',
-        title: 'Debe pagar la totalidad de la factura',
-        text: ''
-      });
-    }else if (validarDatos <= 0 ) {
-      Swal.fire({
-        type: 'info',
-        title: 'Ingrese los datos necesarios para guardar la factura',
-        text: ''
-      });
-    }else{
-      var update = false;
-      //var update = confirm("¿Desea actualizar los datos del cliente?");
-      Swal.fire({
-        title: 'Esta seguro?',
-        text: "¿Desea actualizar los datos del cliente?",
-        type: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#3085d6',
-        cancelButtonColor: '#d33',
-        confirmButtonText: 'Si!'
-      }).then((result) => {
-        if (result.value==true) {
-          update = true;
-        }else{
-          update = false;
-        }
-        TextRepresentante = $("#persona").val();
-        DCLinea = $("#DCLinea").val();
-        TxtDireccion = $("#direccion").val();
-        TxtTelefono = $("#telefono").val();
-        TextFacturaNo = $("#factura").val();
-        TxtGrupo = $("#grupo").val();
-        TextCI = $("#ci_ruc").val();
-        TD_Rep = $("#tdCliente").val();
-        TxtEmail = $("#email").val();
-        TxtDirS = $("#direccion1").val();
-        TextCheque = $("#valorBanco").val();
-        DCBanco = $("#cuentaBanco").val();
-        chequeNo = $("#chequeNo").val();
-        TxtEfectivo = $("#efectivo").val();
-        TxtNC = $("#cuentaNC").val();
-        DCNC = $("#abono").val();
-        Fecha = $("#fechaEmision").val();
-        Total = $("#total").val();
-        codigoCliente = $("#codigoCliente").val();
-        //var confirmar = confirm("Esta seguro que desea guardar \n La factura No."+TextFacturaNo);
-        Swal.fire({
-          title: 'Esta seguro?',
-          text: "Esta seguro que desea guardar \n La factura No."+TextFacturaNo,
-          type: 'warning',
-          showCancelButton: true,
-          confirmButtonColor: '#3085d6',
-          cancelButtonColor: '#d33',
-          confirmButtonText: 'Si!'
-        }).then((result) => {
-          if (result.value==true) {
-            $('#myModal_espera').modal('show');
-            $.ajax({
-            type: "POST",
-            url: '../controlador/facturacion/facturar_pensionC.php?guardarPension=true',
-            data: {
-              'update' : update,
-              'DCLinea' : DCLinea,
-              'Total' : Total,
-              'TextRepresentante' : TextRepresentante,
-              'TxtDireccion' : TxtDireccion,
-              'TxtTelefono' : TxtTelefono,
-              'TextFacturaNo' : TextFacturaNo,
-              'TxtGrupo' : TxtGrupo,
-              'chequeNo' : chequeNo,
-              'TextCI' : TextCI,
-              'TD_Rep' : TD_Rep,
-              'TxtEmail' : TxtEmail,
-              'TxtDirS' : TxtDirS,
-              'codigoCliente' : codigoCliente,
-              'TextCheque' : TextCheque,
-              'DCBanco' : DCBanco,
-              'TxtEfectivo' : TxtEfectivo,
-              'TxtNC' : TxtNC,
-              'Fecha' : Fecha,
-              'DCNC' : DCNC, 
-            }, 
-            success: function(response)
-            {
-              
-              $('#myModal_espera').modal('hide');
-              if (response) {
+  function autocomplete_producto(){
+    $('#producto0').select2({
+      placeholder: 'Seleccione un producto',
+      ajax: {
+        url:   '../controlador/cybernet/facturaC.php?catalagoProducto=true',
+        dataType: 'json',
+        delay: 250,
+        processResults: function (data) {
+          return {
+            results: data
+          };
+        },
+        cache: true
+      }
+    });
+  }
 
-                response = JSON.parse(response);
-                if(response.respuesta == '3')
-                {
-                  Swal.fire({
-                       type: 'error',
-                       title: 'Este documento electronico ya esta autorizado',
-                       text: ''
-                     });
+  function addCliente(){
+    $("#nombreCliente").show();
+    $("#cliente").select2().next().hide();
+  }
 
-                  }else if(response.respuesta == '1')
-                  {
-                    Swal.fire({
-                      type: 'success',
-                      title: 'Este documento electronico fue autorizado',
-                      text: ''
-                    }).then(() => {
-                      serie = DCLinea.split(" ");
-                      url = '../vista/appr/controlador/imprimir_ticket.php?mesa=0&tipo=FA&CI='+TextCI+'&fac='+TextFacturaNo+'&serie='+serie[1];
-                      window.open(url, '_blank');
-                      location.reload();
-                      //imprimir_ticket_fac(0,TextCI,TextFacturaNo,serie[1]);
-                    });
-                  }else if(response.respuesta == '2')
-                  {
-                    Swal.fire({
-                       type: 'info',
-                       title: 'XML devuelto',
-                       text: ''
-                     });
-                    //descargar_archivos(response.url,response.ar);
-
-                  }
-                  else
-                  {
-                    Swal.fire({
-                       type: 'info',
-                       title: 'Error por: '+response,
-                       text: ''
-                     });
-
-                  }
-              }else{
-                Swal.fire({
-                  type: 'info',
-                  title: 'La factura ya se autorizo',
-                  text: ''
-                });
-              }
-            }
-            });
-          }
-        })
-      })
-    }
-    
+  function searchCliente(){
+    $("#nombreCliente").hide();
+    $("#cliente").select2().next().show();
+    autocomplete_cliente();
   }
 
 </script>
@@ -246,66 +131,62 @@
     <div class="panel panel-primary">
       <div class="panel-body">
         <div class="row">
-          <div class="col-sm-3 col-xs-1 text-center">
-            <label>Serie</label>
-          </div>
-          <div class="col-sm-3 col-xs-4">
-            <input type="input" class="form-control input-sm" name="serie" id="serie">
-          </div>
-          <div class="col-sm-3 col-xs-3 text-center">
-            <label>Factura No</label>
-          </div>
-          <div class="col-sm-3 col-xs-4">
-            <input type="input" class="form-control input-sm" name="factura" id="factura">
-          </div>
-        </div>
-        <div class="row">
-          <div class="col-sm-3 col-xs-2 text-right">
+          <div class="col-sm-5 col-xs-12">
             <label class="text-right">Cliente</label>
-          </div>
-          <div class="col-sm-6 col-xs-10">
-            <select class="form-control input-sm" id="cliente" name="cliente" tabindex="5">
+            <a title="Agregar nuevo cliente" style="padding-left: 20px" onclick="addCliente();">
+              <img src="../../img/png/mostrar.png" width="20" height="20">
+            </a>
+            <a title="Buscar cliente" style="padding-left: 20px" onclick="searchCliente();">
+              <img src="../../img/png/consultar.png" width="20" height="20">
+            </a>
+            <select class="form-control input-sm" id="cliente" name="cliente">
               <option value="">Seleccione un cliente</option>
             </select>
             <input type="hidden" name="codigoCliente" id="codigoCliente">
+            <input type="text" class="form-control input-sm" placeholder="Ingrese nombre del nuevo cliente" name="nombreCliente" id="nombreCliente">
           </div>
-          <div class="col-sm-3 col-xs-12">
-            <button type="button" class="btn" data-toggle="modal" data-target="#myModal">Cliente Nuevo</button>
+          <div class="col-sm-3 col-xs-4">
+            <label>RUC/CI</label>
+            <input type="input" class="form-control input-sm" name="ci_ruc" id="ci_ruc">
+          </div>
+          <div class="col-sm-2 col-xs-4">
+            <label>Serie</label>
+            <input type="input" class="form-control input-sm" name="serie" id="serie" value="<?php echo $serie ?>" readonly>
+          </div>
+          <div class="col-sm-2 col-xs-4">
+            <label>Factura No</label>
+            <input type="input" class="form-control input-sm" name="factura" id="factura" value="<?php echo $codigo ?>" readonly>
           </div>
         </div>
       
         <div class="row">
-          <div class="col-sm-2 col-xs-2 text-right">
-            <label>Dirección</label>
-          </div>
-          <div class="col-sm-5 col-xs-10">
-            <input type="input" class="form-control input-sm" name="direccion" id="direccion">
-          </div>
-          <div class="col-sm-1 col-xs-2 text-right">
-            <label>Telefono</label>
-          </div>
-          <div class=" col-sm-2 col-xs-10">
-            <input type="input" class="form-control input-sm" name="telefono" id="telefono">
-          </div>
-          <div class="col-sm-1 col-xs-2 text-right">
-            <label>Email</label>
-          </div>
-          <div class="col-sm-2 col-xs-10">
+          <div class="col-sm-3 col-xs-6">
+            <label>Correo eléctronico</label>
             <input type="input" class="form-control input-sm" name="email" id="email">
           </div>
+          <div class="col-sm-5 col-xs-6">
+            <label>Dirección</label>
+            <input type="input" class="form-control input-sm" name="direccion" id="direccion">
+          </div>
+          <div class=" col-sm-2 col-xs-6">
+            <label>Telefono convencional</label>
+            <input type="input" class="form-control input-sm" name="telefono1" id="telefono">
+          </div>
+          <div class=" col-sm-2 col-xs-6">
+            <label>Telefono celular</label>
+            <input type="input" class="form-control input-sm" name="telefono2" id="telefono1">
+          </div>
         </div>
-
-        <br>
         <div class="row">
           <div class="col-sm-12">
-            <h2>Detalle del pedido</h2>
+            <h4>Detalle del pedido</h4>
           </div>
           <div class="col-sm-12" style="
               height: 150px;
               overflow: auto;
               display: block;
           ">
-            <table class="table table-responsive table-borfed thead-dark" id="customers" tabindex="14">
+            <table class="table table-responsive table-borfed thead-dark" id="customers">
               <thead>
                 <tr>
                   <th>Producto</th>
@@ -315,6 +196,22 @@
                 </tr>
               </thead>
               <tbody id="cuerpo">
+                <tr>
+                  <td>
+                    <select class="form-control input-sm" id="producto0" name="producto0">
+                      <option value="">Seleccione un cliente</option>
+                    </select>
+                  </td>
+                  <td>
+                    <input type="text" class="form-control input-sm text-right" name="cantidad0" value="0">
+                  </td>
+                  <td>
+                    <input type="text" class="form-control input-sm text-right" name="pvp0" id="pvp0" value="0">
+                  </td>
+                  <td>
+                    <input type="text" class="form-control input-sm text-right" name="total0" value="0">
+                  </td>
+                </tr>
               </tbody>
             </table>          
           </div>
@@ -356,7 +253,7 @@
           <div class=" col-sm-4 col-xs-6 col-sm-offset-8 col-xs-offset-5">
             <div class="col-sm-2 col-xs-4 col-sm-offset-4 col-xs-offset-4">
               <a title="Guardar" class="btn btn-default" tabindex="22">
-                <img src="../../img/png/save.png" width="25" height="30" onclick="guardarPension();">
+                <img src="../../img/png/save.png" width="25" height="30" onclick="guardarFactura();">
               </a>
             </div>
             <div class="col-xs-4 col-md-2 col-sm-2 col-lg-1">

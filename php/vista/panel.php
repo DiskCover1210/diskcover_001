@@ -121,6 +121,7 @@ if(isset($_GET['mos']))
 				$_SESSION['INGRESO']['Dec_PVP'] = $empresa_d[0]['Dec_PVP'];
 				$_SESSION['INGRESO']['Dec_Costo'] = $empresa_d[0]['Dec_Costo'];
 				$_SESSION['INGRESO']['Cotizacion'] = $empresa_d[0]['Cotizacion'];
+				$_SESSION['INGRESO']['Serie_FA'] = $empresa_d[0]['Serie_FA'];
 				// print_r($empresa_d);die();
 				$_SESSION['INGRESO']['Ciudad'] = $empresa_d[0]['Ciudad'];
 			   

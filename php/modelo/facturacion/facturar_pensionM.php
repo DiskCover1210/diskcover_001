@@ -24,13 +24,15 @@ class facturar_pensionM
 			AND C.Codigo <> '9999999999' 
 			AND C.FA <> 0
 			AND CF.Codigo = C.Codigo";
-		if($query != '')
+		if($query != 'total')
 		{
 		   	$sql.=" AND Cliente LIKE '%".$query."%'";
 		}
 		$sql.=" GROUP BY C.Email, C.T,C.Codigo,C.Cliente,C.Direccion,C.Grupo,C.Telefono,C.CI_RUC,C.TD 
-			ORDER BY C.Cliente OFFSET 0 ROWS FETCH NEXT 10 ROWS ONLY";
-
+			ORDER BY C.Cliente";
+    if ($query != 'total') {
+      $sql .= " OFFSET 0 ROWS FETCH NEXT 10 ROWS ONLY";
+    }
 		$stmt = sqlsrv_query( $this->dbs, $sql);
 		$result = array();
 	    while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_ASSOC) ) 

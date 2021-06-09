@@ -1,7 +1,6 @@
 <?php
   include "../controlador/facturacion/facturar_pensionC.php";
   $facturar = new facturar_pensionC();
-  $codigo = ReadSetDataNum("FA_SERIE_001001", True, False);
 ?>
 <style type="text/css">
   #container1{
@@ -65,6 +64,7 @@
   $(document).ready(function () {
     autocomplete_cliente();
     catalogoLineas();
+    totalRegistros();
     //enviar datos del cliente
     $('#cliente').on('select2:select', function (e) {
       var data = e.params.data.data;
@@ -139,7 +139,8 @@
           }
         }else{
           console.log("No tiene datos");
-        }            
+        }
+        numeroFactura();            
       }
     });
     $('#myModal_espera').modal('hide');
@@ -322,7 +323,6 @@
         key++;
       }
     }
-    console.log(datosLineas);
     codigoCliente = $("#codigoCliente").val();
     $("#total12").val(parseFloat(total12).toFixed(2));
     $("#descuento").val(parseFloat(descuento).toFixed(2));
@@ -363,8 +363,6 @@
         $("#descuento2"+i).val(descuento1.toFixed(2));
         subtotal = valor - descuento1;
         $("#subtotal"+i).val(subtotal.toFixed(2));
-        console.log(row.cells[0]);
-        console.log(valor);
       }
       total0 = $("#total0").val();
       descuento = total0 * (porcentaje/100);
@@ -383,6 +381,38 @@
     banco = $("#valorBanco").val();
     saldo = total - banco - efectivo - abono;
     $("#saldoTotal").val(saldo.toFixed(2));
+  }
+
+  function numeroFactura(){
+    DCLinea = $("#DCLinea").val();
+    $.ajax({
+      type: "POST",
+      url: '../controlador/facturacion/facturar_pensionC.php?numFactura=true',
+      data: {
+        'DCLinea' : DCLinea,
+      }, 
+      success: function(data)
+      {
+        datos = JSON.parse(data);
+        document.querySelector('#numeroSerie').innerText = datos.serie;
+        $("#factura").val(datos.codigo);
+      }
+    });
+  }
+
+  function totalRegistros(){
+    $.ajax({
+      type: "POST",
+      url: '../controlador/facturacion/facturar_pensionC.php?cliente=true&total=true',
+      data: {
+        'q' : '',
+      }, 
+      success: function(data)
+      {
+        datos = JSON.parse(data);
+        $("#registros").val(datos.registros);
+      }
+    });
   }
 
   function guardarPension(){
@@ -588,7 +618,7 @@
           <div class="col-md-2">
             <input type="hidden" id="Autorizacion">
             <input type="hidden" id="Cta_CxP">
-            <select class="form-control input-sm" name="DCLinea" id="DCLinea" tabindex="1">
+            <select class="form-control input-sm" name="DCLinea" id="DCLinea" tabindex="1" onchange="numeroFactura();">
               
             </select>
           </div>
@@ -606,6 +636,7 @@
           </div>
           <div class=" col-sm-2">
             <label class="red">Factura No.</label>
+            <label id="numeroSerie" class="red"></label>
           </div>
         </div>
         <div class="row">
@@ -622,7 +653,7 @@
             <input type="input" class="form-control input-sm" id="grupo" name="grupo" tabindex="6">
           </div>
           <div class=" col-sm-2">
-            <input tabindex="7" type="input" class="form-control input-sm text-right" name="factura" id="factura" value="<?php echo $codigo; ?>">
+            <input tabindex="7" type="input" class="form-control input-sm text-right" name="factura" id="factura">
           </div>
         </div>
         <div class="row">
@@ -633,7 +664,7 @@
             <input tabindex="8" type="input" class="form-control input-sm" name="direccion" id="direccion">
           </div>
           <div class="col-sm-2 text-center justify-content-center align-items-center">
-            <input style="width: 50px" type="text" name="codigoBanco" class="form-control input-sm text-center justify-content-center align-items-center" value="538" readonly>
+            <input style="width: 50px" type="text" id="registros" class="form-control input-sm text-center justify-content-center align-items-center" readonly>
           </div>
           <div class="col-sm-1">
             <label class="online-radio"><input tabindex="4" type="checkbox" name="rbl_radio" id="rbl_no" checked="" style="margin-right: 2px;">Con mes</label>  

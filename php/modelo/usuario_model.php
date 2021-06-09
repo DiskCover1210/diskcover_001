@@ -673,7 +673,8 @@ class usuario_model{
 				$empresa[$i]['RUC']=$obj->RUC;
 				$empresa[$i]['Gerente']=$obj->Gerente;	
 				$empresa[$i]['Cotizacion']=$obj->Cotizacion;
-				$empresa[$i]['No_Autorizar']=$obj->No_Autorizar;					
+				$empresa[$i]['No_Autorizar']=$obj->No_Autorizar;
+				$empresa[$i]['Serie_FA']=$obj->Serie_FA;				
 							
 				//IVA ACTUAL
 				$sql="SELECT ROUND((Porc/100), 2) AS porc FROM Tabla_Por_ICE_IVA WHERE IVA <> '0' 

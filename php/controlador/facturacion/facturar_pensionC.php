@@ -11,11 +11,26 @@ $controlador = new facturar_pensionC();
 if(isset($_GET['cliente']))
 {
 	$query = '';
-	if(isset($_GET['q']))
+	if(isset($_GET['q']) && $_GET['q'] != ''  )
 	{
-		$query = $_GET['q'];
+		$query = $_GET['q']; 
 	}
-	echo json_encode($controlador->getClientes($query));
+  if (isset($_GET['total'])) {
+    echo json_encode($controlador->totalClientes());
+  }else{
+    echo json_encode($controlador->getClientes($query));
+  }
+}
+
+if(isset($_GET['numFactura']))
+{
+  $query = '';
+  $DCLinea = $_POST['DCLinea'];
+  $fact = SinEspaciosIzq($DCLinea);
+  $serie = SinEspaciosDer($DCLinea);
+  $codigo = ReadSetDataNum($fact."_SERIE_".$serie, True, False);
+  echo json_encode(array('codigo' => $codigo,'serie' => $serie));
+  exit();
 }
 
 if(isset($_GET['catalogo']))
@@ -86,6 +101,13 @@ class facturar_pensionC
 		echo json_encode($clientes);
 		exit();
 	}
+
+  public function totalClientes(){
+    $datos = $this->facturacion->getClientes('total');
+    $total = count($datos);
+    echo json_encode(array('registros'=>$total));
+    exit();
+  }
 
 	public function getCatalogoLineas(){
 		$emision = $_POST['fechaEmision'];
