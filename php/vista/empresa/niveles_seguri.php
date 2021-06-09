@@ -170,6 +170,7 @@ require_once("panel.php");
     		//   $('#modu').html('<img src="../../img/gif/loader4.1.gif" width="50%">');
     		// },
     		success:  function (response) { 
+          console.log(response);
     			if(response)
     			 {
     			 	if(response.n1==1)
@@ -375,6 +376,7 @@ function guardar()
  		'n7':$('#rbl_n7').prop('checked'),
  		'super':$('#rbl_super').prop('checked'),
  		'usuario':$('#txt_usuario').val(),
+    'nombre': $('select[name="ddl_usuarios"] option:selected').text(),
  		'pass':$('#txt_pass').val(),
     'email':$('#txt_email').val(),
  		'modulos':modulos,
@@ -407,7 +409,11 @@ function guardar()
     					$('#myModal_espera').modal('hide'); 
               $('#rbl_all').prop('checked',false); 
     					buscar_permisos();
-    				}
+    				}else if(response == -2)
+            {
+              $('#myModal_espera').modal('hide'); 
+              Swal.fire('No se pudo crear el usuario para SQLServer','Pongace en contacto con el administrador del sistema, su base no esta actualizada o no tiene las credenciales correctas','error');
+            }
     		}
     	});
 
@@ -637,13 +643,13 @@ function marcar_acceso(item,modulo)
         type:  'post',
         dataType: 'json',
         beforeSend: function () { 
-          $('#myModal_espera').modal('show'); 
+          // $('#myModal_espera').modal('show'); 
         },
         success:  function (response) { 
           if(response == 1)
            {
               usuario_empresa();
-              $('#myModal_espera').modal('hide');      
+              // $('#myModal_espera').modal('hide');      
             
            }
         }
