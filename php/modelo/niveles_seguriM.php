@@ -150,7 +150,9 @@ class niveles_seguriM
 	function datos_usuario($entidad,$usuario)
 	{
 		$cid = Conectar::conexion('MYSQL');
-		$sql = "SELECT Usuario,Clave,Nivel_1 as 'n1',Nivel_2 as 'n2',Nivel_3 as 'n3',Nivel_4 as 'n4',Nivel_5 as 'n5',Nivel_6 as 'n6',Nivel_7 as 'n7',Supervisor,Cod_Ejec,Email FROM acceso_usuarios WHERE  ID_Empresa = ".$entidad." AND CI_NIC = '".$usuario."'";
+		$sql = "SELECT Usuario,Clave,Nivel_1 as 'n1',Nivel_2 as 'n2',Nivel_3 as 'n3',Nivel_4 as 'n4',Nivel_5 as 'n5',Nivel_6 as 'n6',Nivel_7 as 'n7',Supervisor,Cod_Ejec,Email FROM acceso_usuarios WHERE  CI_NIC = '".$usuario."'";
+
+		// print_r($sql);die();
 		 $datos=array();
 		 if($cid)
 		 {
@@ -221,7 +223,7 @@ class niveles_seguriM
 	function update_acceso_usuario($niveles,$usuario,$clave,$entidad,$CI_NIC,$email)
 	{
 	   $cid = Conectar::conexion('MYSQL');
-	   $sql = "UPDATE acceso_usuarios SET Nivel_1 =".$niveles['1'].", Nivel_2 =".$niveles['2'].", Nivel_3 =".$niveles['3'].", Nivel_4 =".$niveles['4'].",Nivel_5 =".$niveles['5'].", Nivel_6=".$niveles['6'].", Nivel_7=".$niveles['7'].", Supervisor = ".$niveles['super'].", Usuario = '".$usuario."',Clave = '".$clave."',Email='".$email."' WHERE ID_Empresa = '".$entidad."' AND CI_NIC = '".$CI_NIC."';";
+	   $sql = "UPDATE acceso_usuarios SET Nivel_1 =".$niveles['1'].", Nivel_2 =".$niveles['2'].", Nivel_3 =".$niveles['3'].", Nivel_4 =".$niveles['4'].",Nivel_5 =".$niveles['5'].", Nivel_6=".$niveles['6'].", Nivel_7=".$niveles['7'].", Supervisor = ".$niveles['super'].", Usuario = '".$usuario."',Clave = '".$clave."',Email='".$email."' WHERE CI_NIC = '".$CI_NIC."';";
 	   if($cid)
 	   {
 	   	 $resultado = mysqli_query($cid, $sql);
@@ -327,17 +329,20 @@ class niveles_seguriM
 		 	     $cid2 = Conectar:: modulos_sql_server($value['IP_VPN_RUTA'],$value['Usuario_DB'],$value['Contrasena_DB'],$value['Base_Datos'],$value['Puerto']);
 
 		 	     $sql = "INSERT INTO Clientes(T,FA,Codigo,Fecha,Cliente,TD,CI_RUC,FactM,Descuento,RISE,Especial)VALUES('N',0,'".$parametros['ced']."','".date('Y-m-d')."','".$parametros['nom']."','C','".$parametros['ced']."',0,0,0,0);";
-		 	     $sql.="INSERT INTO Accesos (TODOS,Clave,Usuario,Codigo,Nombre_Completo) VALUES (1,'".$parametros['cla']."','".$parametros['usu']."','".$parametros['ced']."','".$parametros['nom']."')";
-
+		 	     $sql.="INSERT INTO Accesos (TODOS,Clave,Usuario,Codigo,Nombre_Completo,Nivel_1,Nivel_2,Nivel_3,Nivel_4,Nivel_5,Nivel_6,Nivel_7,Supervisor,EmailUsuario) VALUES (1,'".$parametros['cla']."','".$parametros['usu']."','".$parametros['ced']."','".$parametros['nom']."','".$parametros['n1']."','".$parametros['n2']."','".$parametros['n3']."','".$parametros['n4']."','".$parametros['n5']."','".$parametros['n6']."','".$parametros['n7']."','".$parametros['super']."','".$parametros['email']."')";
 		 	     // print_r($sql);die();
 		 	    $stmt = sqlsrv_query($cid2, $sql);
 	            if($stmt === false)  
 	        	    {  
-	        		    echo "Error en consulta PA.\n";
+	        	    	// print_r('fallo');die();
+	        		    // echo "Error en consulta PA.\n";
+	        		    // print_r($sql);die();
 	        		    return -1;
 		               die( print_r( sqlsrv_errors(), true));  
 	                }else
 	                {
+
+	        	    	// print_r('si');die();
 	            	    cerrarSQLSERVERFUN($cid2);
 	            	    $insertado = true;
 	                }     
@@ -350,6 +355,106 @@ class niveles_seguriM
 		 {
 		 	return -1;
 		 }
+
+	}
+
+
+	function existe_en_SQLSERVER($parametros)
+	{
+        $registrado = true;
+		$cid = Conectar::conexion('MYSQL');
+		$sql= "SELECT DISTINCT Base_Datos,Usuario_DB,Contrasena_DB,IP_VPN_RUTA,Tipo_Base,Puerto  FROM lista_empresas WHERE ID_Empresa = '".$parametros['entidad']."' AND Base_Datos <>'.'";
+		 if($cid)
+		 {
+		 	$consulta=$cid->query($sql) or die($cid->error);
+		 	while($filas=$consulta->fetch_assoc())
+			{
+				$datos[] =$filas;			
+			}
+		 }
+		 $insertado = false;
+		// print_r($datos);die();
+		 foreach ($datos as $key => $value) {
+		 	if($value['Usuario_DB']=='sa')
+		 	{
+
+		 	// print_r($value);die();
+		 	     $cid2 = Conectar:: modulos_sql_server($value['IP_VPN_RUTA'],$value['Usuario_DB'],$value['Contrasena_DB'],$value['Base_Datos'],$value['Puerto']);
+		 	     // print_r($cid2);die();
+
+		 	     $sql = "SELECT * FROM Accesos WHERE Codigo = '".$parametros['CI_usuario']."'";
+		 	     // print_r($sql);die();
+		 	     $stmt = sqlsrv_query($cid2, $sql);
+		 	     $result = array();	
+		 	     if($stmt===false)
+		 	     {
+		 	     	// print_r('fallo');die();
+		 	     	return -2;
+		 	     }else{
+
+		 	     	// print_r('consulto');die();
+		 	        while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_ASSOC)) 
+		 	     	   {
+		 	     		   $result[] = $row;
+		 	     	   }
+
+		 	     	// print_r($result);die();
+		 	     	 if(count($result)>0)
+		 	     	 {
+
+		 	     	// print_r('existe');die();
+		 	     	 	$sql = "UPDATE Accesos SET Nivel_1 =".$parametros['n1'].", Nivel_2 =".$parametros['n2'].", Nivel_3 =".$parametros['n3'].", Nivel_4 =".$parametros['n4'].",Nivel_5 =".$parametros['n5'].", Nivel_6=".$parametros['n6'].", Nivel_7=".$parametros['n7'].", Supervisor = ".$parametros['super'].", Usuario = '".$parametros['usuario']."',Clave = '".$parametros['pass']."',EmailUsuario='".$parametros['email']."' WHERE Codigo = '".$parametros['CI_usuario']."';";
+
+		 	     	 	  $sql = str_replace('false',0, $sql);
+		 	     	 	  $sql = str_replace('true',1, $sql);
+		 	     	 	  // print_r($sql);die();
+		 	     	 	 $stmt2 = sqlsrv_query($cid2, $sql);
+		 	     	 	  if( $stmt2 === false)                         
+	                          {  
+		                        echo "Error en consulta PA.\n";  
+		                        return '';
+		                        die( print_r( sqlsrv_errors(), true));  
+	                          }else
+	                          {
+	                          	$insertado = true;
+	                          }	 	    
+
+		 	     	 }else
+		 	     	 {
+
+		 	     	// print_r('no existe');die();
+		 	     	 	$parametros_ing = array();
+		 	            $parametros_ing['ent']	  = $parametros['entidad'];     	 	 
+		 	            $parametros_ing['cla'] = $parametros['pass'];
+		 	            $parametros_ing['usu'] = $parametros['usuario'];
+		 	            $parametros_ing['ced'] = $parametros['CI_usuario'];
+		 	            $parametros_ing['nom'] = $parametros['nombre'];
+		 	            $parametros_ing['n1'] = $parametros['n1'];
+		 	            $parametros_ing['n2'] = $parametros['n2'];
+		 	            $parametros_ing['n3'] = $parametros['n3'];
+		 	            $parametros_ing['n4'] = $parametros['n4'];
+		 	            $parametros_ing['n5'] = $parametros['n5'];
+		 	            $parametros_ing['n6'] = $parametros['n6'];
+		 	            $parametros_ing['n7'] = $parametros['n7'];
+		 	            $parametros_ing['super'] = $parametros['super'];
+		 	            $parametros_ing['email'] = $parametros['email'];
+		 	            // print_r($parametros_ing);die();
+		 	     	 	 if($this->crear_como_cliente_SQLSERVER($parametros_ing)==1)
+		 	     	 	 {
+		 	     	 	 	$insertado = true;
+		 	     	 	 }
+		 	     	 }
+		 	     }
+	        }     
+		 }
+		 if($insertado == true)
+		 {
+		 	return 1;
+		 }else
+		 {
+		 	return -1;
+		 }
+
 
 	}
 
@@ -399,30 +504,13 @@ class niveles_seguriM
 
 	}
 
-	// function usuario_empresas($entidad,$usuario)
-	// { 
-	// 	$cid = Conectar::conexion('MYSQL');	  
-	// 	$sql="SELECT DISTINCT Item FROM acceso_empresas WHERE ID_Empresa = '".$entidad."' AND CI_NIC = '".$usuario."' ORDER BY Item";
-	// 	$empresa = array();
-
-	// 	 if($cid)
-	// 	 {
-	// 	 	$consulta=$cid->query($sql) or die($cid->error);
-	// 	 	while($filas=$consulta->fetch_assoc())
-	// 		{
-	// 			$empresa[] =$filas;			
-	// 		}
-			
-	// 	 }
-	// 	 return $empresa;
-	// }
-
 	function accesos_modulos($entidad,$usuario)
 	{
 
 		$cid = Conectar::conexion('MYSQL');	  
 		$sql="SELECT Item,Modulo FROM acceso_empresas WHERE ID_Empresa = '".$entidad."' AND CI_NIC = '".$usuario."'";
-		 $empresa = array();
+		 $datos = array();
+
 
 		 if($cid)
 		 {

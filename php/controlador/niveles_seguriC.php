@@ -168,14 +168,6 @@ class niveles_seguriC
 				 		{
 				 			$items .= '<label class="checkbox-inline"><input type="checkbox" name="modulos_'.$value.'_'.$value1['modulo'].'" id="modulos_'.$value.'_'.$value1['modulo'].'" value="'.$value1['modulo'].'"><b>'.$value1['aplicacion'].'</b></label><br>';
 				 		}
-				 		// if(count($mod)>0)
-				 		// {
-				 		// 	$items .= '<label class="checkbox-inline"><input type="checkbox" name="modulos_'.$value.'[]" value="'.$value1['modulo'].'" checked><b>'.$value1['aplicacion'].'</b></label><br>';
-				 		// }
-				 		// else
-				 		// {
-				 		// 	$items .= '<label class="checkbox-inline"><input type="checkbox" name="modulos_'.$value.'[]" value="'.$value1['modulo'].'"><b>'.$value1['aplicacion'].'</b></label><br>';
-				 		// }
 				 	}
 				 	$items.='</form></div>';
 				 }
@@ -200,20 +192,10 @@ class niveles_seguriC
 	}
 	function guardar_datos_modulo($parametros)
 	{
-		// die();
-		// $modulos = substr($parametros['modulos'],0,-1);
-		// $empresas = explode(',',$parametros['empresas']);
-		// $insert =1;
-		// foreach ($empresas as $key => $value) {
-		// 	if($value!='')
-		// 	{
-		//        $this->modelo->delete_modulos($parametros['entidad'],$value,$parametros['CI_usuario']);
-		//        if($modulos!='')
-		//        {
-		// 	     $this->modelo->guardar_acceso_empresa($modulos,$parametros['entidad'],$value,$parametros['CI_usuario']);
-		// 	   }
-		//     }
-		// }
+		$r = $this->modelo->existe_en_SQLSERVER($parametros);
+		// print_r($r);die();
+		if($r==1)
+		{		
 
 		$niveles = array('1'=>$parametros['n1'],'2'=>$parametros['n2'],'3'=>$parametros['n3'],'4'=>$parametros['n4'],'5'=>$parametros['n5'],'6'=>$parametros['n6'],'7'=>$parametros['n7'],'super'=>$parametros['super']);
 
@@ -228,6 +210,11 @@ class niveles_seguriC
 		{
 			return -1 ;
 		}
+	}else
+	{
+		return -2;
+	}
+
 
 	}
 	function bloqueado_usurio($parametros)
@@ -239,6 +226,15 @@ class niveles_seguriC
 	function nuevo_usurio($parametros)
 	{
 		// print_r($parametros);die();
+		$parametros['n1'] = 0;
+		$parametros['n2'] = 0;
+		$parametros['n3'] = 0;
+		$parametros['n4'] = 0;
+		$parametros['n5'] = 0;
+		$parametros['n6'] = 0;
+		$parametros['n7'] = 0;
+		$parametros['super'] = 0;
+		$parametros['email'] = '.';
 		$existe = $this->modelo->usuario_existente($parametros['usu'],$parametros['cla'],$parametros['ent']);
 		if($existe == 1)
 		{
