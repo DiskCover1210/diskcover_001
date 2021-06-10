@@ -1,96 +1,72 @@
-<?xml version="1.0" encoding="UTF-8"?><autorizacion>
-  <estado>AUTORIZADO</estado>
-  <numeroAutorizacion>2605202101070216417900110010010000140431234567813</numeroAutorizacion>
-  <fechaAutorizacion class="fechaAutorizacion">26/05/2021 11:40:16.000</fechaAutorizacion>
-  <comprobante><![CDATA[<?xml version="1.0" encoding="UTF-8" standalone="no"?><factura id="comprobante" version="1.1.0">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><comprobanteRetencion id="comprobante" version="1.1.0">
   <infoTributaria>
     <ambiente>1</ambiente>
     <tipoEmision>1</tipoEmision>
-    <razonSocial>DESARROLLO  COFRADIA</razonSocial>
+    <razonSocial>DESARROLLO - COFRADIA</razonSocial>
     <nombreComercial>DISKCOVER SYSTEM</nombreComercial>
-    <ruc>0702164179001</ruc>
-    <claveAcceso>2605202101070216417900110010010000140431234567813</claveAcceso>
-    <codDoc>01</codDoc>
+    <ruc>0990050368001</ruc>
+    <claveAcceso>0906202107099005036800110010016000000001234567818</claveAcceso>
+    <codDoc>07</codDoc>
     <estab>001</estab>
     <ptoEmi>001</ptoEmi>
-    <secuencial>000014043</secuencial>
-    <dirMatriz>JUAN DE DIOS MARTINEZ N36245 Y CARLOS JULIO AROSEMENA</dirMatriz>
+    <secuencial>000000006</secuencial>
+    <dirMatriz>JUAN DE DIOS MARTINEZ N36-245 Y CARLOS JULIO AROSEMENA</dirMatriz>
   </infoTributaria>
-  <infoFactura>
-    <fechaEmision>26/05/2021</fechaEmision>
-    <dirEstablecimiento>JUAN DE DIOS MARTINEZ N36245 Y CARLOS JULIO AROSEMENA</dirEstablecimiento>
+  <infoCompRetencion>
+    <fechaEmision>09/06/2021</fechaEmision>
+    <dirEstablecimiento>JUAN DE DIOS MARTINEZ N36-245 Y CARLOS JULIO AROSEMENA</dirEstablecimiento>
     <obligadoContabilidad>SI</obligadoContabilidad>
-    <tipoIdentificacionComprador>06</tipoIdentificacionComprador>
-    <razonSocialComprador>ABAD MOSQUERA EDITHSON MARCELO</razonSocialComprador>
-    <identificacionComprador>0701520546</identificacionComprador>
-    <totalSinImpuestos>2.2</totalSinImpuestos>
-    <totalDescuento>0</totalDescuento>
-    <totalConImpuestos>
-      <totalImpuesto>
-        <codigo>2</codigo>
-        <codigoPorcentaje>0</codigoPorcentaje>
-        <descuentoAdicional>0</descuentoAdicional>
-        <baseImponible>2.2</baseImponible>
-        <valor>0.00</valor>
-      </totalImpuesto>
-    </totalConImpuestos>
-    <propina>0</propina>
-    <importeTotal>2.2</importeTotal>
-    <moneda>DOLAR</moneda>
-  </infoFactura>
-  <detalles>
-    <detalle>
-      <codigoPrincipal>98.90</codigoPrincipal>
-      <descripcion>Servicio de Entreg</descripcion>
-      <unidadMedida>DOLAR</unidadMedida>
-      <cantidad>1.0000</cantidad>
-      <precioUnitario>2.2</precioUnitario>
-      <descuento>0</descuento>
-      <precioTotalSinImpuesto>2.2</precioTotalSinImpuesto>
-      <impuestos>
-        <impuesto>
-          <codigo>2</codigo>
-          <codigoPorcentaje>0</codigoPorcentaje>
-          <tarifa>0</tarifa>
-          <baseImponible>2.2</baseImponible>
-          <valor>0</valor>
-        </impuesto>
-      </impuestos>
-    </detalle>
-  </detalles>
+    <tipoIdentificacionSujetoRetenido>04</tipoIdentificacionSujetoRetenido>
+    <razonSocialSujetoRetenido>CIAAN CLINICA GUAYAQUIL SERVICIOS MEDICOS S.A.</razonSocialSujetoRetenido>
+    <identificacionSujetoRetenido>0990050368001</identificacionSujetoRetenido>
+    <periodoFiscal>06/2021</periodoFiscal>
+  </infoCompRetencion>
+  <impuestos>
+    <impuesto>
+      <codigo>2</codigo>
+      <codigoRetencion>9</codigoRetencion>
+      <baseImponible>49.9500</baseImponible>
+      <porcentajeRetener>10</porcentajeRetener>
+      <codDocSustento>01</codDocSustento>
+      <numDocSustento>001001000000005</numDocSustento>
+      <fechaEmisionDocSustento>2021/06/09</fechaEmisionDocSustento>
+    </impuesto>
+  </impuestos>
   <infoAdicional>
-    <campoAdicional nombre="Direccion">HOSPITAL DEL SURAAA</campoAdicional>
-    <campoAdicional nombre="Email">diskcover@gmail.commm</campoAdicional>
-    <campoAdicional nombre="Referencia">DINERS CLUB</campoAdicional>
+    <campoAdicional nombre="Direccion">PADRE AGUIRRE 401 Y GENERAL CORDOVA</campoAdicional>
+    <campoAdicional nombre="Telefono">042563555</campoAdicional>
+    <campoAdicional nombre="comprobante No">CD-006000162</campoAdicional>
+    <campoAdicional nombre="Agente de Retencion">ssss</campoAdicional>
+    <campoAdicional nombre="Contribuyente Regimen Microempresas"/>
   </infoAdicional>
-<ds:Signature xmlns:ds="http://www.w3.org/2000/09/xmldsig#" xmlns:etsi="http://uri.etsi.org/01903/v1.3.2#" Id="Signature757969">
-<ds:SignedInfo Id="Signature-SignedInfo917273">
+<ds:Signature xmlns:ds="http://www.w3.org/2000/09/xmldsig#" xmlns:etsi="http://uri.etsi.org/01903/v1.3.2#" Id="Signature726404">
+<ds:SignedInfo Id="Signature-SignedInfo356851">
 <ds:CanonicalizationMethod Algorithm="http://www.w3.org/TR/2001/REC-xml-c14n-20010315"/>
 <ds:SignatureMethod Algorithm="http://www.w3.org/2000/09/xmldsig#rsa-sha1"/>
-<ds:Reference Id="SignedPropertiesID782432" Type="http://uri.etsi.org/01903#SignedProperties" URI="#Signature757969-SignedProperties719286">
+<ds:Reference Id="SignedPropertiesID569549" Type="http://uri.etsi.org/01903#SignedProperties" URI="#Signature726404-SignedProperties395564">
 <ds:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1"/>
-<ds:DigestValue>xXpLxMMQn9mPWqU97BPxeJrNOy0=</ds:DigestValue>
+<ds:DigestValue>CJ3FAgwjJ4uPtWlUhWfFKVL/UG4=</ds:DigestValue>
 </ds:Reference>
-<ds:Reference URI="#Certificate1945359">
+<ds:Reference URI="#Certificate18182">
 <ds:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1"/>
-<ds:DigestValue>9KJ7dpPjnq7SZjr1V5wxUby8aFU=</ds:DigestValue>
+<ds:DigestValue>1gdmNr4IyRg++JTAZq6uvaR7N7U=</ds:DigestValue>
 </ds:Reference>
-<ds:Reference Id="Reference-ID-780059" URI="#comprobante">
+<ds:Reference Id="Reference-ID-148798" URI="#comprobante">
 <ds:Transforms>
 <ds:Transform Algorithm="http://www.w3.org/2000/09/xmldsig#enveloped-signature"/>
 </ds:Transforms>
 <ds:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1"/>
-<ds:DigestValue>v2zWyWRqDUt3saptuE2wBAOVnj8=</ds:DigestValue>
+<ds:DigestValue>jfTpNiytel7mtUnXHsy2ybwMQMM=</ds:DigestValue>
 </ds:Reference>
 </ds:SignedInfo>
-<ds:SignatureValue Id="SignatureValue69974">
-bj7Fv+AUv3P64YbYNq53nCQEqOQSdnEpsB/AzS3to1OyCMa16q2VKtbXElWM/ahaa0mGVFsNRAh4
-7DmJV7mQIsBq7EE2P3VjfUdmjOkphVYmhSttYpddFMpBPUFN1zsuKRy3FTm8amC+iy6d7ynsqL+h
-TuqCVic9fQoJT9yBdqHxu9MIoBSaphuUQ3tniGHnNOdpS86/O6OZQotXGfdAy13T42AM7JfJPfV+
-hptG5GTwCna5jjqLUA0mIM5jht7TM8qmCUjHDSPJv9mby3Lx9UJZ767sLD7A11YK9lKCzXbKW6LU
-/KUGDA1Sri7IF7aEHV1AOzfV27KjzhEQCsMqJg==
+<ds:SignatureValue Id="SignatureValue808162">
+NQh/NSan5cwEol96Cbfit0nUys4cmwLjuEr/8ROrnJXJEJx2hikTGfVjZIeSKlUXLKqGcEU1lklx
+pByW/b+uIccaZylisbxmTuk/pD9YK+xTypIDnssdAUUD+jzWjUMoWdAHv0nLewHwzl4VCesGz1PL
+L7xic3uzlrScuwwhxR9BdOE6AX3360OQpvXmN35JGd6Pvq+4mKiYSFWVl20R4Be94SojWXud8rPh
+xQuhzkEh8Gd0mRwVlorX/gOoxCiI1yumN+4pEiP0bOfSc6d1f7GgXG2/lq66GXHK+Vlny9sgb1JG
+RinmXTyth+MkhY6sPRdRo1W4lAbKyp7dg2+fKg==
 </ds:SignatureValue>
-<ds:KeyInfo Id="Certificate1945359">
+<ds:KeyInfo Id="Certificate18182">
 <ds:X509Data>
 <ds:X509Certificate>
 MIILkjCCCXqgAwIBAgIEXDrIAjANBgkqhkiG9w0BAQsFADCBmTELMAkGA1UEBhMCRUMxHTAbBgNV
@@ -161,6 +137,4 @@ LRuAVSyi58qyAD0Eu1zLMc3KhEUXoxF7aA8P0w==
 </ds:RSAKeyValue>
 </ds:KeyValue>
 </ds:KeyInfo>
-<ds:Object Id="Signature757969-Object102318"><etsi:QualifyingProperties Target="#Signature757969"><etsi:SignedProperties Id="Signature757969-SignedProperties719286"><etsi:SignedSignatureProperties><etsi:SigningTime>2021-05-26T11:40:14-05:00</etsi:SigningTime><etsi:SigningCertificate><etsi:Cert><etsi:CertDigest><ds:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1"/><ds:DigestValue>m8okW/lbE8bTuXKKJc3pO5HpQGc=</ds:DigestValue></etsi:CertDigest><etsi:IssuerSerial><ds:X509IssuerName>CN=AUTORIDAD DE CERTIFICACION SUBCA-1 SECURITY DATA,OU=ENTIDAD DE CERTIFICACION DE INFORMACION,O=SECURITY DATA S.A. 1,C=EC</ds:X509IssuerName><ds:X509SerialNumber>1547356162</ds:X509SerialNumber></etsi:IssuerSerial></etsi:Cert></etsi:SigningCertificate></etsi:SignedSignatureProperties><etsi:SignedDataObjectProperties><etsi:DataObjectFormat ObjectReference="#Reference-ID-780059"><etsi:Description>contenido comprobante</etsi:Description><etsi:MimeType>text/xml</etsi:MimeType></etsi:DataObjectFormat></etsi:SignedDataObjectProperties></etsi:SignedProperties></etsi:QualifyingProperties></ds:Object></ds:Signature></factura>]]></comprobante>
-  <mensajes/>
-</autorizacion>
+<ds:Object Id="Signature726404-Object205289"><etsi:QualifyingProperties Target="#Signature726404"><etsi:SignedProperties Id="Signature726404-SignedProperties395564"><etsi:SignedSignatureProperties><etsi:SigningTime>2021-06-09T16:43:18-05:00</etsi:SigningTime><etsi:SigningCertificate><etsi:Cert><etsi:CertDigest><ds:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1"/><ds:DigestValue>m8okW/lbE8bTuXKKJc3pO5HpQGc=</ds:DigestValue></etsi:CertDigest><etsi:IssuerSerial><ds:X509IssuerName>CN=AUTORIDAD DE CERTIFICACION SUBCA-1 SECURITY DATA,OU=ENTIDAD DE CERTIFICACION DE INFORMACION,O=SECURITY DATA S.A. 1,C=EC</ds:X509IssuerName><ds:X509SerialNumber>1547356162</ds:X509SerialNumber></etsi:IssuerSerial></etsi:Cert></etsi:SigningCertificate></etsi:SignedSignatureProperties><etsi:SignedDataObjectProperties><etsi:DataObjectFormat ObjectReference="#Reference-ID-148798"><etsi:Description>contenido comprobante</etsi:Description><etsi:MimeType>text/xml</etsi:MimeType></etsi:DataObjectFormat></etsi:SignedDataObjectProperties></etsi:SignedProperties></etsi:QualifyingProperties></ds:Object></ds:Signature></comprobanteRetencion>

@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<comprobanteRetencion id="comprobante" version="1.1.0">
+  <infoTributaria>
+    <ambiente>1</ambiente>
+    <tipoEmision>1</tipoEmision>
+    <razonSocial>DESARROLLO - COFRADIA</razonSocial>
+    <nombreComercial>DISKCOVER SYSTEM</nombreComercial>
+    <ruc>0990050368001</ruc>
+    <claveAcceso>0906202107099005036800110010016000000001234567818</claveAcceso>
+    <codDoc>07</codDoc>
+    <estab>001</estab>
+    <ptoEmi>001</ptoEmi>
+    <secuencial>000000006</secuencial>
+    <dirMatriz>JUAN DE DIOS MARTINEZ N36-245 Y CARLOS JULIO AROSEMENA</dirMatriz>
+  </infoTributaria>
+  <infoCompRetencion>
+    <fechaEmision>09/06/2021</fechaEmision>
+    <dirEstablecimiento>JUAN DE DIOS MARTINEZ N36-245 Y CARLOS JULIO AROSEMENA</dirEstablecimiento>
+    <obligadoContabilidad>SI</obligadoContabilidad>
+    <tipoIdentificacionSujetoRetenido>04</tipoIdentificacionSujetoRetenido>
+    <razonSocialSujetoRetenido>CIAAN CLINICA GUAYAQUIL SERVICIOS MEDICOS S.A.</razonSocialSujetoRetenido>
+    <identificacionSujetoRetenido>0990050368001</identificacionSujetoRetenido>
+    <periodoFiscal>06/2021</periodoFiscal>
+  </infoCompRetencion>
+  <impuestos>
+    <impuesto>
+      <codigo>2</codigo>
+      <codigoRetencion>9</codigoRetencion>
+      <baseImponible>49.9500</baseImponible>
+      <porcentajeRetener>10</porcentajeRetener>
+      <codDocSustento>01</codDocSustento>
+      <numDocSustento>001001000000005</numDocSustento>
+      <fechaEmisionDocSustento>2021/06/09</fechaEmisionDocSustento>
+    </impuesto>
+  </impuestos>
+  <infoAdicional>
+    <campoAdicional nombre="Direccion">PADRE AGUIRRE 401 Y GENERAL CORDOVA</campoAdicional>
+    <campoAdicional nombre="Telefono">042563555</campoAdicional>
+    <campoAdicional nombre="comprobante No">CD-006000162</campoAdicional>
+    <campoAdicional nombre="Agente de Retencion">ssss</campoAdicional>
+    <campoAdicional nombre="Contribuyente Regimen Microempresas"/>
+  </infoAdicional>
+</comprobanteRetencion>

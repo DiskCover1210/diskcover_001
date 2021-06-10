@@ -1261,6 +1261,7 @@ function generar_xml_retencion($cabecera,$detalle=false)
 	    $xml_razonSocial = $xml->createElement("razonSocial",$_SESSION['INGRESO']['Razon_Social']);
 	    $xml_nombreComercial = $xml->createElement("nombreComercial",$_SESSION['INGRESO']['Nombre_Comercial']);
 	    $xml_ruc = $xml->createElement("ruc",$ruc);
+	    $xml_claveAcceso = $xml->createElement("claveAcceso",$cabecera[0]['ClaveAcceso']);
 	    $xml_codDoc = $xml->createElement("codDoc",'07');
 	    $xml_estab = $xml->createElement("estab",substr($cabecera[0]['Serie_R'], 0,3));
 	    $xml_ptoEmi = $xml->createElement("ptoEmi",substr($cabecera[0]['Serie_R'], 3,3));
@@ -1273,6 +1274,7 @@ function generar_xml_retencion($cabecera,$detalle=false)
         $xml_infotributaria->appendChild($xml_razonSocial);
         $xml_infotributaria->appendChild($xml_nombreComercial);
         $xml_infotributaria->appendChild($xml_ruc);
+        $xml_infotributaria->appendChild($xml_claveAcceso);
         $xml_infotributaria->appendChild($xml_codDoc);
         $xml_infotributaria->appendChild($xml_estab);
         $xml_infotributaria->appendChild($xml_ptoEmi);
@@ -1428,13 +1430,13 @@ function generar_xml_retencion($cabecera,$detalle=false)
              $AgenteRetencion ='ssss'; 
          if ($AgenteRetencion<>'.'){ 
         	 $xml_campoAdicional = $xml->createElement("campoAdicional",$AgenteRetencion);
-        	 $xml_campoAdicional->setAttribute( "nombre", "Agente de Retención");
+        	 $xml_campoAdicional->setAttribute( "nombre", "Agente de Retencion");
         	 $xml_infoAdicional->appendChild($xml_campoAdicional);
         	}
         	$MicroEmpresa = 's';
          if ($MicroEmpresa<>'.'){ 
         	 $xml_campoAdicional = $xml->createElement("campoAdicional");
-        	 $xml_campoAdicional->setAttribute( "nombre", "Contribuyente Régimen Microempresas");
+        	 $xml_campoAdicional->setAttribute( "nombre", "Contribuyente Regimen Microempresas");
         	 $xml_infoAdicional->appendChild($xml_campoAdicional);
         	}
 
@@ -1469,16 +1471,12 @@ function generar_xml_retencion($cabecera,$detalle=false)
 */
 
      $ruta_G = dirname(__DIR__).'/entidades/entidad_'.$entidad."/CE_".$entidad.'/Generados';
-	if($archivo = fopen($ruta_G.'/retencion001.xml',"w+b"))
+	if($archivo = fopen($ruta_G.'/'.$cabecera[0]['ClaveAcceso'].'.xml',"w+b"))
 	  {
 	  	fwrite($archivo,$xml->saveXML());
-
-	print_r($cabecera);
-	print_r($_SESSION);
-	print_r($detalle); die();
-	  	die();
-	  	 // $respuesta =  $this->firmar_documento($compro,$entidad,$cabecera['clave_ce'],$cabecera['ruta_ce']);
-	     // return $respuesta;
+	  	 $respuesta =  $this->firmar_documento($cabecera[0]['ClaveAcceso'],$entidad,$_SESSION['INGRESO']['Clave_Certificado'],$_SESSION['INGRESO']['Ruta_Certificado']);
+	  	 print_r($respuesta);die();
+	     return $respuesta;
 	  }else
 	  {
 	  	// print_r($ruta_G);die();
@@ -1497,6 +1495,7 @@ function generar_xml_retencion($cabecera,$detalle=false)
  	    $certificado_1 = dirname(__DIR__).'/certificados/';
  	    if(file_exists($certificado_1.$p12))
        {
+       	// print_r("java -jar ".$firmador." ".$nom_doc.".xml ".$url_generados." ".$url_firmados." ".$certificado_1." ".$p12." ".$pass);die();
         		exec("java -jar ".$firmador." ".$nom_doc.".xml ".$url_generados." ".$url_firmados." ".$certificado_1." ".$p12." ".$pass, $f);
  	   }else
  	   {

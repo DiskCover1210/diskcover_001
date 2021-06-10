@@ -542,6 +542,7 @@ class incomC
      	 $reg = $this->modelo->Asiento_Air_Com($Autorizacion_R,$T_No);
 
      	 // print_r($reg);die();
+     	 $RetNueva =false;
      	 if(count($reg) >0 && $RetNueva && $RetSecuencial)
      	 {
      	 	$retencion = ReadSetDataNum("RE_SERIE_".$Serie_R, True, True);
@@ -1359,11 +1360,10 @@ class incomC
             $parametros_xml['TP']=$TP;
             $parametros_xml['Fecha']=$Fecha;
             $parametros_xml['Numero']=$Numero;
-
-                // print_r($parametros_xml);die();   
+            $parametros_xml['ruc']=$parametros['ruc'];
            
             if(strlen($Autorizacion_R) >= 13){
-            	// SRI_Crear_Clave_Acceso_Retenciones FA, True //function xml
+            	$this->SRI_Crear_Clave_Acceso_Retencines($parametros_xml); //function xml
             }
 
 
@@ -1513,10 +1513,11 @@ class incomC
        return $this->modelo->eliminar_registros($tabla,$Codigo);
      }
 
-     function SRI_Crear_Clave_Acceso_Retenciones($parametros)
+     function SRI_Crear_Clave_Acceso_Retencines($parametros)
      {
 
-        $datos = $this->modelo->retencion_compras($parametros['numero'],$parametros['comp']);
+        $datos = $this->modelo->retencion_compras($parametros['Numero'],$parametros['TP']);
+        // print_r($datos);die();
         if(count($datos)>0)
         {
           $TFA[0]["Serie_R"] = $datos[0]["Serie_Retencion"];
@@ -1537,8 +1538,8 @@ class incomC
           $CodSustento = $datos[0]["CodSustento"];
 
           $TFA[0]["Ruc"] = $datos[0]["CI_RUC"];
-          $TFA[0]["TP"] = $parametros['comp'];
-          $TFA[0]["Numero"] = $parametros['numero'];
+          $TFA[0]["TP"] = $parametros['TP'];
+          $TFA[0]["Numero"] = $parametros['Numero'];
           $TFA[0]["TipoComprobante"] = '0'.$datos[0]["TipoComprobante"];
 
           // Validar_Porc_IVA $TFA[0]["Fecha"];
@@ -1554,7 +1555,9 @@ class incomC
             $rete = $TFA[0]["Retencion"].$retencion;
           }
           // print_r($rete);die();
-          $TFA[0]["ClaveAcceso"] = date("ddmmyyyy", strtotime($TFA[0]['Fecha']->format('Y-m-d')))."07".$parametros['ruc'].$_SESSION['INGRESO']['Ambiente'].$TFA[0]["Serie_R"].$rete."123456781";
+          $dig = digito_verificador_nuevo($parametros['ruc']);
+          // print_r($dig);die();
+          $TFA[0]["ClaveAcceso"] = date("dmY", strtotime($TFA[0]['Fecha']->format('Y-m-d')))."07".$parametros['ruc'].$_SESSION['INGRESO']['Ambiente'].$TFA[0]["Serie_R"].$rete."123456781".$dig['Dig_ver'];
           $TFA[0]["ClaveAcceso"] = str_replace('.','1', $TFA[0]['ClaveAcceso']);
           $this->sri->generar_xml_retencion($TFA,$datos);
 

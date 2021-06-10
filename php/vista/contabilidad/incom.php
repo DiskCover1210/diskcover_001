@@ -895,7 +895,7 @@
             success:  function (response) { 
               if(response==1)
               {
-                eliminar_ac();
+                // eliminar_ac();
                 Swal.fire({
                    title: 'Comprobante Generado',
                    text: "",

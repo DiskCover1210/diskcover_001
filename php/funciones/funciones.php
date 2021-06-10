@@ -1197,7 +1197,7 @@ function digito_verificador_nuevo($NumeroRUC){
    $Digito_Verificador = $DigStr;
 
    $res = array('Codgo'=>$R_Codigo_RUC_CI,'Tipo'=>$R_Tipo_Beneficiario,'Dig_ver'=>$R_Digito_Verificador,'Ruc_Natu'=> $R_RUC_Natural,'CI'=>$R_RUC_CI);
-print_r($res);die();
+// print_r($res);die();
    return $res;
 }
 //digito_verificadorf('1710034065'); $solovar = si es uno devuelve solo el codigo
