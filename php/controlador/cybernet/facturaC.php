@@ -77,7 +77,7 @@ class facturaC
 		$productos = [];
 		foreach ($datos as $key => $value) {
       //print_r($value);
-      $productos[] = array('id' => utf8_encode($value['Producto']),'text' => utf8_encode($value['Producto']), 'data' => array('pvp' =>utf8_encode($value['PVP'])));
+      $productos[] = array('id' => utf8_encode($value['Producto'])."/".utf8_encode($value['PVP'])."/".utf8_encode($value['IVA']),'text' => utf8_encode($value['Producto']), 'data' => array('pvp' =>utf8_encode($value['PVP'])));
     }
 		echo json_encode($productos);
 		exit();

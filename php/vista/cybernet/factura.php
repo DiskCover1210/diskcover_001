@@ -68,15 +68,6 @@
       $('#direccion').val(data.direccion);
       $('#telefono').val(data.telefono);
       $('#ci_ruc').val(data.ci_ruc);
-      $("#subtotal0").val(parseFloat(0.00).toFixed(2));
-      $("#subtotal12").val(parseFloat(0.00).toFixed(2));
-      $("#iva").val(parseFloat(0.00).toFixed(2));
-      $("#total").val(parseFloat(0.00).toFixed(2));
-    });
-    $('#producto0').on('select2:select', function (e) {
-      var data = e.params.data.data;
-      $("#pvp0").val(parseFloat(data.pvp).toFixed(2));
-      console.log(data);
     });
   });
 
@@ -98,7 +89,7 @@
   }
 
   function autocomplete_producto(){
-    $('#producto0').select2({
+    $('#producto1').select2({
       placeholder: 'Seleccione un producto',
       ajax: {
         url:   '../controlador/cybernet/facturaC.php?catalagoProducto=true',
@@ -123,6 +114,82 @@
     $("#nombreCliente").hide();
     $("#cliente").select2().next().show();
     autocomplete_cliente();
+  }
+
+  function setPVP(id){
+    producto = $("#producto"+id).val();
+    cantidad = $("#cantidad"+id).val();
+    pvp = producto.split("/");
+    $("#pvp"+id).val(pvp[1]);
+    $("#iva"+id).val(pvp[2]);
+    total = cantidad * pvp[1];
+    $("#total"+id).val(total);
+    calcularTotal();
+  }
+
+  function calcularSubtotal(id){
+    cantidad = $("#cantidad"+id).val();
+    pvp = $("#pvp"+id).val();
+    total = cantidad * pvp;
+    $("#total"+id).val(total);
+    calcularTotal();
+  }
+
+  function calcularTotal(){
+    var nFilas = $("#customers tr").length;
+    total0 = 0;
+    total12 = 0;
+    iva12 = 0;
+    total = 0;
+    for (var i = 1; i <= nFilas - 1; i++) {
+      totalp = $("#total"+i).val();
+      ivap = $("#iva"+i).val();
+      if (ivap == 0) {
+        total0 += parseFloat(totalp);
+      }else{
+        total12 += parseFloat(totalp);
+      }
+    }
+    iva12 = parseFloat(total12) * 0.12;
+    console.log(total12);
+    total = parseFloat(total0) + parseFloat(total12) + parseFloat(iva12);
+    $("#subtotal0").val(total0);
+    $("#subtotal12").val(total12);
+    $("#iva").val(iva12);
+    $("#total").val(total);
+  }
+
+  function agregarLinea(){
+    var nFilas = $("#customers tr").length;
+    clave = nFilas;
+    var tr = `<tr>
+        <td>
+          <select class="form-control input-sm" id="producto`+clave+`" onchange="setPVP('`+clave+`');">
+            <option value="">Seleccione un cliente</option>
+          </select>      
+        </td>
+        <td><input type ="text" class="form-control input-sm text-right" onkeyup="calcularSubtotal('`+clave+`');" id="cantidad`+clave+`" value ="1"/></td>
+        <td>
+          <input type ="text" class="form-control input-sm text-right" id="pvp`+clave+`" value ="0" disabled/>
+          <input type ="hidden" class="form-control input-sm text-right" id="iva`+clave+`" />
+        </td>
+        <td><input type ="text" class="form-control input-sm text-right" id="total`+clave+`" value ="0" disabled/></td>
+      </tr>`;
+    $("#cuerpo").append(tr);
+    $('#producto'+clave).select2({
+      placeholder: 'Seleccione un producto',
+      ajax: {
+        url:   '../controlador/cybernet/facturaC.php?catalagoProducto=true',
+        dataType: 'json',
+        delay: 250,
+        processResults: function (data) {
+          return {
+            results: data
+          };
+        },
+        cache: true
+      }
+    });
   }
 
 </script>
@@ -198,18 +265,19 @@
               <tbody id="cuerpo">
                 <tr>
                   <td>
-                    <select class="form-control input-sm" id="producto0" name="producto0">
+                    <select class="form-control input-sm" id="producto1" name="producto1" onchange="setPVP('1');">
                       <option value="">Seleccione un cliente</option>
                     </select>
                   </td>
                   <td>
-                    <input type="text" class="form-control input-sm text-right" name="cantidad0" value="0">
+                    <input type="text" class="form-control input-sm text-right" onkeyup="calcularSubtotal('1')" name="cantidad1" id="cantidad1" value="1">
                   </td>
                   <td>
-                    <input type="text" class="form-control input-sm text-right" name="pvp0" id="pvp0" value="0">
+                    <input type="text" class="form-control input-sm text-right" name="pvp1" id="pvp1" value="0" readonly>
+                    <input type="hidden" class="form-control input-sm text-right" name="iva1" id="iva1" value="0" readonly>
                   </td>
                   <td>
-                    <input type="text" class="form-control input-sm text-right" name="total0" value="0">
+                    <input type="text" class="form-control input-sm text-right" name="total1" id="total1" value="0" readonly>
                   </td>
                 </tr>
               </tbody>
@@ -217,6 +285,11 @@
           </div>
         </div>
         <br>
+        <div class="row">
+          <div class="col-sm-2 col-sm-offset-10 col-xs-4">
+            <button class="btn btn-default" onclick="agregarLinea();">Agregar línea</button>
+          </div>
+        </div>
         <div class="row">
           <div class="col-sm-2 col-xs-offset-4 col-sm-offset-8 col-xs-4 text-right">
             <b>Subtotal 0%</b>
