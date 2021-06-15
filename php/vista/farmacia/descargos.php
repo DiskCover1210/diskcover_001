@@ -339,6 +339,24 @@ function reporte_excel()
 
 }
 
+function reporte_excel_nega()
+{
+   var url = '../controlador/farmacia/descargosC.php?imprimir_excel_nega=true&';
+   var datos =  $("#filtro_bus").serialize();
+    window.open(url+datos, '_blank');
+     $.ajax({
+         data:  {datos:datos},
+         url:   url,
+         type:  'post',
+         dataType: 'json',
+         success:  function (response) {  
+          
+          } 
+       });
+
+}
+
+
 
 </script>
 
@@ -354,7 +372,10 @@ function reporte_excel()
             <button type="button" class="btn btn-default" title="Generar pdf" onclick="reporte_pdf()"><img src="../../img/png/pdf.png"></button>
         </div>
         <div class="col-xs-2 col-md-2 col-sm-2 col-lg-1">
-            <button type="button" class="btn btn-default" title="Generar pdf" onclick="reporte_excel()"><img src="../../img/png/table_excel.png"></button>
+            <button type="button" class="btn btn-default" title="Generar excel" onclick="reporte_excel()"><img src="../../img/png/table_excel.png"></button>
+        </div>
+        <div class="col-xs-2 col-md-2 col-sm-2 col-lg-1">
+            <button type="button" class="btn btn-default" title="Generar pdf negativos" onclick="reporte_excel_nega()"><img src="../../img/png/pdf.png"></button>
         </div>
         <div class="col-xs-2 col-md-2 col-sm-2 col-lg-1">
           <a href="./farmacia.php?mod=Farmacia&acc=pacientes&acc1=Visualizar%20paciente&b=1&po=subcu#" type="button" class="btn btn-default" id="imprimir_pdf" title="Pacientes">

@@ -43,7 +43,7 @@ if(isset($_GET['paciente_existente']))
 if(isset($_GET['validar_ci']))
 {
 	$ci =$_POST['num'] ;
-	echo json_encode(digito_verificadorf($ci,1));
+	echo json_encode(digito_verificador_nuevo($ci));
 }
 class pacienteC
 {
@@ -122,9 +122,11 @@ class pacienteC
 
 		if($parametros['tip']=='E')
 		{
-
+			$codig = digito_verificador_nuevo($parametros['ruc']);
 		$datos[7]['campo'] = 'Codigo';
-		$datos[7]['dato']=digito_verificadorf($parametros['ruc'],1);
+		$datos[7]['dato']=$codig['Codigo'];
+		$datos[8]['campo'] = 'TD';
+		$datos[8]['dato']=$codig['Tipo'];
 
 			$campoWhere[0]['campo']='ID';
 			$campoWhere[0]['valor']=$parametros['id'];
@@ -132,11 +134,13 @@ class pacienteC
 			return  $this->modelo->insertar_paciente($datos,$campoWhere,$parametros['tip']);
 		}else
 		{
-
+			$codig = digito_verificador_nuevo($parametros['ruc']);
 		$datos[7]['campo'] = 'T';
 		$datos[7]['dato']='N';
 		$datos[8]['campo'] = 'Codigo';
-		$datos[8]['dato']=digito_verificadorf($parametros['ruc'],1);
+		$datos[8]['dato']=$codig['Codigo'];
+		$datos[9]['campo'] = 'TD';
+		$datos[9]['dato']=$codig['Tipo'];
 			return  $this->modelo->insertar_paciente($datos,false,$parametros['tip']);
 		}
 
@@ -157,14 +161,17 @@ class pacienteC
 			}
 		}else
 		{
-			$ruc = substr($ruc,0,-3);
+			// $ruc = substr($ruc,0,-3);
+
+			// print_r('ssssss');die();
 			$resp = $this->modelo->existe_transacciones_subcuenta_abonos_air_compras($ruc);
 			if($resp ==1)
 			{
 				return -1;
 			}else
 			{
-				return 1;//funcion eliminar falta
+				return $this->modelo->eliminar_paciente($cli);
+				//return 1;//funcion eliminar falta
 			}
 
 		}

@@ -93,7 +93,7 @@ class auditoriaM
 	      return $datos;
 	}
 
-	function tabla_registros($entidad = false,$empresa=false,$CodigoU=false,$aplicacion=false,$desde=false,$hasta=false,$numReg = 50)
+	function tabla_registros($entidad = false,$empresa=false,$CodigoU=false,$aplicacion=false,$desde=false,$hasta=false,$paginacion)
 	{
 		$query = false;
 		$cid = $this->conn;
@@ -104,7 +104,7 @@ class auditoriaM
 		   {
 		   	$sql.=" AND Cliente LIKE '%".$query."%'";
 		   }
-		  $sql.=" ORDER BY Cliente OFFSET 0 ROWS FETCH NEXT 25 ROWS ONLY;";
+		   // $sql.=" ORDER BY Cliente OFFSET 0 ROWS FETCH NEXT 12 ROWS ONLY;";
 		  // print_r($sql);die();
   //       $stmt = sqlsrv_query($cid, $sql);
 	 //    $result = array();	
@@ -135,7 +135,10 @@ class auditoriaM
 		  $image=array();
 		  $tabla = 'Clientes';
 		  $titulo ='balance de comprobacion';
-	return  grilla_generica_new($sql,$tabla,$titulo,$botones,$check,$image,$border=1,$sobreado=1,$head_fijo =1,$tamaño_tabla=300);
+		  $paginado = $paginacion;
+		  //array('0','25','cargar_registros'); //paginado primero desde que registro va a comenzar segundo cantidad de rregistros, tercero funcio que se ejecuta para mostrar los registros
+	return  grilla_generica_new($sql,$tabla,$id_tabla=false,$titulo,$botones,$check,$imagen=false,null,null,null,null,null,$paginado);
+	// ($sql,$tabla,$id_tabla=false,$titulo,$botones,$check,$imagen=false,$border=1,$sombreado=1,$head_fijo=1,$tamaño_tabla=300,$num_decimales=2,$num_reg=false)
 		
 	}
 

@@ -115,10 +115,12 @@
           {
            Swal.fire('','Cliente Editado.','success');
            cargar_clientes();
+           limpiar();
            }else
            {
             Swal.fire('','Nuevo Cliente Registrado.','success');
             cargar_clientes();
+            limpiar();
            }          
         }else
         {
@@ -230,7 +232,8 @@
                       {
                         if(response ==1)
                           {
-                            Swal.fire('','Agregado en entregas.','success');
+                            Swal.fire('','Registro eliminado.','success');
+                            cargar_clientes();
                           }else
                           {
                             Swal.fire('','Este usuario tiene Datos ligados.','error');
@@ -338,17 +341,21 @@
                 }else
                 {
 
+                limpiar();
                 $('#txt_ruc').val('');
                 }
             });
-
+        }else
+        {
+           $('#txt_id').val('');
+           $('#txt_codigo').val('');
+           $('#txt_tip').val('N');
         }
       }
     });
 
     }
   }
-
 
 </script>
 <div class="container-lg">
