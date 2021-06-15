@@ -1363,7 +1363,12 @@ class incomC
             $parametros_xml['ruc']=$parametros['ruc'];
            
             if(strlen($Autorizacion_R) >= 13){
-            	$this->SRI_Crear_Clave_Acceso_Retencines($parametros_xml); //function xml
+            	$res = $this->SRI_Crear_Clave_Acceso_Retencines($parametros_xml); //function xml
+            	// print_r($res);die();
+            	if(!is_null($res))
+            	{
+            	 return $res;
+                }
             }
 
 
@@ -1552,15 +1557,71 @@ class incomC
           {
             $num_ce = 9-$len;
             $retencion = str_repeat('0',$num_ce);
-            $rete = $TFA[0]["Retencion"].$retencion;
+            $rete = $retencion.$TFA[0]["Retencion"];
           }
           // print_r($rete);die();
           $dig = digito_verificador_nuevo($parametros['ruc']);
           // print_r($dig);die();
-          $TFA[0]["ClaveAcceso"] = date("dmY", strtotime($TFA[0]['Fecha']->format('Y-m-d')))."07".$parametros['ruc'].$_SESSION['INGRESO']['Ambiente'].$TFA[0]["Serie_R"].$rete."123456781".$dig['Dig_ver'];
-          $TFA[0]["ClaveAcceso"] = str_replace('.','1', $TFA[0]['ClaveAcceso']);
-          $this->sri->generar_xml_retencion($TFA,$datos);
 
+          //10062021
+          
+
+
+          $TFA[0]["ClaveAcceso"] = date("dmY", strtotime($TFA[0]['Fecha']->format('Y-m-d')))."07".$_SESSION['INGRESO']['RUC'].$_SESSION['INGRESO']['Ambiente'].$TFA[0]["Serie_R"].$rete."123456781";
+          $TFA[0]["ClaveAcceso"] = str_replace('.','1', $TFA[0]['ClaveAcceso']);
+          $respuesta = $this->sri->generar_xml_retencion($TFA,$datos);
+
+         
+
+          // print_r($respuesta);die();
+          $num_res = count($respuesta);
+          if($num_res>=2)
+	           {
+	           	// print_r($respuesta);die();
+	           	if($num_res!=2)
+	           	{
+	           	 $estado = explode(' ', $respuesta[2]);
+	           	 if($estado[1].' '.$estado[2]=='FACTURA AUTORIZADO')
+	           	 {
+	           	 	$respuesta = $this->actualizar_datos_CE(trim($estado[0]),$cabecera['tc'],$cabecera['serie'],$cabecera['factura'],$cabecera['item'],$cabecera['Autorizacion']);
+	           	 	if($respuesta==1)
+	           	 	{
+	           	 	  return array('respuesta'=>1);
+	           	 	}
+	           	 }else
+	           	 {
+
+	           	   $compro = explode('COMPROBANTE', $respuesta[2]);
+	           	   $entidad= $_SESSION['INGRESO']['item'];
+	           	   $url_No_autorizados ='../comprobantes/entidades/entidad_'.$entidad."/CE_".$entidad.'/No_autorizados/';
+	           	   $resp = array('respuesta'=>2,'ar'=>trim($compro[0]).'.xml','url'=>$url_No_autorizados);
+	           	 	return $resp;
+	           	 }
+	           	}else
+	           	{
+	           	 $estado = explode(' ', $respuesta[1]);
+	           	 if($estado[1].' '.$estado[2]=='FACTURA AUTORIZADO')
+	           	 {
+	           	 	$respuesta = $this->actualizar_datos_CE(trim($estado[0]),$cabecera['tc'],$cabecera['serie'],$cabecera['factura'],$cabecera['item'],$cabecera['Autorizacion']);
+	           	 	if($respuesta==1)
+	           	 	{
+	           	 	  return array('respuesta'=>1);
+	           	 	}
+	           	 }
+
+	           	}
+
+	           }else
+	           {
+	           	if($respuesta[1]=='Autorizado')
+	           	{
+	           		return array('respuesta'=>3);
+
+	           	}else{
+	           		$resp = utf8_encode($respuesta[1]);
+	           		return $resp;
+	           	}
+	           }
         }
 
      }

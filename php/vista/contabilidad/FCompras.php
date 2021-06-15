@@ -438,7 +438,7 @@ function contracuenta()
                                         </div>
                                         <div class="col-sm-3">
                                             <b>Autorizacion</b>
-                                            <input type="text" name="" class="form-control input-sm text-right" id="TxtNumAutor" onblur="autorizacion_factura()" placeholder="0000000001" onkeyup="solo_10_numeros(this.id)">
+                                            <input type="text" name="" class="form-control input-sm text-right" id="TxtNumAutor" onblur="autorizacion_factura()" placeholder="0000000001" > <!--onkeyup="solo_10_numeros(this.id)"-->
                                         </div>
                                     </div>
                                     <div class="row">

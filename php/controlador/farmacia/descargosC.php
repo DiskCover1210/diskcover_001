@@ -483,11 +483,13 @@ class ingreso_descargosC
 		    {
 		    	$fechas = $this->modelo->cargar_lineas_pedidos_por_fecha($value['ORDEN']);
 		    	foreach ($fechas as $key1 => $value1) {		    		
-		    		$reg_fecha[$value1['Fecha_Fab']->format('Y-m-d')]= array();	
-		    		$lineas = $this->modelo->cargar_lineas_pedidos($value['ORDEN'],$value1['Fecha_Fab']->format('Y-m-d'));		    		
+		    		$reg_fecha[$value1['Fecha_Fab']->format('Y-m-d').'_'.$value['ORDEN']]= array();	
+		    		$lineas = $this->modelo->cargar_lineas_pedidos($value['ORDEN'],$value1['Fecha_Fab']->format('Y-m-d'));  		
 		    		 foreach ($lineas as $key2 => $value2) {
 		    		 	$reg_lineas[$key2] = array('codigo'=>$value2['CODIGO_INV'],'cantidad'=>$value2['CANTIDAD'],'producto'=>$value2['PRODUCTO'],'pre_uni'=>$value2['VALOR_UNIT'],'total'=>$value2['VALOR_TOTAL']);		    		 	
 		    		 }
+
+		    		// print_r($reg_lineas);		print_r($reg_fecha[$value1['Fecha_Fab']->format('Y-m-d').'_'.$value['ORDEN']]);	  
 		    		  array_push($reg_fecha[$value1['Fecha_Fab']->format('Y-m-d').'_'.$value['ORDEN']],$reg_lineas);
 		    		  $reg_lineas = array();
 		    	}

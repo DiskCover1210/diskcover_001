@@ -1196,7 +1196,7 @@ function digito_verificador_nuevo($NumeroRUC){
    }
    $Digito_Verificador = $DigStr;
 
-   $res = array('Codgo'=>$R_Codigo_RUC_CI,'Tipo'=>$R_Tipo_Beneficiario,'Dig_ver'=>$R_Digito_Verificador,'Ruc_Natu'=> $R_RUC_Natural,'CI'=>$R_RUC_CI);
+   $res = array('Codigo'=>$R_Codigo_RUC_CI,'Tipo'=>$R_Tipo_Beneficiario,'Dig_ver'=>$R_Digito_Verificador,'Ruc_Natu'=> $R_RUC_Natural,'CI'=>$R_RUC_CI);
 // print_r($res);die();
    return $res;
 }
@@ -7827,14 +7827,43 @@ function crear_variables_session($empresa)
     return $resultado[0];
   }
 
-function grilla_generica_new($sql,$tabla,$id_tabla=false,$titulo=false,$botones=false,$check=false,$imagen=false,$border=1,$sombreado=1,$head_fijo=1,$tamaño_tabla=300,$num_decimales=2)
-{
+function grilla_generica_new($sql,$tabla,$id_tabla=false,$titulo=false,$botones=false,$check=false,$imagen=false,$border=1,$sombreado=1,$head_fijo=1,$tamaño_tabla=300,$num_decimales=2,$num_reg=false)
+{  
+  $conn = new Conectar();
+
+  $ddl_reg = '';
+  $val_pagina = '';
+  $fun_pagina = '';
   if($id_tabla=='' || $id_tabla == false)
   {
     $id_tabla = 'datos_t';
   }
 
-  $conn = new Conectar();
+  $sql2 = " SELECT COUNT(*) as 'reg' FROM ".$tabla;
+  $cid2=$conn->conexion();
+  $stmt2 = sqlsrv_query($cid2, $sql2);
+  if( $stmt2 === false)  { echo "Error en consulta PA.\n"; return ''; die( print_r( sqlsrv_errors(), true)); }
+  $datos2 =  array();
+  while( $row = sqlsrv_fetch_array( $stmt2, SQLSRV_FETCH_ASSOC) ){$datos2[]=$row; }
+  $total_registros = $datos2[0]['reg']; 
+
+  if($num_reg && count($num_reg)>1)
+  {
+    $ddl_reg = $num_reg[1];
+    $val_pagina = $num_reg[0];
+    $fun_pagina = $num_reg[2];
+    $sql.= " ORDER BY Cliente OFFSET ".$num_reg[0]." ROWS FETCH NEXT ".$num_reg[1]." ROWS ONLY;";
+  }else
+  {
+    $ddl_reg = '15';
+    $val_pagina = '0';
+    $fun_pagina = $num_reg[2];
+    $paginacion = array('0','15');
+    $sql.= " ORDER BY Cliente OFFSET ".$paginacion[0]." ROWS FETCH NEXT ".$paginacion[1]." ROWS ONLY;";
+  }
+
+  // print_r($sql);die();
+
   $cid=$conn->conexion();
   $cid1=$conn->conexion();
   $stmt = sqlsrv_query($cid, $sql);
@@ -7896,12 +7925,86 @@ function grilla_generica_new($sql,$tabla,$id_tabla=false,$titulo=false,$botones=
 
  $tbl.="</style>";
 
+// print_r($titulo);die();
 if($titulo)
  {
   // $num = count($columnas_uti);
    $tbl.="<div class='text-center'><b>".$titulo."</b></div>";
  }
- $tbl.= '<div class="table-responsive" style="overflow-x: scroll;"><div style="width:fit-content;padding-right:20px"><table class="table" style="table-layout: fixed;" id="'.$id_tabla.'"><thead>';
+
+ $tbl.= '<div class="table-responsive" style="overflow-x: scroll;">
+ <div style="width:fit-content;padding-right:20px">';
+ // ''paginado
+ $funcion_e ='';
+ if($fun_pagina!='')
+ {
+   $funcion_e = $fun_pagina.'()';
+ }
+  $tbl.= '
+<select id="ddl_reg" onChange="'.$funcion_e.'"><option value="15">15</option><option value="25">25</option><option value="50">50</option></select>
+  <nav aria-label="...">
+  <input type="hidden" value="0" id="pag">
+  <ul class="pagination" style="margin:0px">
+  <li class="page-item" onclick="paginacion(0);'.$funcion_e.'">
+      <span class="page-link">Inicio</span>
+     </li>';
+    if($fun_pagina==''){
+      for ($i=1; $i <= 10; $i++) {
+       $pa = $ddl_reg*($i-1); 
+       if($val_pagina==$pa)
+        {
+          $tbl.=' <li class="page-item  active" id="pag_'.$pa.'" onclick="paginacion(\''.$pa.'\')"><a class="page-link" href="#">'.$i.'</a></li>';
+        }else
+        {
+           $tbl.=' <li class="page-item" id="pag_'.$pa.'" onclick="paginacion(\''.$pa.'\')"><a class="page-link" href="#">'.$i.'</a></li>';
+        }
+      }
+    }else
+    {
+      $tab = ($val_pagina/$ddl_reg)+1;
+      $inicio = 1;
+      $tab_paginas = 10;
+      if($tab%10 ==0)
+      {
+         $parte = ($tab/10)+1;
+         $inicio = $tab;
+         $tab_paginas = $inicio+$tab+1;
+      }
+      // else
+      // {
+      //    print_r($tab%10);die();
+      // }
+
+
+      for ($i=$inicio; $i <= $tab_paginas; $i++) {
+       $pa = $ddl_reg*($i-1); 
+       if($val_pagina==$pa)
+        {
+          $tbl.=' <li class="page-item  active" id="pag_'.$pa.'" onclick="paginacion(\''.$pa.'\';'.$fun_pagina.'()"><a class="page-link" href="#">'.$i.'</a></li>';
+        }else
+        {
+           $tbl.=' <li class="page-item" id="pag_'.$pa.'" onclick="paginacion(\''.$pa.'\');'.$fun_pagina.'()"><a class="page-link" href="#">'.$i.'</a></li>';
+        }
+      }
+
+    }
+   //  <li class="page-item"><a class="page-link" href="#">1</a></li>
+   //  <li class="page-item active">
+   //    <span class="page-link">2<span class="sr-only">(current)</span></span>
+   //  </li>
+    // <li class="page-item" id="" onclick=""><a class="page-link" href="#">4</a></li>
+    // <li class="page-item" id="" onclick=""><a class="page-link" href="#">5</a></li>
+    // <li class="page-item" id="" onclick=""><a class="page-link" href="#">6</a></li>
+    // <li class="page-item" id="" onclick=""><a class="page-link" href="#">7</a></li>
+    // <li class="page-item" id="" onclick=""><a class="page-link" href="#">8</a></li>
+    // <li class="page-item" id="" onclick=""><a class="page-link" href="#">9</a></li>
+    // <li class="page-item" id="" onclick=""><a class="page-link" href="#">10</a></li>
+    $tbl.='<li class="page-item">
+      <a class="page-link" href="#">Ultimo</a>
+    </li>
+  </ul>
+</nav>';
+ $tbl.='<table class="table" style="table-layout: fixed;" id="'.$id_tabla.'"><thead>';
   //cabecera de la consulta sql//
  if($botones)
   {
@@ -8157,6 +8260,13 @@ if($titulo)
   $tbl.='</tbody>
       </table>
       </div>
+      <script>
+      $("#ddl_reg").val('.$ddl_reg.');
+      function paginacion(p)
+      {
+        $("#pag").val(p);
+      }
+  </script>
       
     </div>';
     // print_r($tbl);die();

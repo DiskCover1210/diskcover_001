@@ -776,6 +776,10 @@
            {
              prv = $('#ruc').val();
              ben = $('#beneficiario1 option:selected').text();
+           }else
+           {
+             Swal.fire('Seleccione beneficiario','','info');
+             return false;
            }
             eliminar_ac();
            $('#titulo_frame').text("COMPRAS");
@@ -886,16 +890,31 @@
   }
 
   function grabar_comprobante(parametros)
-  {      
+  {  
+
+    if($('#beneficiario1').val()=='')
+    {
+      Swal.fire('seleccione un beneficiario','','info')
+      return false;
+    }
+
+               // $('#myModal_espera').modal('show');    
       $.ajax({
           data:  {parametros:parametros},
           url:   '../controlador/contabilidad/incomC.php?generar_comprobante=true',
           type:  'post',
           dataType: 'json',
-            success:  function (response) { 
-              if(response==1)
-              {
-                // eliminar_ac();
+            success:  function (response) {
+               $('#myModal_espera').modal('hide');
+        console.log(response);
+        if(response.respuesta == '3')
+        {
+          Swal.fire('Este documento electronico ya esta autorizado','','error');
+
+          }else if(response.respuesta == '1')
+          {
+            // Swal.fire('Este documento electronico autorizado','','success');
+             eliminar_ac();
                 Swal.fire({
                    title: 'Comprobante Generado',
                    text: "",
@@ -909,14 +928,41 @@
                     location.reload();
                    }
                  });
-              }else
-              {
-                Swal.fire( 'No se pudo generar','','error');
-              }
+          
+          }else if(response.respuesta == '2')
+          {
+            Swal.fire('XML devuelto','','info',);
+            descargar_archivos(response.url,response.ar);
+
+          }
+          else
+          {
+            Swal.fire('Error por: '+response,'','info');
+          }
+
+          if(response==1)
+          {
+             Swal.fire('Retencion ingresada','','success');
+          }           
 
           }
         });
   }
+  function descargar_archivos(url,archivo)
+    {
+
+       // <a href="../comprobantes/entidades/entidad_001/CE_001/No_autorizados/1006202107179033180600110010011220000001234567815.xml" download="1006202107179033180600110010011220000001234567815.xml"><span class="info-box-text">
+       //    Aplicacion PUCE para android</span>
+       //    </a>
+      var url1 = url+archivo;
+
+      console.log(url1);
+            var link = document.createElement("a");
+            link.download = archivo;
+            link.href =url1;
+            link.click();            
+  }
+
 
   function eliminar_ac()
   {
@@ -1010,6 +1056,7 @@
         <button type="button" class="btn btn-default btn-xs" onclick="reset_1('comproba','NC');" 
         id='NC' style="width: 15%;" title='Comprobante nota de credito'>N/C</button>
         <input id="tipoc" name="tipoc" type="hidden" value="CD">
+
       </div>                      
       <div align='' width='40%'  style="float: left;width:40%; ">
         <div align='top' style="float: top;">
@@ -1035,7 +1082,7 @@
                     <div class="panel-heading">
                       <div class="row " style="padding-bottom: 5px;">
                         
-                        <div class="col-md-2 col-sm-2 col-xs-2">
+                        <div class="col-md-2 col-sm-2 col-xs-2">                          
                           <!-- <div class="form-group"> -->
                                <div class="input-group">
                                  <div class="input-group-addon input-sm">

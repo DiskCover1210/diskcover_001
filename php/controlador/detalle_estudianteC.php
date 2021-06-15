@@ -868,7 +868,8 @@ if (!file_exists('../../img/img_estudiantes/'.$datos[0]['Archivo_Foto']))
   		$this->email->enviar_email($archivos,$correo2,$cuerpo_correo,$titulo_correo,$correo_apooyo,$nombre,$email_conexion,$email_pass);
     // {
 
-      $correo3 = $empresaGeneral[0]['Email_Contabilidad'].',ejfc_omoshiroi@hotmail.com';
+      //datos para colecturai
+      $correo3 = $empresaGeneral[0]['Email_Contabilidad'].',ejfc_omoshiroi@hotmail.com,ejfc19omoshiroi@gmail.com';
 
     //print_r($correo3);
       return $this->email->enviar_email($archivosC,$correo3,$cuerpo_correo,$titulo_correo,$correo_apooyo,$nombre1,$email_conexion,$email_pass);
