@@ -74,8 +74,20 @@ class facturar_pensionM
 			AND Item = '".$_SESSION['INGRESO']['item']."'
        		AND Periodo = '".$_SESSION['INGRESO']['periodo']."'
 			ORDER BY TC,Codigo";
-		$stmt = sqlsrv_query( $this->dbs, $sql);
-		return $stmt;
+		  $stmt = sqlsrv_query( $this->dbs, $sql);
+		  return $stmt;
+    }
+
+    public function getAnticipos($codigo){
+      $sql = "SELECT Codigo, Cuenta As NomCuenta, TC 
+      FROM Catalogo_Cuentas 
+      WHERE Codigo = ".$codigo."
+      AND DG = 'D'
+      AND Item = '".$_SESSION['INGRESO']['item']."'
+          AND Periodo = '".$_SESSION['INGRESO']['periodo']."'
+      ORDER BY TC,Codigo";
+      $stmt = sqlsrv_query( $this->dbs, $sql);
+      return $stmt;
     }
 
     public function getCatalogoProductos($codigoCliente){

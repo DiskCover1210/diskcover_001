@@ -196,7 +196,7 @@ class autorizacion_sri
 
 	           	   $compro = explode('FACTURA', $respuesta[2]);
 	           	   $entidad= '001';
-	           	   $url_No_autorizados ='../../comprobantes/entidades/entidad_'.$entidad."/CE_".$entidad.'/No_autorizados/';
+	           	   $url_No_autorizados ='../../comprobantes/entidades/entidad_'.$entidad."/CE".$entidad.'/No_autorizados/';
 	           	   $resp = array('respuesta'=>2,'ar'=>trim($compro[0]).'.xml','url'=>$url_No_autorizados);
 	           	 	return $resp;
 	           	 }
@@ -233,7 +233,7 @@ class autorizacion_sri
 	{
 		$con = $this->conn->conexion();
 		$sql = "SELECT * From Facturas WHERE Item = '".$_SESSION['INGRESO']['item']."' AND Periodo = '".$_SESSION['INGRESO']['periodo']."' AND TC = 'FA' AND Serie = '".$serie."' AND Factura = ".$fact." AND LEN(Autorizacion) = 13 AND T <> 'A' ";
-		// print_r($sql);die();
+		 //print_r($sql);die();
 		$stmt = sqlsrv_query($con, $sql);
 	   if( $stmt === false)  
 	   {  
@@ -735,16 +735,24 @@ class autorizacion_sri
 	    $verificador=0;
 	    for($i=count($aux)-1;$i>=0;--$i)
 	    {
-		    $aux[$i]= substr($cadena,$i,1);
-		    $aux[$i]*=$multiplicador;
-		    ++$multiplicador;
-		    if($multiplicador>$baseMultiplicador)
+		    $aux[$i] = substr($cadena,$i,1);
+		    $aux[$i] *= $multiplicador;
+		    $multiplicador++;
+		    if($multiplicador > $baseMultiplicador)
 		    {
 			    $multiplicador=2;
 		    }
-		$total+=$aux[$i];
+			$total+=$aux[$i];
 	    }
-	    if(($total==0)||($total==1)) $verificador=0;
+	    $verificador = $total % 11;
+	    $verificador = 11 - $verificador;
+	    if ($verificador == 10) {
+	    	$verificador = 1;
+	    }
+	    if ($verificador == 11) {
+	    	$verificador = 0;
+	    }
+	    /*if(($total==0)||($total==1)) $verificador=0;
 	    else
 	    {
 		    $verificador=(11-($total%11)==11)?0:11-($total%11);
@@ -752,7 +760,7 @@ class autorizacion_sri
 	    if($verificador==10)
 	    {
 		    $verificador=1;
-	    }
+	    }*/
 	    return $verificador;
     }
 
@@ -796,7 +804,7 @@ class autorizacion_sri
         $carpeta_no_autori = "";
 	if(file_exists($carpeta_entidad))
 	{
-		$carpeta_comprobantes = $carpeta_entidad.'/CE_'.$empresa;
+		$carpeta_comprobantes = $carpeta_entidad.'/CE'.$empresa;
 		if(file_exists($carpeta_comprobantes))
 		{
 		  $carpeta_autorizados = $carpeta_comprobantes."/Autorizados";		  
@@ -806,36 +814,36 @@ class autorizacion_sri
 
 			if(!file_exists($carpeta_autorizados))
 			{
-				mkdir($carpeta_entidad."/CE_".$empresa."/Autorizados", 0777);
+				mkdir($carpeta_entidad."/CE".$empresa."/Autorizados", 0777);
 			}
 			if(!file_exists($carpeta_generados))
 			{
-				 mkdir($carpeta_entidad.'/CE_'.$empresa.'/Generados', 0777);
+				 mkdir($carpeta_entidad.'/CE'.$empresa.'/Generados', 0777);
 			}
 			if(!file_exists($carpeta_firmados))
 			{
-				 mkdir($carpeta_entidad.'/CE_'.$empresa.'/Firmados', 0777);
+				 mkdir($carpeta_entidad.'/CE'.$empresa.'/Firmados', 0777);
 			}
 			if(!file_exists($carpeta_no_autori))
 			{
-				 mkdir($carpeta_entidad.'/CE_'.$empresa.'/No_autorizados', 0777);
+				 mkdir($carpeta_entidad.'/CE'.$empresa.'/No_autorizados', 0777);
 			}
 		}else
 		{
-			mkdir($carpeta_entidad.'/CE_'.$empresa, 0777);
-			mkdir($carpeta_entidad."/CE_".$empresa."/Autorizados", 0777);
-		    mkdir($carpeta_entidad.'/CE_'.$empresa.'/Generados', 0777);
-		    mkdir($carpeta_entidad.'/CE_'.$empresa.'/Firmados', 0777);
-		    mkdir($carpeta_entidad.'/CE_'.$empresa.'/No_autorizados', 0777);
+			mkdir($carpeta_entidad.'/CE'.$empresa, 0777);
+			mkdir($carpeta_entidad."/CE".$empresa."/Autorizados", 0777);
+		    mkdir($carpeta_entidad.'/CE'.$empresa.'/Generados', 0777);
+		    mkdir($carpeta_entidad.'/CE'.$empresa.'/Firmados', 0777);
+		    mkdir($carpeta_entidad.'/CE'.$empresa.'/No_autorizados', 0777);
 		}
 	}else
 	{
 		   mkdir($carpeta_entidad, 0777);
-		   mkdir($carpeta_entidad.'/CE_'.$empresa, 0777);
-		   mkdir($carpeta_entidad."/CE_".$empresa."/Autorizados", 0777);
-		   mkdir($carpeta_entidad.'/CE_'.$empresa.'/Generados', 0777);
-		   mkdir($carpeta_entidad.'/CE_'.$empresa.'/Firmados', 0777);
-		   mkdir($carpeta_entidad.'/CE_'.$empresa.'/No_autorizados', 0777);	    
+		   mkdir($carpeta_entidad.'/CE'.$empresa, 0777);
+		   mkdir($carpeta_entidad."/CE".$empresa."/Autorizados", 0777);
+		   mkdir($carpeta_entidad.'/CE'.$empresa.'/Generados', 0777);
+		   mkdir($carpeta_entidad.'/CE'.$empresa.'/Firmados', 0777);
+		   mkdir($carpeta_entidad.'/CE'.$empresa.'/No_autorizados', 0777);	    
 	}
 		
 
@@ -1144,7 +1152,7 @@ class autorizacion_sri
 
 	$xml->appendChild($xml_factura);
 
-	$ruta_G = dirname(__DIR__).'/entidades/entidad_'.$entidad."/CE_".$entidad.'/Generados';
+	$ruta_G = dirname(__DIR__).'/entidades/entidad_'.$entidad."/CE".$entidad.'/Generados';
 	if($archivo = fopen($ruta_G.'/'.$compro.'.xml',"w+b"))
 	  {
 	  	fwrite($archivo,$xml->saveXML());
@@ -1197,7 +1205,7 @@ function generar_xml_retencion($cabecera,$detalle=false)
 
 	if(file_exists($carpeta_entidad))
 	{
-		$carpeta_comprobantes = $carpeta_entidad.'/CE_'.$empresa;
+		$carpeta_comprobantes = $carpeta_entidad.'/CE'.$empresa;
 		if(file_exists($carpeta_comprobantes))
 		{
 		  $carpeta_autorizados = $carpeta_comprobantes."/Autorizados";		  
@@ -1207,36 +1215,36 @@ function generar_xml_retencion($cabecera,$detalle=false)
 
 			if(!file_exists($carpeta_autorizados))
 			{
-				mkdir($carpeta_entidad."/CE_".$empresa."/Autorizados", 0777);
+				mkdir($carpeta_entidad."/CE".$empresa."/Autorizados", 0777);
 			}
 			if(!file_exists($carpeta_generados))
 			{
-				 mkdir($carpeta_entidad.'/CE_'.$empresa.'/Generados', 0777);
+				 mkdir($carpeta_entidad.'/CE'.$empresa.'/Generados', 0777);
 			}
 			if(!file_exists($carpeta_firmados))
 			{
-				 mkdir($carpeta_entidad.'/CE_'.$empresa.'/Firmados', 0777);
+				 mkdir($carpeta_entidad.'/CE'.$empresa.'/Firmados', 0777);
 			}
 			if(!file_exists($carpeta_no_autori))
 			{
-				 mkdir($carpeta_entidad.'/CE_'.$empresa.'/No_autorizados', 0777);
+				 mkdir($carpeta_entidad.'/CE'.$empresa.'/No_autorizados', 0777);
 			}
 		}else
 		{
-			mkdir($carpeta_entidad.'/CE_'.$empresa, 0777);
-			mkdir($carpeta_entidad."/CE_".$empresa."/Autorizados", 0777);
-		    mkdir($carpeta_entidad.'/CE_'.$empresa.'/Generados', 0777);
-		    mkdir($carpeta_entidad.'/CE_'.$empresa.'/Firmados', 0777);
-		    mkdir($carpeta_entidad.'/CE_'.$empresa.'/No_autorizados', 0777);
+			mkdir($carpeta_entidad.'/CE'.$empresa, 0777);
+			mkdir($carpeta_entidad."/CE".$empresa."/Autorizados", 0777);
+		    mkdir($carpeta_entidad.'/CE'.$empresa.'/Generados', 0777);
+		    mkdir($carpeta_entidad.'/CE'.$empresa.'/Firmados', 0777);
+		    mkdir($carpeta_entidad.'/CE'.$empresa.'/No_autorizados', 0777);
 		}
 	}else
 	{
 		   mkdir($carpeta_entidad, 0777);
-		   mkdir($carpeta_entidad.'/CE_'.$empresa, 0777);
-		   mkdir($carpeta_entidad."/CE_".$empresa."/Autorizados", 0777);
-		   mkdir($carpeta_entidad.'/CE_'.$empresa.'/Generados', 0777);
-		   mkdir($carpeta_entidad.'/CE_'.$empresa.'/Firmados', 0777);
-		   mkdir($carpeta_entidad.'/CE_'.$empresa.'/No_autorizados', 0777);	    
+		   mkdir($carpeta_entidad.'/CE'.$empresa, 0777);
+		   mkdir($carpeta_entidad."/CE".$empresa."/Autorizados", 0777);
+		   mkdir($carpeta_entidad.'/CE'.$empresa.'/Generados', 0777);
+		   mkdir($carpeta_entidad.'/CE'.$empresa.'/Firmados', 0777);
+		   mkdir($carpeta_entidad.'/CE'.$empresa.'/No_autorizados', 0777);	    
 	}
 		
 
@@ -1468,7 +1476,7 @@ function generar_xml_retencion($cabecera,$detalle=false)
 
 */
 
-     $ruta_G = dirname(__DIR__).'/entidades/entidad_'.$entidad."/CE_".$entidad.'/Generados';
+     $ruta_G = dirname(__DIR__).'/entidades/entidad_'.$entidad."/CE".$entidad.'/Generados';
 	if($archivo = fopen($ruta_G.'/retencion001.xml',"w+b"))
 	  {
 	  	fwrite($archivo,$xml->saveXML());
@@ -1492,8 +1500,8 @@ function generar_xml_retencion($cabecera,$detalle=false)
     {	
 
  	    $firmador = dirname(__DIR__).'/SRI/firmar/firmador.jar';
- 	    $url_generados=dirname(__DIR__).'/entidades/entidad_'.$entidad."/CE_".$entidad.'/Generados/';
- 	    $url_firmados =dirname(__DIR__).'/entidades/entidad_'.$entidad."/CE_".$entidad.'/Firmados/';
+ 	    $url_generados=dirname(__DIR__).'/entidades/entidad_'.$entidad."/CE".$entidad.'/Generados/';
+ 	    $url_firmados =dirname(__DIR__).'/entidades/entidad_'.$entidad."/CE".$entidad.'/Firmados/';
  	    $certificado_1 = dirname(__DIR__).'/certificados/';
  	    if(file_exists($certificado_1.$p12))
        {
@@ -1505,8 +1513,8 @@ function generar_xml_retencion($cabecera,$detalle=false)
  	   }
 
  		$quijoteCliente =  dirname(__DIR__).'/SRI/firmar/QuijoteLuiClient-1.2.jar';
- 	    $url_No_autorizados =dirname(__DIR__).'/entidades/entidad_'.$entidad."/CE_".$entidad.'/No_autorizados/';
- 	    $url_autorizado =dirname(__DIR__).'/entidades/entidad_'.$entidad."/CE_".$entidad.'/Autorizados';
+ 	    $url_No_autorizados =dirname(__DIR__).'/entidades/entidad_'.$entidad."/CE".$entidad.'/No_autorizados/';
+ 	    $url_autorizado =dirname(__DIR__).'/entidades/entidad_'.$entidad."/CE".$entidad.'/Autorizados';
  	   
  		if(count($f)<6)
  		{
@@ -1586,7 +1594,7 @@ function generar_xml_retencion($cabecera,$detalle=false)
 			}
 			//creamos trans_documentos
 			//echo $ban1[2];
-			$url_autorizado =dirname(__DIR__).'/entidades/entidad_'.$entidad."/CE_".$entidad.'/Autorizados/'.$autorizacion.'.xml';
+			$url_autorizado =dirname(__DIR__).'/entidades/entidad_'.$entidad."/CE".$entidad.'/Autorizados/'.$autorizacion.'.xml';
 
 			$archivo = fopen($url_autorizado,"rb");
 			if( $archivo == false ) 

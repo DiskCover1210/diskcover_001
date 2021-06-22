@@ -8556,7 +8556,7 @@ function datos_tabla($tabla,$campo=false)
           $dato[17]['campo']='Porc_IVA';
           $dato[17]['dato']=$_SESSION['INGRESO']['porc']; 
           $dato[18]['campo']='Autorizacion';
-          $dato[18]['dato']=$_SESSION['INGRESO']['RUC'];
+          $dato[18]['dato']=$datos1['Autorizacion'];
           $total_iva=$total_iva+$row[7];
           insert_generico("Detalle_Factura",$dato);
           if($row[7]==0)
@@ -8661,7 +8661,7 @@ function datos_tabla($tabla,$campo=false)
           $dato[19]['campo']='Banco';
           $dato[19]['dato']=$cuenta;
           $dato[20]['campo']='Autorizacion';
-          $dato[20]['dato']=$_SESSION['INGRESO']['RUC'];
+          $dato[20]['dato']=$datos1['Autorizacion'];
           $this->insert_generico("Trans_Abonos",$dato);
         }
         $query="INSERT INTO Facturas
@@ -8787,7 +8787,7 @@ function datos_tabla($tabla,$campo=false)
         $dato[37]['campo']='Propina';
         $dato[37]['dato']=$propina_a; 
         $dato[38]['campo']='Autorizacion';
-        $dato[38]['dato']=$_SESSION['INGRESO']['RUC'];
+        $dato[38]['dato']=$datos1['Autorizacion'];
         insert_generico("Facturas",$dato);
         $n_fac++;
         //incrementar contador de facturas

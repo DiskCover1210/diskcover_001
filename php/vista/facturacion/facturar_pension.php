@@ -655,6 +655,7 @@
           <div class=" col-sm-2">
             <input tabindex="7" type="input" class="form-control input-sm text-right" name="factura" id="factura">
           </div>
+          
         </div>
         <div class="row">
           <div class="col-sm-2 text-right">
@@ -663,18 +664,18 @@
           <div class="col-sm-6">
             <input tabindex="8" type="input" class="form-control input-sm" name="direccion" id="direccion">
           </div>
-          <div class="col-sm-2 text-center justify-content-center align-items-center">
-            <input style="width: 50px" type="text" id="registros" class="form-control input-sm text-center justify-content-center align-items-center" readonly>
+          <div class="col-sm-2 text-right">
+            <label class="form-control input-sm" id="saldo">Saldo pendiente</label>
           </div>
-          <div class="col-sm-1">
-            <label class="online-radio"><input tabindex="4" type="checkbox" name="rbl_radio" id="rbl_no" checked="" style="margin-right: 2px;">Con mes</label>  
+          <div class="col-sm-2">
+            <input type="input" id="saldoPendiente" class="form-control input-sm text-right blue saldo_input" name="saldoPendiente">
           </div>
         </div>
         <div class="row">
           <div class="col-sm-2 text-right">
             <label>Razón social</label>
           </div>
-          <div class="col-sm-5">
+          <div class="col-sm-4">
             <input tabindex="9" type="input" class="form-control input-sm" name="persona" id="persona">
           </div>
           <div class="col-sm-1 text-right">
@@ -685,6 +686,9 @@
           </div>
           <div class=" col-sm-2">
             <input tabindex="10" type="input" class="form-control input-sm" name="ci" id="ci_ruc">   
+          </div>
+          <div class="col-sm-1">
+            <label class="online-radio"><input tabindex="4" type="checkbox" name="rbl_radio" id="rbl_no" checked="" style="margin-right: 2px;">Con mes</label>  
           </div>
         </div>
         <div class="row">
@@ -743,64 +747,52 @@
         </div>
         <br>
         <div class="row">
-          <div class="col-sm-2 text-right">
-            <label>Bancos/Tarjetas</label>
-          </div>
-          <div class="col-sm-6">
-            <select class="form-control input-sm" name="cuentaBanco" id="cuentaBanco" tabindex="15">
-              <?php
-                $cuentas = $facturar->getCatalogoCuentas();
-                foreach ($cuentas as $cuenta) {
-                  echo "<option value='".$cuenta['codigo']."'>".$cuenta['nombre']."</option>";
-                }
-              ?>
-            </select>
-          </div>
-          <div class="col-sm-2 text-right">
-            <label class="form-control input-sm" id="saldo">Saldo a favor</label>
-          </div>
-          <div class="col-sm-2">
-            <input type="input" id="saldoFavor" class="form-control input-sm text-right black saldo_input" name="saldoFavor" tabindex="24">
-          </div>
-        </div>
-        <div class="row">
-          <div class="col-sm-2 text-right">
-            <label>Notas de crédito</label>
-          </div>
-          <div class="col-sm-6">
-            <select class="form-control input-sm" name="cuentaNC" id="cuentaNC" tabindex="16">
-              <?php
-                $cuentas = $facturar->getNotasCredito();
-                foreach ($cuentas as $cuenta) {
-                  echo "<option value='".$cuenta['codigo']."'>".$cuenta['nombre']."</option>";
-                }
-              ?>
-            </select>
-          </div>
-          <div class="col-sm-2 text-right">
-            <label class="form-control input-sm" id="saldo">Saldo pendiente</label>
-          </div>
-          <div class="col-sm-2">
-            <input type="input" id="saldoPendiente" class="form-control input-sm text-right blue saldo_input" name="saldoPendiente">
-          </div>
-        </div>
-        <div class="row">
-          <div class="col-sm-3 text-right">
-            <label>Cheque / Deposito del banco</label>
-          </div>
-          <div class="col-sm-5">
-            <input type="text" name="cheque" class="form-control input-sm" value="." tabindex="17">
-          </div>
-          <div class="col-sm-4 text-center">
-            <input type="text" name="codigoB" class="red1 form-control input-sm" id="codigoB" style="color: white" value="Código del banco: " />
-          </div>
-        </div>
-        <div class="row">
-          <div class="col-sm-2 text-right">
+          <div class="col-sm-2 text-left">
             <b>Total Tarifa 0%</b>
           </div>
+          <div class="col-sm-2 text-left">
+            <b>Total Tarifa 12%</b>
+          </div>
+          <div class="col-sm-2 text-left">
+            <b>Descuentos</b>
+          </div>
+          <div class="col-sm-2 text-left">
+            <b>Desc x P P</b>
+            <button tabindex="25" type="button" class="btn" data-toggle="modal" data-target="#myModal">%</button>
+          </div>
+          <div class="col-sm-2 text-left">
+            <b>I.V.A. 12%</b>
+          </div>
+          <div class="col-sm-2 text-left">
+            <b>Total Facturado</b>
+          </div>
+        </div>
+        <div class="row">
           <div class="col-sm-2">
             <input type="text" name="total0" id="total0" class="form-control input-sm red text-right" readonly>
+          </div>
+          <div class="col-sm-2">
+            <input type="text" name="total12" id="total12" class="form-control input-sm red text-right" readonly>
+          </div>
+          <div class="col-sm-2">
+            <input type="text" name="descuento" id="descuento" class="form-control input-sm red text-right" readonly>
+          </div>
+          <div class="col-sm-2">
+            <input type="text" name="descuentop" id="descuentop" class="form-control input-sm red text-right" readonly>
+          </div>
+          <div class="col-sm-2">
+            <input type="text" name="iva12" id="iva12" class="form-control input-sm red text-right" readonly>
+          </div>
+          <div class="col-sm-2">
+            <input type="text" name="total" id="total" class="form-control input-sm red text-right" readonly>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-sm-2 text-right">
+            <label>Detalle del pago</label>
+          </div>
+          <div class="col-sm-6">
+            <input type="text" name="cheque" class="form-control input-sm" value="." tabindex="17">
           </div>
           <div class="col-sm-2 text-right">
             <b>Cheque No.</b>
@@ -811,21 +803,20 @@
         </div>
         <div class="row">
           <div class="col-sm-2 text-right">
-            <b>Total Tarifa 12%</b>
+            <label>Bancos/Tarjetas</label>
           </div>
-          <div class="col-sm-2">
-            <input type="text" name="total12" id="total12" class="form-control input-sm red text-right" readonly>
+          <div class="col-sm-7">
+            <select class="form-control input-sm" name="cuentaBanco" id="cuentaBanco" tabindex="15">
+              <?php
+                $cuentas = $facturar->getCatalogoCuentas();
+                foreach ($cuentas as $cuenta) {
+                  echo "<option value='".$cuenta['codigo']."'>".$cuenta['nombre']."</option>";
+                }
+              ?>
+            </select>
           </div>
-        </div>
-        <div class="row">
-          <div class="col-sm-2 text-right">
-            <b>Descuentos</b>
-          </div>
-          <div class="col-sm-2">
-            <input type="text" name="descuento" id="descuento" class="form-control input-sm red text-right" readonly>
-          </div>
-          <div class="col-sm-2 text-right">
-            <b>Valor Banco</b>
+          <div class="col-sm-1 text-right">
+            <label>USD</label>
           </div>
           <div class="col-sm-2">
             <input tabindex="19" type="text" name="valorBanco" id="valorBanco" onkeyup="calcularSaldo();" class="form-control input-sm red text-right">
@@ -833,47 +824,62 @@
         </div>
         <div class="row">
           <div class="col-sm-2 text-right">
-            <b>Desc x P P</b>
-            <button tabindex="25" type="button" class="btn" data-toggle="modal" data-target="#myModal">%</button>
+            <label>Anticipos</label>
+          </div>
+          <div class="col-sm-7">
+            <select class="form-control input-sm" name="cuentaBanco" id="cuentaBanco" tabindex="15">
+              <?php
+                $cuentas = $facturar->getAnticipos();
+                foreach ($cuentas as $cuenta) {
+                  echo "<option value='".$cuenta['codigo']."'>".$cuenta['nombre']."</option>";
+                }
+              ?>
+            </select>
+          </div>
+          <div class="col-sm-1 text-right">
+            <label>USD</label>
           </div>
           <div class="col-sm-2">
-            <input type="text" name="descuentop" id="descuentop" class="form-control input-sm red text-right" readonly>
-          </div>
-          <div class="col-sm-2 text-right">
-            <b>Efectivo</b>
-          </div>
-          <div class="col-sm-2">
-            <input tabindex="20" type="text" name="efectivo" id="efectivo" onkeyup="calcularSaldo();" class="form-control input-sm red text-right">
+            <input type="input" id="saldoFavor" class="form-control input-sm red text-right" name="saldoFavor" tabindex="24" onkeyup="calcularSaldo();">
           </div>
         </div>
         <div class="row">
           <div class="col-sm-2 text-right">
-            <b>I. V. A. 12%</b>
+            <label>Notas de crédito</label>
           </div>
-          <div class="col-sm-2">
-            <input type="text" name="iva12" id="iva12" class="form-control input-sm red text-right" readonly>
+          <div class="col-sm-7">
+            <select class="form-control input-sm" name="cuentaNC" id="cuentaNC" tabindex="16">
+              <?php
+                $cuentas = $facturar->getNotasCredito();
+                foreach ($cuentas as $cuenta) {
+                  echo "<option value='".$cuenta['codigo']."'>".$cuenta['nombre']."</option>";
+                }
+              ?>
+            </select>
           </div>
-          <div class="col-sm-2 text-right">
-            <b>Abono N/C</b>
+          <div class="col-sm-1 text-right">
+            <label>USD</label>
           </div>
           <div class="col-sm-2">
             <input tabindex="21" type="text" name="abono" id="abono" onkeyup="calcularSaldo();" class="form-control input-sm red text-right">
           </div>
         </div>
         <div class="row">
-          <div class="col-sm-2 text-right">
-            <b>Total Facturado</b>
+          <div class="col-sm-4 text-center">
+            <input type="text" name="codigoB" class="red1 form-control input-sm" id="codigoB" style="color: white" value="Código del banco: " />
+          </div>
+          <div class="col-sm-2 col-sm-offset-4 text-right">
+            <b>Efectivo USD</b>
           </div>
           <div class="col-sm-2">
-            <input type="text" name="total" id="total" class="form-control input-sm red text-right" readonly>
+            <input tabindex="20" type="text" name="efectivo" id="efectivo" onkeyup="calcularSaldo();" class="form-control input-sm red text-right">
           </div>
-          <div class="col-sm-2 text-right">
-            <b>Saldo</b>
+        </div>
+        <div class="row">
+          <div class="col-sm-1 text-center justify-content-center align-items-center">
+            <input style="width: 50px" type="text" id="registros" class="form-control input-sm text-center justify-content-center align-items-center" readonly>
           </div>
-          <div class="col-sm-2">
-            <input type="text" name="saldoTotal" id="saldoTotal" class="form-control input-sm red text-right">
-          </div>
-          <div class=" col-sm-4 col-sm-offset-8">
+          <div class=" col-sm-4 col-sm-offset-3">
             <div class="col-sm-2 col-sm-offset-4">
               <a title="Guardar" class="btn btn-default" tabindex="22">
                 <img src="../../img/png/save.png" width="25" height="30" onclick="guardarPension();">
@@ -884,6 +890,12 @@
                 <img src="../../img/png/salire.png" width="25" height="30">
               </a>
             </div>
+          </div>
+          <div class="col-sm-2 text-right">
+            <b>Saldo USD</b>
+          </div>
+          <div class="col-sm-2">
+            <input type="text" name="saldoTotal" id="saldoTotal" class="form-control input-sm red text-right">
           </div>
         </div>
       </div>

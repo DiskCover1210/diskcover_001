@@ -96,7 +96,6 @@ class facturar_pensionC
 		$clientes = [];
 		foreach ($datos as $key => $value) {
 			$clientes[] = array('id'=>$value['Cliente'],'text'=>utf8_encode($value['Cliente']),'data'=>array('email'=> $value['Email'],'direccion' => utf8_encode($value['Direccion']), 'telefono' => utf8_encode($value['Telefono']), 'ci_ruc' => utf8_encode($value['CI_RUC']), 'codigo' => utf8_encode($value['Codigo']), 'cliente' => utf8_encode($value['Cliente']), 'grupo' => utf8_encode($value['Grupo']), 'tdCliente' => utf8_encode($value['TD'])));
-			//$clientes[] = array('id'=>$value['Cliente'],'text' => $value['Cliente'],'data' => array('email'=> $value['Email'],'direccion' => $value['Direccion'], 'telefono' => $value['Telefono'], 'ci_ruc' => $value['CI_RUC'], 'codigo' => $value['Codigo'], 'cliente' => $value['Cliente']));
 		}
 		echo json_encode($clientes);
 		exit();
@@ -183,18 +182,18 @@ class facturar_pensionC
       $tablaHTML[$count]['datos'] = array($value['TD'],$value['Fecha']->format('Y-m-d'),$value['Serie'],$value['Factura'],$value['Detalle'], $value['Anio'],$value['Mes'],$value['Total'],$value['Abonos'],$value['Mes_No'],$value['No']);
       $tablaHTML[$count]['borde'] = $tablaHTML[0]['borde'];
       $count+=1;
-      # code...
     }
-
-
     $this->pdf->cabecera_reporte_MC($titulo,$tablaHTML,$contenido=false,$image=false,$parametros['desde'],$parametros['hasta'],$sizetable,$mostrar,25);
   }
 
 	public function getCatalogoCuentas(){
 		$datos = $this->facturacion->getCatalogoCuentas();
 		$cuentas = [];
+    $cuentas[0] = array('codigo'=>$value['Codigo'],'nombre'=>'No existen datos.');
+    $i = 0;
 		while ($value = sqlsrv_fetch_array( $datos, SQLSRV_FETCH_ASSOC)) {
-			$cuentas[] = array('codigo'=>$value['Codigo'],'nombre'=>utf8_encode($value['Codigo'])." - ".utf8_encode($value['NomCuenta']));
+			$cuentas[$i] = array('codigo'=>$value['Codigo'],'nombre'=>utf8_encode($value['Codigo'])." - ".utf8_encode($value['NomCuenta']));
+      $i++;
 		}
 		return $cuentas;
 	}
@@ -202,11 +201,27 @@ class facturar_pensionC
 	public function getNotasCredito(){
 		$datos = $this->facturacion->getNotasCredito();
 		$cuentas = [];
+    $cuentas[0] = array('codigo'=>$value['Codigo'],'nombre'=>'No existen datos.');
+    $i = 0;
 		while ($value = sqlsrv_fetch_array( $datos, SQLSRV_FETCH_ASSOC)) {
-			$cuentas[] = array('codigo'=>$value['Codigo'],'nombre'=>utf8_encode($value['Codigo'])." - ".utf8_encode($value['NomCuenta']));
+			$cuentas[$i] = array('codigo'=>$value['Codigo'],'nombre'=>utf8_encode($value['Codigo'])." - ".utf8_encode($value['NomCuenta']));
+      $i++;
 		}
 		return $cuentas;
 	}
+
+  public function getAnticipos(){
+    $codigo = Leer_Seteos_Ctas('Cta_Anticipos_Clientes');
+    $datos = $this->facturacion->getAnticipos($codigo);
+    $cuentas = [];
+    $cuentas[0] = array('codigo'=>$value['Codigo'],'nombre'=>'No existen datos.');
+    $i = 0;
+    while ($value = sqlsrv_fetch_array( $datos, SQLSRV_FETCH_ASSOC)) {
+      $cuentas[$i] = array('codigo'=>$value['Codigo'],'nombre'=>utf8_encode($value['Codigo'])." - ".utf8_encode($value['NomCuenta']));
+      $i++;
+    }
+    return $cuentas;
+  }
 
 	public function getSaldoFavor(){
 		$codigoCliente = $_POST['codigoCliente'];
