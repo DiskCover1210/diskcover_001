@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<comprobanteRetencion id="comprobante" version="1.1.0">
+  <infoTributaria>
+    <ambiente>1</ambiente>
+    <tipoEmision>1</tipoEmision>
+    <razonSocial>VACA PRIETO WALTER JALIL</razonSocial>
+    <nombreComercial>DISKCOVER SYSTEM</nombreComercial>
+    <ruc>1792164710001</ruc>
+    <claveAcceso>1106202107070216417900110010010000001531234567811</claveAcceso>
+    <codDoc>07</codDoc>
+    <estab>001</estab>
+    <ptoEmi>001</ptoEmi>
+    <secuencial>000000153</secuencial>
+    <dirMatriz>JUAN DE DIOS MARTINEZ N36-245 Y CARLOS JULIO AROSEMENA</dirMatriz>
+  </infoTributaria>
+  <infoCompRetencion>
+    <fechaEmision>11/06/2021</fechaEmision>
+    <dirEstablecimiento>JUAN DE DIOS MARTINEZ N36-245 Y CARLOS JULIO AROSEMENA</dirEstablecimiento>
+    <obligadoContabilidad>NO</obligadoContabilidad>
+    <tipoIdentificacionSujetoRetenido>04</tipoIdentificacionSujetoRetenido>
+    <razonSocialSujetoRetenido>PRISMANET PROFESIONAL S.A.</razonSocialSujetoRetenido>
+    <identificacionSujetoRetenido>1792164710001</identificacionSujetoRetenido>
+    <periodoFiscal>06/2021</periodoFiscal>
+  </infoCompRetencion>
+  <impuestos>
+    <impuesto>
+      <codigo>2</codigo>
+      <codigoRetencion>9</codigoRetencion>
+      <baseImponible>6.76</baseImponible>
+      <porcentajeRetener>10</porcentajeRetener>
+      <valorRetenido>0.68</valorRetenido>
+      <codDocSustento>01</codDocSustento>
+      <numDocSustento>001001000000003</numDocSustento>
+      <fechaEmisionDocSustento>11/06/2021</fechaEmisionDocSustento>
+    </impuesto>
+    <impuesto>
+      <codigo>2</codigo>
+      <codigoRetencion>2</codigoRetencion>
+      <baseImponible>0.00</baseImponible>
+      <porcentajeRetener>70</porcentajeRetener>
+      <valorRetenido>0.00</valorRetenido>
+      <codDocSustento>01</codDocSustento>
+      <numDocSustento>001001000000003</numDocSustento>
+      <fechaEmisionDocSustento>11/06/2021</fechaEmisionDocSustento>
+    </impuesto>
+    <impuesto>
+      <codigo>1</codigo>
+      <codigoRetencion>312</codigoRetencion>
+      <baseImponible>156.46</baseImponible>
+      <porcentajeRetener>2.00</porcentajeRetener>
+      <valorRetenido>2.7400</valorRetenido>
+      <codDocSustento>01</codDocSustento>
+      <numDocSustento>001001000000003</numDocSustento>
+      <fechaEmisionDocSustento>11/06/2021</fechaEmisionDocSustento>
+    </impuesto>
+  </impuestos>
+  <infoAdicional>
+    <campoAdicional nombre="Direccion">SD</campoAdicional>
+    <campoAdicional nombre="Telefono">000000000</campoAdicional>
+    <campoAdicional nombre="Email">diskcover@msn.com</campoAdicional>
+    <campoAdicional nombre="Comprobante No">CD-006000212</campoAdicional>
+    <campoAdicional nombre="Contribuyente Regimen Microempresas"> </campoAdicional>
+  </infoAdicional>
+</comprobanteRetencion>

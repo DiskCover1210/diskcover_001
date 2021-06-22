@@ -142,8 +142,21 @@ class pacienteM
 		}
 
 	}
-	function eliminar_paciente()
+	function eliminar_paciente($id)
 	{
+
+		$cid = $this->conn;
+		$sql = 'DELETE FROM Clientes WHERE ID='.$id;
+		$stmt = sqlsrv_query($cid, $sql);
+		if( $stmt === false)  
+		{  
+			return -1;			
+			die( print_r( sqlsrv_errors(), true));  
+		}else
+		{
+			return 1;
+		}
+		
 
 	}
 	function imprimir_paciente()
@@ -258,6 +271,7 @@ class pacienteM
            $sql[3] = "SELECT * FROM Trans_Abonos WHERE CodigoC = '".$cli."'";
            $sql[4] = "SELECT * FROM Trans_Air WHERE idProv= '".$cli."'";
            $sql[5] = "SELECT * FROM Trans_Compras WHERE idProv = '".$cli."'";
+           $sql[6] = "SELECT * FROM Asiento_K WHERE Codigo_B = '".$cli."'";
            $i=0;
          while ( $existe == false) {
          	$i+=1;
@@ -276,7 +290,7 @@ class pacienteM
 			  		}
 			  		if(count($datos)==0)
 			  			{
-			  				if($i>=5)
+			  				if($i>=6)
 			  				{
 			  					return $existe;
 			  				}
@@ -287,7 +301,6 @@ class pacienteM
 			  			}
          }
 	}
-
 }
 
 ?>

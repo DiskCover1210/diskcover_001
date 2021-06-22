@@ -146,6 +146,12 @@
    function cargar_registros()
    {
    	var enti = $('#ddl_entidad').val().split('_');
+    var paginacion = 
+    {
+      '0':$('#pag').val(),
+      '1':$('#ddl_reg').val(),
+      '2':'cargar_registros',
+    }
     var parametros = 
     {
       'des':$('#txt_desde').val(),
@@ -157,7 +163,7 @@
       'numReg':$('#ddl_num_reg').val(),
     }
      $.ajax({
-       data:  {parametros:parametros},
+       data:  {parametros:parametros,paginacion:paginacion},
       url:   '../controlador/seteos/auditoriaC.php?tabla=true',
       type:  'post',
       dataType: 'json',

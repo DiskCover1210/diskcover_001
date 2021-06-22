@@ -53,6 +53,11 @@ if(isset($_GET['imprimir_excel']))
 	$parametros= $_GET;
 	$controlador->imprimir_excel($parametros);	
 }
+if(isset($_GET['imprimir_excel_nega']))
+{   
+	$parametros= $_GET;
+	$controlador->imprimir_excel_nega($parametros);	
+}
 
 class ingreso_descargosC 
 {
@@ -97,12 +102,163 @@ class ingreso_descargosC
 
 	}
 
+
+	function imprimir_excel_nega($parametros)
+	{
+
+		// print_r($_SESSION['NEGATIVOS']['CODIGO_INV']);die();
+
+			$nega = $this->ordenes_negativas(false,$parametros['txt_tipo_filtro'],$parametros['txt_query'],$parametros['txt_desde'],$parametros['txt_hasta'],false);
+
+			$neg = explode(',', str_replace("'","", $nega['cod_inv']));
+
+
+			// print_r($neg);die();
+
+			$titulo = 'REPORTE INVENTARIO EN NEGATIVOS';
+			$tablaHTML = array();
+			$Fechaini= $parametros['txt_desde'];
+			$Fechafin=$parametros['txt_hasta'];
+			$mostrar = true;
+			$sizetable = 7;
+
+	  $medidas = array(56,55,62,17);
+		$alineado = array('L','L','L','L');
+		$pos = 0;
+		$borde = 1;
+		// print_r($datos);die();
+		$gran_total = 0;
+		foreach ($nega['ordenes'] as $key => $value){
+			$da = $this->modelo->pedido_paciente(false,$tipo='P',$value['ORDEN'],$desde=false,$hasta =false,$busfe=false);
+			// print_r($da);die();
+			$tablaHTML[$pos]['medidas']=$medidas;
+		    $tablaHTML[$pos]['alineado']=$alineado;
+		    $tablaHTML[$pos]['datos']=array('');
+		    // $tablaHTML[$pos]['borde'] =$borde;
+		    $pos+=1;
+			$tablaHTML[$pos]['medidas']=$medidas;
+		    $tablaHTML[$pos]['alineado']=$alineado;
+		    // print_r($value);die();
+		    $tablaHTML[$pos]['datos']=array('<b>Nombre:
+		    	'.$da[0]['nombre'],'<b>PROCEDIMIENTO:
+		    	'.$da[0]['Detalle'],'<b>AREA :
+		    	'.$da[0]['subcta'],'<b>No.DESC:
+		    	'.$value['ORDEN']);
+		    $tablaHTML[$pos]['borde'] =$borde;
+
+		    if($parametros['txt_tipo_filtro']=='f')
+		    {
+		    	$fechas = $this->modelo->cargar_lineas_pedidos_por_fecha($value['ORDEN'],$Fechaini,$Fechafin);
+		    	foreach ($fechas as $key1 => $value1) {
+		    		$pos+=1;
+		    		$tablaHTML[$pos]['medidas']=array(190);
+		            $tablaHTML[$pos]['alineado']=array('L');
+		            $tablaHTML[$pos]['datos']=array('<b>Fecha de descargo:'.$value1['Fecha_Fab']->format('Y-m-d'));
+		            $tablaHTML[$pos]['borde'] =$borde;
+		    		$lineas = $this->modelo->cargar_lineas_pedidos($value['ORDEN'],$value1['Fecha_Fab']->format('Y-m-d'));
+
+		    		$pos+=1;
+		    		 $tablaHTML[$pos]['medidas']=array(39,100,15,18,18);
+		             $tablaHTML[$pos]['alineado']=array('L','L','R','R','R');
+		             $tablaHTML[$pos]['datos']=array('<b>CODIGO','<b>PRODUCTO','<b>CANTIDAD','<b>VALOR UNI','<b>VALOR TOTAL');
+		             $tablaHTML[$pos]['borde'] =$borde;
+
+		             $total = 0;
+		    		 foreach ($lineas as $key => $value2) {
+		    		 	$pos+=1;
+		    		    $tablaHTML[$pos]['medidas']=array(39,100,15,18,18);
+		                $tablaHTML[$pos]['alineado']=array('L','L','R','R','R');
+		                $tablaHTML[$pos]['datos']=array($value2['CODIGO_INV'],$value2['PRODUCTO'],$value2['CANTIDAD'],$value2['VALOR_UNIT'],$value2['VALOR_TOTAL']);
+		                $tablaHTML[$pos]['borde'] =$borde;
+		                $total+=$value2['VALOR_TOTAL'];
+		    		 }
+		    		 $pos+=1;
+		    		    $tablaHTML[$pos]['medidas']=array(39,100,15,18,18);
+		                $tablaHTML[$pos]['alineado']=array('L','L','R','R','R');
+		                $tablaHTML[$pos]['datos']=array('','','','TOTAL',$total);
+		                $tablaHTML[$pos]['borde'] =$borde;
+		                $gran_total+=$total;
+		    	     $pos+=1;		    		
+		    	}
+		    }else
+		    {
+		    	$fechas = $this->modelo->cargar_lineas_pedidos_por_fecha($value['ORDEN']);
+		    	foreach ($fechas as $key1 => $value1) {
+		    		$pos+=1;
+		    		$tablaHTML[$pos]['medidas']=array(190);
+		            $tablaHTML[$pos]['alineado']=array('L');
+		            $tablaHTML[$pos]['datos']=array('<b>Fecha de descargo:'.$value1['Fecha_Fab']->format('Y-m-d'));
+		            $tablaHTML[$pos]['borde'] =$borde;
+		    		$lineas = $this->modelo->cargar_lineas_pedidos($value['ORDEN'],$value1['Fecha_Fab']->format('Y-m-d'));
+
+		    		$pos+=1;
+		    		 $tablaHTML[$pos]['medidas']=array(39,100,15,18,18);
+		             $tablaHTML[$pos]['alineado']=array('L','L','R','R','R');
+		             $tablaHTML[$pos]['datos']=array('<b>CODIGO','<b>PRODUCTO','<b>CANTIDAD','<b>VALOR UNI','<b>VALOR TOTAL');
+		             $tablaHTML[$pos]['borde'] =$borde;
+		             $total=0;
+		             $exis = false;
+		    		 foreach ($lineas as $key => $value2) {
+		    		 	$pos+=1;
+		    		 	foreach ($neg as $key => $valuen) {
+		    		 		if ($valuen==$value2['CODIGO_INV']) {
+		    		 			$exis =true;
+		    		 		}
+		    		 	}
+		    		 	if($exis==true)
+		    		 	{
+		    		 		 $tablaHTML[$pos]['medidas']=array(39,100,15,18,18);
+		                $tablaHTML[$pos]['alineado']=array('L','L','R','R','R');
+		                $tablaHTML[$pos]['datos']=array("* * ".$value2['CODIGO_INV'],$value2['PRODUCTO'],$value2['CANTIDAD'],$value2['VALOR_UNIT'],$value2['VALOR_TOTAL']);
+		                $tablaHTML[$pos]['borde'] =$borde;
+
+		                $total+=$value2['VALOR_TOTAL'];
+		                $exis=false;
+		              }else
+		              {
+		              	 $tablaHTML[$pos]['medidas']=array(39,100,15,18,18);
+		                $tablaHTML[$pos]['alineado']=array('L','L','R','R','R');
+		                $tablaHTML[$pos]['datos']=array($value2['CODIGO_INV'],$value2['PRODUCTO'],$value2['CANTIDAD'],$value2['VALOR_UNIT'],$value2['VALOR_TOTAL']);
+		                $tablaHTML[$pos]['borde'] =$borde;
+
+		                $total+=$value2['VALOR_TOTAL'];
+		              }		    		   
+		    		 }
+		    		 $pos+=1;
+		    		    $tablaHTML[$pos]['medidas']=array(39,100,15,18,18);
+		                $tablaHTML[$pos]['alineado']=array('L','L','R','R','R');
+		                $tablaHTML[$pos]['datos']=array('','','','TOTAL',$total);
+		                $tablaHTML[$pos]['borde'] =$borde;
+		                 $gran_total+=$total;
+		    	     $pos+=1;	    		
+		    	}
+		    }
+
+			// foreach ($lineas as $key => $value) {
+			// 	$lin+=1;
+			// }
+			$pos+=1;
+			
+		}
+		 $tablaHTML[$pos]['medidas']=array(39,100,13,21,18);
+		 $tablaHTML[$pos]['alineado']=array('L','L','R','R','R');
+		 $tablaHTML[$pos]['datos']=array('','','','<b>GRAN TOTAL ',$gran_total);
+		 $tablaHTML[$pos]['borde'] =array('T');
+
+
+
+			$this->pdf->cabecera_reporte_MC($titulo,$tablaHTML,$contenido=false,$image=false,$Fechaini,$Fechafin,$sizetable,$mostrar,25,'P');
+
+			// print_r($nega);die();
+
+	}
+
 	function cargar_pedidos($parametros)
 	{
 		if ($parametros['nega']=='true') {
 		if(!isset($_SESSION['NEGATIVOS']['CODIGO_INV']))
 		{
-		$nega = $this->ordenes_negativas($parametros['codigo'],$parametros['tipo'],$parametros['query'],$parametros['desde'],$parametros['hasta'],$parametros['busfe']);
+		$nega = $this->ordenes_negativas($parametros['codigo'],$parametros['rbl_busca'],$parametros['query'],$parametros['desde'],$parametros['hasta'],$parametros['busfe']);
 	    }else
 	    {
 	    	$nega = $_SESSION['NEGATIVOS']['CODIGO_INV'] ;
@@ -117,7 +273,7 @@ class ingreso_descargosC
 
 		if ($parametros['nega']=='true') {
 		
-			foreach ($nega as $key1 => $value1) {
+			foreach ($nega['ordenes'] as $key1 => $value1) {
 				if($value1['ORDEN'] == $value['ORDEN'])
 				{
 						$bur = '<i class="fa fa-circle-o text-red"></i>';
@@ -180,7 +336,7 @@ class ingreso_descargosC
 		$negativos = substr($negativos,0,-1);
 		$datos = $this->modelo->ordenes_producto_nega($codigo_b,$tipo,$query,$desde,$hasta,$busfe,$negativos);
 	    $_SESSION['NEGATIVOS']['CODIGO_INV']  = $datos;
-		return $datos;
+		return array('ordenes'=>$datos,'cod_inv'=>$negativos);
 
 		// print_r($datos);die();
 
@@ -483,11 +639,13 @@ class ingreso_descargosC
 		    {
 		    	$fechas = $this->modelo->cargar_lineas_pedidos_por_fecha($value['ORDEN']);
 		    	foreach ($fechas as $key1 => $value1) {		    		
-		    		$reg_fecha[$value1['Fecha_Fab']->format('Y-m-d')]= array();	
-		    		$lineas = $this->modelo->cargar_lineas_pedidos($value['ORDEN'],$value1['Fecha_Fab']->format('Y-m-d'));		    		
+		    		$reg_fecha[$value1['Fecha_Fab']->format('Y-m-d').'_'.$value['ORDEN']]= array();	
+		    		$lineas = $this->modelo->cargar_lineas_pedidos($value['ORDEN'],$value1['Fecha_Fab']->format('Y-m-d'));  		
 		    		 foreach ($lineas as $key2 => $value2) {
 		    		 	$reg_lineas[$key2] = array('codigo'=>$value2['CODIGO_INV'],'cantidad'=>$value2['CANTIDAD'],'producto'=>$value2['PRODUCTO'],'pre_uni'=>$value2['VALOR_UNIT'],'total'=>$value2['VALOR_TOTAL']);		    		 	
 		    		 }
+
+		    		// print_r($reg_lineas);		print_r($reg_fecha[$value1['Fecha_Fab']->format('Y-m-d').'_'.$value['ORDEN']]);	  
 		    		  array_push($reg_fecha[$value1['Fecha_Fab']->format('Y-m-d').'_'.$value['ORDEN']],$reg_lineas);
 		    		  $reg_lineas = array();
 		    	}

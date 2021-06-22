@@ -541,8 +541,9 @@ class Conectar{
 		$cid = sqlsrv_connect($server, $connectionInfo); //returns false
 		if( $cid === false )
 			{
+				return $cid;
 				//echo "fallo conecion sql server";
-				echo "<script>
+				$men = "<script>
 					/*Swal.fire({
 							type: 'error',
 							title: 'Fallo',
@@ -551,6 +552,7 @@ class Conectar{
 						})*/
 						alert('Fallo conexion sql server ".$server." - ".$connectionInfo[0]." - ".$connectionInfo[1]." - ".$connectionInfo[2]."');
 					</script>";
+					// return $men;
 			}
 			return $cid;
 	}

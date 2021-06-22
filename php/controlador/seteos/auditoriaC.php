@@ -26,8 +26,10 @@ if (isset($_GET['empresa'])) {
 }
 if (isset($_GET['tabla'])) 
 {
+	// print_r($_POST);die();
 	$parametros = $_POST['parametros'];
-	echo json_encode($controlador->reporte_auditoria($parametros));
+	$paginacion = $_POST['paginacion'];
+	echo json_encode($controlador->reporte_auditoria($parametros,$paginacion));
 }
 if (isset($_GET['entidades'])) {
 	if(!isset($_GET['q']))
@@ -84,10 +86,11 @@ class auditoriaC
 		return $empresas;
 
 	}
-	function reporte_auditoria($parametros)
+	function reporte_auditoria($parametros,$paginacion)
 	{
 		// print_r($parametros);die();
-		$datos = $this->modelo->tabla_registros($parametros['ent'],$parametros['emp'],$parametros['usu'],$parametros['mod'],$parametros['des'],$parametros['has'],$parametros['numReg']);
+		// print_r($paginacion);die();
+		$datos = $this->modelo->tabla_registros($parametros['ent'],$parametros['emp'],$parametros['usu'],$parametros['mod'],$parametros['des'],$parametros['has'],$paginacion);
 		// $tr='';
 		// if(count($datos)>0)
 		// {
