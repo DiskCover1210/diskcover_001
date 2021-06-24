@@ -89,6 +89,8 @@ class niveles_seguriC
 	function entidades($valor)
 	{
 		$entidades = $this->modelo->entidades($valor);
+		echo json_encode($entidades);
+		exit();
 		return $entidades;
 
 	}
@@ -374,20 +376,31 @@ class niveles_seguriC
   	// $where[0]['valor'] = $parametros['ci'];
   	// $where[0]['tipo'] = 'string';
 
-//hay que cambiar esas variables de conexion y pass 
-    $datos = $this->modelo->entidades($parametros['entidad']);
+//hay que cambiar esas variables de conexion y pass
+ 
+    
+  	$this->modelo->actualizar_correo($parametros['email'],$parametros['CI_usuario']);
+    $datos = $this->modelo->entidades_usuario($parametros['CI_usuario']);
 
   	$email_conexion = 'info@diskcoversystem.com'; //$empresaGeneral[0]['Email_Conexion'];
-    $email_pass =  'info2021diskCover'; //$empresaGeneral[0]['Email_Contraseña'];
+    $email_pass =  'info2021DiskCover'; //$empresaGeneral[0]['Email_Contraseña'];
     // print_r($empresaGeneral[0]);die();
   	$correo_apooyo="credenciales@diskcoversystem.com"; //correo que saldra ala do del emisor
   	$cuerpo_correo = '
-  	Estimado(a) '.$parametros['usuario'].' sus credenciales de acceso:
+  	Estimado (a) '.$parametros['usuario'].' sus credenciales de acceso:
   	 <br>
-  	<h3>Usuario:</h3>'.$parametros['usuario'].'<br>
-  	<h3>Clave:</h3>'.$parametros['clave'].' <br>
+  	<h3>Usuario:</h3>'.$datos[0]['Usuario'].'<br>
+  	<h3>Clave:</h3>'.$datos[0]['Clave'].' <br>
+  	<h3>Email:</h3>'.$datos[0]['Email'].' <br>
+  	Usted esta asignado a las siguientes entidades: <br>
+  	<table>
+  	<tr><th>Codigo</th><th>Entidad</th></tr>
+  	';
 
-    De la entidad '.$parametros['entidad'].' con CI/RUC: '.$datos[0]['RUC'].' <br>'.utf8_decode('
+  	foreach ($datos as $value) {
+  		$cuerpo_correo .= '<tr><td>'.utf8_decode($value['id']).'</td><td>'.utf8_decode($value['text']).'</td></tr>';
+  	}
+    $cuerpo_correo .= ' </table><br>'.utf8_decode('
     <pre>
 -----------------------------------
 SERVIRLES ES NUESTRO COMPROMISO, DISFRUTARLO ES EL SUYO.
@@ -414,9 +427,11 @@ QUITO - ECUADOR</pre>');
   	// if($resp==1)
   	// {
   		if($this->email->enviar_credenciales($archivos,$correo,$cuerpo_correo,$titulo_correo,$correo_apooyo,'Credenciales de acceso al sistema DiskCover System',$email_conexion,$email_pass,$html=1)==1){
-  			return 1;
+  			echo json_encode(1);
+  			exit();
   		}else
   		{
+  			echo json_encode(-1);
   			return -1;
   		}
   	// }else

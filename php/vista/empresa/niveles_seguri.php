@@ -31,7 +31,7 @@ require_once("panel.php");
   function autocmpletar_usuario(){
        let entidad = $('#ddl_entidad').val();	
       $('#ddl_usuarios').select2({
-        placeholder: 'Seleccione una Usuario',
+        placeholder: 'Seleccione un Usuario',
         ajax: {
           url: '../controlador/niveles_seguriC.php?usuarios=true&entidad='+entidad,
           dataType: 'json',
@@ -206,9 +206,10 @@ require_once("panel.php");
     			 		$('#rbl_super').prop('checked',true);
     			 	}else { $('#rbl_super').prop('checked',false); }
     			 	$('#txt_usuario').val(response.Usuario);
-    			 	$('#txt_pass').val(response.Clave)
-            $('#txt_email').val(response.Email)
-    			 	
+    			 	$('#txt_pass').val(response.Clave);
+            $('#txt_email').val(response.Email);
+            $('#txt_ci_nic').val(response.CI_NIC);
+    			 	console.log(response);
     			 }
 
       usuario_empresa();
@@ -682,6 +683,7 @@ function enviar_email()
     'entidad':$('select[name="ddl_entidad"] option:selected').text(),
     'ruc':$('#ddl_entidad').val(),
     'usuario':$('select[name="ddl_usuarios"] option:selected').text(), 
+    'CI_usuario':$('#ddl_usuarios').val(),
   }
     $.ajax({
         data:  {parametros:parametros},
@@ -689,9 +691,10 @@ function enviar_email()
         type:  'post',
         dataType: 'json',
         beforeSend: function () { 
-          $('#myModal_espera').modal('show'); 
+          //$('#myModal_espera').modal('show'); 
         },
         success:  function (response) { 
+          console.log(response);
           if(response == 1)
            {
              Swal.fire('Email enviado,Se guardara el correo','','success');

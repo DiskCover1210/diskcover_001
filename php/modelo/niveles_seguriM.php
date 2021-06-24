@@ -36,20 +36,42 @@ class niveles_seguriM
 		$cid = Conectar::conexion('MYSQL');
 		$sql ="SELECT Nombre_Entidad,ID_Empresa,RUC_CI_NIC FROM entidad  WHERE RUC_CI_NIC <> '.' AND Nombre_Entidad LIKE '%".$valor."%' 
 		    ORDER BY Nombre_Entidad";
-		  $datos=[];
-		 if($cid)
-		 {
+		$datos=[];
+		if($cid)
+		{
 		 	$consulta=$cid->query($sql) or die($cid->error);
 		 	while($filas=$consulta->fetch_assoc())
 			{
 				// $datos[]=['id'=>$filas['ID_Empresa'],'text'=>utf8_encode($filas['Nombre_Entidad'])];	
-				$datos[]=['id'=>$filas['ID_Empresa'],'text'=>$filas['Nombre_Entidad'],'RUC'=>$filas['RUC_CI_NIC']];				
+				$datos[]=['id'=>utf8_encode($filas['ID_Empresa']),'text'=>utf8_encode($filas['Nombre_Entidad']),'RUC'=>utf8_encode($filas['RUC_CI_NIC'])];				
 			}
-		 }
-
-	      return $datos;
-
+		}
+	    return $datos;
 	}
+
+	function entidades_usuario($ci_nic)
+	{
+		$cid = Conectar::conexion('MYSQL');
+		$sql ="SELECT AU.Nombre_Usuario,AU.Usuario,AU.Clave, AU.Email, E.Nombre_Entidad, E.RUC_CI_NIC As Codigo_Entidad
+				FROM acceso_empresas AS AE,acceso_usuarios AS AU, entidad AS E
+				WHERE AU.CI_NIC ='".$ci_nic."'
+				AND AE.ID_Empresa = E.ID_Empresa 
+				AND AE.CI_NIC = AU.CI_NIC
+				GROUP BY AU.Nombre_Usuario,AU.Email, E.Nombre_Entidad, E.RUC_CI_NIC,AU.Usuario,AU.Clave
+				ORDER BY E.Nombre_Entidad ";
+		$datos=[];
+		if($cid)
+		{
+		 	$consulta=$cid->query($sql) or die($cid->error);
+		 	while($filas=$consulta->fetch_assoc())
+			{
+				// $datos[]=['id'=>$filas['ID_Empresa'],'text'=>utf8_encode($filas['Nombre_Entidad'])];	
+				$datos[]=['id'=>utf8_encode($filas['Codigo_Entidad']),'text'=>utf8_encode($filas['Nombre_Entidad']),'RUC'=>utf8_encode($filas['Codigo_Entidad']),'Usuario'=>utf8_encode($filas['Usuario']),'Clave'=>utf8_encode($filas['Clave']),'Email'=>utf8_encode($filas['Email'])];				
+			}
+		}
+	    return $datos;
+	}
+
 	function empresas($entidad)
 	{
 		$cid = Conectar::conexion('MYSQL');
@@ -102,7 +124,7 @@ class niveles_seguriM
 		 	while($filas=$consulta->fetch_assoc())
 			{
 				// $datos[]=['id'=>$filas['CI_NIC'],'text'=>utf8_encode($filas['Nombre_Usuario']),'CI'=>$filas['CI_NIC'],'usuario'=>$filas['Usuario'],'clave'=>$filas['Clave']];
-				$datos[]=['id'=>$filas['CI_NIC'],'text'=>$filas['Nombre_Usuario'],'CI'=>$filas['CI_NIC'],'usuario'=>$filas['Usuario'],'clave'=>$filas['Clave'],$filas['Email']];					
+				$datos[]=['id'=>utf8_encode($filas['CI_NIC']),'text'=>utf8_encode($filas['Nombre_Usuario']),'CI'=>utf8_encode($filas['CI_NIC']),'usuario'=>utf8_encode($filas['Usuario']),'clave'=>utf8_encode($filas['Clave']),utf8_encode($filas['Email'])];					
 			}
 		 }
 
@@ -150,7 +172,7 @@ class niveles_seguriM
 	function datos_usuario($entidad,$usuario)
 	{
 		$cid = Conectar::conexion('MYSQL');
-		$sql = "SELECT Usuario,Clave,Nivel_1 as 'n1',Nivel_2 as 'n2',Nivel_3 as 'n3',Nivel_4 as 'n4',Nivel_5 as 'n5',Nivel_6 as 'n6',Nivel_7 as 'n7',Supervisor,Cod_Ejec,Email FROM acceso_usuarios WHERE  CI_NIC = '".$usuario."'";
+		$sql = "SELECT CI_NIC,Usuario,Clave,Nivel_1 as 'n1',Nivel_2 as 'n2',Nivel_3 as 'n3',Nivel_4 as 'n4',Nivel_5 as 'n5',Nivel_6 as 'n6',Nivel_7 as 'n7',Supervisor,Cod_Ejec,Email FROM acceso_usuarios WHERE  CI_NIC = '".$usuario."'";
 
 		// print_r($sql);die();
 		 $datos=array();
@@ -166,6 +188,13 @@ class niveles_seguriM
 	      return $datos;
 
 	}
+
+	function actualizar_correo($correo,$ci_nic){
+		$cid = Conectar::conexion('MYSQL');
+		$sql = "UPDATE acceso_usuarios set Email = '".$correo ."' WHERE CI_NIC = '".$ci_nic."'";
+		$cid->query($sql) or die($cid->error);
+	}
+
 	function guardar_acceso_empresa($modulos,$entidad,$empresas,$usuario)
 	{	
 	    $cid = Conectar::conexion('MYSQL');
