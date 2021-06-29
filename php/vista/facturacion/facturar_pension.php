@@ -246,6 +246,28 @@
     window.open(url, '_blank');
   }
 
+  function enviarHistoriaCliente(){
+    codigoCliente = $('#codigoCliente').val();
+    email = $('#email').val();
+    //url = '../controlador/facturacion/facturar_pensionC.php?enviarCorreo=true&codigoCliente='+codigoCliente+'&email='+email;
+    //window.open(url, '_blank');
+    $('#myModal_espera').modal('show');
+    $.ajax({
+      type: "POST",                 
+      url: '../controlador/facturacion/facturar_pensionC.php?enviarCorreo=true&codigoCliente='+codigoCliente,
+      data: {'email' : email }, 
+      success: function(data)
+      {
+        $('#myModal_espera').modal('hide');
+        Swal.fire({
+          type: 'success',
+          title: 'Correo enviado correctamente',
+          text: ''
+        });
+      }
+    });
+  }
+
   function saldoFavor(codigoCliente){
     $.ajax({
       type: "POST",                 
@@ -971,17 +993,17 @@
       <div class="modal-footer">
         <div class="col-xs-2 col-md-2 col-sm-2">
           <a type="button" href="#" target="_blank" class="btn btn-default" onclick="historiaClientePDF();">
-            <img src="../../img/png/impresora.png">
+            <img title="Generar PDF" src="../../img/png/impresora.png">
           </a>                           
         </div>      
         <div class="col-xs-2 col-md-2 col-sm-2">
           <a type="button" href="#" target="_blank" class="btn btn-default" onclick="historiaClienteExcel();">
-            <img src="../../img/png/table_excel.png">
+            <img title="Generar EXCEL" src="../../img/png/table_excel.png">
           </a>                          
         </div>
         <div class="col-xs-2 col-md-2 col-sm-2">
-          <a type="button" href="#" target="_blank" class="btn btn-default" onclick="enviarHistoriaCliente();">
-            <img src="../../img/png/table_excel.png">
+          <a type="button" class="btn btn-default" onclick="enviarHistoriaCliente();">
+            <img title="Enviar a correo" src="../../img/png/email.png">
           </a>                          
         </div>
         

@@ -482,10 +482,10 @@
             if(response == 1)
             {
               Swal.fire({
-        type: 'success',
-        title: 'Eliminado',
-        text: 'Registro eliminado!'
-            });
+                type: 'success',
+                title: 'Eliminado',
+                text: 'Registro eliminado!'
+              });
               ListarAsientoB();
               //
             }  else
@@ -842,11 +842,11 @@
     var haber = $('#txt_haber').val();
     var com = $('#num_com').text();
     // var comprobante = com.split('.');
-    if((debe != haber) || (debe==0 && haber==0) )
+    /*if((debe != haber) || (debe==0 && haber==0) )
     {
       Swal.fire( 'Las transacciones no cuadran correctamente  corrija los resultados de las cuentas','','info');
       return false;
-    }
+    }*/
     if(ben =='')
     {      
       ben = '.';
@@ -1026,6 +1026,7 @@
 
   function ListarAsientoB()
   {
+    $('#div_tabla').empty();
      $.ajax({
           // data:  {parametros:parametros},
           url:   '../controlador/contabilidad/incomC.php?ListarAsientoB=true',
@@ -1033,7 +1034,7 @@
           dataType: 'json',
             success:  function (response) { 
 
-            // console.log(response);     
+             console.log(response);     
             $('#div_tabla').html(response);  
           }
         });
@@ -1319,8 +1320,8 @@
                               <div class="tab-content">
                                 <div class="tab-pane fade in active" id="contabilidad">
                                   <?php 
-                                    // $balance=ListarAsientoTem(null,null,'1','0,1,clave');
-                                    // ListarTotalesTem(null,null,'1','0,1,clave');
+                                    $balance=ListarAsientoTem(null,null,'1','0,1,clave');
+                                    ListarTotalesTem(null,null,'1','0,1,clave');
                                   ?>
                                   
                                 </div>

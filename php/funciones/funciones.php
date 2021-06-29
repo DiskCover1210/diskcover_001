@@ -7857,12 +7857,12 @@ function grilla_generica_new($sql,$tabla,$id_tabla=false,$titulo=false,$botones=
   {
     $ddl_reg = '15';
     $val_pagina = '0';
-    $fun_pagina = $num_reg[2];
+    //$fun_pagina = $num_reg[2];
     $paginacion = array('0','15');
-    $sql.= " ORDER BY Cliente OFFSET ".$paginacion[0]." ROWS FETCH NEXT ".$paginacion[1]." ROWS ONLY;";
+    //$sql.= " OFFSET ".$paginacion[0]." ROWS FETCH NEXT ".$paginacion[1]." ROWS ONLY;";
   }
 
-  // print_r($sql);die();
+  //print_r($sql);die();
 
   $cid=$conn->conexion();
   $cid1=$conn->conexion();

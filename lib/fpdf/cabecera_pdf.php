@@ -105,7 +105,7 @@ class cabecera_pdf
 
 	}
  
- function cabecera_reporte_MC($titulo,$tablaHTML,$contenido=false,$image=false,$fechaini,$fechafin,$sizetable,$mostrar=false,$sal_hea_body=30,$orientacion='P')
+ function cabecera_reporte_MC($titulo,$tablaHTML,$contenido=false,$image=false,$fechaini,$fechafin,$sizetable,$mostrar=false,$sal_hea_body=30,$orientacion='P',$download = true)
 	{	
 
 	    $this->pdftable->fechaini = $fechaini; 
@@ -189,6 +189,7 @@ class cabecera_pdf
 		}
 		//echo $titulo;
 		//die();
+		if ($download) {	
 		 if($mostrar==true)
 	       {
 		    $this->pdftable->Output();
@@ -198,7 +199,10 @@ class cabecera_pdf
 		     $this->pdftable->Output('D',$titulo.'.pdf',false);
 
 	      }
-
+		}else{
+			$this->pdftable->Output('F',dirname(__DIR__,2).'/php/vista/TEMP/'.$titulo.'.pdf');
+		}
+		
 	}
 
 

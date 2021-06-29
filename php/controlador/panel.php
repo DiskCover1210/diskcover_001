@@ -164,10 +164,16 @@ function contruir_modulos($modulos)
 	$pos = 1;
 	foreach ($modulos  as $key => $value) {
 		// print_r($value);die();
+		$link = '';
+		if ($value['link'] == '.') {
+			$link = 'onclick="no_modulo();"';
+		}else{
+			$link = 'href="'.$value['link'].'"';
+		}
 		$mod .= '<div class="col-lg-3 col-xs-6">
           <!-- small box -->
           <div class="small-box '.$color[$pos].'"  style="border-radius: 10px;">
-            <div class="inner"><a href="'.$value['link'].'" style="color: #ffffff;">';
+            <div class="inner"><a '.$link.' style="color: #ffffff;">';
             if(strlen($value['apli'])<9)
             {
             	$mod.= '<h4><b>'.$value['apli'].'</b></h4>';
@@ -188,7 +194,7 @@ function contruir_modulos($modulos)
             }
 
             $mod.='</div>
-            <a href="'.$value['link'].'" class="small-box-footer">Click para ingresar <i class="fa fa-arrow-circle-right"></i></a>
+            <a '.$link.' class="small-box-footer">Click para ingresar <i class="fa fa-arrow-circle-right"></i></a>
           </div>
         </div>';        
         $pos+=1;

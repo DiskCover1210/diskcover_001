@@ -1,6 +1,7 @@
 <?php 
 include(dirname(__DIR__).'/db/variables_globales.php');//
 include(dirname(__DIR__).'/funciones/funciones.php');
+require_once(dirname(__DIR__)."/db/db.php");
 /**
  * 
  */
@@ -10,6 +11,7 @@ class niveles_seguriM
 	function __construct()
 	{
 	   $this->conn = cone_ajax();
+	   $this->dbs=Conectar::conexionSQL();
 	}
 
 	function modulos_todo()
@@ -84,7 +86,7 @@ class niveles_seguriM
 		 	$consulta=$cid->query($sql) or die($cid->error);
 		 	while($filas=$consulta->fetch_assoc())
 			{
-				$datos[]=['id'=>$filas['Item'],'text'=>utf8_encode($filas['Empresa'])];				
+				$datos[]=['id'=>utf8_encode($filas['Item']),'text'=>utf8_encode($filas['Empresa'])];				
 			}
 		 }
 
@@ -252,7 +254,7 @@ class niveles_seguriM
 	function update_acceso_usuario($niveles,$usuario,$clave,$entidad,$CI_NIC,$email)
 	{
 	   $cid = Conectar::conexion('MYSQL');
-	   $sql = "UPDATE acceso_usuarios SET Nivel_1 =".$niveles['1'].", Nivel_2 =".$niveles['2'].", Nivel_3 =".$niveles['3'].", Nivel_4 =".$niveles['4'].",Nivel_5 =".$niveles['5'].", Nivel_6=".$niveles['6'].", Nivel_7=".$niveles['7'].", Supervisor = ".$niveles['super'].", Usuario = '".$usuario."',Clave = '".$clave."',Email='".$email."' WHERE CI_NIC = '".$CI_NIC."';";
+	   $sql = "UPDATE acceso_usuarios SET TODOS = 1, Nivel_1 =".$niveles['1'].", Nivel_2 =".$niveles['2'].", Nivel_3 =".$niveles['3'].", Nivel_4 =".$niveles['4'].",Nivel_5 =".$niveles['5'].", Nivel_6=".$niveles['6'].", Nivel_7=".$niveles['7'].", Supervisor = ".$niveles['super'].", Usuario = '".$usuario."',Clave = '".$clave."',Email='".$email."' WHERE CI_NIC = '".$CI_NIC."';";
 	   if($cid)
 	   {
 	   	 $resultado = mysqli_query($cid, $sql);
@@ -360,7 +362,7 @@ class niveles_seguriM
 		 	     $sql = "INSERT INTO Clientes(T,FA,Codigo,Fecha,Cliente,TD,CI_RUC,FactM,Descuento,RISE,Especial)VALUES('N',0,'".$parametros['ced']."','".date('Y-m-d')."','".$parametros['nom']."','C','".$parametros['ced']."',0,0,0,0);";
 		 	     $sql.="INSERT INTO Accesos (TODOS,Clave,Usuario,Codigo,Nombre_Completo,Nivel_1,Nivel_2,Nivel_3,Nivel_4,Nivel_5,Nivel_6,Nivel_7,Supervisor,EmailUsuario) VALUES (1,'".$parametros['cla']."','".$parametros['usu']."','".$parametros['ced']."','".$parametros['nom']."','".$parametros['n1']."','".$parametros['n2']."','".$parametros['n3']."','".$parametros['n4']."','".$parametros['n5']."','".$parametros['n6']."','".$parametros['n7']."','".$parametros['super']."','".$parametros['email']."')";
 		 	     // print_r($sql);die();
-		 	    $stmt = sqlsrv_query($cid2, $sql);
+		 	    $stmt = sqlsrv_query($this->dbs, $sql);
 	            if($stmt === false)  
 	        	    {  
 	        	    	// print_r('fallo');die();
@@ -372,7 +374,7 @@ class niveles_seguriM
 	                {
 
 	        	    	// print_r('si');die();
-	            	    cerrarSQLSERVERFUN($cid2);
+	            	    cerrarSQLSERVERFUN($this->dbs);
 	            	    $insertado = true;
 	                }     
 	        }     
@@ -413,7 +415,7 @@ class niveles_seguriM
 
 		 	     $sql = "SELECT * FROM Accesos WHERE Codigo = '".$parametros['CI_usuario']."'";
 		 	     // print_r($sql);die();
-		 	     $stmt = sqlsrv_query($cid2, $sql);
+		 	     $stmt = sqlsrv_query($this->dbs, $sql);
 		 	     $result = array();	
 		 	     if($stmt===false)
 		 	     {
@@ -437,7 +439,7 @@ class niveles_seguriM
 		 	     	 	  $sql = str_replace('false',0, $sql);
 		 	     	 	  $sql = str_replace('true',1, $sql);
 		 	     	 	  // print_r($sql);die();
-		 	     	 	 $stmt2 = sqlsrv_query($cid2, $sql);
+		 	     	 	 $stmt2 = sqlsrv_query($this->dbs, $sql);
 		 	     	 	  if( $stmt2 === false)                         
 	                          {  
 		                        echo "Error en consulta PA.\n";  

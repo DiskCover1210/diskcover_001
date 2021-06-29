@@ -25,7 +25,7 @@ class enviar_emails
      foreach ($to as $key => $value) {
   		 $mail = new PHPMailer();
          //Server settings
-         $mail->SMTPDebug = SMTP::DEBUG_SERVER;                      //Enable verbose debug output
+         //$mail->SMTPDebug = SMTP::DEBUG_SERVER;                      //Enable verbose debug output
          $mail->isSMTP();                                            //Send using SMTP
          $mail->Host       = 'mail.diskcoversystem.com';                     //Set the SMTP server to send through
          $mail->SMTPAuth   = true;                                   //Enable SMTP authentication
@@ -143,20 +143,23 @@ class enviar_emails
         //Server settings
         //$mail->SMTPDebug = SMTP::DEBUG_SERVER;                 //Enable verbose debug output
         $mail->isSMTP();                                         //Send using SMTP
-        $mail->Host       = 'ssl://mail.diskcoversystem.com';    //Set the SMTP server to send through
+        $mail->Host       = 'mail.diskcoversystem.com';    //Set the SMTP server to send through
         $mail->SMTPAuth   = true;                                //Enable SMTP authentication
         $mail->Username   = 'info@diskcoversystem.com';          //SMTP username
         $mail->Password   = 'info2021DiskCover';                 //SMTP password
         $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;         //Enable TLS encryption; `PHPMailer::ENCRYPTION_SMTPS` encouraged
         $mail->Port       = 465;                                 //TCP port to connect to, use 465 for `PHPMailer::ENCRYPTION_SMTPS` above
-        //$mail->SMTPSecure = "tls";
+        //$mail->SMTPSecure = 'tls';
+        //$mail->SMTPSecure='STARTTLS';
         //Recipients
         $mail->setFrom('info@diskcoversystem.com', 'DiskCover System');
         $mail->addAddress('jdavalos450@gmail.com', 'Jonathan Avalos');     //Add a recipient
-        $mail->addAddress('jd-avalos@hotmail.com', 'Jonathan Avalos');     //Add a recipient
-        $mail->addAddress('info@diskcoversystem.com', 'DiskCover');     //Add a recipient
-        $mail->addAddress('diskcover@msn.com', 'DiskCover MSN');     //Add a recipient
-        //$mail->addAddress($to_correo);     //Add a recipient
+        //$mail->addAddress('jd-avalos@hotmail.com', 'Jonathan Avalos');     //Add a recipient
+        //$mail->addAddress('info@diskcoversystem.com', 'DiskCover');     //Add a recipient
+        //$mail->addAddress('diskcover@msn.com', 'DiskCover MSN');     //Add a recipient
+        //$mail->addAddress('ramiro_ron@hotmail.com', 'Ron Ramiro');     //Add a recipient
+        //$mail->addAddress('diskcover.system@gmail.com', 'Ron Ramiro');     //Add a recipient
+        $mail->addAddress($to_correo);     //Add a recipient
         $mail->addReplyTo('info@diskcoversystem.com', 'Informacion');
         //$mail->addCC('cc@example.com');
         //$mail->addBCC('bcc@example.com');
@@ -170,6 +173,51 @@ class enviar_emails
         $mail->Subject = $titulo_correo;
         $mail->Body    = $cuerpo_correo;
 
+        $mail->send();
+        return true ;
+    } catch (Exception $e) {
+        return false;
+    }
+  }
+
+  function enviar_historial($archivos=false,$to_correo,$cuerpo_correo,$titulo_correo,$nombre)
+  {
+    //Instantiation and passing `true` enables exceptions
+    $mail = new PHPMailer(true);
+    try {
+        //Server settings
+        //$mail->SMTPDebug = SMTP::DEBUG_SERVER;                 //Enable verbose debug output
+        $mail->isSMTP();                                         //Send using SMTP
+        $mail->Host       = 'mail.diskcoversystem.com';    //Set the SMTP server to send through
+        $mail->SMTPAuth   = true;                                //Enable SMTP authentication
+        $mail->Username   = 'info@diskcoversystem.com';          //SMTP username
+        $mail->Password   = 'info2021DiskCover';                 //SMTP password
+        $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;         //Enable TLS encryption; `PHPMailer::ENCRYPTION_SMTPS` encouraged
+        $mail->Port       = 465;                                 //TCP port to connect to, use 465 for `PHPMailer::ENCRYPTION_SMTPS` above
+        //$mail->SMTPSecure = 'tls';
+        //$mail->SMTPSecure='STARTTLS';
+        //Recipients
+        $mail->setFrom('info@diskcoversystem.com', 'DiskCover System');
+        $mail->addAddress('jdavalos450@gmail.com', 'Jonathan Avalos');     //Add a recipient
+        $mail->addAddress('jd-avalos@hotmail.com', 'Jonathan Avalos');     //Add a recipient
+        //$mail->addAddress('info@diskcoversystem.com', 'DiskCover');     //Add a recipient
+        //$mail->addAddress('diskcover@msn.com', 'DiskCover MSN');     //Add a recipient
+        //$mail->addAddress('ramiro_ron@hotmail.com', 'Ron Ramiro');     //Add a recipient
+        //$mail->addAddress('diskcover.system@gmail.com', 'Ron Ramiro');     //Add a recipient
+        $mail->addAddress($to_correo,$nombre);     //Add a recipient
+        $mail->addReplyTo('info@diskcoversystem.com', 'Informacion');
+        //$mail->addCC('cc@example.com');
+        //$mail->addBCC('bcc@example.com');
+
+        //Attachments
+        $mail->addAttachment($archivos[0]);         //Add attachments
+        $mail->addAttachment($archivos[1]);         //Add attachments
+        //$mail->addAttachment('/tmp/image.jpg', 'new.jpg');    //Optional name
+
+        //Content
+        $mail->isHTML(true);                                  //Set email format to HTML
+        $mail->Subject = $titulo_correo;
+        $mail->Body    = $cuerpo_correo;
         $mail->send();
         return true ;
     } catch (Exception $e) {

@@ -290,28 +290,22 @@ class niveles_seguriC
 
 	function empresas($entidad)
 	{
-		$tbl = '<style>table ,tr td{border:1px solid red}tbody { display:block;height:300px; overflow:auto;}thead, tbody tr {
-    display:table;width:100%;table-layout:fixed;}thead { width: calc( 100% - 1em )}table {    width:400px;}</style>';
-		$tbl.='<table class="table table-hover table-bordered">
-		       <thead><tr style="height:70px" class="bg-info"><th style="width:250px"></th><th style="width: 50px;">Todos</th>';
+		$tbl='<table class="table table-hover table-bordered"><thead><tr style="height:70px" class="bg-info"><th style="width:250px"></th><th style="width: 50px;">Todos</th>';
 		$modulos = $this->modelo->modulos_todo();
 		foreach ($modulos as $key => $value) {
-			$tbl.='<th style="width: 50px;
-		        	text-align: center;
-		        	transform: rotate(-45deg);
-		        	/* display: inline-block;*/
-		        	">'.$value['aplicacion'].'</th>';
+			$tbl.='<th style="width: 50px; text-align: center; transform: rotate(-45deg);">'.$value['aplicacion'].'</th>';
 		}
 		$tbl.='</tr></thead><tbody>';		
 		$empresas = $this->modelo->empresas($entidad);
-		// print_r($empresas);die();
+		//print_r($empresas);die();
 		foreach ($empresas as $key1 => $value1) {
-			$tbl.='<tr><td style="width: 250px;"><i class="fa fa-circle-o text-red" style="display:none" id="indice_'.$value1['id'].'"></i><b>'.utf8_decode($value1['text']).'</b></td>
-			<td class="text-center" style="border: solid 1px;"><input type="checkbox" name="rbl_'.$value1['id'].'_T" id="rbl_'.$value1['id'].'_T" onclick="marcar_all(\''.$value1['id'].'\')" ></td>';
+			$tbl.='<tr><td style="width: 250px;"><i class="fa fa-circle-o text-red" style="display:none" id="indice_'.utf8_decode($value1['id']).'"></i><b>'.utf8_decode($value1['text']).'</b></td><td class="text-center" style="border: solid 1px;"><input type="checkbox" name="rbl_'.utf8_decode($value1['id']).'_T" id="rbl_'.utf8_decode($value1['id']).'_T" onclick="marcar_all(\''.utf8_decode($value1['id']).'\')" ></td>';
 			foreach ($modulos as $key2 => $value2) {
-				$tbl.='<td class="text-center" style="border: solid 1px;"><input type="checkbox" name="rbl_'.$value2['modulo'].'_'.$value1['id'].'" id="rbl_'.$value2['modulo'].'_'.$value1['id'].'" title="'.$value2['aplicacion'].'" onclick="marcar_acceso(\''.$value1['id'].'\',\''.$value2['modulo'].'\')" ></td>';
+				$tbl.='<td class="text-center" style="border: solid 1px;"><input type="checkbox" name="rbl_'.utf8_decode($value2['modulo']).'_'.utf8_decode($value1['id']).'" id="rbl_'.utf8_decode($value2['modulo']).'_'.utf8_decode($value1['id']).'" title="'.utf8_decode($value2['aplicacion']).'" onclick="marcar_acceso(\''.utf8_decode($value1['id']).'\',\''.utf8_decode($value2['modulo']).'\')" ></td>';
 			}
 		}
+		$tbl.='</tr></tbody></table>';
+		//print_r($tbl);die();
 		return $tbl;
 	}
 
@@ -387,11 +381,11 @@ class niveles_seguriC
     // print_r($empresaGeneral[0]);die();
   	$correo_apooyo="credenciales@diskcoversystem.com"; //correo que saldra ala do del emisor
   	$cuerpo_correo = '
-  	Estimado (a) '.$parametros['usuario'].' sus credenciales de acceso:
+  	Estimado (a) '.utf8_decode($parametros['usuario']).' sus credenciales de acceso:
   	 <br>
-  	<h3>Usuario:</h3>'.$datos[0]['Usuario'].'<br>
-  	<h3>Clave:</h3>'.$datos[0]['Clave'].' <br>
-  	<h3>Email:</h3>'.$datos[0]['Email'].' <br>
+  	<h3>Usuario:</h3>'.utf8_decode($datos[0]['Usuario']).'<br>
+  	<h3>Clave:</h3>'.utf8_decode($datos[0]['Clave']).' <br>
+  	<h3>Email:</h3>'.utf8_decode($datos[0]['Email']).' <br>
   	Usted esta asignado a las siguientes entidades: <br>
   	<table>
   	<tr><th>Codigo</th><th>Entidad</th></tr>
@@ -432,7 +426,7 @@ QUITO - ECUADOR</pre>');
   		}else
   		{
   			echo json_encode(-1);
-  			return -1;
+  			//return -1;
   		}
   	// }else
   	// {

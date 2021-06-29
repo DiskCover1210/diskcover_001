@@ -320,6 +320,7 @@ require_once("panel.php");
   	autocmpletar_usuario();
   	let entidad = $('#ddl_entidad').val();
     // alert(entidad);
+    $('#myModal_espera').modal('show');
   	$.ajax({
     		 data:  {entidad:entidad},
     		url:   '../controlador/niveles_seguriC.php?empresas=true',
@@ -329,9 +330,8 @@ require_once("panel.php");
     		//   $('#myModal_espera').modal('show'); 
     		// },
     		success:  function (response) { 
-    			 					
-    				 $('#tbl_modulos').html(response);
-              
+    			 	$('#myModal_espera').modal('hide');				
+    				$('#tbl_modulos').html(response);  
     		}
     	});
 
@@ -409,7 +409,7 @@ function guardar()
     						});
     					$('#myModal_espera').modal('hide'); 
               $('#rbl_all').prop('checked',false); 
-    					buscar_permisos();
+    					//buscar_permisos();
     				}else if(response == -2)
             {
               $('#myModal_espera').modal('hide'); 
@@ -691,7 +691,7 @@ function enviar_email()
         type:  'post',
         dataType: 'json',
         beforeSend: function () { 
-          //$('#myModal_espera').modal('show'); 
+          $('#myModal_espera').modal('show'); 
         },
         success:  function (response) { 
           console.log(response);
@@ -708,6 +708,27 @@ function enviar_email()
       }); 
 }
 </script>
+
+<style>
+  table ,tr, td{ 
+    border:1px solid red
+  } 
+  tbody { 
+    display:block;
+    height:300px; 
+    overflow:auto;
+  } 
+  thead, tbody, tr {
+    display:table;
+    width:100%;table-layout:fixed;
+  } 
+  thead { 
+    width: calc( 100% - 1em )
+  } 
+  table { 
+    width:400px;
+  }
+</style>
 
 <div class="container">
   <div class="row">
@@ -793,7 +814,7 @@ function enviar_email()
     <div class="input-group">
         <select class="form-control input" id="ddl_usuarios"  name="ddl_usuarios" onchange="buscar_permisos();"  style="width:50%"></select>
         <div class="input-group-btn">
-          <button type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#myModal"><span class="fa fa-plus"></span> Nuevo</button>
+          <button type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target="#myModal"><span class="fa fa-plus"></span> Nuevo</button>
         </div>
       </div>
 	</div>
