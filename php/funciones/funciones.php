@@ -7961,20 +7961,16 @@ if($titulo)
       }
     }else
     {
-      $tab = ($val_pagina/$ddl_reg)+1;
+      $tab = ($val_pagina/$ddl_reg);
       $inicio = 1;
       $tab_paginas = 10;
-      if($tab%10 ==0)
-      {
-         $parte = ($tab/10)+1;
-         $inicio = $tab;
-         $tab_paginas = $inicio+$tab+1;
+      $co = 0;
+      // print_r($tab);die();
+      while (($tab+1)>=$tab_paginas) {
+        $inicio = $tab_paginas;
+        $tab_paginas = $tab_paginas+10;
+        // $co = $co+1;
       }
-      // else
-      // {
-      //    print_r($tab%10);die();
-      // }
-
 
       for ($i=$inicio; $i <= $tab_paginas; $i++) {
        $pa = $ddl_reg*($i-1); 
