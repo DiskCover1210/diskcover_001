@@ -880,7 +880,7 @@
       confirmButtonText: 'Si!'
     }).then((result) => {
       if (result.value==true) {
-
+        $('#myModal_espera').modal('show');
          grabar_comprobante(parametros);
       }else
       {
@@ -943,6 +943,11 @@
           if(response==1)
           {
              Swal.fire('Retencion ingresada','','success');
+             eliminar_todo_asisntoB();
+             cargar_tablas_contabilidad();
+             cargar_tablas_tab4();
+             cargar_tablas_retenciones();
+             cargar_tablas_sc();
           }           
 
           }
@@ -1319,10 +1324,7 @@
                             <div class="panel-body" style="padding-top: 2px;">
                               <div class="tab-content">
                                 <div class="tab-pane fade in active" id="contabilidad">
-                                  <?php 
-                                    $balance=ListarAsientoTem(null,null,'1','0,1,clave');
-                                    ListarTotalesTem(null,null,'1','0,1,clave');
-                                  ?>
+                                 <!--  -->
                                   
                                 </div>
                                 <div class="tab-pane fade" id="subcuentas">Default 2</div>

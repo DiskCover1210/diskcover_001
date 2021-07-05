@@ -1167,7 +1167,6 @@ class autorizacion_sri
 function generar_xml_retencion($cabecera,$detalle=false)
 {
 
-	// print_r($cabecera);die();
 	    $entidad=$_SESSION['INGRESO']['item'];
 	    $Ambiente = $_SESSION['INGRESO']["Ambiente"];
 	    $ContEspec = '';//Leer_Campo_Empresa("Codigo_Contribuyente_Especial") ojo hay que ver
@@ -1178,7 +1177,7 @@ function generar_xml_retencion($cabecera,$detalle=false)
 	    $Fecha1 = explode("-",$cabecera[0]['Fecha']->format('Y-m-d'));
 		$fechaem=$Fecha1[2].'/'.$Fecha1[1].'/'.$Fecha1[0];
 	    $fecha = str_replace('/','',$fechaem);
-	    $ruc=$cabecera[0]['CI_RUC'];
+	    $ruc=$_SESSION['INGRESO']['RUC'];
 	    $tc=$cabecera[0]['TipoComprobante'];
 	    $serie=$cabecera[0]['Serie'];
 	    $numero=$this->generaCeros($cabecera[0]['Factura'], '9');
@@ -1250,7 +1249,6 @@ function generar_xml_retencion($cabecera,$detalle=false)
 		return $respuesta;
 	}
 
-
 	    $xml = new DOMDocument( "1.0", "UTF-8");
         $xml->formatOutput = true;
         $xml->preserveWhiteSpace = false;
@@ -1258,7 +1256,7 @@ function generar_xml_retencion($cabecera,$detalle=false)
 
 	    $xml_inicio = $xml->createElement( "comprobanteRetencion" );
         $xml_inicio->setAttribute( "id", "comprobante" );
-        $xml_inicio->setAttribute( "version", "1.1.0" );
+        $xml_inicio->setAttribute( "version", "1.0.0" );
         //informacion de cabecera
 	    $xml_infotributaria = $xml->createElement("infoTributaria");
 	    $xml_ambiente = $xml->createElement("ambiente",$ambiente);
@@ -1348,9 +1346,9 @@ function generar_xml_retencion($cabecera,$detalle=false)
             $Retencion = intval($detalle[0]["Porc_Bienes"]);
             $Valor = number_format(($Total * ($Retencion / 100)), 2);
 
-	    	$xml_baseImponible = $xml->createElement("baseImponible", number_format($Total,2));
+	    	$xml_baseImponible = $xml->createElement("baseImponible", number_format($Total,2 , '.', ''));
 	    	$xml_porcentajeRetener = $xml->createElement("porcentajeRetener",$Retencion);
-	    	$xml_valorRetenido = $xml->createElement("valorRetenido",number_format($Valor,2));
+	    	$xml_valorRetenido = $xml->createElement("valorRetenido",number_format($Valor,2, '.', ''));
 	    	$xml_codDocSustento = $xml->createElement("codDocSustento",$cabecera[0]['TipoComprobante']);
 	    	$xml_numDocSustento = $xml->createElement("numDocSustento", $cabecera[0]['Serie'].$this->generaCeros($cabecera[0]['Factura'],9));
 	    	$xml_fechaEmisionDocSustento = $xml->createElement("fechaEmisionDocSustento",$cabecera[0]['Fecha']->format('d/m/Y'));
@@ -1387,9 +1385,9 @@ function generar_xml_retencion($cabecera,$detalle=false)
             $Retencion = intval($detalle[0]["Porc_Servicios"]);
             $Valor = number_format(($Total * ($Retencion / 100)), 2);
 
-	    	$xml_baseImponible = $xml->createElement("baseImponible",number_format($Total,2));
+	    	$xml_baseImponible = $xml->createElement("baseImponible",number_format($Total,2, '.', ''));
 	    	$xml_porcentajeRetener = $xml->createElement("porcentajeRetener",$Retencion);
-	    	$xml_valorRetenido = $xml->createElement("valorRetenido",number_format($Valor,2));
+	    	$xml_valorRetenido = $xml->createElement("valorRetenido",number_format($Valor,2, '.', ''));
 	    	$xml_codDocSustento = $xml->createElement("codDocSustento",$cabecera[0]['TipoComprobante']);
 	    	$xml_numDocSustento = $xml->createElement("numDocSustento", $cabecera[0]['Serie'].$this->generaCeros($cabecera[0]['Factura'],9));
 	    	$xml_fechaEmisionDocSustento = $xml->createElement("fechaEmisionDocSustento",$cabecera[0]['Fecha']->format('d/m/Y'));
@@ -1445,8 +1443,8 @@ function generar_xml_retencion($cabecera,$detalle=false)
                   	  $xml_codigo = $xml->createElement("codigo",'1');
                   	  $xml_codigoRetencion = $xml->createElement("codigoRetencion",$value['CodRet']);
 
-	    	          $xml_baseImponible = $xml->createElement("baseImponible",number_format($value['BaseImp'],2));
-	    	          $xml_porcentajeRetener = $xml->createElement("porcentajeRetener",number_format(($value['Porcentaje']*100),2));
+	    	          $xml_baseImponible = $xml->createElement("baseImponible",number_format($value['BaseImp'],2, '.', ''));
+	    	          $xml_porcentajeRetener = $xml->createElement("porcentajeRetener",number_format(($value['Porcentaje']*100),2, '.', ''));
 	    	          $xml_valorRetenido = $xml->createElement("valorRetenido",$value['ValRet']);
 	    	          $xml_codDocSustento = $xml->createElement("codDocSustento",$cabecera[0]['TipoComprobante']);
 	    	          $xml_numDocSustento = $xml->createElement("numDocSustento", $cabecera[0]['Serie'].$this->generaCeros($cabecera[0]['Factura'],9));
@@ -1537,6 +1535,7 @@ function generar_xml_retencion($cabecera,$detalle=false)
 
 
      $ruta_G = dirname(__DIR__).'/entidades/entidad_'.$entidad."/CE".$entidad.'/Generados';
+     // print_r($ruta_G);die();
 	if($archivo = fopen($ruta_G.'/'.$cabecera[0]['ClaveAcceso'].'.xml',"w+b"))
 	  {
 	  	fwrite($archivo,$xml->saveXML());
