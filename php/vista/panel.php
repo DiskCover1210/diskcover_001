@@ -755,6 +755,14 @@ if(isset($_GET['mos']))
 			
 
 		}
+
+		function no_modulo(){
+			Swal.fire({
+		      type: 'error',
+		      title: 'No puede usar este módulo',
+		      text: ''
+		    });
+		}
 	
 	
 		function getParameterByName(name) {

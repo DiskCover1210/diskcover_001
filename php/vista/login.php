@@ -343,7 +343,7 @@ if (isset($_SESSION['autentificado']) != "VERDADERO")
   	if(acc == 0)
   	{
   		Swal.fire({
-  			title: 'Usuario Bloqueao o sin permisos?',
+  			title: 'Usuario Bloqueado o sin permisos?',
   			text:'Consulte con su administrador',
   			type: 'warning',
   			confirmButtonColor: '#3085d6',

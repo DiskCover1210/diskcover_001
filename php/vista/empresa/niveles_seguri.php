@@ -31,7 +31,7 @@ require_once("panel.php");
   function autocmpletar_usuario(){
        let entidad = $('#ddl_entidad').val();	
       $('#ddl_usuarios').select2({
-        placeholder: 'Seleccione una Usuario',
+        placeholder: 'Seleccione un Usuario',
         ajax: {
           url: '../controlador/niveles_seguriC.php?usuarios=true&entidad='+entidad,
           dataType: 'json',
@@ -206,9 +206,10 @@ require_once("panel.php");
     			 		$('#rbl_super').prop('checked',true);
     			 	}else { $('#rbl_super').prop('checked',false); }
     			 	$('#txt_usuario').val(response.Usuario);
-    			 	$('#txt_pass').val(response.Clave)
-            $('#txt_email').val(response.Email)
-    			 	
+    			 	$('#txt_pass').val(response.Clave);
+            $('#txt_email').val(response.Email);
+            $('#txt_ci_nic').val(response.CI_NIC);
+    			 	console.log(response);
     			 }
 
       usuario_empresa();
@@ -319,6 +320,7 @@ require_once("panel.php");
   	autocmpletar_usuario();
   	let entidad = $('#ddl_entidad').val();
     // alert(entidad);
+    $('#myModal_espera').modal('show');
   	$.ajax({
     		 data:  {entidad:entidad},
     		url:   '../controlador/niveles_seguriC.php?empresas=true',
@@ -328,9 +330,8 @@ require_once("panel.php");
     		//   $('#myModal_espera').modal('show'); 
     		// },
     		success:  function (response) { 
-    			 					
-    				 $('#tbl_modulos').html(response);
-              
+    			 	$('#myModal_espera').modal('hide');				
+    				$('#tbl_modulos').html(response);  
     		}
     	});
 
@@ -408,7 +409,7 @@ function guardar()
     						});
     					$('#myModal_espera').modal('hide'); 
               $('#rbl_all').prop('checked',false); 
-    					buscar_permisos();
+    					//buscar_permisos();
     				}else if(response == -2)
             {
               $('#myModal_espera').modal('hide'); 
@@ -682,6 +683,7 @@ function enviar_email()
     'entidad':$('select[name="ddl_entidad"] option:selected').text(),
     'ruc':$('#ddl_entidad').val(),
     'usuario':$('select[name="ddl_usuarios"] option:selected').text(), 
+    'CI_usuario':$('#ddl_usuarios').val(),
   }
     $.ajax({
         data:  {parametros:parametros},
@@ -692,6 +694,7 @@ function enviar_email()
           $('#myModal_espera').modal('show'); 
         },
         success:  function (response) { 
+          console.log(response);
           if(response == 1)
            {
              Swal.fire('Email enviado,Se guardara el correo','','success');
@@ -705,6 +708,27 @@ function enviar_email()
       }); 
 }
 </script>
+
+<style>
+  table ,tr, td{ 
+    border:1px solid red
+  } 
+  tbody { 
+    display:block;
+    height:300px; 
+    overflow:auto;
+  } 
+  thead, tbody, tr {
+    display:table;
+    width:100%;table-layout:fixed;
+  } 
+  thead { 
+    width: calc( 100% - 1em )
+  } 
+  table { 
+    width:400px;
+  }
+</style>
 
 <div class="container">
   <div class="row">
@@ -790,7 +814,7 @@ function enviar_email()
     <div class="input-group">
         <select class="form-control input" id="ddl_usuarios"  name="ddl_usuarios" onchange="buscar_permisos();"  style="width:50%"></select>
         <div class="input-group-btn">
-          <button type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#myModal"><span class="fa fa-plus"></span> Nuevo</button>
+          <button type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target="#myModal"><span class="fa fa-plus"></span> Nuevo</button>
         </div>
       </div>
 	</div>

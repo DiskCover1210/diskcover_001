@@ -1361,7 +1361,8 @@ class incomC
             $parametros_xml['Fecha']=$Fecha;
             $parametros_xml['Numero']=$Numero;
             $parametros_xml['ruc']=$parametros['ruc'];
-           
+            print_r($Autorizacion_R);
+            exit();
             if(strlen($Autorizacion_R) >= 13){
             	$res = $this->SRI_Crear_Clave_Acceso_Retencines($parametros_xml); //function xml
             	// print_r($res);die();

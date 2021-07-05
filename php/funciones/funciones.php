@@ -7857,12 +7857,12 @@ function grilla_generica_new($sql,$tabla,$id_tabla=false,$titulo=false,$botones=
   {
     $ddl_reg = '15';
     $val_pagina = '0';
-    $fun_pagina = $num_reg[2];
+    //$fun_pagina = $num_reg[2];
     $paginacion = array('0','15');
-    $sql.= " ORDER BY Cliente OFFSET ".$paginacion[0]." ROWS FETCH NEXT ".$paginacion[1]." ROWS ONLY;";
+    //$sql.= " OFFSET ".$paginacion[0]." ROWS FETCH NEXT ".$paginacion[1]." ROWS ONLY;";
   }
 
-  // print_r($sql);die();
+  //print_r($sql);die();
 
   $cid=$conn->conexion();
   $cid1=$conn->conexion();
@@ -8662,7 +8662,7 @@ function datos_tabla($tabla,$campo=false)
           $dato[17]['campo']='Porc_IVA';
           $dato[17]['dato']=$_SESSION['INGRESO']['porc']; 
           $dato[18]['campo']='Autorizacion';
-          $dato[18]['dato']=$_SESSION['INGRESO']['RUC'];
+          $dato[18]['dato']=$datos1['Autorizacion'];
           $total_iva=$total_iva+$row[7];
           insert_generico("Detalle_Factura",$dato);
           if($row[7]==0)
@@ -8767,7 +8767,7 @@ function datos_tabla($tabla,$campo=false)
           $dato[19]['campo']='Banco';
           $dato[19]['dato']=$cuenta;
           $dato[20]['campo']='Autorizacion';
-          $dato[20]['dato']=$_SESSION['INGRESO']['RUC'];
+          $dato[20]['dato']=$datos1['Autorizacion'];
           $this->insert_generico("Trans_Abonos",$dato);
         }
         $query="INSERT INTO Facturas
@@ -8893,7 +8893,7 @@ function datos_tabla($tabla,$campo=false)
         $dato[37]['campo']='Propina';
         $dato[37]['dato']=$propina_a; 
         $dato[38]['campo']='Autorizacion';
-        $dato[38]['dato']=$_SESSION['INGRESO']['RUC'];
+        $dato[38]['dato']=$datos1['Autorizacion'];
         insert_generico("Facturas",$dato);
         $n_fac++;
         //incrementar contador de facturas

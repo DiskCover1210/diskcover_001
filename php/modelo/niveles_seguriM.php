@@ -1,6 +1,7 @@
 <?php 
 include(dirname(__DIR__).'/db/variables_globales.php');//
 include(dirname(__DIR__).'/funciones/funciones.php');
+require_once(dirname(__DIR__)."/db/db.php");
 /**
  * 
  */
@@ -10,6 +11,7 @@ class niveles_seguriM
 	function __construct()
 	{
 	   $this->conn = cone_ajax();
+	   $this->dbs=Conectar::conexionSQL();
 	}
 
 	function modulos_todo()
@@ -36,20 +38,42 @@ class niveles_seguriM
 		$cid = Conectar::conexion('MYSQL');
 		$sql ="SELECT Nombre_Entidad,ID_Empresa,RUC_CI_NIC FROM entidad  WHERE RUC_CI_NIC <> '.' AND Nombre_Entidad LIKE '%".$valor."%' 
 		    ORDER BY Nombre_Entidad";
-		  $datos=[];
-		 if($cid)
-		 {
+		$datos=[];
+		if($cid)
+		{
 		 	$consulta=$cid->query($sql) or die($cid->error);
 		 	while($filas=$consulta->fetch_assoc())
 			{
 				// $datos[]=['id'=>$filas['ID_Empresa'],'text'=>utf8_encode($filas['Nombre_Entidad'])];	
-				$datos[]=['id'=>$filas['ID_Empresa'],'text'=>$filas['Nombre_Entidad'],'RUC'=>$filas['RUC_CI_NIC']];				
+				$datos[]=['id'=>utf8_encode($filas['ID_Empresa']),'text'=>utf8_encode($filas['Nombre_Entidad']),'RUC'=>utf8_encode($filas['RUC_CI_NIC'])];				
 			}
-		 }
-
-	      return $datos;
-
+		}
+	    return $datos;
 	}
+
+	function entidades_usuario($ci_nic)
+	{
+		$cid = Conectar::conexion('MYSQL');
+		$sql ="SELECT AU.Nombre_Usuario,AU.Usuario,AU.Clave, AU.Email, E.Nombre_Entidad, E.RUC_CI_NIC As Codigo_Entidad
+				FROM acceso_empresas AS AE,acceso_usuarios AS AU, entidad AS E
+				WHERE AU.CI_NIC ='".$ci_nic."'
+				AND AE.ID_Empresa = E.ID_Empresa 
+				AND AE.CI_NIC = AU.CI_NIC
+				GROUP BY AU.Nombre_Usuario,AU.Email, E.Nombre_Entidad, E.RUC_CI_NIC,AU.Usuario,AU.Clave
+				ORDER BY E.Nombre_Entidad ";
+		$datos=[];
+		if($cid)
+		{
+		 	$consulta=$cid->query($sql) or die($cid->error);
+		 	while($filas=$consulta->fetch_assoc())
+			{
+				// $datos[]=['id'=>$filas['ID_Empresa'],'text'=>utf8_encode($filas['Nombre_Entidad'])];	
+				$datos[]=['id'=>utf8_encode($filas['Codigo_Entidad']),'text'=>utf8_encode($filas['Nombre_Entidad']),'RUC'=>utf8_encode($filas['Codigo_Entidad']),'Usuario'=>utf8_encode($filas['Usuario']),'Clave'=>utf8_encode($filas['Clave']),'Email'=>utf8_encode($filas['Email'])];				
+			}
+		}
+	    return $datos;
+	}
+
 	function empresas($entidad)
 	{
 		$cid = Conectar::conexion('MYSQL');
@@ -62,7 +86,7 @@ class niveles_seguriM
 		 	$consulta=$cid->query($sql) or die($cid->error);
 		 	while($filas=$consulta->fetch_assoc())
 			{
-				$datos[]=['id'=>$filas['Item'],'text'=>utf8_encode($filas['Empresa'])];				
+				$datos[]=['id'=>utf8_encode($filas['Item']),'text'=>utf8_encode($filas['Empresa'])];				
 			}
 		 }
 
@@ -102,7 +126,7 @@ class niveles_seguriM
 		 	while($filas=$consulta->fetch_assoc())
 			{
 				// $datos[]=['id'=>$filas['CI_NIC'],'text'=>utf8_encode($filas['Nombre_Usuario']),'CI'=>$filas['CI_NIC'],'usuario'=>$filas['Usuario'],'clave'=>$filas['Clave']];
-				$datos[]=['id'=>$filas['CI_NIC'],'text'=>$filas['Nombre_Usuario'],'CI'=>$filas['CI_NIC'],'usuario'=>$filas['Usuario'],'clave'=>$filas['Clave'],$filas['Email']];					
+				$datos[]=['id'=>utf8_encode($filas['CI_NIC']),'text'=>utf8_encode($filas['Nombre_Usuario']),'CI'=>utf8_encode($filas['CI_NIC']),'usuario'=>utf8_encode($filas['Usuario']),'clave'=>utf8_encode($filas['Clave']),utf8_encode($filas['Email'])];					
 			}
 		 }
 
@@ -150,7 +174,7 @@ class niveles_seguriM
 	function datos_usuario($entidad,$usuario)
 	{
 		$cid = Conectar::conexion('MYSQL');
-		$sql = "SELECT Usuario,Clave,Nivel_1 as 'n1',Nivel_2 as 'n2',Nivel_3 as 'n3',Nivel_4 as 'n4',Nivel_5 as 'n5',Nivel_6 as 'n6',Nivel_7 as 'n7',Supervisor,Cod_Ejec,Email FROM acceso_usuarios WHERE  CI_NIC = '".$usuario."'";
+		$sql = "SELECT CI_NIC,Usuario,Clave,Nivel_1 as 'n1',Nivel_2 as 'n2',Nivel_3 as 'n3',Nivel_4 as 'n4',Nivel_5 as 'n5',Nivel_6 as 'n6',Nivel_7 as 'n7',Supervisor,Cod_Ejec,Email FROM acceso_usuarios WHERE  CI_NIC = '".$usuario."'";
 
 		// print_r($sql);die();
 		 $datos=array();
@@ -166,6 +190,13 @@ class niveles_seguriM
 	      return $datos;
 
 	}
+
+	function actualizar_correo($correo,$ci_nic){
+		$cid = Conectar::conexion('MYSQL');
+		$sql = "UPDATE acceso_usuarios set Email = '".$correo ."' WHERE CI_NIC = '".$ci_nic."'";
+		$cid->query($sql) or die($cid->error);
+	}
+
 	function guardar_acceso_empresa($modulos,$entidad,$empresas,$usuario)
 	{	
 	    $cid = Conectar::conexion('MYSQL');
@@ -223,7 +254,7 @@ class niveles_seguriM
 	function update_acceso_usuario($niveles,$usuario,$clave,$entidad,$CI_NIC,$email)
 	{
 	   $cid = Conectar::conexion('MYSQL');
-	   $sql = "UPDATE acceso_usuarios SET Nivel_1 =".$niveles['1'].", Nivel_2 =".$niveles['2'].", Nivel_3 =".$niveles['3'].", Nivel_4 =".$niveles['4'].",Nivel_5 =".$niveles['5'].", Nivel_6=".$niveles['6'].", Nivel_7=".$niveles['7'].", Supervisor = ".$niveles['super'].", Usuario = '".$usuario."',Clave = '".$clave."',Email='".$email."' WHERE CI_NIC = '".$CI_NIC."';";
+	   $sql = "UPDATE acceso_usuarios SET TODOS = 1, Nivel_1 =".$niveles['1'].", Nivel_2 =".$niveles['2'].", Nivel_3 =".$niveles['3'].", Nivel_4 =".$niveles['4'].",Nivel_5 =".$niveles['5'].", Nivel_6=".$niveles['6'].", Nivel_7=".$niveles['7'].", Supervisor = ".$niveles['super'].", Usuario = '".$usuario."',Clave = '".$clave."',Email='".$email."' WHERE CI_NIC = '".$CI_NIC."';";
 	   if($cid)
 	   {
 	   	 $resultado = mysqli_query($cid, $sql);
@@ -331,7 +362,7 @@ class niveles_seguriM
 		 	     $sql = "INSERT INTO Clientes(T,FA,Codigo,Fecha,Cliente,TD,CI_RUC,FactM,Descuento,RISE,Especial)VALUES('N',0,'".$parametros['ced']."','".date('Y-m-d')."','".$parametros['nom']."','C','".$parametros['ced']."',0,0,0,0);";
 		 	     $sql.="INSERT INTO Accesos (TODOS,Clave,Usuario,Codigo,Nombre_Completo,Nivel_1,Nivel_2,Nivel_3,Nivel_4,Nivel_5,Nivel_6,Nivel_7,Supervisor,EmailUsuario) VALUES (1,'".$parametros['cla']."','".$parametros['usu']."','".$parametros['ced']."','".$parametros['nom']."','".$parametros['n1']."','".$parametros['n2']."','".$parametros['n3']."','".$parametros['n4']."','".$parametros['n5']."','".$parametros['n6']."','".$parametros['n7']."','".$parametros['super']."','".$parametros['email']."')";
 		 	     // print_r($sql);die();
-		 	    $stmt = sqlsrv_query($cid2, $sql);
+		 	    $stmt = sqlsrv_query($this->dbs, $sql);
 	            if($stmt === false)  
 	        	    {  
 	        	    	// print_r('fallo');die();
@@ -343,7 +374,7 @@ class niveles_seguriM
 	                {
 
 	        	    	// print_r('si');die();
-	            	    cerrarSQLSERVERFUN($cid2);
+	            	    cerrarSQLSERVERFUN($this->dbs);
 	            	    $insertado = true;
 	                }     
 	        }     
@@ -384,7 +415,7 @@ class niveles_seguriM
 
 		 	     $sql = "SELECT * FROM Accesos WHERE Codigo = '".$parametros['CI_usuario']."'";
 		 	     // print_r($sql);die();
-		 	     $stmt = sqlsrv_query($cid2, $sql);
+		 	     $stmt = sqlsrv_query($this->dbs, $sql);
 		 	     $result = array();	
 		 	     if($stmt===false)
 		 	     {
@@ -408,7 +439,7 @@ class niveles_seguriM
 		 	     	 	  $sql = str_replace('false',0, $sql);
 		 	     	 	  $sql = str_replace('true',1, $sql);
 		 	     	 	  // print_r($sql);die();
-		 	     	 	 $stmt2 = sqlsrv_query($cid2, $sql);
+		 	     	 	 $stmt2 = sqlsrv_query($this->dbs, $sql);
 		 	     	 	  if( $stmt2 === false)                         
 	                          {  
 		                        echo "Error en consulta PA.\n";  

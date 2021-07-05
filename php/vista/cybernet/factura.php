@@ -47,6 +47,15 @@
     background-color: #ddd;
     color: black;
   }
+  th, td {
+    padding: 10px;
+  }
+
+  @media (max-width:600px) {
+    .input-width{
+      width: 80px;
+    }
+  }
 </style>
 
 <script type="text/javascript">
@@ -68,6 +77,8 @@
       $('#direccion').val(data.direccion);
       $('#telefono').val(data.telefono);
       $('#ci_ruc').val(data.ci_ruc);
+      $('#codigoCliente').val(data.codigo);
+      $('#celular').val(data.celular);
     });
   });
 
@@ -108,6 +119,12 @@
   function addCliente(){
     $("#nombreCliente").show();
     $("#cliente").select2().next().hide();
+    $('#email').val('');
+    $('#direccion').val('');
+    $('#telefono').val('');
+    $('#ci_ruc').val('');
+    $('#codigoCliente').val('');
+    $('#celular').val('');
   }
 
   function searchCliente(){
@@ -157,6 +174,143 @@
     $("#subtotal12").val(total12);
     $("#iva").val(iva12);
     $("#total").val(total);
+  }
+
+  function guardarFactura(){
+    var update = false;
+    var nombreCliente = $("#nombreCliente").val();
+    var cliente = $("#cliente").val();
+    var factura = $("#factura").val();
+    var textMsg = "¿Desea actualizar los datos del cliente?";
+    if (nombreCliente != '') {
+      textMsg = "¿Desea crear nuevo cliente?";
+    }
+    Swal.fire({
+      title: 'Esta seguro?',
+      text: textMsg,
+      type: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Si!'
+    }).then((result) => {
+      if (result.value==true) {
+        update = true;
+      }
+      email = $('#email').val();
+      direccion = $('#direccion').val();
+      telefono = $('#telefono').val();
+      ci_ruc = $('#ci_ruc').val();
+      celular = $('#celular').val();
+      codigoCliente = $('#codigoCliente').val();
+      //datos de la tabla
+      var datos = [];
+      var nFilas = $("#customers tr").length;
+      for (var i = 1; i <= nFilas - 1; i++) {
+        producto0 = $("#producto"+i).val();
+        producto = producto0.split("/");
+        datos[i-1] =  {
+                        'total' : $("#total"+i).val() , 
+                        'producto' : producto[0], 
+                        'cantidad' : $("#cantidad"+i).val(),
+                        'pvp' : producto[1],
+                        'iva' : producto[2],
+                        'codigo' : producto[3],
+                      };
+      }
+      iva12 = parseFloat(total12) * 0.12;
+      total = parseFloat(total0) + parseFloat(total12) + parseFloat(iva12);
+      $("#subtotal0").val(total0);
+      $("#subtotal12").val(total12);
+      $("#iva").val(iva12);
+      $("#total").val(total);
+      Swal.fire({
+        title: 'Esta seguro?',
+        text: '¿Desea guardar la factura No. '+ factura+"?",
+        type: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Si!'
+      }).then((result) => {
+        if (result.value == true) {
+          $('#myModal_espera').modal('show');
+          $.ajax({
+            type: "POST",
+            url: '../controlador/cybernet/facturaC.php?guardarFactura=true',
+            data: {
+              'update' : update,
+              'cliente' : cliente,
+              'nombreCliente' : nombreCliente,
+              'direccion' : direccion,
+              'telefono' : telefono,
+              'factura' : factura,
+              'ci_ruc' : ci_ruc,
+              'email' : email,
+              'celular' : celular,
+              'codigoCliente' : codigoCliente,
+              'datos' : datos,
+              'total' : total,
+              'iva' : iva12,
+            }, 
+            success: function(response)
+            {
+              $('#myModal_espera').modal('hide');
+              if (response) {
+
+                response = JSON.parse(response);
+                if(response.respuesta == '3')
+                {
+                  Swal.fire({
+                       type: 'error',
+                       title: 'Este documento electronico ya esta autorizado',
+                       text: ''
+                     });
+
+                  }else if(response.respuesta == '1')
+                  {
+                    Swal.fire({
+                      type: 'success',
+                      title: 'Este documento electronico fue autorizado',
+                      text: ''
+                    }).then(() => {
+                      serie = DCLinea.split(" ");
+                      url = '../vista/appr/controlador/imprimir_ticket.php?mesa=0&tipo=FA&CI='+TextCI+'&fac='+TextFacturaNo+'&serie='+serie[1];
+                      window.open(url, '_blank');
+                      location.reload();
+                      //imprimir_ticket_fac(0,TextCI,TextFacturaNo,serie[1]);
+                    });
+                  }else if(response.respuesta == '2')
+                  {
+                    Swal.fire({
+                       type: 'info',
+                       title: 'XML devuelto',
+                       text: ''
+                     });
+                    //descargar_archivos(response.url,response.ar);
+
+                  }
+                  else
+                  {
+                    Swal.fire({
+                       type: 'info',
+                       title: 'Error por: '+response,
+                       text: ''
+                     });
+
+                  }
+              }else{
+                Swal.fire({
+                  type: 'info',
+                  title: 'La factura ya se autorizo',
+                  text: ''
+                });
+              }
+            }
+          });
+        }
+      })
+    })
   }
 
   function agregarLinea(){
@@ -210,11 +364,11 @@
               <option value="">Seleccione un cliente</option>
             </select>
             <input type="hidden" name="codigoCliente" id="codigoCliente">
-            <input type="text" class="form-control input-sm" placeholder="Ingrese nombre del nuevo cliente" name="nombreCliente" id="nombreCliente">
+            <input type="text" class="form-control input-sm" placeholder="Ingrese nombre del nuevo cliente" name="nombreCliente" id="nombreCliente" autocomplete="off">
           </div>
           <div class="col-sm-3 col-xs-4">
             <label>RUC/CI</label>
-            <input type="input" class="form-control input-sm" name="ci_ruc" id="ci_ruc">
+            <input type="input" class="form-control input-sm" name="ci_ruc" id="ci_ruc" autocomplete="off">
           </div>
           <div class="col-sm-2 col-xs-4">
             <label>Serie</label>
@@ -229,37 +383,38 @@
         <div class="row">
           <div class="col-sm-3 col-xs-6">
             <label>Correo eléctronico</label>
-            <input type="input" class="form-control input-sm" name="email" id="email">
+            <input type="input" class="form-control input-sm" name="email" id="email" autocomplete="off">
           </div>
           <div class="col-sm-5 col-xs-6">
             <label>Dirección</label>
-            <input type="input" class="form-control input-sm" name="direccion" id="direccion">
+            <input type="input" class="form-control input-sm" name="direccion" id="direccion" autocomplete="off">
           </div>
           <div class=" col-sm-2 col-xs-6">
             <label>Telefono convencional</label>
-            <input type="input" class="form-control input-sm" name="telefono1" id="telefono">
+            <input type="input" class="form-control input-sm" name="telefono" id="telefono" autocomplete="off">
           </div>
           <div class=" col-sm-2 col-xs-6">
             <label>Telefono celular</label>
-            <input type="input" class="form-control input-sm" name="telefono2" id="telefono1">
+            <input type="input" class="form-control input-sm" name="celular" id="celular" autocomplete="off">
           </div>
         </div>
         <div class="row">
-          <div class="col-sm-12">
+          <div class="col-sm-12 col-xs-12">
             <h4>Detalle del pedido</h4>
           </div>
           <div class="col-sm-12" style="
               height: 150px;
               overflow: auto;
               display: block;
+              width: 100%;
           ">
             <table class="table table-responsive table-borfed thead-dark" id="customers">
               <thead>
                 <tr>
-                  <th>Producto</th>
-                  <th>Cantidad</th>
-                  <th>PVP</th>
-                  <th>Total</th>
+                  <th width="500px">Producto</th>
+                  <th width="200px">Cantidad</th>
+                  <th width="200px">PVP</th>
+                  <th width="200px">Total</th>
                 </tr>
               </thead>
               <tbody id="cuerpo">
@@ -270,14 +425,14 @@
                     </select>
                   </td>
                   <td>
-                    <input type="text" class="form-control input-sm text-right" onkeyup="calcularSubtotal('1')" name="cantidad1" id="cantidad1" value="1">
+                    <input type="text" size="50px" class="form-control input-sm text-right input-width" onkeyup="calcularSubtotal('1')" name="cantidad1" id="cantidad1" value="1">
                   </td>
                   <td>
-                    <input type="text" class="form-control input-sm text-right" name="pvp1" id="pvp1" value="0" readonly>
+                    <input type="text" size="50px" class="form-control input-sm text-right input-width" name="pvp1" id="pvp1" value="0" readonly>
                     <input type="hidden" class="form-control input-sm text-right" name="iva1" id="iva1" value="0" readonly>
                   </td>
                   <td>
-                    <input type="text" class="form-control input-sm text-right" name="total1" id="total1" value="0" readonly>
+                    <input type="text" size="50px" class="form-control input-sm text-right input-width" name="total1" id="total1" value="0" readonly>
                   </td>
                 </tr>
               </tbody>
@@ -285,8 +440,8 @@
           </div>
         </div>
         <br>
-        <div class="row">
-          <div class="col-sm-2 col-sm-offset-10 col-xs-4">
+        <div class="row" style="padding-bottom: 10px">
+          <div class="col-sm-2 col-sm-offset-10 col-xs-offset-7 col-xs-4">
             <button class="btn btn-default" onclick="agregarLinea();">Agregar línea</button>
           </div>
         </div>
@@ -322,7 +477,7 @@
             <input type="text" name="total" id="total" class="form-control input-sm red text-right" readonly>
           </div>
         </div>
-        <div class="row">
+        <div class="row" style="padding-top: 10px;">
           <div class=" col-sm-4 col-xs-6 col-sm-offset-8 col-xs-offset-5">
             <div class="col-sm-2 col-xs-4 col-sm-offset-4 col-xs-offset-4">
               <a title="Guardar" class="btn btn-default" tabindex="22">
@@ -346,11 +501,9 @@
   </div>
 </div>
 
-<!-- Modal cliente nuevo-->
+<!-- Modal cliente nuevo 
 <div id="myModal" class="modal fade" role="dialog">
   <div class="modal-dialog">
-
-    <!-- Modal content-->
     <div class="modal-content">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal">&times;</button>
@@ -378,3 +531,4 @@
 
   </div>
 </div>
+ Fin Modal cliente nuevo-->

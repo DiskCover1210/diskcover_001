@@ -187,6 +187,7 @@ class incomM
 			WHERE 
 			Item = '".$_SESSION['INGRESO']['item']."' 
 			AND CodigoU = '".$_SESSION['INGRESO']['Id']."' ";
+			$sql=$sql." ORDER BY CTA_BANCO ";
 			$ta='Asiento_B';
 		}
 		else

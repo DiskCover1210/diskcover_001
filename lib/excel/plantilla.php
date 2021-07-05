@@ -4302,7 +4302,7 @@ function excel_file_comp($re=false,$ti=null,$camne=null,$b=null,$base=null)
     }
 }
 
-function historiaClienteExcel($datos,$ti='HistoriaCliente',$camne=null,$b=null,$base=null)
+function historiaClienteExcel($datos,$ti='HistoriaCliente',$camne=null,$b=null,$base=null,$download=true)
 {
 
 	//header('Content-type: application/vnd.ms-excel;charset=iso-8859-15');
@@ -4623,15 +4623,18 @@ function historiaClienteExcel($datos,$ti='HistoriaCliente',$camne=null,$b=null,$
 
 	if($ti == '' OR $ti==null)
 	{
-	$writer->save(dirname(__DIR__,2).'/php/vista/TEMP/'.trim($_SESSION['INGRESO']['ti']).'.xlsx');
-	//$writer->save('php://output');
-	download_file(dirname(__DIR__,2).'/php/vista/TEMP/'.trim($_SESSION['INGRESO']['ti']).".xlsx", trim($_SESSION['INGRESO']['ti']).".xlsx");
+		$writer->save(dirname(__DIR__,2).'/php/vista/TEMP/'.trim($_SESSION['INGRESO']['ti']).'.xlsx');
+		//$writer->save('php://output');
+		if ($download) {
+			download_file(dirname(__DIR__,2).'/php/vista/TEMP/'.trim($_SESSION['INGRESO']['ti']).".xlsx", trim($_SESSION['INGRESO']['ti']).".xlsx");
+		}
     }else
     {
-    
 		$writer->save(dirname(__DIR__,2).'/php/vista/TEMP/'.trim($ti).'.xlsx');
 		//$writer->save('php://output');
-	    download_file(dirname(__DIR__,2).'/php/vista/TEMP/'.trim($ti).".xlsx", trim($ti).".xlsx");
+		if ($download) {
+	    	download_file(dirname(__DIR__,2).'/php/vista/TEMP/'.trim($ti).".xlsx", trim($ti).".xlsx");
+		}
 
     }
 }

@@ -2,6 +2,7 @@
 require_once(dirname(__DIR__,2)."/modelo/facturacion/facturar_pensionM.php");
 require_once(dirname(__DIR__,2)."/comprobantes/SRI/autorizar_sri.php");
 require_once(dirname(__DIR__,3)."/lib/excel/plantilla.php");
+require_once(dirname(__DIR__,3).'/lib/phpmailer/enviar_emails.php');
 if(!class_exists('cabecera_pdf'))
 {
   require(dirname(__DIR__,3).'/lib/fpdf/cabecera_pdf.php');
@@ -50,12 +51,17 @@ if(isset($_GET['historiaCliente']))
 
 if(isset($_GET['historiaClienteExcel']))
 {
-  $controlador->historiaClienteExcel();
+  $controlador->historiaClienteExcel($_REQUEST['codigoCliente']);
 }
 
 if(isset($_GET['historiaClientePDF']))
 {
-  $controlador->historiaClientePDF();
+  $controlador->historiaClientePDF($_REQUEST['codigoCliente']);
+}
+
+if(isset($_GET['enviarCorreo']))
+{
+  $controlador->enviarCorreo();
 }
 
 if(isset($_GET['saldoFavor']))
@@ -88,6 +94,7 @@ class facturar_pensionC
         $this->facturacion = new facturar_pensionM();
         $this->autorizar_sri = new autorizacion_sri();
         $this->pdf = new cabecera_pdf();
+        $this->email = new enviar_emails(); 
         //$this->modelo = new MesaModel();
     }
 
@@ -96,7 +103,6 @@ class facturar_pensionC
 		$clientes = [];
 		foreach ($datos as $key => $value) {
 			$clientes[] = array('id'=>$value['Cliente'],'text'=>utf8_encode($value['Cliente']),'data'=>array('email'=> $value['Email'],'direccion' => utf8_encode($value['Direccion']), 'telefono' => utf8_encode($value['Telefono']), 'ci_ruc' => utf8_encode($value['CI_RUC']), 'codigo' => utf8_encode($value['Codigo']), 'cliente' => utf8_encode($value['Cliente']), 'grupo' => utf8_encode($value['Grupo']), 'tdCliente' => utf8_encode($value['TD'])));
-			//$clientes[] = array('id'=>$value['Cliente'],'text' => $value['Cliente'],'data' => array('email'=> $value['Email'],'direccion' => $value['Direccion'], 'telefono' => $value['Telefono'], 'ci_ruc' => $value['CI_RUC'], 'codigo' => $value['Codigo'], 'cliente' => $value['Cliente']));
 		}
 		echo json_encode($clientes);
 		exit();
@@ -146,23 +152,23 @@ class facturar_pensionC
     exit();
   }
 
-  public function historiaClienteExcel(){
-    $codigoCliente = $_REQUEST['codigoCliente'];
+  public function historiaClienteExcel($codigo,$download = true){
+    $codigoCliente = $codigo;
     if ($codigoCliente == "") {
       $codigoCliente = G_NINGUNO;
     }
     $datos = $this->facturacion->historiaCliente($codigoCliente);
-    historiaClienteExcel($datos);
+    historiaClienteExcel($datos,$ti='HistoriaCliente',$camne=null,$b=null,$base=null,$download);
   }
 
-  public function historiaClientePDf(){
-    $codigoCliente = $_REQUEST['codigoCliente'];
+  public function historiaClientePDf($codigo,$download = true){
+    $codigoCliente = $codigo;
     if ($codigoCliente == "") {
       $codigoCliente = G_NINGUNO;
     }
     $datos = $this->facturacion->historiaCliente($codigoCliente);
 
-    $titulo = 'Reporte historial';
+    $titulo = 'HistoriaCliente';
     $parametros['desde'] = false;
     $parametros['hasta'] = false;
     $sizetable = 8;
@@ -183,18 +189,56 @@ class facturar_pensionC
       $tablaHTML[$count]['datos'] = array($value['TD'],$value['Fecha']->format('Y-m-d'),$value['Serie'],$value['Factura'],$value['Detalle'], $value['Anio'],$value['Mes'],$value['Total'],$value['Abonos'],$value['Mes_No'],$value['No']);
       $tablaHTML[$count]['borde'] = $tablaHTML[0]['borde'];
       $count+=1;
-      # code...
     }
+    $this->pdf->cabecera_reporte_MC($titulo,$tablaHTML,$contenido=false,$image=false,$parametros['desde'],$parametros['hasta'],$sizetable,$mostrar,25,$orientacion='P',$download);
+  }
+
+  public function enviarCorreo(){
+    //Eliminar archivos temporales
+    if (file_exists(dirname(__DIR__,2).'/vista/TEMP/HistoriaCliente.xlsx')) {
+      unlink(dirname(__DIR__,2).'/vista/TEMP/HistoriaCliente.xlsx');
+    }
+    if (file_exists(dirname(__DIR__,2).'/vista/TEMP/HistoriaCliente.pdf')) {
+      unlink(dirname(__DIR__,2).'/vista/TEMP/HistoriaCliente.pdf');
+    }
+    $this->historiaClientePDf($_REQUEST['codigoCliente'],false);
+    $this->historiaClienteExcel($_REQUEST['codigoCliente'],false);
+    $archivos[0] = dirname(__DIR__,2).'/vista/TEMP/HistoriaCliente.xlsx';
+    $archivos[1] = dirname(__DIR__,2).'/vista/TEMP/HistoriaCliente.pdf';
+    $to_correo = $_REQUEST['email'];
+    $titulo_correo = 'Historial de cliente';
+    $nombre = 'DiskCover System';
+    $cuerpo_correo = 'Estimado (a) ha recibido su historial en formato PDF y EXCEL';
+    $cuerpo_correo .= '<br>'.utf8_decode('
+    <pre>
+      -----------------------------------
+      SERVIRLES ES NUESTRO COMPROMISO, DISFRUTARLO ES EL SUYO.
 
 
-    $this->pdf->cabecera_reporte_MC($titulo,$tablaHTML,$contenido=false,$image=false,$parametros['desde'],$parametros['hasta'],$sizetable,$mostrar,25);
+      Este correo electrónico fue generado automáticamente del Sistema Financiero Contable DiskCover System a usted porque figura como correo electrónico alternativo de Oblatas de San Francisco de Sales.
+      Nosotros respetamos su privacidad y solamente se utiliza este correo electrónico para mantenerlo informado sobre nuestras ofertas, promociones y comunicados. No compartimos, publicamos o vendemos su información personal fuera de nuestra empresa. Para obtener más información, comunicate a nuestro Centro de Atención al Cliente Teléfono: 052310304. Este mensaje fue recibido por: DiskCover Sytem.
+
+      Por la atención que se de al presente quedo de usted.
+
+
+      Esta dirección de correo electrónico no admite respuestas. En caso de requerir atención personalizada por parte de un asesor de servicio al cliente de DiskCover System, Usted podrá solicitar ayuda mediante los canales de atención al cliente oficiales que detallamos a continuación: Telefonos: (+593) 02-321-0051/098-652-4396/099-965-4196/098-910-5300.
+      Emails: prisma_net@hotmail.es/diskcover@msn.com.
+
+      www.diskcoversystem.com
+      QUITO - ECUADOR</pre>');
+    $this->email->enviar_historial($archivos,$to_correo,$cuerpo_correo,$titulo_correo,$nombre);
+    exit();
+    
   }
 
 	public function getCatalogoCuentas(){
 		$datos = $this->facturacion->getCatalogoCuentas();
 		$cuentas = [];
+    $cuentas[0] = array('codigo'=>$value['Codigo'],'nombre'=>'No existen datos.');
+    $i = 0;
 		while ($value = sqlsrv_fetch_array( $datos, SQLSRV_FETCH_ASSOC)) {
-			$cuentas[] = array('codigo'=>$value['Codigo'],'nombre'=>utf8_encode($value['Codigo'])." - ".utf8_encode($value['NomCuenta']));
+			$cuentas[$i] = array('codigo'=>$value['Codigo'],'nombre'=>utf8_encode($value['Codigo'])." - ".utf8_encode($value['NomCuenta']));
+      $i++;
 		}
 		return $cuentas;
 	}
@@ -202,11 +246,27 @@ class facturar_pensionC
 	public function getNotasCredito(){
 		$datos = $this->facturacion->getNotasCredito();
 		$cuentas = [];
+    $cuentas[0] = array('codigo'=>$value['Codigo'],'nombre'=>'No existen datos.');
+    $i = 0;
 		while ($value = sqlsrv_fetch_array( $datos, SQLSRV_FETCH_ASSOC)) {
-			$cuentas[] = array('codigo'=>$value['Codigo'],'nombre'=>utf8_encode($value['Codigo'])." - ".utf8_encode($value['NomCuenta']));
+			$cuentas[$i] = array('codigo'=>$value['Codigo'],'nombre'=>utf8_encode($value['Codigo'])." - ".utf8_encode($value['NomCuenta']));
+      $i++;
 		}
 		return $cuentas;
 	}
+
+  public function getAnticipos(){
+    $codigo = Leer_Seteos_Ctas('Cta_Anticipos_Clientes');
+    $datos = $this->facturacion->getAnticipos($codigo);
+    $cuentas = [];
+    $cuentas[0] = array('codigo'=>$value['Codigo'],'nombre'=>'No existen datos.');
+    $i = 0;
+    while ($value = sqlsrv_fetch_array( $datos, SQLSRV_FETCH_ASSOC)) {
+      $cuentas[$i] = array('codigo'=>$value['Codigo'],'nombre'=>utf8_encode($value['Codigo'])." - ".utf8_encode($value['NomCuenta']));
+      $i++;
+    }
+    return $cuentas;
+  }
 
 	public function getSaldoFavor(){
 		$codigoCliente = $_POST['codigoCliente'];
