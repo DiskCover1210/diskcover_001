@@ -58,6 +58,11 @@ if(isset($_GET['imprimir_excel_nega']))
 	$parametros= $_GET;
 	$controlador->imprimir_excel_nega($parametros);	
 }
+if(isset($_GET['imprimir_pdf_nega']))
+{   
+	$parametros= $_GET;
+	$controlador->imprimir_pdf_nega($parametros);	
+}
 
 class ingreso_descargosC 
 {
@@ -103,7 +108,7 @@ class ingreso_descargosC
 	}
 
 
-	function imprimir_excel_nega($parametros)
+	function imprimir_pdf_nega($parametros)
 	{
 
 		// print_r($_SESSION['NEGATIVOS']['CODIGO_INV']);die();
@@ -669,6 +674,91 @@ class ingreso_descargosC
 
 	 $this->modelo->imprimir_excel($registros);
 	}
+
+function imprimir_excel_nega($parametros)
+	{
+		 $_SESSION['INGRESO']['ti']='ordenes en negativo';
+		$nega = $this->ordenes_negativas(false,$parametros['txt_tipo_filtro'],$parametros['txt_query'],$parametros['txt_desde'],$parametros['txt_hasta'],false);
+
+			$neg = explode(',', str_replace("'","", $nega['cod_inv']));
+			$Fechaini= $parametros['txt_desde'];
+			$Fechafin=$parametros['txt_hasta'];
+
+
+	 $registros = array();
+	 $reg_fecha = array();
+	 $reg_lineas = array();
+	 foreach ($nega['ordenes'] as $key => $value){
+	 	// print_r($value);die();
+
+			$da = $this->modelo->pedido_paciente(false,$tipo='P',$value['ORDEN'],$desde=false,$hasta =false,$busfe=false);
+	 	    // print_r($value);die();
+			$registros[$key] = array('Nombre'=>$da[0]['nombre'],'Procedimiento'=>$da[0]['Detalle'],'Area'=>$da[0]['subcta'],'Descargo'=>$value['ORDEN'],'registros'=>array());
+		    if($parametros['txt_tipo_filtro']=='f')
+		    {
+		    	$fechas = $this->modelo->cargar_lineas_pedidos_por_fecha($value['ORDEN'],$Fechaini,$Fechafin);
+
+		    	foreach ($fechas as $key1 => $value1) {
+
+		    		$reg_fecha[$value1['Fecha_Fab']->format('Y-m-d')]= array();		    		
+		    		$lineas = $this->modelo->cargar_lineas_pedidos($value['ORDEN'],$value1['Fecha_Fab']->format('Y-m-d'));
+		    		 foreach ($lineas as $key2 => $value2) {
+		    		 	$reg_lineas[] = array('codigo'=>$value2['CODIGO_INV'],'cantidad'=>$value2['CANTIDAD'],'producto'=>$value2['PRODUCTO'],'pre_uni'=>$value2['VALOR_UNIT'],'total'=>$value2['VALOR_TOTAL']);
+		    		 }
+
+		    		  array_push($reg_fecha[$value1['Fecha_Fab']->format('Y-m-d')],$reg_lineas);
+		    		  $reg_lineas = array();
+
+		    		  // print_r($reg_fecha[$value1['Fecha_Fab']->format('Y-m-d')]);die();
+		    	}
+		    	   array_push($registros[$key]['registros'],$reg_fecha);
+		    	   $reg_fecha=array();	  		    		 
+		    }else
+		    {
+		    	$fechas = $this->modelo->cargar_lineas_pedidos_por_fecha($value['ORDEN']);
+		    	$esta = false;
+		    	foreach ($fechas as $key1 => $value1) {		    		
+		    		$reg_fecha[$value1['Fecha_Fab']->format('Y-m-d').'_'.$value['ORDEN']]= array();	
+		    		$lineas = $this->modelo->cargar_lineas_pedidos($value['ORDEN'],$value1['Fecha_Fab']->format('Y-m-d'));  		
+		    		 foreach ($lineas as $key2 => $value2) {
+		    		 	$indice = array_search($value2['CODIGO_INV'],$neg,true);
+
+		    		 	if($indice)
+		    		 	{
+
+		    		  		$reg_lineas[$key2] = array('codigo'=>'**'.$value2['CODIGO_INV'],'cantidad'=>$value2['CANTIDAD'],'producto'=>$value2['PRODUCTO'],'pre_uni'=>$value2['VALOR_UNIT'],'total'=>$value2['VALOR_TOTAL']);
+		    		  }else
+		    		  {
+		    		  	$reg_lineas[$key2] = array('codigo'=>$value2['CODIGO_INV'],'cantidad'=>$value2['CANTIDAD'],'producto'=>$value2['PRODUCTO'],'pre_uni'=>$value2['VALOR_UNIT'],'total'=>$value2['VALOR_TOTAL']);
+		    		  }
+		    		 		    		 	
+		    		 }
+
+		    		// print_r($reg_lineas);		print_r($reg_fecha[$value1['Fecha_Fab']->format('Y-m-d').'_'.$value['ORDEN']]);	  
+		    		  array_push($reg_fecha[$value1['Fecha_Fab']->format('Y-m-d').'_'.$value['ORDEN']],$reg_lineas);
+		    		  $reg_lineas = array();
+		    	}
+
+		    	   array_push($registros[$key]['registros'],$reg_fecha);
+		    	   $reg_fecha=array();	    		
+		    }
+
+		    // print_r($registros);die();
+
+			// foreach ($lineas as $key => $value) {
+			// 	$lin+=1;
+			// }
+
+				// print_r($registros[$key]);die();
+		}
+
+		    		  // print_r($reg_fecha['2021-03-05']);die();
+
+		// print_r($registros);die();
+
+	 $this->modelo->imprimir_excel($registros);
+	}
+
 
 
 
