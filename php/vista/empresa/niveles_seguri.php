@@ -731,17 +731,16 @@ function enviar_email_masivo()
         },
         success:  function (response) { 
           console.log(response);
-          if(response == 1)
-           {
-             Swal.fire('Email enviado,Se guardara el correo','','success');
-             guardar();
-            
-           }else
-           {
-             Swal.fire('No se pudo enviar','asegurese que su correo sea el correcto','error');
-           }
+          if(response==1)
+          {
+            Swal.fire('Email enviado,Se guardara el correo','','success');
+          }else if(response==2)
+          {
+            Swal.fire('Puede ser que algunos usuarios no hayan recibido sus credenciales','info');
+          }
+          $('#myModal_espera').modal('hide');
         }
-      }); 
+    }); 
 }
 </script>
 

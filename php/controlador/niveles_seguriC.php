@@ -429,67 +429,67 @@ class niveles_seguriC
 
   	function enviar_email_masivo($parametros)
   	{
+
+  		// print_r(1);die();
 	  	//$this->modelo->actualizar_correo($parametros['email'],$parametros['CI_usuario']);
-	    $datos = $this->modelo->entidades_usuario($parametros['ruc']);
-  		print_r($datos);
-  		exit();
-
-	  	$email_conexion = 'info@diskcoversystem.com'; //$empresaGeneral[0]['Email_Conexion'];
-	    $email_pass =  'info2021DiskCover'; //$empresaGeneral[0]['Email_Contraseña'];
-	    // print_r($empresaGeneral[0]);die();
-	  	$correo_apooyo="credenciales@diskcoversystem.com"; //correo que saldra ala do del emisor
-	  	$cuerpo_correo = '
-	  	Estimado (a) '.utf8_decode($parametros['usuario']).' sus credenciales de acceso:
-	  	 <br>
-	  	<h3>Usuario:</h3>'.utf8_decode($datos[0]['Usuario']).'<br>
-	  	<h3>Clave:</h3>'.utf8_decode($datos[0]['Clave']).' <br>
-	  	<h3>Email:</h3>'.utf8_decode($datos[0]['Email']).' <br>
-	  	Usted esta asignado a las siguientes entidades: <br>
-	  	<table>
-	  	<tr><th>Codigo</th><th>Entidad</th></tr>
-	  	';
-
-	  	foreach ($datos as $value) {
-	  		$cuerpo_correo .= '<tr><td>'.utf8_decode($value['id']).'</td><td>'.utf8_decode($value['text']).'</td></tr>';
-	  	}
-	    $cuerpo_correo .= ' </table><br>'.utf8_decode('
-	    	<pre>
-			-----------------------------------
-			SERVIRLES ES NUESTRO COMPROMISO, DISFRUTARLO ES EL SUYO.
+	  	$fallo = false;
+	    $usuarios = $this->modelo->entidades_usuarios($parametros['ruc']);
+	    foreach ($usuarios as $datos) {
+  			$datos0 = $this->modelo->entidades_usuario($datos['CI_NIC']);
+		  	$email_conexion = 'info@diskcoversystem.com';
+		    $email_pass =  'info2021DiskCover';
+		  	$correo_apooyo="credenciales@diskcoversystem.com";
+		  	$cuerpo_correo = '
+		  	Estimado (a) '.utf8_decode($datos['Nombre_Usuario']).' sus credenciales de acceso:
+		  	 <br>
+		  	<h3>Usuario:</h3>'.utf8_decode($datos['Usuario']).'<br>
+		  	<h3>Clave:</h3>'.utf8_decode($datos['Clave']).' <br>
+		  	<h3>Email:</h3>'.utf8_decode($datos['Email']).' <br>
+		  	Usted esta asignado a las siguientes entidades: <br>
+		  	<table>
+		  	<tr><th>Codigo</th><th>Entidad</th></tr>
+		  	';
+		  	foreach ($datos0 as $value) {
+		  		$cuerpo_correo .= '<tr><td>'.utf8_decode($value['id']).'</td><td>'.utf8_decode($value['text']).'</td></tr>';
+		  	}
+		    $cuerpo_correo .= ' </table><br>'.utf8_decode('
+		    	<pre>
+				-----------------------------------
+				SERVIRLES ES NUESTRO COMPROMISO, DISFRUTARLO ES EL SUYO.
 
 
-			Este correo electrónico fue generado automáticamente del Sistema Financiero Contable DiskCover System a usted porque figura como correo electrónico alternativo de Oblatas de San Francisco de Sales.
-			Nosotros respetamos su privacidad y solamente se utiliza este correo electrónico para mantenerlo informado sobre nuestras ofertas, promociones y comunicados. No compartimos, publicamos o vendemos su información personal fuera de nuestra empresa. Para obtener más información, comunicate a nuestro Centro de Atención al Cliente Teléfono: 052310304. Este mensaje fue recibido por: DiskCover Sytem.
+				Este correo electrónico fue generado automáticamente del Sistema Financiero Contable DiskCover System a usted porque figura como correo electrónico alternativo de '.$parametros['entidad'].'.
+				Nosotros respetamos su privacidad y solamente se utiliza este correo electrónico para mantenerlo informado sobre nuestras ofertas, promociones y comunicados. No compartimos, publicamos o vendemos su información personal fuera de nuestra empresa. Para obtener más información, comunicate a nuestro Centro de Atención al Cliente Teléfono: 052310304. Este mensaje fue recibido por: DiskCover Sytem.
 
-			Por la atención que se de al presente quedo de usted.
+				Por la atención que se de al presente quedo de usted.
 
 
-			Esta dirección de correo electrónico no admite respuestas. En caso de requerir atención personalizada por parte de un asesor de servicio al cliente de DiskCover System, Usted podrá solicitar ayuda mediante los canales de atención al cliente oficiales que detallamos a continuación: Telefonos: (+593) 02-321-0051/098-652-4396/099-965-4196/098-910-5300.
-			Emails: prisma_net@hotmail.es/diskcover@msn.com.
+				Esta dirección de correo electrónico no admite respuestas. En caso de requerir atención personalizada por parte de un asesor de servicio al cliente de DiskCover System, Usted podrá solicitar ayuda mediante los canales de atención al cliente oficiales que detallamos a continuación: Telefonos: (+593) 02-321-0051/098-652-4396/099-965-4196/098-910-5300.
+				Emails: prisma_net@hotmail.es/diskcover@msn.com.
 
-			www.diskcoversystem.com
-			QUITO - ECUADOR</pre>');
+				www.diskcoversystem.com
+				QUITO - ECUADOR</pre>');
 
-	  	$titulo_correo = 'Credenciales de acceso al sistema DiskCover System';
-	  	$archivos = false;
-	  	$correo = $parametros['email'];
-	  	// print_r($correo);die();
-	  	// $resp = $this->modelo->ingresar_update($datos,'Clientes',$where);  	
-	  	
-	  	// if($resp==1)
-	  	// {
-	  	if($this->email->enviar_credenciales($archivos,$correo,$cuerpo_correo,$titulo_correo,$correo_apooyo,'Credenciales de acceso al sistema DiskCover System',$email_conexion,$email_pass,$html=1)==1){
-	  		echo json_encode(1);
-	  		exit();
-	  	}else{
-	  		echo json_encode(-1);
-	  		//return -1;
-	  	}
-	  	// }else
-	  	// {
-	  		// return -1;
-	  	// }
+		  	$titulo_correo = 'Credenciales de acceso al sistema DiskCover System';
+		  	$archivos = false;
+		  	$correo = $datos['Email'];
+		  	$resp = $this->email->enviar_credenciales($archivos,$correo,$cuerpo_correo,$titulo_correo,$correo_apooyo,'Credenciales de acceso al sistema DiskCover System',$email_conexion,$email_pass,$html=1);
+		    if($resp!=1)
+		    {
+		    	$fallo = true;
+		    }
+	    }
+
+	    if($fallo==true)
+	    {
+	    	return -2;
+	    }else
+	    {
+	    	return 1;
+	    }
+		//echo json_encode(1);
   	}
+
  // function encode1($arr) {
  //    $new = array(); 
  //    foreach($arr as $key => $value) {

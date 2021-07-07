@@ -170,9 +170,10 @@ class enviar_emails
         $mail->Body    = $cuerpo_correo;
 
         $mail->send();
-        return true ;
+        return 1;
+        
     } catch (Exception $e) {
-        return false;
+        return -1;
     }
   }
 
