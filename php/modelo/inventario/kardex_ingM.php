@@ -1341,6 +1341,35 @@ function cuentas_todos($query)
 		 }
 		  return $result;
    }
+
+   function numero_autorizacion($serie1,$serie2,$fechaReg)
+   {
+
+   		$cid = $this->conn;
+   	    $sql = "SELECT TOP 1 AutRetencion 
+        FROM Trans_Air 
+        WHERE Tipo_Trans = 'C' 
+        AND Item = '".$_SESSION['INGRESO']['item']."' 
+        AND Periodo = '".$_SESSION['INGRESO']['periodo']."' 
+        AND Fecha <= '".$fechaReg."' 
+        AND EstabRetencion = '".$serie1."' 
+        AND PtoEmiRetencion = '".$serie2."' 
+        ORDER BY SecRetencion DESC, Fecha DESC, AutRetencion DESC ";
+
+        // print_r($sql);die();
+         $result = array();
+       $stmt = sqlsrv_query( $cid, $sql);
+		if( $stmt === false)  
+		{  
+			echo "Error en consulta PA.\n";  
+			die( print_r( sqlsrv_errors(), true));  
+		}
+	    while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_ASSOC) ) 
+		 {
+		 	$result[] = $row;
+		 }
+		  return $result;
+   }
     
 
 }

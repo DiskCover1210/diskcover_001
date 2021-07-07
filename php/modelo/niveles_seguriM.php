@@ -382,10 +382,13 @@ class niveles_seguriM
 		 	// print_r($value);die();
 		 	     $cid2 = Conectar:: modulos_sql_server($value['IP_VPN_RUTA'],$value['Usuario_DB'],$value['Contrasena_DB'],$value['Base_Datos'],$value['Puerto']);
 
+		 	     // print_r($value['IP_VPN_RUTA'].'-'.$value['Usuario_DB'].'-'.$value['Contrasena_DB'].'-'.$value['Base_Datos'].'-'.$value['Puerto']);die();
+
+
 		 	     $sql = "INSERT INTO Clientes(T,FA,Codigo,Fecha,Cliente,TD,CI_RUC,FactM,Descuento,RISE,Especial)VALUES('N',0,'".$parametros['ced']."','".date('Y-m-d')."','".$parametros['nom']."','C','".$parametros['ced']."',0,0,0,0);";
 		 	     $sql.="INSERT INTO Accesos (TODOS,Clave,Usuario,Codigo,Nombre_Completo,Nivel_1,Nivel_2,Nivel_3,Nivel_4,Nivel_5,Nivel_6,Nivel_7,Supervisor,EmailUsuario) VALUES (1,'".$parametros['cla']."','".$parametros['usu']."','".$parametros['ced']."','".$parametros['nom']."','".$parametros['n1']."','".$parametros['n2']."','".$parametros['n3']."','".$parametros['n4']."','".$parametros['n5']."','".$parametros['n6']."','".$parametros['n7']."','".$parametros['super']."','".$parametros['email']."')";
 		 	     // print_r($sql);die();
-		 	    $stmt = sqlsrv_query($this->dbs, $sql);
+		 	    $stmt = sqlsrv_query($cid2, $sql);
 	            if($stmt === false)  
 	        	    {  
 	        	    	// print_r('fallo');die();
@@ -397,7 +400,7 @@ class niveles_seguriM
 	                {
 
 	        	    	// print_r('si');die();
-	            	    cerrarSQLSERVERFUN($this->dbs);
+	            	    cerrarSQLSERVERFUN($cid2);
 	            	    $insertado = true;
 	                }     
 	        }     
