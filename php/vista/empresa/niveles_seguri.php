@@ -539,55 +539,55 @@ function guardar()
 
  }
 
-//  function buscar_empresa_ruc()
-//  {
-//   var ruc = $('#ruc_empresa').val();
-//       $.ajax({
-//         data:  {ruc:ruc},
-//         url:   '../controlador/niveles_seguriC.php?buscar_ruc=true',
-//         type:  'post',
-//         dataType: 'json',
-//         beforeSend: function () { 
-//           $('#myModal_espera').modal('show'); 
-//           $('#list_empre').html('<tr class="text-center"><td colspan="6"> No encontrado... </td></tr>');
-//           $('#txt_enti').val('');
-//         },
-//         success:  function (response) { 
-//           if(response == -1)
-//            {
-//             Swal.fire({
-//                 //position: 'top-end',
-//                 type: 'info',
-//                 title: 'RUC no encontrado!',
-//                 showConfirmButton: true
-//                 //timer: 2500
-//                 });
-//               $('#myModal_espera').modal('hide'); 
+ function buscar_empresa_ruc()
+ {
+  var ruc = $('#ruc_empresa').val();
+      $.ajax({
+        data:  {ruc:ruc},
+        url:   '../controlador/niveles_seguriC.php?buscar_ruc=true',
+        type:  'post',
+        dataType: 'json',
+        beforeSend: function () { 
+          $('#myModal_espera').modal('show'); 
+          $('#list_empre').html('<tr class="text-center"><td colspan="6"> No encontrado... </td></tr>');
+          $('#txt_enti').val('');
+        },
+        success:  function (response) { 
+          if(response == -1)
+           {
+            Swal.fire({
+                //position: 'top-end',
+                type: 'info',
+                title: 'RUC no encontrado!',
+                showConfirmButton: true
+                //timer: 2500
+                });
+              $('#myModal_espera').modal('hide'); 
             
-//            }else
-//            {
+           }else
+           {
 
-//             // $('#txt_enti').val(response.entidad[0]['Nombre_Entidad']);
-//             var empresa = '';
-//             console.log(response);
-//             $.each(response, function(i,item){
-//               if(i==0)
-//               {
-//              empresa+="<tr><td><input type='radio' name='radio_usar' value='"+item.ID_Empresa+"-"+item.Entidad+"-"+item.Item+"' checked></td><td>"+item.emp+"</td><td>"+item.Item+"</td><td>"+item.ruc+"</td><td>"+item.Estado+"</td><td><i><b><u>"+item.Entidad+"</u></b></i></td><td><i><b><u>"+item.Ruc_en+"</u></b></i></td></tr>";
-//               }else
-//               {
-//                  empresa+="<tr><td><input type='radio' name='radio_usar' value='"+item.ID_Empresa+"-"+item.Entidad+"-"+item.Item+"'></td><td>"+item.emp+"</td><td>"+item.Item+"</td><td>"+item.ruc+"</td><td>"+item.Estado+"</td><td><i><b><u>"+item.Entidad+"</u></b></i></td><td><i><b><u>"+item.Ruc_en+"</u></b></i></td></tr>";
+            // $('#txt_enti').val(response.entidad[0]['Nombre_Entidad']);
+            var empresa = '';
+            console.log(response);
+            $.each(response, function(i,item){
+              if(i==0)
+              {
+             empresa+="<tr><td><input type='radio' name='radio_usar' value='"+item.ID_Empresa+"-"+item.Entidad+"-"+item.Item+"' checked></td><td>"+item.emp+"</td><td>"+item.Item+"</td><td>"+item.ruc+"</td><td>"+item.Estado+"</td><td><i><b><u>"+item.Entidad+"</u></b></i></td><td><i><b><u>"+item.Ruc_en+"</u></b></i></td></tr>";
+              }else
+              {
+                 empresa+="<tr><td><input type='radio' name='radio_usar' value='"+item.ID_Empresa+"-"+item.Entidad+"-"+item.Item+"'></td><td>"+item.emp+"</td><td>"+item.Item+"</td><td>"+item.ruc+"</td><td>"+item.Estado+"</td><td><i><b><u>"+item.Entidad+"</u></b></i></td><td><i><b><u>"+item.Ruc_en+"</u></b></i></td></tr>";
 
-//               }
-//             });
+              }
+            });
 
-//            $('#list_empre').html(empresa);
-//              $('#myModal_espera').modal('hide'); 
-//            }
-//         }
-//       });
+           $('#list_empre').html(empresa);
+             $('#myModal_espera').modal('hide'); 
+           }
+        }
+      });
 
-// }
+}
 
 function marcar_all(item)
 {
@@ -711,7 +711,7 @@ function enviar_email()
 
 <style>
   table ,tr, td{ 
-    border:1px solid red
+    /*border:1px solid */
   } 
   tbody { 
     display:block;

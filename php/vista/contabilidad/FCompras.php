@@ -13,6 +13,31 @@ if(isset($_GET['ben']))
 if(isset($_GET['fec']))
    $fec = $_GET['fec'];
 ?>
+<style type="text/css">
+    button:focus {
+    box-shadow: 0 0 0 0px white, 0 0 0 2px black;
+ }
+  input[type=text]:focus {
+    box-shadow: 0 0 0 0px white, 0 0 0 2px black;
+ }
+ input[type=date]:focus {
+    box-shadow: 0 0 0 0px white, 0 0 0 2px black;
+ }
+ input[type=radio]:focus {
+    box-shadow: 0 0 0 0px white, 0 0 0 2px black;
+ }
+ input[type=checkbox]:focus {
+    box-shadow: 0 0 0 0px white, 0 0 0 2px black;
+ }
+ select :active {
+    box-shadow: 0 0 0 0px white, 0 0 0 2px black;
+}
+.input-sm:focus
+{
+    box-shadow: 0 0 0 0px white, 0 0 0 2px black;
+}
+
+</style>
 <script type="text/javascript">
 </script>
 <script src="../../lib/dist/js/kardex_ing.js"></script>
@@ -34,6 +59,10 @@ if(isset($_GET['fec']))
     ddl_DCConceptoRet(fecha);
     ddl_DCPorcenIce(fecha);
     ddl_DCPorcenIva(fecha);
+    $('#MBFechaEmi').val(fecha);
+    $('#MBFechaRegis').val(fecha);
+    $('#MBFechaCad').val(fecha);
+
 
     
   });
@@ -328,7 +357,7 @@ function contracuenta()
                                     <label class="radio-inline" onclick="habilitar_bienes()"><input type="checkbox" name="ChRetB" id="ChRetB"> Bienes</label>
                                 </div>
                                 <div class="col-sm-9">
-                                    <select class="form-control input-sm" id="DCRetIBienes">
+                                    <select class="form-control input-sm" id="DCRetIBienes" style="display:none;">
                                         <option>Seleccione Tipo Retencion</option>
                                     </select>
                                 </div>
@@ -338,7 +367,7 @@ function contracuenta()
                                     <label class="radio-inline" onclick="habilitar_servicios()"><input type="checkbox" name="ChRetS" id="ChRetS">Servicios</label>
                                 </div>
                                 <div class="col-sm-9">
-                                    <select class="form-control input-sm" id="DCRetISer">
+                                    <select class="form-control input-sm" id="DCRetISer" style="display: none;">
                                         <option>Seleccione Tipo Retencion</option>
                                     </select>
                                 </div>
@@ -395,7 +424,7 @@ function contracuenta()
                                 <div class="row">
                                     <div class="col-sm-12">
                                         <b>Tipo de sustento Tributario</b>
-                                        <select class="form-control input-sm" id="DCSustento" onchange="ddl_DCTipoComprobante('<?php echo $fec?>');ddl_DCDctoModif();">
+                                        <select class="form-control input-sm" id="DCSustento" onchange="ddl_DCTipoComprobante('<?php echo $fec?>');ddl_DCDctoModif();" onblur="cambiar_fecha_sus()">
                                             <option value="">seleccione sustento </option>
                                         </select>
                                     </div>                                    
@@ -416,8 +445,8 @@ function contracuenta()
                                 <div class="box-body">
                                     <div class="row">
                                         <div class="col-sm-5">
-                                            <b>tipo de comprobate</b>
-                                            <select class="form-control input-sm" id="DCTipoComprobante" onchange="mostrar_panel()">
+                                            <b>Tipo de comprobate</b>
+                                            <select class="form-control input-sm" id="DCTipoComprobante" onchange="mostrar_panel()" onblur="selec_tipo_comp()">
                                                 <option value="1">Factura</option>
                                             </select>
                                         </div>
@@ -445,7 +474,7 @@ function contracuenta()
                                         <div class="col-sm-12">
                                             <div class="col-sm-2"  style="padding-left: 0px;padding-right: 0px">
                                              <b>Emision</b>
-                                                <input type="date" name="" class="form-control input-sm" value="<?php echo date('Y-m-d') ?>" id="MBFechaEmi" onblur="cambiar_fecha()">
+                                                <input type="date" name="" class="form-control input-sm" value="<?php echo date('Y-m-d') ?>" id="MBFechaEmi" onblur="cambiar_fecha();">
                                             </div>
                                             <div class="col-sm-2"  style="padding-left: 0px;padding-right: 0px">
                                                 <b>Registro</b>
@@ -684,10 +713,54 @@ function contracuenta()
                                         Autorizacion
                                         <input type="text" name="" class="form-control input-sm" id="TxtNumUnoAutComRet" onblur="validar_autorizacion()" >
                                       </div>
-                                      <script type="text/javascript">                                              
+                                      <script type="text/javascript"> 
+                                               function selec_tipo_comp()
+                                               {
+                                                if($('#DCTipoComprobante').val()=='')
+                                                {
+                                                 Swal.fire('Seleccione tipo de comprobante','','info').then(()=>{ $('#DCTipoComprobante').focus();});
+                                                }
+
+                                               }                                             
                                               function cambiar_fecha()
                                               {
+
+                                                var sus = $('#DCSustento').val();
+                                                if(sus=='00')
+                                                { 
+                                                  if(Date.parse($('#MBFechaEmi').val()) <= Date.parse('2000-01-01')){
+                                                    $('#MBFechaRegis').val($('#MBFechaEmi').val());       
+                                                }else{
+                                                    Swal.fire('La Fecha de Emisión debe ser menor a 2000-01-01','','info').then(()=>{ $('#MBFechaEmi').focus();});
+                                                     today = '2000-01-01';
+                                                    // console.log('2000/01/01');
+                                                    $('#MBFechaEmi').val(today);
+                                                 }
+
+                                                   
+
+                                                }else
+                                                {                                                    
+                                                    $('#MBFechaEmi').val(fecha);
+                                                    $('#MBFechaRegis').val($('#MBFechaEmi').val());
+                                                }
                                                 $('#MBFechaRegis').val($('#MBFechaEmi').val());
+                                              }
+                                              function cambiar_fecha_sus()
+                                              {
+                                                var sus = $('#DCSustento').val();
+                                                if(sus=='00')
+                                                {                                                   
+                                                    today = '2000-01-01';
+                                                    // console.log('2000/01/01');
+                                                    $('#MBFechaEmi').val(today);
+                                                    $('#MBFechaRegis').val($('#MBFechaEmi').val());
+
+                                                }else
+                                                {                                                    
+                                                    $('#MBFechaEmi').val(fecha);
+                                                    $('#MBFechaRegis').val($('#MBFechaEmi').val());
+                                                }
                                               }
                                               function validar_fecha(){
                                               var fr = new Date($('#MBFechaRegis').val());
