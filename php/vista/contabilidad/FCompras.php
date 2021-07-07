@@ -336,10 +336,11 @@ function contracuenta()
   }
   function limpiar_retencaion()
   {
-    $('#rbl_retencion').prop('checked',false);
-    $('#myModal').modal('hide');
-    parent.location.reload();
-    cancelar();
+    console.log('entra');
+    //$('#rbl_retencion').prop('checked',false);
+    $('#modal_cuenta').modal('hide');
+    //parent.location.reload();
+    //cancelar();
   }
   </script>
 <div class="row">
@@ -377,7 +378,9 @@ function contracuenta()
                 </div>
                 <div class="col-sm-4 text-center">
                   <button class="btn btn-default" id="btn_g"> <img src="../../img/png/grabar.png"  onclick="validar_formulario();"><br> Guardar</button>
-                  <button class="btn btn-default"  data-dismiss="modal" onclick="limpiar_retencaion()"> <img src="../../img/png/bloqueo.png" ><br> Cancelar</button>
+                  <!--
+                  <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+                  <button class="btn btn-default"  data-dismiss="modal" onclick="limpiar_retencaion();"> <img src="../../img/png/bloqueo.png" ><br> Cancelar</button>-->
                 </div>            
             </div>
             <div class="row">

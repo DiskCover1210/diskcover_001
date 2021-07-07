@@ -263,7 +263,7 @@ class ingreso_descargosC
 		if ($parametros['nega']=='true') {
 		if(!isset($_SESSION['NEGATIVOS']['CODIGO_INV']))
 		{
-		$nega = $this->ordenes_negativas($parametros['codigo'],$parametros['rbl_busca'],$parametros['query'],$parametros['desde'],$parametros['hasta'],$parametros['busfe']);
+		$nega = $this->ordenes_negativas($parametros['codigo'],$parametros['tipo'],$parametros['query'],$parametros['desde'],$parametros['hasta'],$parametros['busfe']);
 	    }else
 	    {
 	    	$nega = $_SESSION['NEGATIVOS']['CODIGO_INV'] ;

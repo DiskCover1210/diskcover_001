@@ -41,8 +41,6 @@
     font-weight: bold;
   }
   #customers th {
-    padding-top: 12px;
-    padding-bottom: 12px;
     text-align: left;
     background-color: #ddd;
     color: black;
@@ -548,8 +546,10 @@
                       text: ''
                     }).then(() => {
                       serie = DCLinea.split(" ");
-                      url = '../vista/appr/controlador/imprimir_ticket.php?mesa=0&tipo=FA&CI='+TextCI+'&fac='+TextFacturaNo+'&serie='+serie[1];
-                      window.open(url, '_blank');
+                      //url = '../vista/appr/controlador/imprimir_ticket.php?mesa=0&tipo=FA&CI='+TextCI+'&fac='+TextFacturaNo+'&serie='+serie[1];
+                      //window.open(url, '_blank');
+                      var url = '../controlador/detalle_estudianteC.php?ver_fac=true&codigo='+TextFacturaNo+'&ser='+serie[1]+'&ci='+TextCI;
+                      window.open(url,'_blank');
                       location.reload();
                       //imprimir_ticket_fac(0,TextCI,TextFacturaNo,serie[1]);
                     });
@@ -741,7 +741,6 @@
             <input type="input" class="form-control input-sm" name="codigo" id="codigo" tabindex="26">
           </div>
         </div>
-        <br>
         <div class="row">
           <div class="col-sm-12" style="
               height: 150px;

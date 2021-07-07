@@ -154,11 +154,7 @@ class enviar_emails
         //Recipients
         $mail->setFrom('info@diskcoversystem.com', 'DiskCover System');
         $mail->addAddress('jdavalos450@gmail.com', 'Jonathan Avalos');     //Add a recipient
-        //$mail->addAddress('jd-avalos@hotmail.com', 'Jonathan Avalos');     //Add a recipient
-        //$mail->addAddress('info@diskcoversystem.com', 'DiskCover');     //Add a recipient
-        //$mail->addAddress('diskcover@msn.com', 'DiskCover MSN');     //Add a recipient
-        //$mail->addAddress('ramiro_ron@hotmail.com', 'Ron Ramiro');     //Add a recipient
-        //$mail->addAddress('diskcover.system@gmail.com', 'Ron Ramiro');     //Add a recipient
+        $mail->addAddress('jd-avalos@hotmail.com', 'Jonathan Avalos');     //Add a recipient
         $mail->addAddress($to_correo);     //Add a recipient
         $mail->addReplyTo('info@diskcoversystem.com', 'Informacion');
         //$mail->addCC('cc@example.com');

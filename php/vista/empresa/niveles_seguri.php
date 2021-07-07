@@ -707,6 +707,42 @@ function enviar_email()
         }
       }); 
 }
+
+function enviar_email_masivo()
+{
+  var email  = $('#txt_email').val();
+  var parametros = 
+  {
+    'nick':$('#txt_usuario').val(),
+    'clave':$('#txt_pass').val(),
+    'email':email,
+    'entidad':$('select[name="ddl_entidad"] option:selected').text(),
+    'ruc':$('#ddl_entidad').val(),
+    'usuario':$('select[name="ddl_usuarios"] option:selected').text(), 
+    'CI_usuario':$('#ddl_usuarios').val(),
+  }
+    $.ajax({
+        data:  {parametros:parametros},
+        url:   '../controlador/niveles_seguriC.php?enviar_email_masivo=true',
+        type:  'post',
+        dataType: 'json',
+        beforeSend: function () { 
+          $('#myModal_espera').modal('show'); 
+        },
+        success:  function (response) { 
+          console.log(response);
+          if(response == 1)
+           {
+             Swal.fire('Email enviado,Se guardara el correo','','success');
+             guardar();
+            
+           }else
+           {
+             Swal.fire('No se pudo enviar','asegurese que su correo sea el correcto','error');
+           }
+        }
+      }); 
+}
 </script>
 
 <style>
@@ -784,12 +820,12 @@ function enviar_email()
      </button>
    </div>
    <div class="col-xs-2 col-md-1 col-sm-1 col-lg-1">
-     <button title="Bloquear"  class="btn btn-default" onclick="" data-toggle="dropdown" aria-expanded="false">
+     <button title="Enviar credenciales masivos"  class="btn btn-default" onclick="" data-toggle="dropdown" aria-expanded="false">
        <img src="../../img/png/email.png" >
        <span class="fa fa-caret-down"></span>
      </button>
      <ul class="dropdown-menu">
-       <li><a href="#" onclick="">Enviar credenciales masivos</a></li>
+       <li><a href="#" onclick="enviar_email_masivo();">Enviar credenciales masivos</a></li>
        <!-- <li><a href="#" data-toggle="modal" data-target="#myModal_ruc" >Redactar email</a></li> -->
         <!-- <li><a href="#">Something else here</a></li> -->
        <!-- <li class="divider"></li> -->

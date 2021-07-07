@@ -56,6 +56,11 @@ if(isset($_SESSION['INGRESO']['IP_VPN_RUTA']) && $_SESSION['INGRESO']['Tipo_Base
 						{
 							require_once("facturacion/facturar_pension.php");
 						}
+						//compra / venta divisas
+						if ($_SESSION['INGRESO']['accion']=='divisas') 
+						{
+							require_once("facturacion/divisas.php");
+						}
 						if ($_SESSION['INGRESO']['accion']=='facturarLista') 
 						{
 							require_once("facturacion/lista_facturas.php");

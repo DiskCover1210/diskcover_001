@@ -76,6 +76,13 @@ if(isset($_GET['enviar_email']))
 	// echo json_encode($controlador->usuario_empresa($parametros['entidad'],$parametros['usuario']));
 }
 
+if(isset($_GET['enviar_email_masivo']))
+{
+	$parametros=$_POST['parametros'];
+	echo json_encode($controlador->enviar_email_masivo($parametros));
+	// echo json_encode($controlador->usuario_empresa($parametros['entidad'],$parametros['usuario']));
+}
+
 class niveles_seguriC
 {
 	private $modelo;
@@ -299,14 +306,15 @@ class niveles_seguriC
 		$empresas = $this->modelo->empresas($entidad);
 		//print_r($empresas);die();
 		foreach ($empresas as $key1 => $value1) {
-			$tbl.='<tr><td style="width: 250px;"><i class="fa fa-circle-o text-red" style="display:none" id="indice_'.utf8_decode($value1['id']).'"></i><b>'.utf8_decode($value1['text']).'</b></td><td class="text-center" style="border: solid 1px;"><input type="checkbox" name="rbl_'.utf8_decode($value1['id']).'_T" id="rbl_'.utf8_decode($value1['id']).'_T" onclick="marcar_all(\''.utf8_decode($value1['id']).'\')" ></td>';
+			$tbl.='<tr><td style="width: 250px;"><i class="fa fa-circle-o text-red" style="display:none" id="indice_'.utf8_decode($value1['id']).'"></i><b>'.utf8_decode($value1['text']).'</b></td><td style="width: 50px; class="text-center" style="border: solid 1px;"><input type="checkbox" name="rbl_'.utf8_decode($value1['id']).'_T" id="rbl_'.utf8_decode($value1['id']).'_T" onclick="marcar_all(\''.utf8_decode($value1['id']).'\')" ></td>';
 			foreach ($modulos as $key2 => $value2) {
-				$tbl.='<td class="text-center" style="border: solid 1px;"><input type="checkbox" name="rbl_'.utf8_decode($value2['modulo']).'_'.utf8_decode($value1['id']).'" id="rbl_'.utf8_decode($value2['modulo']).'_'.utf8_decode($value1['id']).'" title="'.utf8_decode($value2['aplicacion']).'" onclick="marcar_acceso(\''.utf8_decode($value1['id']).'\',\''.utf8_decode($value2['modulo']).'\')" ></td>';
+				$tbl.='<td style="width: 50px; class="text-center" style="border: solid 1px;"><input type="checkbox" name="rbl_'.utf8_decode($value2['modulo']).'_'.utf8_decode($value1['id']).'" id="rbl_'.utf8_decode($value2['modulo']).'_'.utf8_decode($value1['id']).'" title="'.utf8_decode($value2['aplicacion']).'" onclick="marcar_acceso(\''.utf8_decode($value1['id']).'\',\''.utf8_decode($value2['modulo']).'\')" ></td>';
 			}
+			$tbl.='</tr>';	
 		}
-		$tbl.='</tr></tbody></table>';
+		$tbl.='</tbody></table>';
 		//print_r($tbl);die();
-		return $tbl;
+		return utf8_decode($tbl);
 	}
 
 	function modulos_usuario($entidad,$usuario)
@@ -357,84 +365,131 @@ class niveles_seguriC
 		}
 	}
 
-  function enviar_email($parametros)
-  {
-  	// print_r($parametros);die();
-    // $empresaGeneral = array_map(array($this, 'encode1'), $this->empresaGeneral);
+  	function enviar_email($parametros)
+  	{
+	  	$this->modelo->actualizar_correo($parametros['email'],$parametros['CI_usuario']);
+	    $datos = $this->modelo->entidades_usuario($parametros['CI_usuario']);
 
-  	// $nueva_Clave = generate_clave(8);
-  	// $datos[0]['campo']='Clave';
-  	// $datos[0]['dato']=$nueva_Clave;
+	  	$email_conexion = 'info@diskcoversystem.com'; //$empresaGeneral[0]['Email_Conexion'];
+	    $email_pass =  'info2021DiskCover'; //$empresaGeneral[0]['Email_Contraseña'];
+	    // print_r($empresaGeneral[0]);die();
+	  	$correo_apooyo="credenciales@diskcoversystem.com"; //correo que saldra ala do del emisor
+	  	$cuerpo_correo = '
+	  	Estimado (a) '.utf8_decode($parametros['usuario']).' sus credenciales de acceso:
+	  	 <br>
+	  	<h3>Usuario:</h3>'.utf8_decode($datos[0]['Usuario']).'<br>
+	  	<h3>Clave:</h3>'.utf8_decode($datos[0]['Clave']).' <br>
+	  	<h3>Email:</h3>'.utf8_decode($datos[0]['Email']).' <br>
+	  	Usted esta asignado a las siguientes entidades: <br>
+	  	<table>
+	  	<tr><th>Codigo</th><th>Entidad</th></tr>
+	  	';
 
-  	// $where[0]['campo'] = 'Codigo';
-  	// $where[0]['valor'] = $parametros['ci'];
-  	// $where[0]['tipo'] = 'string';
+	  	foreach ($datos as $value) {
+	  		$cuerpo_correo .= '<tr><td>'.utf8_decode($value['id']).'</td><td>'.utf8_decode($value['text']).'</td></tr>';
+	  	}
+	    $cuerpo_correo .= ' </table><br>'.utf8_decode('
+	    	<pre>
+			-----------------------------------
+			SERVIRLES ES NUESTRO COMPROMISO, DISFRUTARLO ES EL SUYO.
 
-//hay que cambiar esas variables de conexion y pass
- 
-    
-  	$this->modelo->actualizar_correo($parametros['email'],$parametros['CI_usuario']);
-    $datos = $this->modelo->entidades_usuario($parametros['CI_usuario']);
 
-  	$email_conexion = 'info@diskcoversystem.com'; //$empresaGeneral[0]['Email_Conexion'];
-    $email_pass =  'info2021DiskCover'; //$empresaGeneral[0]['Email_Contraseña'];
-    // print_r($empresaGeneral[0]);die();
-  	$correo_apooyo="credenciales@diskcoversystem.com"; //correo que saldra ala do del emisor
-  	$cuerpo_correo = '
-  	Estimado (a) '.utf8_decode($parametros['usuario']).' sus credenciales de acceso:
-  	 <br>
-  	<h3>Usuario:</h3>'.utf8_decode($datos[0]['Usuario']).'<br>
-  	<h3>Clave:</h3>'.utf8_decode($datos[0]['Clave']).' <br>
-  	<h3>Email:</h3>'.utf8_decode($datos[0]['Email']).' <br>
-  	Usted esta asignado a las siguientes entidades: <br>
-  	<table>
-  	<tr><th>Codigo</th><th>Entidad</th></tr>
-  	';
+			Este correo electrónico fue generado automáticamente del Sistema Financiero Contable DiskCover System a usted porque figura como correo electrónico alternativo de '.$parametros['entidad'].'.
+			Nosotros respetamos su privacidad y solamente se utiliza este correo electrónico para mantenerlo informado sobre nuestras ofertas, promociones y comunicados. No compartimos, publicamos o vendemos su información personal fuera de nuestra empresa. Para obtener más información, comunicate a nuestro Centro de Atención al Cliente. Este mensaje fue recibido por: DiskCover Sytem.
 
-  	foreach ($datos as $value) {
-  		$cuerpo_correo .= '<tr><td>'.utf8_decode($value['id']).'</td><td>'.utf8_decode($value['text']).'</td></tr>';
+			Por la atención que se de al presente quedo de usted.
+
+
+			Esta dirección de correo electrónico no admite respuestas. En caso de requerir atención personalizada por parte de un asesor de servicio al cliente de DiskCover System, Usted podrá solicitar ayuda mediante los canales de atención al cliente oficiales que detallamos a continuación: Telefonos: (+593) 02-321-0051/098-652-4396/099-965-4196/098-910-5300.
+			Emails: prisma_net@hotmail.es/diskcover@msn.com.
+
+			www.diskcoversystem.com
+			QUITO - ECUADOR</pre>');
+
+	  	$titulo_correo = 'Credenciales de acceso al sistema DiskCover System';
+	  	$archivos = false;
+	  	$correo = $parametros['email'];
+	  	// print_r($correo);die();
+	  	// $resp = $this->modelo->ingresar_update($datos,'Clientes',$where);  	
+	  	
+	  	// if($resp==1)
+	  	// {
+	  	if($this->email->enviar_credenciales($archivos,$correo,$cuerpo_correo,$titulo_correo,$correo_apooyo,'Credenciales de acceso al sistema DiskCover System',$email_conexion,$email_pass,$html=1)==1){
+	  		echo json_encode(1);
+	  		exit();
+	  	}else{
+	  		echo json_encode(-1);
+	  		//return -1;
+	  	}
+	  	// }else
+	  	// {
+	  		// return -1;
+	  	// }
   	}
-    $cuerpo_correo .= ' </table><br>'.utf8_decode('
-    <pre>
------------------------------------
-SERVIRLES ES NUESTRO COMPROMISO, DISFRUTARLO ES EL SUYO.
+
+  	function enviar_email_masivo($parametros)
+  	{
+	  	//$this->modelo->actualizar_correo($parametros['email'],$parametros['CI_usuario']);
+	    $datos = $this->modelo->entidades_usuario($parametros['ruc']);
+  		print_r($datos);
+  		exit();
+
+	  	$email_conexion = 'info@diskcoversystem.com'; //$empresaGeneral[0]['Email_Conexion'];
+	    $email_pass =  'info2021DiskCover'; //$empresaGeneral[0]['Email_Contraseña'];
+	    // print_r($empresaGeneral[0]);die();
+	  	$correo_apooyo="credenciales@diskcoversystem.com"; //correo que saldra ala do del emisor
+	  	$cuerpo_correo = '
+	  	Estimado (a) '.utf8_decode($parametros['usuario']).' sus credenciales de acceso:
+	  	 <br>
+	  	<h3>Usuario:</h3>'.utf8_decode($datos[0]['Usuario']).'<br>
+	  	<h3>Clave:</h3>'.utf8_decode($datos[0]['Clave']).' <br>
+	  	<h3>Email:</h3>'.utf8_decode($datos[0]['Email']).' <br>
+	  	Usted esta asignado a las siguientes entidades: <br>
+	  	<table>
+	  	<tr><th>Codigo</th><th>Entidad</th></tr>
+	  	';
+
+	  	foreach ($datos as $value) {
+	  		$cuerpo_correo .= '<tr><td>'.utf8_decode($value['id']).'</td><td>'.utf8_decode($value['text']).'</td></tr>';
+	  	}
+	    $cuerpo_correo .= ' </table><br>'.utf8_decode('
+	    	<pre>
+			-----------------------------------
+			SERVIRLES ES NUESTRO COMPROMISO, DISFRUTARLO ES EL SUYO.
 
 
-Este correo electrónico fue generado automáticamente del Sistema Financiero Contable DiskCover System a usted porque figura como correo electrónico alternativo de Oblatas de San Francisco de Sales.
-Nosotros respetamos su privacidad y solamente se utiliza este correo electrónico para mantenerlo informado sobre nuestras ofertas, promociones y comunicados. No compartimos, publicamos o vendemos su información personal fuera de nuestra empresa. Para obtener más información, comunicate a nuestro Centro de Atención al Cliente Teléfono: 052310304. Este mensaje fue recibido por: DiskCover Sytem.
+			Este correo electrónico fue generado automáticamente del Sistema Financiero Contable DiskCover System a usted porque figura como correo electrónico alternativo de Oblatas de San Francisco de Sales.
+			Nosotros respetamos su privacidad y solamente se utiliza este correo electrónico para mantenerlo informado sobre nuestras ofertas, promociones y comunicados. No compartimos, publicamos o vendemos su información personal fuera de nuestra empresa. Para obtener más información, comunicate a nuestro Centro de Atención al Cliente Teléfono: 052310304. Este mensaje fue recibido por: DiskCover Sytem.
 
-Por la atención que se de al presente quedo de usted.
-
-
-Esta dirección de correo electrónico no admite respuestas. En caso de requerir atención personalizada por parte de un asesor de servicio al cliente de DiskCover System, Usted podrá solicitar ayuda mediante los canales de atención al cliente oficiales que detallamos a continuación: Telefonos: (+593) 02-321-0051/098-652-4396/099-965-4196/098-910-5300.
-Emails: prisma_net@hotmail.es/diskcover@msn.com.
-
-www.diskcoversystem.com
-QUITO - ECUADOR</pre>');
-
-  	$titulo_correo = 'Credenciales de acceso al sistema DiskCover System';
-  	$archivos = false;
-  	$correo = $parametros['email'];
-  	// print_r($correo);die();
-  	// $resp = $this->modelo->ingresar_update($datos,'Clientes',$where);  	
-  	
-  	// if($resp==1)
-  	// {
-  		if($this->email->enviar_credenciales($archivos,$correo,$cuerpo_correo,$titulo_correo,$correo_apooyo,'Credenciales de acceso al sistema DiskCover System',$email_conexion,$email_pass,$html=1)==1){
-  			echo json_encode(1);
-  			exit();
-  		}else
-  		{
-  			echo json_encode(-1);
-  			//return -1;
-  		}
-  	// }else
-  	// {
-  		// return -1;
-  	// }
-  }
+			Por la atención que se de al presente quedo de usted.
 
 
+			Esta dirección de correo electrónico no admite respuestas. En caso de requerir atención personalizada por parte de un asesor de servicio al cliente de DiskCover System, Usted podrá solicitar ayuda mediante los canales de atención al cliente oficiales que detallamos a continuación: Telefonos: (+593) 02-321-0051/098-652-4396/099-965-4196/098-910-5300.
+			Emails: prisma_net@hotmail.es/diskcover@msn.com.
+
+			www.diskcoversystem.com
+			QUITO - ECUADOR</pre>');
+
+	  	$titulo_correo = 'Credenciales de acceso al sistema DiskCover System';
+	  	$archivos = false;
+	  	$correo = $parametros['email'];
+	  	// print_r($correo);die();
+	  	// $resp = $this->modelo->ingresar_update($datos,'Clientes',$where);  	
+	  	
+	  	// if($resp==1)
+	  	// {
+	  	if($this->email->enviar_credenciales($archivos,$correo,$cuerpo_correo,$titulo_correo,$correo_apooyo,'Credenciales de acceso al sistema DiskCover System',$email_conexion,$email_pass,$html=1)==1){
+	  		echo json_encode(1);
+	  		exit();
+	  	}else{
+	  		echo json_encode(-1);
+	  		//return -1;
+	  	}
+	  	// }else
+	  	// {
+	  		// return -1;
+	  	// }
+  	}
  // function encode1($arr) {
  //    $new = array(); 
  //    foreach($arr as $key => $value) {
