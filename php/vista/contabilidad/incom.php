@@ -607,10 +607,12 @@
           dataType: 'json',
             success:  function (response) {    
             $('#retenciones').html(response.b+response.r);
-            // console.log(response.datos[0]);
-            $('#Autorizacion_R').val(response.datos[0].AutRetencion); 
-            $('#Serie_R').val(response.datos[0].PtoEmiRetencion+''+response.datos[0].PuntoEmiFactura); 
-            $('#Retencion').val(response.datos[0].SecRetencion);      
+            console.log(response.datos[0]);
+            if (response.datos[0]) {
+              $('#Autorizacion_R').val(response.datos[0].AutRetencion); 
+              $('#Serie_R').val(response.datos[0].PtoEmiRetencion+''+response.datos[0].PuntoEmiFactura); 
+              $('#Retencion').val(response.datos[0].SecRetencion);      
+            }
           }
         });
 
@@ -842,11 +844,11 @@
     var haber = $('#txt_haber').val();
     var com = $('#num_com').text();
     // var comprobante = com.split('.');
-    /*if((debe != haber) || (debe==0 && haber==0) )
+    if((debe != haber) || (debe==0 && haber==0) )
     {
       Swal.fire( 'Las transacciones no cuadran correctamente  corrija los resultados de las cuentas','','info');
       return false;
-    }*/
+    }
     if(ben =='')
     {      
       ben = '.';
@@ -1335,8 +1337,12 @@
                         <div class="row ">
                           <div class="col-sm-6">
                              <button type="button"  class="btn btn-primary" id='grabar1' onclick="validar_comprobante()">Guardar</button>
-                             <button type="button"  class="btn btn-danger" id='cancelar'>Cancelar</button>
-                             <button type="button"  class="btn btn-danger" id='' onclick="xml()">xml</button>                            
+                             <a  href="./contabilidad.php?mod=contabilidad" title="Salir de modulo" class="btn btn-danger">
+                                Cancelar
+                              </a>
+                             <!-- 
+                              <button type="button"  class="btn btn-danger" id='' onclick="xml()">xml</button>
+                             -->                            
                           </div>
                           <div class="col-sm-6">
                             <div class="col-sm-4">
@@ -1418,14 +1424,12 @@
   </div>
 </div>
 
-<div class="modal fade" id="modal_subcuentas" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true" data-keyboard="false" data-backdrop="static">
+<div class="modal fade" id="modal_subcuentas" tabindex="-1" role="dialog" >
   <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title" id="titulo_frame">SUB CUENTAS</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
       </div>
       <div class="modal-body">
         <!-- <div class="container-fluid"> -->
@@ -1437,7 +1441,7 @@
       </div>
       <div class="modal-footer">
           <!-- <button type="button" class="btn btn-primary" onclick="cambia_foco();">Guardar</button> -->
-          <button type="button" class="btn btn-default" data-dismiss="modal" aria-label="Close" onclick="recarar()">Cerrar</button>
+          <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
         </div>
     </div>
   </div>

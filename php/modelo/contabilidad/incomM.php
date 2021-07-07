@@ -315,7 +315,6 @@ class incomM
 		 	{
 		 		$datos[] = $row;
 		 	}
- 
        $botones[0] = array('boton'=>'eliminar', 'icono'=>'<i class="fa fa-trash"></i>', 'tipo'=>'danger', 'id'=>'CodRet,air');
 	   $tbl = grilla_generica_new($sql,'Asiento_Air',false,$titulo=false,$botones,$check=false,$imagen=false,1,1,1,100);
 			 // print_r($tbl);die();

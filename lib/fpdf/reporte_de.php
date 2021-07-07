@@ -1413,7 +1413,7 @@ prisma_net@hotmail.es; para Transferencia o Depósitos hacer en El Banco Pichinc
 		//$auto=simplexml_load_string($resultado);
 		//echo ' ccc '.$auto->factura->infoTributaria;
 	//die();
-	$pdf->SetFont('Arial','B',30);
+	$pdf->SetFont('Arial','B',28);
 	$x=41;
 	$pdf->SetXY($x, 20);
 	//$pdf->SetWidths(array(250));
@@ -1463,7 +1463,7 @@ prisma_net@hotmail.es; para Transferencia o Depósitos hacer en El Banco Pichinc
 	$pdf->SetFont('Arial','B',13);
 	$pdf->SetXY(285, 35);
 	$pdf->SetWidths(array(70,150));
-	$arr=array('R.U.C.:     ', etiqueta_xml($resultado,"<ruc>"));
+	$arr=array('R.U.C.     ', etiqueta_xml($resultado,"<ruc>"));
 	$pdf->Row($arr,10);
 	 //factura
 	 $pdf->SetXY(285, 47);
@@ -2128,6 +2128,7 @@ prisma_net@hotmail.es; para Transferencia o Depósitos hacer en El Banco Pichinc
 	$x=41;
 	$pdf->SetXY($x, 20);
 	//$pdf->SetWidths(array(250));
+
 	if(isset($_SESSION['INGRESO']['Logo_Tipo'])) 
 	{
 		$logo=$_SESSION['INGRESO']['Logo_Tipo'];
@@ -2157,10 +2158,14 @@ prisma_net@hotmail.es; para Transferencia o Depósitos hacer en El Banco Pichinc
 	}
 	$tam = 9;
 	$pdf->cabeceraHorizontal(array(' '),285,30,280,115,20,5);
-	$pdf->SetFont('Arial','B',13);
+	$pdf->SetFont('Arial','B',12);
 	$pdf->SetXY(285, 35);
-	$pdf->SetWidths(array(70,150));
-	$arr=array('R.U.C.:     ', $_SESSION['INGRESO']['RUCEnt']);//mio
+	$pdf->SetWidths(array(70,140));
+	$arr=array('R.U.C.');//mio
+	$pdf->Row($arr,10);
+	$pdf->SetXY(425, 35);
+	$pdf->SetWidths(array(140));
+	$arr=array( $_SESSION['INGRESO']['RUCEnt']);//mio
 	$pdf->Row($arr,10);
 	 //factura
 	$pdf->SetXY(285, 47);
@@ -2235,9 +2240,9 @@ prisma_net@hotmail.es; para Transferencia o Depósitos hacer en El Banco Pichinc
 	$pdf->SetFont('Arial','',9);
 	$pdf->SetXY(285, 110);
 	$pdf->SetWidths(array(275));
-	$arr=array($code);
-	$pdf->Row($arr,10);
-
+	//$arr=array($code);
+	//$pdf->Row($arr,10);
+		$pdf->Cell(10,10,$code);
 	 }else if($datos[0]['Clave_Acceso'] > 39)
 	 {	 	
 	    $code=$datos[0]['Clave_Acceso'];
@@ -2248,9 +2253,11 @@ prisma_net@hotmail.es; para Transferencia o Depósitos hacer en El Banco Pichinc
 	    $pdf->SetFont('Arial','',7);
 	    $pdf->SetXY(285, 130);
 	    $pdf->SetWidths(array(275));
-	    $arr=array($code);
-	    $pdf->Row($arr,10);
+	    //$arr=array($code);
+	    //$pdf->Row($arr,10);
+	    $pdf->Cell(10,10,$code);
 	 }
+
 	
 	/******************/
 	/******************/
@@ -2277,7 +2284,7 @@ prisma_net@hotmail.es; para Transferencia o Depósitos hacer en El Banco Pichinc
 	$pdf->SetWidths(array(140));
 	$arr=array(utf8_decode('Dirección Matríz'));
 	$pdf->Row($arr,10);
-	$pdf->SetFont('Arial','',8);
+	$pdf->SetFont('Arial','',7);
 	$pdf->SetXY($x, 107);
 	$pdf->SetWidths(array(280));
 	$arr=array(utf8_decode($_SESSION['INGRESO']['Direccion']));//mio
@@ -2288,10 +2295,10 @@ prisma_net@hotmail.es; para Transferencia o Depósitos hacer en El Banco Pichinc
 	$pdf->SetWidths(array(140));
 	$arr=array(utf8_decode('Dirección Sucursal'));
 	$pdf->Row($arr,10);
-	$pdf->SetFont('Arial','',8);
+	$pdf->SetFont('Arial','',7);
 	$pdf->SetXY($x, 127);
 	$pdf->SetWidths(array(280));
-	if($_SESSION['INGRESO']['Sucursal']==0)
+	if($_SESSION['INGRESO']['Sucursal']==0 || $_SESSION['INGRESO']['Sucursal']==1 )
 	{
 	  $arr=array(utf8_decode($_SESSION['INGRESO']['Direccion']));//mio
 	}else
@@ -2397,11 +2404,11 @@ prisma_net@hotmail.es; para Transferencia o Depósitos hacer en El Banco Pichinc
  //print_r($detalle);
 
      foreach ($detalle as $key => $value) {
-     	
+     		
      	 	$pdf->SetWidths(array(55,55,45,45,110,45,45,40,40,45));
 			$pdf->SetAligns(array("L","L","R","R","L","L","R","R","R","R"));
 			//$arr=array($arr1[$i]);
-			$arr=array($value['Codigo'],$value['CodigoU'],$value['Cantidad'],'',$value['Producto'],'',$value['Precio'],$value['Total_Desc'],'',$value['Total']);
+			$arr=array($value['Codigo'],$value['CodigoU'],$value['Cantidad'],'',$value['Producto'],'',sprintf("%01.2f", $value['Precio']),$value['Total_Desc'],'',$value['Total']);
 			$pdf->Row($arr,10,1);    	
      }
    
@@ -2468,7 +2475,7 @@ prisma_net@hotmail.es; para Transferencia o Depósitos hacer en El Banco Pichinc
 	if($educativo[0]['Email'] != '.' && $educativo[0]['Email'] != '')
 	{	
 	
-	$arr=array('Emial: '.$educativo[0]['Email']);
+	$arr=array('Email: '.$educativo[0]['Email']);
 	$pdf->Row($arr,10);
 	$pdf->SetWidths(array(140));
     }
@@ -2492,8 +2499,7 @@ prisma_net@hotmail.es; para Transferencia o Depósitos hacer en El Banco Pichinc
 	$pdf->Cell(321,46,'','1',1,'Q');
 	$pdf->SetXY($x, ($y+68));
 	$pdf->SetWidths(array(319));
-	$arr=array($_SESSION['INGRESO']['LeyendaFA']);			
-				
+	$arr=array($_SESSION['INGRESO']['LeyendaFA']);	
 	$pdf->Row($arr,8);
 	//subtotales
 	//depende del valor de coordenada 'y' del detalle
@@ -2536,13 +2542,12 @@ prisma_net@hotmail.es; para Transferencia o Depósitos hacer en El Banco Pichinc
 	$arr=array("SUBTOTAL ".$imp."%:");
 	$pdf->Row($arr,10);
 	$pdf->SetFont('Arial','',7);
-	$pdf->SetXY(510, ($y-9));
+	$pdf->SetXY(545, ($y-9));
 	$pdf->SetWidths(array(55));
 	$pdf->SetAligns(array("R"));
-	
-	$arr=array($bai);
-	$pdf->Row($arr,10);
-	
+	$formateado = sprintf("%01.2f", $bai);
+	$pdf->Cell(10,10,$formateado);
+
 	$y=$y-10+11;//365
 	$pdf->SetFont('Arial','B',7);
 	$pdf->SetXY(365, $y);
@@ -2553,11 +2558,16 @@ prisma_net@hotmail.es; para Transferencia o Depósitos hacer en El Banco Pichinc
 	$arr=array("SUBTOTAL 0%:");
 	$pdf->Row($arr,10);
 	$pdf->SetFont('Arial','',7);
-	$pdf->SetXY(510, ($y+1));
+	$pdf->SetXY(545, ($y+1));
 	$pdf->SetWidths(array(55));
 	$pdf->SetAligns(array("R"));
-	$arr=array($ba0);
-	$pdf->Row($arr,10);
+	$arr=array(sprintf("%01.2f", $ba0));
+	$formateado = sprintf("%01.2f", $ba0);
+	$pdf->Cell(10,10,$formateado);
+ 	//echo $formateado;
+	//str_pad($ba0, 2, '0', STR_PAD_RIGHT);
+	//exit();
+	//$pdf->Row($arr,10);
 	
 	$y=$y+11;//380
 	$pdf->SetFont('Arial','B',7);
@@ -2569,11 +2579,11 @@ prisma_net@hotmail.es; para Transferencia o Depósitos hacer en El Banco Pichinc
 	$arr=array("TOTAL DESCUENTO:");
 	$pdf->Row($arr,10);
 	$pdf->SetFont('Arial','',7);
-	$pdf->SetXY(510, ($y+1));
+	$pdf->SetXY(545, ($y+1));
 	$pdf->SetWidths(array(55));
 	$pdf->SetAligns(array("R"));
-	$arr=array($descu);
-	$pdf->Row($arr,10);
+	$formateado = sprintf("%01.2f", $descu);
+	$pdf->Cell(10,10,$formateado);
 	
 	$y=$y+11;//395
 	$pdf->SetFont('Arial','B',7);
@@ -2585,11 +2595,11 @@ prisma_net@hotmail.es; para Transferencia o Depósitos hacer en El Banco Pichinc
 	$arr=array("SUBTOTAL NO OBJETO DE IVA:");
 	$pdf->Row($arr,10);
 	$pdf->SetFont('Arial','',7);
-	$pdf->SetXY(510, ($y+1));
+	$pdf->SetXY(545, ($y+1));
 	$pdf->SetWidths(array(55));
 	$pdf->SetAligns(array("R"));
-	$arr=array("000.00");
-	$pdf->Row($arr,10);
+	$formateado = sprintf("%01.2f", "0.00");
+	$pdf->Cell(10,10,$formateado);
 	
 	$y=$y+11;//410
 	$pdf->SetFont('Arial','B',7);
@@ -2601,11 +2611,11 @@ prisma_net@hotmail.es; para Transferencia o Depósitos hacer en El Banco Pichinc
 	$arr=array("SUBTOTAL EXENTO DE IVA:");
 	$pdf->Row($arr,10);
 	$pdf->SetFont('Arial','',7);
-	$pdf->SetXY(510, ($y+1));
+	$pdf->SetXY(545, ($y+1));
 	$pdf->SetWidths(array(55));
 	$pdf->SetAligns(array("R"));
-	$arr=array("000.00");
-	$pdf->Row($arr,10);
+	$formateado = sprintf("%01.2f", "0.00");
+	$pdf->Cell(10,10,$formateado);
 	
 	$y=$y+11;//425
 	$pdf->SetFont('Arial','B',7);
@@ -2617,11 +2627,11 @@ prisma_net@hotmail.es; para Transferencia o Depósitos hacer en El Banco Pichinc
 	$arr=array("SUBTOTAL SIN IMPUESTOS:");
 	$pdf->Row($arr,10);
 	$pdf->SetFont('Arial','',7);
-	$pdf->SetXY(510, ($y+1));
+	$pdf->SetXY(545, ($y+1));
 	$pdf->SetWidths(array(55));
 	$pdf->SetAligns(array("R"));
-	$arr=array($ba0);
-	$pdf->Row($arr,10);
+	$formateado = sprintf("%01.2f", $ba0);
+	$pdf->Cell(10,10,$formateado);
 	
 	$y=$y+11;//440
 	$pdf->SetFont('Arial','B',7);
@@ -2633,11 +2643,11 @@ prisma_net@hotmail.es; para Transferencia o Depósitos hacer en El Banco Pichinc
 	$arr=array("ICE:");
 	$pdf->Row($arr,10);
 	$pdf->SetFont('Arial','',7);
-	$pdf->SetXY(510, ($y+1));
+	$pdf->SetXY(545, ($y+1));
 	$pdf->SetWidths(array(55));
 	$pdf->SetAligns(array("R"));
-	$arr=array("000.00");
-	$pdf->Row($arr,10);
+	$formateado = sprintf("%01.2f", "0.00");
+	$pdf->Cell(10,10,$formateado);
 	
 	$y=$y+11;//455
 	$pdf->SetFont('Arial','B',7);
@@ -2649,11 +2659,11 @@ prisma_net@hotmail.es; para Transferencia o Depósitos hacer en El Banco Pichinc
 	$arr=array("IVA ".$imp."%:");
 	$pdf->Row($arr,10);
 	$pdf->SetFont('Arial','',7);
-	$pdf->SetXY(510, ($y+1));
+	$pdf->SetXY(545, ($y+1));
 	$pdf->SetWidths(array(55));
 	$pdf->SetAligns(array("R"));
-	$arr=array($vimp1);
-	$pdf->Row($arr,10);
+	$formateado = sprintf("%01.2f", $vimp1);
+	$pdf->Cell(10,10,$formateado);
 	
 	$y=$y+11;//470
 	$pdf->SetFont('Arial','B',7);
@@ -2665,11 +2675,11 @@ prisma_net@hotmail.es; para Transferencia o Depósitos hacer en El Banco Pichinc
 	$arr=array("IVA 0%:");
 	$pdf->Row($arr,10);
 	$pdf->SetFont('Arial','',7);
-	$pdf->SetXY(510, ($y+1));
+	$pdf->SetXY(545, ($y+1));
 	$pdf->SetWidths(array(55));
 	$pdf->SetAligns(array("R"));
-	$arr=array($vimp0);
-	$pdf->Row($arr,10);
+	$formateado = sprintf("%01.2f", $vimp1);
+	$pdf->Cell(10,10,$formateado);
 	
 	$y=$y+11;//485
 	$pdf->SetFont('Arial','B',7);
@@ -2681,11 +2691,11 @@ prisma_net@hotmail.es; para Transferencia o Depósitos hacer en El Banco Pichinc
 	$arr=array("PROPINA:");
 	$pdf->Row($arr,10);
 	$pdf->SetFont('Arial','',7);
-	$pdf->SetXY(510, ($y+1));
+	$pdf->SetXY(545, ($y+1));
 	$pdf->SetWidths(array(55));
 	$pdf->SetAligns(array("R"));
-	$arr=array("0");
-	$pdf->Row($arr,10);
+	$formateado = sprintf("%01.2f", "0.00");
+	$pdf->Cell(10,10,$formateado);
 	
 	$y=$y+11;//500
 	$pdf->SetFont('Arial','B',7);
@@ -2697,11 +2707,11 @@ prisma_net@hotmail.es; para Transferencia o Depósitos hacer en El Banco Pichinc
 	$arr=array("VALOR TOTAL:");
 	$pdf->Row($arr,10);
 	$pdf->SetFont('Arial','',7);
-	$pdf->SetXY(510, ($y+1));
+	$pdf->SetXY(545, ($y+1));
 	$pdf->SetWidths(array(55));
 	$pdf->SetAligns(array("R"));
-	$arr=array($datos[0]['Total_MN']);
-	$pdf->Row($arr,10);
+	$formateado = sprintf("%01.2f", $datos[0]['Total_MN']);
+	$pdf->Cell(10,10,$formateado);
 	//echo ' ddd '.$imp1;
 	//die();*/
 	if($imp1==null or $imp1==1)

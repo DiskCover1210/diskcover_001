@@ -23,10 +23,10 @@ class descargosM
 
 		$cid = $this->conn;
 		$sql = "SELECT SUM(VALOR_TOTAL) as 'importe',ORDEN,Codigo_B,Fecha_Fab,C.Cliente as 'nombre',A.SUBCTA as 'area',CS.Detalle as 'subcta',C.Matricula as 'his',A.Detalle as 'Detalle'
-			FROM Asiento_K  A
-			LEFT JOIN Clientes C ON A.Codigo_B = C.CI_RUC 
+			FROM Asiento_K A
+			LEFT JOIN Clientes C ON C.CI_RUC = A.Codigo_B  
 			LEFT JOIN Catalogo_SubCtas CS ON CS.Codigo = A.SUBCTA
-			WHERE 1=1  AND DH='2' ";
+			WHERE DH='2' ";
 		if($codigo_b)
 		{
 			$sql.=" AND Codigo_B = '".$codigo_b."' ";
@@ -51,7 +51,7 @@ class descargosM
 		$sql.=" GROUP BY ORDEN ,Codigo_B,Fecha_Fab,C.Cliente,A.SUBCTA,CS.Detalle,C.Matricula,A.Detalle ORDER BY Fecha_Fab DESC";
 		$sql.=" OFFSET 0 ROWS FETCH NEXT 50 ROWS ONLY;";
 		
-		// print_r($sql);die();
+		//print_r($sql);die();
 		$stmt = sqlsrv_query($cid, $sql);
         $datos =  array();
 	   if( $stmt === false)  

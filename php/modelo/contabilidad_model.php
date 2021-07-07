@@ -2915,7 +2915,7 @@ function SQL_Tipo_Balance($TipoBalance,$TipoPyGCC)
 			FROM Asiento_B
 			WHERE 
 			Item = '".$_SESSION['INGRESO']['item']."' 
-			AND CodigoU = '".$_SESSION['INGRESO']['Id']."' ";
+			AND CodigoU = '".$_SESSION['INGRESO']['Id']."' ORDER BY CTA_BANCO ";
 			$ta='asi_b';
 		}
 		else

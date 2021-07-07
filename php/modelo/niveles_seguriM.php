@@ -74,6 +74,29 @@ class niveles_seguriM
 	    return $datos;
 	}
 
+	function entidades_usuarios($ci_nic)
+	{
+		$cid = Conectar::conexion('MYSQL');
+		$sql ="SELECT AU.Nombre_Usuario,AU.Usuario,AU.Clave, AU.Email, E.Nombre_Entidad, E.RUC_CI_NIC As Codigo_Entidad
+				FROM acceso_empresas AS AE,acceso_usuarios AS AU, entidad AS E
+				WHERE AE.ID_Empresa ='".$ci_nic."'
+				AND AE.ID_Empresa = E.ID_Empresa 
+				AND AE.CI_NIC = AU.CI_NIC
+				GROUP BY AU.Nombre_Usuario,AU.Email, E.Nombre_Entidad, E.RUC_CI_NIC,AU.Usuario,AU.Clave
+				ORDER BY E.Nombre_Entidad ";
+		$datos=[];
+		if($cid)
+		{
+		 	$consulta=$cid->query($sql) or die($cid->error);
+		 	while($filas=$consulta->fetch_assoc())
+			{
+				// $datos[]=['id'=>$filas['ID_Empresa'],'text'=>utf8_encode($filas['Nombre_Entidad'])];	
+				$datos[]=['id'=>utf8_encode($filas['Codigo_Entidad']),'text'=>utf8_encode($filas['Nombre_Entidad']),'RUC'=>utf8_encode($filas['Codigo_Entidad']),'Usuario'=>utf8_encode($filas['Usuario']),'Clave'=>utf8_encode($filas['Clave']),'Email'=>utf8_encode($filas['Email'])];				
+			}
+		}
+	    return $datos;
+	}
+
 	function empresas($entidad)
 	{
 		$cid = Conectar::conexion('MYSQL');
