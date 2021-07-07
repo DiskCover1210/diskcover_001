@@ -7827,7 +7827,7 @@ function crear_variables_session($empresa)
     return $resultado[0];
   }
 
-function grilla_generica_new($sql,$tabla,$id_tabla=false,$titulo=false,$botones=false,$check=false,$imagen=false,$border=1,$sombreado=1,$head_fijo=1,$tamaño_tabla=300,$num_decimales=2,$num_reg=false)
+function grilla_generica_new($sql,$tabla,$id_tabla=false,$titulo=false,$botones=false,$check=false,$imagen=false,$border=1,$sombreado=1,$head_fijo=1,$tamaño_tabla=300,$num_decimales=2,$num_reg=false,$paginacion_view= false)
 {  
   $conn = new Conectar();
 
@@ -7940,6 +7940,8 @@ if($titulo)
  {
    $funcion_e = $fun_pagina.'()';
  }
+ if($paginacion_view)
+ {
   $tbl.= '
 <select id="ddl_reg" onChange="'.$funcion_e.'"><option value="15">15</option><option value="25">25</option><option value="50">50</option></select>
   <nav aria-label="...">
@@ -7961,20 +7963,16 @@ if($titulo)
       }
     }else
     {
-      $tab = ($val_pagina/$ddl_reg)+1;
+      $tab = ($val_pagina/$ddl_reg);
       $inicio = 1;
       $tab_paginas = 10;
-      if($tab%10 ==0)
-      {
-         $parte = ($tab/10)+1;
-         $inicio = $tab;
-         $tab_paginas = $inicio+$tab+1;
+      $co = 0;
+      // print_r($tab);die();
+      while (($tab+1)>=$tab_paginas) {
+        $inicio = $tab_paginas;
+        $tab_paginas = $tab_paginas+10;
+        // $co = $co+1;
       }
-      // else
-      // {
-      //    print_r($tab%10);die();
-      // }
-
 
       for ($i=$inicio; $i <= $tab_paginas; $i++) {
        $pa = $ddl_reg*($i-1); 
@@ -8004,6 +8002,7 @@ if($titulo)
     </li>
   </ul>
 </nav>';
+}
  $tbl.='<table class="table" style="table-layout: fixed;" id="'.$id_tabla.'"><thead>';
   //cabecera de la consulta sql//
  if($botones)

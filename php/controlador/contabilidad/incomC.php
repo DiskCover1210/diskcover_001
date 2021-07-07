@@ -1361,8 +1361,8 @@ class incomC
             $parametros_xml['Fecha']=$Fecha;
             $parametros_xml['Numero']=$Numero;
             $parametros_xml['ruc']=$parametros['ruc'];
-            print_r($Autorizacion_R);
-            exit();
+            // print_r($Autorizacion_R);
+            // exit();
             if(strlen($Autorizacion_R) >= 13){
             	$res = $this->SRI_Crear_Clave_Acceso_Retencines($parametros_xml); //function xml
             	// print_r($res);die();
@@ -1594,7 +1594,7 @@ class incomC
 
 	           	   $compro = explode('COMPROBANTE', $respuesta[2]);
 	           	   $entidad= $_SESSION['INGRESO']['item'];
-	           	   $url_No_autorizados ='../comprobantes/entidades/entidad_'.$entidad."/CE_".$entidad.'/No_autorizados/';
+	           	   $url_No_autorizados ='../comprobantes/entidades/entidad_'.$entidad."/CE".$entidad.'/No_autorizados/';
 	           	   $resp = array('respuesta'=>2,'ar'=>trim($compro[0]).'.xml','url'=>$url_No_autorizados);
 	           	 	return $resp;
 	           	 }
