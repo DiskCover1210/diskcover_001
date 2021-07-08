@@ -665,6 +665,12 @@ class usuario_model{
 				$empresa[$i]['Num_ND']=$obj->Num_ND;		
 				$empresa[$i]['Num_NC']=$obj->Num_NC;
 				$empresa[$i]['Email_Conexion_CE']=$obj->Email_Conexion_CE;
+				$empresa[$i]['Email_Conexion']=$obj->Email_Conexion;
+				//$empresa[$i]['Email_Contrasena']=array_map(array($this, 'encode1'), $obj->Email_Contraseña);
+				$empresa[$i]['smtp_SSL']=$obj->smtp_SSL;
+				$empresa[$i]['smtp_UseAuntentificacion']=$obj->smtp_UseAuntentificacion;
+				$empresa[$i]['smtp_Puerto']=$obj->smtp_Puerto;
+				$empresa[$i]['smtp_Servidor']=$obj->smtp_Servidor;
 				$empresa[$i]['Formato_Cuentas']=$obj->Formato_Cuentas;
 				$empresa[$i]['Formato_Inventario']=$obj->Formato_Inventario;
 				$empresa[$i]['Obligado_Conta']=$obj->Obligado_Conta;

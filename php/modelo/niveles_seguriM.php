@@ -44,8 +44,8 @@ class niveles_seguriM
 		 	$consulta=$cid->query($sql) or die($cid->error);
 		 	while($filas=$consulta->fetch_assoc())
 			{
-				// $datos[]=['id'=>$filas['ID_Empresa'],'text'=>utf8_encode($filas['Nombre_Entidad'])];	
-				$datos[]=['id'=>utf8_encode($filas['ID_Empresa']),'text'=>utf8_encode($filas['Nombre_Entidad']),'RUC'=>utf8_encode($filas['RUC_CI_NIC'])];				
+				/*$datos[]=['id'=>utf8_encode($filas['ID_Empresa']),'text'=>utf8_encode($filas['Nombre_Entidad']),'RUC'=>utf8_encode($filas['RUC_CI_NIC'])];*/
+				$datos[]=['id'=>$filas['ID_Empresa'],'text'=>$filas['Nombre_Entidad'],'RUC'=>$filas['RUC_CI_NIC']];				
 			}
 		}
 	    return $datos;
@@ -67,8 +67,8 @@ class niveles_seguriM
 		 	$consulta=$cid->query($sql) or die($cid->error);
 		 	while($filas=$consulta->fetch_assoc())
 			{
-				// $datos[]=['id'=>$filas['ID_Empresa'],'text'=>utf8_encode($filas['Nombre_Entidad'])];	
-				$datos[]=['id'=>utf8_encode($filas['Codigo_Entidad']),'text'=>utf8_encode($filas['Nombre_Entidad']),'RUC'=>utf8_encode($filas['Codigo_Entidad']),'Usuario'=>utf8_encode($filas['Usuario']),'Clave'=>utf8_encode($filas['Clave']),'Email'=>utf8_encode($filas['Email'])];				
+				/*$datos[]=['id'=>utf8_encode($filas['Codigo_Entidad']),'text'=>utf8_encode($filas['Nombre_Entidad']),'RUC'=>utf8_encode($filas['Codigo_Entidad']),'Usuario'=>utf8_encode($filas['Usuario']),'Clave'=>utf8_encode($filas['Clave']),'Email'=>utf8_encode($filas['Email'])];*/
+				$datos[]=['id'=>$filas['Codigo_Entidad'],'text'=>$filas['Nombre_Entidad'],'RUC'=>$filas['Codigo_Entidad'],'Usuario'=>$filas['Usuario'],'Clave'=>$filas['Clave'],'Email'=>$filas['Email']];				
 			}
 		}
 	    return $datos;
@@ -90,8 +90,8 @@ class niveles_seguriM
 		 	$consulta=$cid->query($sql) or die($cid->error);
 		 	while($filas=$consulta->fetch_assoc())
 			{
-				// $datos[]=['id'=>$filas['ID_Empresa'],'text'=>utf8_encode($filas['Nombre_Entidad'])];	
-				$datos[]=['id'=>utf8_encode($filas['Codigo_Entidad']),'text'=>utf8_encode($filas['Nombre_Entidad']),'RUC'=>utf8_encode($filas['Codigo_Entidad']),'Usuario'=>utf8_encode($filas['Usuario']),'Clave'=>utf8_encode($filas['Clave']),'Email'=>utf8_encode($filas['Email']),'CI_NIC'=>utf8_encode($filas['CI_NIC']), 'Nombre_Usuario'=>utf8_encode($filas['Nombre_Usuario'])];				
+				/*$datos[]=['id'=>utf8_encode($filas['Codigo_Entidad']),'text'=>utf8_encode($filas['Nombre_Entidad']),'RUC'=>utf8_encode($filas['Codigo_Entidad']),'Usuario'=>utf8_encode($filas['Usuario']),'Clave'=>utf8_encode($filas['Clave']),'Email'=>utf8_encode($filas['Email']),'CI_NIC'=>utf8_encode($filas['CI_NIC']), 'Nombre_Usuario'=>utf8_encode($filas['Nombre_Usuario'])];*/
+				$datos[]=['id'=>$filas['Codigo_Entidad'],'text'=>$filas['Nombre_Entidad'],'RUC'=>$filas['Codigo_Entidad'],'Usuario'=>$filas['Usuario'],'Clave'=>$filas['Clave'],'Email'=>$filas['Email'],'CI_NIC'=>$filas['CI_NIC'], 'Nombre_Usuario'=>$filas['Nombre_Usuario']];				
 			}
 		}
 	    return $datos;
@@ -109,7 +109,8 @@ class niveles_seguriM
 		 	$consulta=$cid->query($sql) or die($cid->error);
 		 	while($filas=$consulta->fetch_assoc())
 			{
-				$datos[]=['id'=>utf8_encode($filas['Item']),'text'=>utf8_encode($filas['Empresa'])];				
+				//$datos[]=['id'=>utf8_encode($filas['Item']),'text'=>utf8_encode($filas['Empresa'])];
+				$datos[]=['id'=>$filas['Item'],'text'=>$filas['Empresa']];			
 			}
 		 }
 
@@ -148,8 +149,8 @@ class niveles_seguriM
 		 	$consulta=$cid->query($sql) or die($cid->error);
 		 	while($filas=$consulta->fetch_assoc())
 			{
-				// $datos[]=['id'=>$filas['CI_NIC'],'text'=>utf8_encode($filas['Nombre_Usuario']),'CI'=>$filas['CI_NIC'],'usuario'=>$filas['Usuario'],'clave'=>$filas['Clave']];
-				$datos[]=['id'=>utf8_encode($filas['CI_NIC']),'text'=>utf8_encode($filas['Nombre_Usuario']),'CI'=>utf8_encode($filas['CI_NIC']),'usuario'=>utf8_encode($filas['Usuario']),'clave'=>utf8_encode($filas['Clave']),utf8_encode($filas['Email'])];					
+				// $datos[]=['id'=>utf8_encode($filas['CI_NIC']),'text'=>utf8_encode($filas['Nombre_Usuario']),'CI'=>utf8_encode($filas['CI_NIC']),'usuario'=>utf8_encode($filas['Usuario']),'clave'=>utf8_encode($filas['Clave']),utf8_encode($filas['Email'])];
+				$datos[]=['id'=>$filas['CI_NIC'],'text'=>$filas['Nombre_Usuario'],'CI'=>$filas['CI_NIC'],'usuario'=>$filas['Usuario'],'clave'=>$filas['Clave'],$filas['Email']];					
 			}
 		 }
 
@@ -580,6 +581,30 @@ class niveles_seguriM
 		 // print_r($datos);die();
 	      return $datos;
 	}
+
+	function Empresa_data()
+   {
+   			
+	   $sql = "SELECT * FROM Empresas where Item='".$_SESSION['INGRESO']['item']."'";
+	   $stmt = sqlsrv_query($this->dbs, $sql);
+	    if( $stmt === false)  
+	      {  
+		     echo "Error en consulta PA.\n";  
+		     return '';
+		     die( print_r( sqlsrv_errors(), true));  
+	      }
+
+	    $result = array();	
+	    while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_ASSOC)) 
+	      {
+	    	$result[] = $row;
+		    //echo $row[0];
+	      }
+
+	     // $result =  encode($result);
+	      // print_r($result);
+	      return $result;
+   }
 	
 }
 ?>
