@@ -99,7 +99,15 @@ if(isset($_GET['mos']))
 				$_SESSION['INGRESO']['Num_CI']=$empresa_d[0]['Num_CI'];
 				$_SESSION['INGRESO']['Num_ND']=$empresa_d[0]['Num_ND'];		
 				$_SESSION['INGRESO']['Num_NC']=$empresa_d[0]['Num_NC'];
-				$_SESSION['INGRESO']['Email_Conexion_CE']=$empresa_d[0]['Email_Conexion_CE'];				
+				$_SESSION['INGRESO']['Email_Conexion_CE']=$empresa_d[0]['Email_Conexion_CE'];
+				//email
+				$_SESSION['INGRESO']['Email_Conexion']=$empresa_d[0]['Email_Conexion'];
+				//$_SESSION['INGRESO']['Email_Contrasena']=$empresa_d[0]['Email_Contrasena'];
+				$_SESSION['INGRESO']['smtp_SSL']=$empresa_d[0]['smtp_SSL'];
+				$_SESSION['INGRESO']['smtp_UseAuntentificacion']=$empresa_d[0]['smtp_UseAuntentificacion'];
+				$_SESSION['INGRESO']['smtp_Puerto']=$empresa_d[0]['smtp_Puerto'];
+				$_SESSION['INGRESO']['smtp_Servidor']=$empresa_d[0]['smtp_Servidor'];
+				//			
 				$_SESSION['INGRESO']['Formato_Cuentas']=$empresa_d[0]['Formato_Cuentas'];			
 				$_SESSION['INGRESO']['Formato_Inventario']=$empresa_d[0]['Formato_Inventario'];
 				$_SESSION['INGRESO']['porc']=$empresa_d[0]['porc'];

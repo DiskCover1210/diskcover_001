@@ -1,6 +1,8 @@
 <?php 
 require(dirname(__DIR__).'/modelo/niveles_seguriM.php');
 require(dirname(__DIR__,2).'/lib/phpmailer/enviar_emails.php');
+//require_once(dirname(__DIR__)."/modelo/facturacion/lista_facturasM.php");
+
 /**
  * 
  */
@@ -92,6 +94,8 @@ class niveles_seguriC
 	{
 		$this->modelo = new niveles_seguriM();	
 		$this->email = new enviar_emails();	
+		//$this->modeloFac = new lista_facturasM();
+		$this->empresaGeneral = $this->modelo->Empresa_data();
 	}
 	function entidades($valor)
 	{
@@ -306,9 +310,11 @@ class niveles_seguriC
 		$empresas = $this->modelo->empresas($entidad);
 		//print_r($empresas);die();
 		foreach ($empresas as $key1 => $value1) {
-			$tbl.='<tr><td style="width: 250px;"><i class="fa fa-circle-o text-red" style="display:none" id="indice_'.utf8_decode($value1['id']).'"></i><b>'.utf8_decode($value1['text']).'</b></td><td style="width: 50px; class="text-center" style="border: solid 1px;"><input type="checkbox" name="rbl_'.utf8_decode($value1['id']).'_T" id="rbl_'.utf8_decode($value1['id']).'_T" onclick="marcar_all(\''.utf8_decode($value1['id']).'\')" ></td>';
+			/*$tbl.='<tr><td style="width: 250px;"><i class="fa fa-circle-o text-red" style="display:none" id="indice_'.utf8_decode($value1['id']).'"></i><b>'.utf8_decode($value1['text']).'</b></td><td style="width: 50px; class="text-center" style="border: solid 1px;"><input type="checkbox" name="rbl_'.utf8_decode($value1['id']).'_T" id="rbl_'.utf8_decode($value1['id']).'_T" onclick="marcar_all(\''.utf8_decode($value1['id']).'\')" ></td>';*/
+			$tbl.='<tr><td style="width: 250px;"><i class="fa fa-circle-o text-red" style="display:none" id="indice_'.$value1['id'].'"></i><b>'.$value1['text'].'</b></td><td style="width: 50px; class="text-center" style="border: solid 1px;"><input type="checkbox" name="rbl_'.$value1['id'].'_T" id="rbl_'.$value1['id'].'_T" onclick="marcar_all(\''.$value1['id'].'\')" ></td>';
 			foreach ($modulos as $key2 => $value2) {
-				$tbl.='<td style="width: 50px; class="text-center" style="border: solid 1px;"><input type="checkbox" name="rbl_'.utf8_decode($value2['modulo']).'_'.utf8_decode($value1['id']).'" id="rbl_'.utf8_decode($value2['modulo']).'_'.utf8_decode($value1['id']).'" title="'.utf8_decode($value2['aplicacion']).'" onclick="marcar_acceso(\''.utf8_decode($value1['id']).'\',\''.utf8_decode($value2['modulo']).'\')" ></td>';
+				/*$tbl.='<td style="width: 50px; class="text-center" style="border: solid 1px;"><input type="checkbox" name="rbl_'.utf8_decode($value2['modulo']).'_'.utf8_decode($value1['id']).'" id="rbl_'.utf8_decode($value2['modulo']).'_'.utf8_decode($value1['id']).'" title="'.utf8_decode($value2['aplicacion']).'" onclick="marcar_acceso(\''.utf8_decode($value1['id']).'\',\''.utf8_decode($value2['modulo']).'\')" ></td>';*/
+				$tbl.='<td style="width: 50px; class="text-center" style="border: solid 1px;"><input type="checkbox" name="rbl_'.$value2['modulo'].'_'.$value1['id'].'" id="rbl_'.$value2['modulo'].'_'.$value1['id'].'" title="'.$value2['aplicacion'].'" onclick="marcar_acceso(\''.$value1['id'].'\',\''.$value2['modulo'].'\')" ></td>';
 			}
 			$tbl.='</tr>';	
 		}
@@ -367,26 +373,28 @@ class niveles_seguriC
 
   	function enviar_email($parametros)
   	{
+  		$empresaGeneral = array_map(array($this, 'encode1'), $this->empresaGeneral);
 	  	$this->modelo->actualizar_correo($parametros['email'],$parametros['CI_usuario']);
 	    $datos = $this->modelo->entidades_usuario($parametros['CI_usuario']);
 
 	  	$email_conexion = 'info@diskcoversystem.com'; //$empresaGeneral[0]['Email_Conexion'];
 	    $email_pass =  'info2021DiskCover'; //$empresaGeneral[0]['Email_Contraseña'];
 	    // print_r($empresaGeneral[0]);die();
+	    //$Nombre_Usuario
 	  	$correo_apooyo="credenciales@diskcoversystem.com"; //correo que saldra ala do del emisor
 	  	$cuerpo_correo = '
-	  	Estimado (a) '.utf8_decode($parametros['usuario']).' sus credenciales de acceso:
+	  	Estimado (a) '.$parametros['usuario'].' sus credenciales de acceso:
 	  	 <br>
-	  	<h3>Usuario:</h3>'.utf8_decode($datos[0]['Usuario']).'<br>
-	  	<h3>Clave:</h3>'.utf8_decode($datos[0]['Clave']).' <br>
-	  	<h3>Email:</h3>'.utf8_decode($datos[0]['Email']).' <br>
+	  	<h3>Usuario:</h3>'.$datos[0]['Usuario'].'<br>
+	  	<h3>Clave:</h3>'.$datos[0]['Clave'].' <br>
+	  	<h3>Email:</h3>'.$datos[0]['Email'].' <br>
 	  	Usted esta asignado a las siguientes entidades: <br>
 	  	<table>
 	  	<tr><th>Codigo</th><th>Entidad</th></tr>
 	  	';
 
 	  	foreach ($datos as $value) {
-	  		$cuerpo_correo .= '<tr><td>'.utf8_decode($value['id']).'</td><td>'.utf8_decode($value['text']).'</td></tr>';
+	  		$cuerpo_correo .= '<tr><td>'.$value['id'].'</td><td>'.$value['text'].'</td></tr>';
 	  	}
 	    $cuerpo_correo .= ' </table><br>'.utf8_decode('
 	    	<pre>
@@ -414,7 +422,7 @@ class niveles_seguriC
 	  	
 	  	// if($resp==1)
 	  	// {
-	  	if($this->email->enviar_credenciales($archivos,$correo,$cuerpo_correo,$titulo_correo,$correo_apooyo,'Credenciales de acceso al sistema DiskCover System',$email_conexion,$email_pass,$html=1)==1){
+	  	if($this->email->enviar_credenciales($archivos,$correo,$cuerpo_correo,$titulo_correo,$correo_apooyo,'Credenciales de acceso al sistema DiskCover System',$email_conexion,$email_pass,$html=1,$empresaGeneral)==1){
 	  		echo json_encode(1);
 	  		exit();
 	  	}else{
@@ -429,9 +437,7 @@ class niveles_seguriC
 
   	function enviar_email_masivo($parametros)
   	{
-
-  		// print_r(1);die();
-	  	//$this->modelo->actualizar_correo($parametros['email'],$parametros['CI_usuario']);
+  		$empresaGeneral = array_map(array($this, 'encode1'), $this->empresaGeneral);
 	  	$fallo = false;
 	    $usuarios = $this->modelo->entidades_usuarios($parametros['ruc']);
 	    foreach ($usuarios as $datos) {
@@ -440,17 +446,17 @@ class niveles_seguriC
 		    $email_pass =  'info2021DiskCover';
 		  	$correo_apooyo="credenciales@diskcoversystem.com";
 		  	$cuerpo_correo = '
-		  	Estimado (a) '.utf8_decode($datos['Nombre_Usuario']).' sus credenciales de acceso:
+		  	Estimado (a) '.$datos['Nombre_Usuario'].' sus credenciales de acceso:
 		  	 <br>
-		  	<h3>Usuario:</h3>'.utf8_decode($datos['Usuario']).'<br>
-		  	<h3>Clave:</h3>'.utf8_decode($datos['Clave']).' <br>
-		  	<h3>Email:</h3>'.utf8_decode($datos['Email']).' <br>
+		  	<h3>Usuario:</h3>'.$datos['Usuario'].'<br>
+		  	<h3>Clave:</h3>'.$datos['Clave'].' <br>
+		  	<h3>Email:</h3>'.$datos['Email'].' <br>
 		  	Usted esta asignado a las siguientes entidades: <br>
 		  	<table>
 		  	<tr><th>Codigo</th><th>Entidad</th></tr>
 		  	';
 		  	foreach ($datos0 as $value) {
-		  		$cuerpo_correo .= '<tr><td>'.utf8_decode($value['id']).'</td><td>'.utf8_decode($value['text']).'</td></tr>';
+		  		$cuerpo_correo .= '<tr><td>'.$value['id'].'</td><td>'.$value['text'].'</td></tr>';
 		  	}
 		    $cuerpo_correo .= ' </table><br>'.utf8_decode('
 		    	<pre>
@@ -473,7 +479,7 @@ class niveles_seguriC
 		  	$titulo_correo = 'Credenciales de acceso al sistema DiskCover System';
 		  	$archivos = false;
 		  	$correo = $datos['Email'];
-		  	$resp = $this->email->enviar_credenciales($archivos,$correo,$cuerpo_correo,$titulo_correo,$correo_apooyo,'Credenciales de acceso al sistema DiskCover System',$email_conexion,$email_pass,$html=1);
+		  	$resp = $this->email->enviar_credenciales($archivos,$correo,$cuerpo_correo,$titulo_correo,$correo_apooyo,'Credenciales de acceso al sistema DiskCover System',$email_conexion,$email_pass,$html=1,$empresaGeneral);
 		    if($resp!=1)
 		    {
 		    	$fallo = true;
@@ -490,35 +496,35 @@ class niveles_seguriC
 		//echo json_encode(1);
   	}
 
- // function encode1($arr) {
- //    $new = array(); 
- //    foreach($arr as $key => $value) {
- //      if(!is_object($value))
- //      {
- //      	if($key=='Archivo_Foto')
- //      		{
- //      			if (!file_exists('../../img/img_estudiantes/'.$value)) 
- //      				{
- //      					$value='';
- //      					//$new[utf8_encode($key)] = utf8_encode($value);
- //      					$new[$key] = $value;
- //      				}
- //      		} 
- //         if($value == '.')
- //         {
- //         	$new[$key] = '';
- //         }else{
- //         	//$new[utf8_encode($key)] = utf8_encode($value);
- //         	$new[$key] = $value;
- //         }
- //      }else
- //        {
- //          //print_r($value);
- //          $new[$key] = $value->format('Y-m-d');          
- //        }
- //     }
- //     return $new;
- //    }
+  	function encode1($arr) {
+    $new = array(); 
+    foreach($arr as $key => $value) {
+      if(!is_object($value))
+      {
+      	if($key=='Archivo_Foto')
+      		{
+      			if (!file_exists('../../img/img_estudiantes/'.$value)) 
+      				{
+      					$value='';
+      					//$new[utf8_encode($key)] = utf8_encode($value);
+      					$new[$key] = $value;
+      				}
+      		} 
+         if($value == '.')
+         {
+         	$new[$key] = '';
+         }else{
+         	//$new[utf8_encode($key)] = utf8_encode($value);
+         	$new[$key] = $value;
+         }
+      }else
+        {
+          //print_r($value);
+          $new[$key] = $value->format('Y-m-d');          
+        }
+     }
+     return $new;
+    }
 
 }
 ?>
