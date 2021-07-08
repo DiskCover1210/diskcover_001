@@ -6480,26 +6480,7 @@ function ingresar_asientos_SC($parametros)
       $dia=0;
       for ($i=0;$i<$parametros['mes'];$i++)
       {
-        $sql=$sql."('".$cod."'
-         ,'".$parametros['sub2']."'
-         ,'".$fact2."'
-         ,0
-         ,'".$parametros['tic']."'
-         ,".$parametros['valorn']."
-         ,0
-         ,'".$parametros['Trans']."'
-         ,'".$fecha_actual."'
-         ,'".$parametros['t']."'
-         ,'".$parametros['co']."'
-         ,".$parametros['moneda']."
-         ,".$parametros['T_N']."
-         ,".$SC_No."
-         ,null
-         ,null
-         ,0
-         ,'".$_SESSION['INGRESO']['item']."'
-         ,'".$_SESSION['INGRESO']['CodigoU']."'),";
-         $SC_No++;
+       
          $ot = explode("-",$fecha_actual);
          if($ot[1]=='01')
          {
@@ -6537,22 +6518,7 @@ function ingresar_asientos_SC($parametros)
          }
          else
          {
-          //$ot = explode("-",$fecha_actual);
-          //if($ot[1]=='03')
-          //{
-          /*if( $dia>=28)
-          {
-            $ot = explode("-",$fecha_actual);
-            $fecha_actual = date("Y-m-d",strtotime($ot[0].'-03-31')); 
-            if($_POST['fac2']==0)
-            {
-              $fact2 = date("Ymd",strtotime($ot[0].'0331')); 
-            }
-            $dia=0;
-          }*/
-          //else
-          //{
-            
+          
             if( $dia>=28)
             {
               $ot = explode("-",$fecha_actual);
@@ -6639,20 +6605,63 @@ function ingresar_asientos_SC($parametros)
             }
             else
             {
-              $fecha_actual = date("Y-m-d",strtotime($fecha_actual."+ 1 month")); 
+
+            // print_r($fecha_actual);
+               $fecha_actual = date("Y-m-d",strtotime($fecha_actual)); 
+               $mes = date("m",strtotime($fecha_actual)); 
+               $y = date("y",strtotime($fecha_actual)); 
+               $d = date("d",strtotime($fecha_actual));
+               $m = $i+1;
+               if($m<10)
+               {
+                 $m = '0'.$m;
+               } 
+
+
+            // print_r($fecha_actual);die();
               if($parametros['fac2']==0)
               {
-                $fact2 = date("Ymd",strtotime($fact2."+ 1 month")); 
+                $fact2 = $y.$mes.$d.$m;
+                // $fact2 = date("Ymd",strtotime($fact2."+ 1 month")); 
               }
+
+            // print_r($fact2);die();
             }
-          //}
-          //}
+           //}
+           //}
           }
         // echo $fecha_actual.' <br>';
+           $sql=$sql."('".$cod."'
+         ,'".$parametros['sub2']."'
+         ,'".$fact2."'
+         ,0
+         ,'".$parametros['tic']."'
+         ,".$parametros['valorn']."
+         ,0
+         ,'".$parametros['Trans']."'
+         ,'".$fecha_actual."'
+         ,'".$parametros['t']."'
+         ,'".$parametros['co']."'
+         ,".$parametros['moneda']."
+         ,".$parametros['T_N']."
+         ,".$SC_No."
+         ,null
+         ,null
+         ,0
+         ,'".$_SESSION['INGRESO']['item']."'
+         ,'".$_SESSION['INGRESO']['CodigoU']."'),";
+         $SC_No++;
+
+      //      if($i==1)
+      // {
+
+      //   print_r($sql);die();
+      // }
       }
       //reemplazo una parte de la cadena por otra
       $longitud_cad = strlen($sql); 
-      $cam2 = substr_replace($sql,"",$longitud_cad-1,1); 
+      $cam2 = substr_replace($sql,"",$longitud_cad-1,1);
+     
       $stmt = sqlsrv_query( $cid, $cam2);
         //echo $sql;
       if( $stmt === false)  
@@ -7986,17 +7995,6 @@ if($titulo)
       }
 
     }
-   //  <li class="page-item"><a class="page-link" href="#">1</a></li>
-   //  <li class="page-item active">
-   //    <span class="page-link">2<span class="sr-only">(current)</span></span>
-   //  </li>
-    // <li class="page-item" id="" onclick=""><a class="page-link" href="#">4</a></li>
-    // <li class="page-item" id="" onclick=""><a class="page-link" href="#">5</a></li>
-    // <li class="page-item" id="" onclick=""><a class="page-link" href="#">6</a></li>
-    // <li class="page-item" id="" onclick=""><a class="page-link" href="#">7</a></li>
-    // <li class="page-item" id="" onclick=""><a class="page-link" href="#">8</a></li>
-    // <li class="page-item" id="" onclick=""><a class="page-link" href="#">9</a></li>
-    // <li class="page-item" id="" onclick=""><a class="page-link" href="#">10</a></li>
     $tbl.='<li class="page-item">
       <a class="page-link" href="#">Ultimo</a>
     </li>
@@ -8035,9 +8033,14 @@ if($titulo)
     {
       $medida = '300px';
     }else{
-      if(($value['CHARACTER_MAXIMUM_LENGTH']<=10 && strlen($value['COLUMN_NAME'])>2))
+      if(($value['CHARACTER_MAXIMUM_LENGTH']<=11 && strlen($value['COLUMN_NAME'])>2 && $value['COLUMN_NAME']!='Codigo' && $value['COLUMN_NAME']!='CodigoU'))
       {        
         $medida = dimenciones_tabl(strlen($value['COLUMN_NAME']));       
+      }else if($value['COLUMN_NAME']=='Codigo' || $value['COLUMN_NAME']=='CodigoU'){
+
+        $medida = '100px'; 
+
+      // print_r($medida);die();      
       }else
       {
         $med_nom = str_replace('px','', dimenciones_tabl(strlen($value['COLUMN_NAME'])));
@@ -8048,6 +8051,7 @@ if($titulo)
         }else
         {
            $medida = dimenciones_tabl($value['CHARACTER_MAXIMUM_LENGTH']);
+           // print_r($medida);die();
         }
       }
     }
@@ -8090,6 +8094,7 @@ if($titulo)
   //fin de alineacion        
 
     $tbl.='<th class="'.$alineado.'" style="width:'.$medida.'">'.$value['COLUMN_NAME'].'</th>'; 
+    // print_r($tbl);die();
     array_push($medida_body, $medida);
     array_push($alinea_body, $alineado);
   }else

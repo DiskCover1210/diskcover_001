@@ -88,7 +88,7 @@ if(isset($_GET['tabs_sc']))
 if(isset($_GET['tabs_sc_modal']))
 {
 	$parametros = $_POST['parametros'];
-	echo json_decode($controlador->cargar_tablas_sc_modal($parametros));
+	echo json_encode($controlador->cargar_tablas_sc_modal($parametros));
 }
 
 if(isset($_GET['tabs_retencion']))
