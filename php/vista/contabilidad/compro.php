@@ -81,10 +81,12 @@
 								No.
 							</td>
 							<td>
-								<select class="form-control" name="tipo" id='mes' onclick="reset_('comproba','');">
+								<select class="form-control" name="tipo" id='mes' onchange="reset_('comproba','');">
 									<option value='0'>Todos</option>
 									
-									<?php select_option('Tabla_Dias_Meses','No_D_M','Dia_Mes',"Tipo='M' AND No_D_M<>0 "); ?>
+									<?php echo  Tabla_Dias_Meses();
+									// select_option('Tabla_Dias_Meses','No_D_M','Dia_Mes',"Tipo='M' AND No_D_M<>0 "); 
+									?>
 								</select>
 							</td>
 							<td>
@@ -92,8 +94,8 @@
 							</td>
 							<td>
 							    <div class='comproba'>
-									<select class="form-control" name="tipo" onclick="buscar('comproba');">
-										<option value='seleccione'>seleccione</option>
+									<select class="form-control" name="tipo" onchange="buscar('comproba');">
+										<option value='seleccione'>Seleccionar</option>
 										<?php
 										if(isset($_SESSION['FILTRO']['cam1']))
 										{
@@ -191,9 +193,11 @@
 				element.classList.remove("active");
 			}
 		}
-		$('div.'+idMensaje).html('<select class="form-control" name="tipo" onclick="buscar(\'comproba\');">'+
-									'<option value="seleccione">seleccione</option>'+
+		$('div.'+idMensaje).html('<select class="form-control" name="tipo" onchange="buscar(\'comproba\');">'+
+									'<option value="seleccione">Seleccionar</option>'+
 									'</select>'); 
+		
+		buscar('comproba');
 	}
 	
 	</script>
@@ -212,6 +216,10 @@
   </div>
 </div>
 <script>
+	$( document ).ready(function() {
+		buscar('comproba');
+	});
+
 	//Date picker
     $('#desde').datepicker({
 		dateFormat: 'dd/mm/yyyy',
