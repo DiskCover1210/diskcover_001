@@ -272,11 +272,13 @@ class ingreso_descargosC
 		// print_r($parametros);die();
 		$datos = $this->modelo->pedido_paciente($parametros['codigo'],$parametros['tipo'],$parametros['query'],$parametros['desde'],$parametros['hasta'],$parametros['busfe']);
 		$tr='';
-		// print_r($datos);die();		
+		// print_r($nega);die();		
 		foreach ($datos as $key => $value) {			
 			$bur = '';
+			// print_r($nega)die();
 
 		if ($parametros['nega']=='true') {
+			if(isset($nega['ordenes'])){
 		
 			foreach ($nega['ordenes'] as $key1 => $value1) {
 				if($value1['ORDEN'] == $value['ORDEN'])
@@ -285,6 +287,17 @@ class ingreso_descargosC
 						break;
 				}
 			}
+		  }else
+		  {
+		  	foreach ($nega as $key1 => $value1) {
+				if($value1['ORDEN'] == $value['ORDEN'])
+				{
+						$bur = '<i class="fa fa-circle-o text-red"></i>';
+						break;
+				}
+			}
+
+		  }
 		} 
 			
 			$item = $key+1;

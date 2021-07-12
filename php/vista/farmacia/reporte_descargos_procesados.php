@@ -32,6 +32,10 @@ $cod = ''; $ci =''; if(isset($_GET['cod'])){$cod = $_GET['cod'];} if(isset($_GET
       url:   '../controlador/farmacia/reporte_descargos_procesadosC.php?cargar_pedidos=true',
       type:  'post',
       dataType: 'json',
+        beforeSend: function () {   
+          var spiner = '<tr><td colspan="5"><img src="../../img/gif/loader4.1.gif" width="20%"></td> </tr>';   
+          $('#tbl_body').html(spiner);
+         },
       success:  function (response) { 
         if(response)
         {
@@ -431,7 +435,7 @@ function reporte_excel()
                  <th></th> -->
                </thead>
                <tbody id="tbl_body">
-          
+                
                </tbody>
              </table>      
            </div>

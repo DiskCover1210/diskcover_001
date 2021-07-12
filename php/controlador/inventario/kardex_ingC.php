@@ -195,6 +195,12 @@ if(isset($_GET['serie_ultima']))
    echo  json_encode($controlador->serie_ultima($parametros));
 
 }
+if(isset($_GET['validar_factura']))
+{  
+   $parametros = $_POST['parametros'];
+   echo  json_encode($controlador->validar_factura($parametros));
+
+}
 class kardex_ingC
 {
 	private $modelo;
@@ -1185,17 +1191,39 @@ class kardex_ingC
         $serie2 = substr($parametros['serie'],3,6);
         $numero =ReadSetDataNum("RE_SERIE_".$parametros['serie'],True,false);
         $datos_auto = $this->modelo->numero_autorizacion($serie1,$serie2,$parametros['fechaReg']);
+
+        // print_r($datos_auto);die();
+        if(!empty($datos_auto)){
         if(strlen($datos_auto[0]['AutRetencion'])>=13)
         {
-          $datos_auto[0]['AutRetencion'] = $_SESSION['INGRESO']['RUC'];
+          $autori = $_SESSION['INGRESO']['RUC'];
 
         }else
         {
-          $datos_auto[0]['AutRetencion'] = $datos_auto[0]['AutRetencion'];
+          $autori = $datos_auto[0]['AutRetencion'];
+        }
+        }else
+        {
+          $autori=1;
         }
 
-        $datos = array('numero'=>$numero,'autorizacion'=>$datos_auto[0]['AutRetencion']);
+        $datos = array('numero'=>$numero,'autorizacion'=>$autori);
         return $datos;
+     }
+
+     function validar_factura($parametros)
+     {
+        $uno = substr($parametros['serie'],0,3);
+        $dos = substr($parametros['serie'],3,6); 
+        $datos = $this->modelo->validar_factura($parametros['IdProv'],$uno,$dos,$parametros['numero'],$parametros['auto']);
+        if(count($datos)>0)
+        {
+          return -1;
+        }else
+        {
+          return 1;
+        }
+
      }
 }
 ?>

@@ -1370,6 +1370,35 @@ function cuentas_todos($query)
 		 }
 		  return $result;
    }
+
+   function validar_factura($CodigoCliente,$uno,$dos,$tres,$auto)
+   {
+   	
+   		$cid = $this->conn;
+   	 $sql = "SELECT TOP 1 * 
+         FROM Trans_Compras 
+         WHERE IdProv = '".$CodigoCliente."' 
+         AND Item = '".$_SESSION['INGRESO']['item']."'
+         AND Establecimiento = '".$uno."' 
+         AND PuntoEmision = '".$dos."' 
+         AND Secuencial = ".intval($tres)." 
+         AND Autorizacion = '".$auto."' 
+         ORDER BY Fecha DESC, Secuencial DESC ";
+             // print_r($sql);die();
+         $result = array();
+       $stmt = sqlsrv_query( $cid, $sql);
+		if( $stmt === false)  
+		{  
+			echo "Error en consulta PA.\n";  
+			die( print_r( sqlsrv_errors(), true));  
+		}
+	    while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_ASSOC) ) 
+		 {
+		 	$result[] = $row;
+		 }
+		  return $result;
+
+   }
     
 
 }
