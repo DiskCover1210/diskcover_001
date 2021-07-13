@@ -36,6 +36,29 @@ class incomM
 
 	   return $result;
 	}
+
+	function beneficiarios_c($query)
+	{
+		$cid = $this->conn;
+		$sql="SELECT Cliente AS nombre, CI_RUC as id, email
+		   FROM Clientes 
+		   WHERE T <> '.' ";
+		   if($query != '')
+		   {
+		   	$sql.=" AND CI_RUC='".$query."'";
+		   }
+		  $sql.=" ORDER BY Cliente OFFSET 0 ROWS FETCH NEXT 25 ROWS ONLY;";
+		  // print_r($sql);die();
+        $stmt = sqlsrv_query($cid, $sql);
+	    $result = array();	
+	   while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_ASSOC) ) 
+	   {
+		$result[] = $row;
+	   }
+
+	   return $result;
+	}
+
 	function cuentas_efectivo($query)
 	{
 		$cid = $this->conn;

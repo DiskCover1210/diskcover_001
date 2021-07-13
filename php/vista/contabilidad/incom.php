@@ -48,6 +48,12 @@
 
 
 <script type="text/javascript">
+    var cli = '<?php if(isset($_GET["cliente"])){ echo $_GET["cliente"]; } ?>';
+    // console.log(cli);
+    if(cli!='')
+    {
+      cargar_beneficiario(cli);
+    }
   
   $(document).ready(function () {
     $('#tit_sel').html('<i class="fa  fa-trash"></i>');
@@ -63,7 +69,7 @@
     cargar_tablas_retenciones();
     cargar_tablas_sc();
     ListarAsientoB();
-
+    
      $("#btn_acep").blur(function () { if($('#modal_cuenta').hasClass('in')){if($('#txt_efectiv').is(':visible')){$('#txt_efectiv').trigger( "focus" );}else{$('#txt_moneda').trigger( "focus" );}}else{cambia_foco();}});
 
 
@@ -122,8 +128,30 @@
     {
       var valor = $('#beneficiario1').val();
       parte = valor.split('-');
-      $('#ruc').val(parte[0]);
-      $('#email').val(parte[1]);
+      var url ="../vista/contabilidad.php?mod=contabilidad&acc=incom&acc1=Ingresar%20Comprobantes&b=1";
+      // console.log(data);
+      window.location.href= url+"&cliente="+parte[0]+'#';
+      // $('#ruc').val(parte[0]);
+      // $('#email').val(parte[1]);
+      // cargar_beneficiario();
+    }
+
+    function cargar_beneficiario(ci)
+    {
+      var opcion = '';
+      $.ajax({
+      // data:  {parametros:parametros},
+       url:   '../controlador/contabilidad/incomC.php?beneficiario_C=true&q='+ci+"#",
+      type:  'get',
+      dataType: 'json',
+        success:  function (response) {
+          var valor = response[0].id;
+          var parte = valor.split('-');
+           $('#ruc').val(parte[0]);
+           $('#email').val(parte[1]);
+           $('#beneficiario1').append($('<option>',{value:  response[0].id, text: response[0].text,selected: true }));
+      }
+    }); 
     }
 
     function mostrar_efectivo()
@@ -787,6 +815,7 @@
              return false;
            }
             eliminar_ac();
+             borrar_asientos();
            $('#titulo_frame').text("COMPRAS");
           
            var fec = $('#fecha1').val();
@@ -995,6 +1024,33 @@
         });
 
   }
+
+    function borrar_asientos()
+  {
+    $.ajax({
+          // data:  {parametros:parametros},
+          url:   '../controlador/contabilidad/incomC.php?borrar_asientos=true',
+          type:  'post',
+          dataType: 'json',
+            success:  function (response) { 
+              if(response==1)
+              {
+                cargar_tablas_contabilidad();
+                cargar_tablas_retenciones();
+                cargar_tablas_sc();
+                cargar_tablas_tab4();
+                cargar_totales_aseintos();                
+              }else
+              {
+                Swal.fire( 'No se pudo Eliminar','','error');
+              }
+
+          }
+        });
+
+  }
+
+
 
   function eliminar(codigo,tabla)
   {
