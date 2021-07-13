@@ -1,6 +1,6 @@
 <?php
-  include "../controlador/cybernet/facturaC.php";
-  $facturar = new facturaC();
+  include "../controlador/facturacion/divisasC.php";
+  $divisas = new divisasC();
   $serie = $_SESSION['INGRESO']['Serie_FA'];
   $codigo = ReadSetDataNum("FA_SERIE_".$serie , True, False);
 ?>
@@ -67,7 +67,6 @@
   });
   $(document).ready(function () {
     autocomplete_cliente();
-    autocomplete_producto();
     $("#nombreCliente").hide();
     //enviar datos del cliente
     $('#cliente').on('select2:select', function (e) {
@@ -99,33 +98,8 @@
     });
   }
 
-  function autocomplete_producto(){
-    $('#producto1').select2({
-      placeholder: 'Seleccione un producto',
-      ajax: {
-        url:   '../controlador/cybernet/facturaC.php?catalagoProducto=true',
-        dataType: 'json',
-        delay: 250,
-        processResults: function (data) {
-          return {
-            results: data
-          };
-        },
-        cache: true
-      }
-    });
-  }
-
   function addCliente(){
     $("#myModal").modal("show");
-    //$("#nombreCliente").show();
-    //$("#cliente").select2().next().hide();
-    //$('#email').val('');
-    //$('#direccion').val('');
-    //$('#telefono').val('');
-    //$('#ci_ruc').val('');
-    //$('#codigoCliente').val('');
-    //$('#celular').val('');
   }
 
   function searchCliente(){
@@ -134,215 +108,27 @@
     autocomplete_cliente();
   }
 
-  function setPVP(id){
-    producto = $("#producto"+id).val();
-    cantidad = $("#cantidad"+id).val();
-    pvp = producto.split("/");
-    $("#pvp"+id).val(pvp[1]);
-    $("#iva"+id).val(pvp[2]);
-    total = cantidad * pvp[1];
-    $("#total"+id).val(total);
-    calcularTotal();
+  function setPVP(){
+    producto0 = $("#producto").val();
+    producto = producto0.split("/");
+    $("#preciounitario").val(producto[2]);
+    console.log(producto);
   }
 
-  function calcularSubtotal(id){
-    cantidad = $("#cantidad"+id).val();
-    pvp = $("#pvp"+id).val();
-    total = cantidad * pvp;
-    $("#total"+id).val(total);
-    calcularTotal();
-  }
-
-  function calcularTotal(){
-    var nFilas = $("#customers tr").length;
-    total0 = 0;
-    total12 = 0;
-    iva12 = 0;
-    total = 0;
-    for (var i = 1; i <= nFilas - 1; i++) {
-      totalp = $("#total"+i).val();
-      ivap = $("#iva"+i).val();
-      if (ivap == 0) {
-        total0 += parseFloat(totalp);
-      }else{
-        total12 += parseFloat(totalp);
-      }
-    }
-    iva12 = parseFloat(total12) * 0.12;
-    console.log(total12);
-    total = parseFloat(total0) + parseFloat(total12) + parseFloat(iva12);
-    $("#subtotal0").val(total0);
-    $("#subtotal12").val(total12);
-    $("#iva").val(iva12);
-    $("#total").val(total);
-  }
-
-  function guardarFactura(){
-    var update = false;
-    var nombreCliente = $("#nombreCliente").val();
-    var cliente = $("#cliente").val();
-    var factura = $("#factura").val();
-    var textMsg = "¿Desea actualizar los datos del cliente?";
-    if (nombreCliente != '') {
-      textMsg = "¿Desea crear nuevo cliente?";
-    }
-    Swal.fire({
-      title: 'Esta seguro?',
-      text: textMsg,
-      type: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: '#3085d6',
-      cancelButtonColor: '#d33',
-      confirmButtonText: 'Si!'
-    }).then((result) => {
-      if (result.value==true) {
-        update = true;
-      }
-      email = $('#email').val();
-      direccion = $('#direccion').val();
-      telefono = $('#telefono').val();
-      ci_ruc = $('#ci_ruc').val();
-      celular = $('#celular').val();
-      codigoCliente = $('#codigoCliente').val();
-      //datos de la tabla
-      var datos = [];
-      var nFilas = $("#customers tr").length;
-      for (var i = 1; i <= nFilas - 1; i++) {
-        producto0 = $("#producto"+i).val();
-        producto = producto0.split("/");
-        datos[i-1] =  {
-                        'total' : $("#total"+i).val() , 
-                        'producto' : producto[0], 
-                        'cantidad' : $("#cantidad"+i).val(),
-                        'pvp' : producto[1],
-                        'iva' : producto[2],
-                        'codigo' : producto[3],
-                      };
-      }
-      iva12 = parseFloat(total12) * 0.12;
-      total = parseFloat(total0) + parseFloat(total12) + parseFloat(iva12);
-      $("#subtotal0").val(total0);
-      $("#subtotal12").val(total12);
-      $("#iva").val(iva12);
-      $("#total").val(total);
-      Swal.fire({
-        title: 'Esta seguro?',
-        text: '¿Desea guardar la factura No. '+ factura+"?",
-        type: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#3085d6',
-        cancelButtonColor: '#d33',
-        confirmButtonText: 'Si!'
-      }).then((result) => {
-        if (result.value == true) {
-          $('#myModal_espera').modal('show');
-          $.ajax({
-            type: "POST",
-            url: '../controlador/cybernet/facturaC.php?guardarFactura=true',
-            data: {
-              'update' : update,
-              'cliente' : cliente,
-              'nombreCliente' : nombreCliente,
-              'direccion' : direccion,
-              'telefono' : telefono,
-              'factura' : factura,
-              'ci_ruc' : ci_ruc,
-              'email' : email,
-              'celular' : celular,
-              'codigoCliente' : codigoCliente,
-              'datos' : datos,
-              'total' : total,
-              'iva' : iva12,
-            }, 
-            success: function(response)
-            {
-              $('#myModal_espera').modal('hide');
-              if (response) {
-
-                response = JSON.parse(response);
-                if(response.respuesta == '3')
-                {
-                  Swal.fire({
-                       type: 'error',
-                       title: 'Este documento electronico ya esta autorizado',
-                       text: ''
-                     });
-
-                  }else if(response.respuesta == '1')
-                  {
-                    Swal.fire({
-                      type: 'success',
-                      title: 'Este documento electronico fue autorizado',
-                      text: ''
-                    }).then(() => {
-                      serie = DCLinea.split(" ");
-                      url = '../vista/appr/controlador/imprimir_ticket.php?mesa=0&tipo=FA&CI='+TextCI+'&fac='+TextFacturaNo+'&serie='+serie[1];
-                      window.open(url, '_blank');
-                      location.reload();
-                      //imprimir_ticket_fac(0,TextCI,TextFacturaNo,serie[1]);
-                    });
-                  }else if(response.respuesta == '2')
-                  {
-                    Swal.fire({
-                       type: 'info',
-                       title: 'XML devuelto',
-                       text: ''
-                     });
-                    //descargar_archivos(response.url,response.ar);
-
-                  }
-                  else
-                  {
-                    Swal.fire({
-                       type: 'info',
-                       title: 'Error por: '+response,
-                       text: ''
-                     });
-
-                  }
-              }else{
-                Swal.fire({
-                  type: 'info',
-                  title: 'La factura ya se autorizo',
-                  text: ''
-                });
-              }
-            }
-          });
-        }
-      })
-    })
-  }
-
-  function agregarLinea(){
-    var nFilas = $("#customers tr").length;
-    clave = nFilas;
-    var tr = `<tr>
-        <td>
-          <select class="form-control input-sm" id="producto`+clave+`" onchange="setPVP('`+clave+`');">
-            <option value="">Seleccione un cliente</option>
-          </select>      
-        </td>
-        <td><input type ="text" class="form-control input-sm text-right" onkeyup="calcularSubtotal('`+clave+`');" id="cantidad`+clave+`" value ="1"/></td>
-        <td>
-          <input type ="text" class="form-control input-sm text-right" id="pvp`+clave+`" value ="0" disabled/>
-          <input type ="hidden" class="form-control input-sm text-right" id="iva`+clave+`" />
-        </td>
-        <td><input type ="text" class="form-control input-sm text-right" id="total`+clave+`" value ="0" disabled/></td>
-      </tr>`;
-    $("#cuerpo").append(tr);
-    $('#producto'+clave).select2({
-      placeholder: 'Seleccione un producto',
-      ajax: {
-        url:   '../controlador/cybernet/facturaC.php?catalagoProducto=true',
-        dataType: 'json',
-        delay: 250,
-        processResults: function (data) {
-          return {
-            results: data
-          };
-        },
-        cache: true
+  function numeroFactura(){
+    DCLinea = $("#DCLinea").val();
+    $.ajax({
+      type: "POST",
+      url: '../controlador/facturacion/facturar_pensionC.php?numFactura=true',
+      data: {
+        'DCLinea' : DCLinea,
+      }, 
+      success: function(data)
+      {
+        datos = JSON.parse(data);
+        document.querySelector('#numeroSerie').innerText = datos.serie;
+        console.log(DCLinea);
+        $("#factura").val(datos.codigo);
       }
     });
   }
@@ -380,27 +166,37 @@
             <label class="text-right">TIPO DE PROCESO</label>
           </div>
           <div class="col-sm-4">
-            <select class="form-control input-sm" name="tipoproceso">
-              <option>CXC Clientes</option>
+            <select class="form-control input-sm" name="DCLinea" id="DCLinea" onchange="numeroFactura();">
+              <?php
+                $cuentas = $divisas->getCatalogoLineas();
+                foreach ($cuentas as $cuenta) {
+                  echo "<option value='".$cuenta['id']."'>".$cuenta['text']."</option>";
+                }
+              ?>
             </select>
           </div>
           <div class="col-sm-2">
-            <label>() No.</label>
+            <label id="numeroSerie" class="red">() No.</label>
           </div>
           <div class="col-sm-2">
-            <input type="text" name="no" value="1" class="form-control input-sm">
+            <input type="text" name="factura" id="factura" value="1" class="form-control input-sm">
           </div>
         </div>
         <div class="row">
           <div class="col-sm-6 col-sm-offset-1">
             <label>PRODUCTO</label>
-            <select class="form-control input-sm">
-              <option>AALTO-Ribera del Duero-españa</option>
+            <select class="form-control input-sm" id="producto" onchange="setPVP();">
+              <?php
+                $productos = $divisas->getProductos();
+                foreach ($productos as $producto) {
+                  echo "<option value='".$producto['id']."'>".$producto['text']."</option>";
+                }
+              ?>
             </select>
           </div>
           <div class="col-sm-2">
             <label>Precio Unitario</label>
-            <input type="text" name="preciounitario" value="101.7900" class="form-control input-sm">
+            <input type="text" name="preciounitario" id="preciounitario" value="101.7900" class="form-control input-sm">
           </div>
         </div>
         <div class="row">
