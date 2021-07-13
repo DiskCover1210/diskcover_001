@@ -189,7 +189,18 @@ if(isset($_GET['leercodigo']))
    $parametros = $_POST['parametros'];
   echo  json_encode($controlador->codigo_proveedor($parametros['ruc']));
 }
+if(isset($_GET['serie_ultima']))
+{  
+   $parametros = $_POST['parametros'];
+   echo  json_encode($controlador->serie_ultima($parametros));
 
+}
+if(isset($_GET['validar_factura']))
+{  
+   $parametros = $_POST['parametros'];
+   echo  json_encode($controlador->validar_factura($parametros));
+
+}
 class kardex_ingC
 {
 	private $modelo;
@@ -1144,7 +1155,6 @@ class kardex_ingC
 
      function validar_autorizacion($parametros)
      {
-       // print_r($parametros);die();
       $n = strlen($parametros['auto']);
       if($n<10)
       {
@@ -1152,13 +1162,15 @@ class kardex_ingC
         $parametros['auto'] = $ce.$parametros['auto'];
 
       }
-        if($parametros['auto'] !=  ReadSetDataNum("RE_SERIE_".$parametros['serie'], True, False))
+      $r =  ReadSetDataNum("RE_SERIE_".$parametros['serie'], True, False);
+        if($parametros['numero'] !=  ReadSetDataNum("RE_SERIE_".$parametros['serie'], True, False))
         {
           $titulo = "SECUENCIAL DE RETENCION";
-          $mensajes = "Número de Retención: ".$parametros['serie']."-".$parametros['auto']." no esta en orden secuencial. QUIERE PROCESARLA?";
+          $mensajes = "Número de Retención: ".$parametros['serie']."-".$parametros['numero']." no esta en orden secuencial. QUIERE PROCESARLA?";
           // If BoxMensaje = vbYes Then Co.RetSecuencial = False
           return array('titulo'=>$titulo,'mensaje'=>$mensajes);
       }
+      return 1;
      }
      function validar_numero($parametros)
      {
@@ -1171,6 +1183,47 @@ class kardex_ingC
       {
         return -1;
       }
+     }
+
+     function serie_ultima($parametros)
+     {
+        $serie1 = substr($parametros['serie'],0,3);
+        $serie2 = substr($parametros['serie'],3,6);
+        $numero =ReadSetDataNum("RE_SERIE_".$parametros['serie'],True,false);
+        $datos_auto = $this->modelo->numero_autorizacion($serie1,$serie2,$parametros['fechaReg']);
+
+        // print_r($datos_auto);die();
+        if(!empty($datos_auto)){
+        if(strlen($datos_auto[0]['AutRetencion'])>=13)
+        {
+          $autori = $_SESSION['INGRESO']['RUC'];
+
+        }else
+        {
+          $autori = $datos_auto[0]['AutRetencion'];
+        }
+        }else
+        {
+          $autori=1;
+        }
+
+        $datos = array('numero'=>$numero,'autorizacion'=>$autori);
+        return $datos;
+     }
+
+     function validar_factura($parametros)
+     {
+        $uno = substr($parametros['serie'],0,3);
+        $dos = substr($parametros['serie'],3,6); 
+        $datos = $this->modelo->validar_factura($parametros['IdProv'],$uno,$dos,$parametros['numero'],$parametros['auto']);
+        if(count($datos)>0)
+        {
+          return -1;
+        }else
+        {
+          return 1;
+        }
+
      }
 }
 ?>

@@ -470,8 +470,13 @@ class incomM
 			}
 			else
 			{
-				$camne=array();
-				return grilla_generica($stmt,null,null,1);
+		      $tbl = grilla_generica_new($sql,'Asiento_SC','tbl_subcta',$titulo=false,$botones=false,$check=false,$imagen=false,1,1,1,100);
+			 // print_r($tbl);die();
+		     return $tbl;
+
+
+				// $camne=array();
+				// return grilla_generica($stmt,null,null,1);
 			}
     }
 

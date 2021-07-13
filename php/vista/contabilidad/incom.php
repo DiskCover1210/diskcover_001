@@ -64,6 +64,8 @@
     cargar_tablas_sc();
     ListarAsientoB();
 
+     $("#btn_acep").blur(function () { if($('#modal_cuenta').hasClass('in')){if($('#txt_efectiv').is(':visible')){$('#txt_efectiv').trigger( "focus" );}else{$('#txt_moneda').trigger( "focus" );}}else{cambia_foco();}});
+
 
     $( "#codigo" ).autocomplete({
       source: function( request, response ) {
@@ -564,6 +566,7 @@
     }
     function cambia_foco()
     {
+      // alert('ss');
       $('#modal_cuenta').modal('hide');
       $('#va').select();
     }
@@ -882,7 +885,6 @@
       confirmButtonText: 'Si!'
     }).then((result) => {
       if (result.value==true) {
-        $('#myModal_espera').modal('show');
          grabar_comprobante(parametros);
       }else
       {
@@ -899,6 +901,8 @@
       Swal.fire('seleccione un beneficiario','','info')
       return false;
     }
+    
+        $('#myModal_espera').modal('show');
 
                // $('#myModal_espera').modal('show');    
       $.ajax({
@@ -1326,12 +1330,24 @@
                             <div class="panel-body" style="padding-top: 2px;">
                               <div class="tab-content">
                                 <div class="tab-pane fade in active" id="contabilidad">
-                                 <!--  -->
-                                  
+                                  <div class="text-center">
+                                    <img src="../../img/gif/loader4.1.gif" width="10%">                                        
+                                  </div>                          
                                 </div>
-                                <div class="tab-pane fade" id="subcuentas">Default 2</div>
-                                <div class="tab-pane fade" id="retenciones">Default 3</div>
-                                <div class="tab-pane fade" id="ac_av_ai_ae">Default 4</div>
+                                <div class="tab-pane fade" id="subcuentas">
+                                  <div class="text-center">
+                                    <img src="../../img/gif/loader4.1.gif" width="10%">                                        
+                                  </div>  
+                                </div>
+                                <div class="tab-pane fade" id="retenciones">
+                                  <div class="text-center">
+                                    <img src="../../img/gif/loader4.1.gif" width="10%">                                        
+                                  </div>  
+                                </div>
+                                <div class="tab-pane fade" id="ac_av_ai_ae">
+                                  <div class="text-center">
+                                    <img src="../../img/gif/loader4.1.gif" width="10%">                                        
+                                  </div>  </div>
                               </div>
                             </div>
                           </div>
@@ -1376,9 +1392,9 @@
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title" id="exampleModalLongTitle"></h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+        <!-- <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
-        </button>
+        </button> -->
       </div>
       <div class="modal-body">
         <div id="panel_banco" style=" display: none">
@@ -1419,7 +1435,7 @@
         </div>
       </div>
       <div class="modal-footer">
-          <button type="button" class="btn btn-primary" onclick="subcuenta_frame();">Aceptar</button>
+          <button type="button" class="btn btn-primary" onclick="subcuenta_frame();" id="btn_acep">Aceptar</button>
           <!-- <button type="button" class="btn btn-default" data-dismiss="modal" aria-label="Close">Cerrar</button> -->
         </div>
     </div>
@@ -1441,10 +1457,10 @@
         <!-- <iframe src="../vista/contabilidad/FSubCtas.php"></iframe> -->
         
       </div>
-      <div class="modal-footer">
-          <!-- <button type="button" class="btn btn-primary" onclick="cambia_foco();">Guardar</button> -->
+      <!-- <div class="modal-footer">
+          <button type="button" class="btn btn-primary" onclick="cambia_foco();">Guardar</button>
           <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
-        </div>
+        </div> -->
     </div>
   </div>
 </div>

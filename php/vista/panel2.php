@@ -31,7 +31,7 @@
 				}
 				if ($_SESSION['INGRESO']['accion']=='compro') 
 				{
-					require_once("contabilidad/compro_m.php");
+				//	require_once("contabilidad/compro_m.php");
 				}	
 				if ($_SESSION['INGRESO']['accion']=='cambioe') 
 				{

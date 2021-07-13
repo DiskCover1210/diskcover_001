@@ -780,6 +780,20 @@ function tipo_balance()
 	return $datos;
 }
 
+
+function Tabla_Dias_Meses()
+{
+	$modelo = new contabilidad_model();
+	$datos = $modelo->Tabla_Dias_Meses();
+	$op='';
+	foreach ($datos as $key => $value) {
+		$op.='<option value="'.$value['No_D_M'].'">'.$value['Dia_Mes'].'</option>';
+	}
+	return $op;
+	// print_r($datos);die();
+}
+
+
 function reporte_pdf($parametros)
 {
 	$modal = new contabilidad_model();

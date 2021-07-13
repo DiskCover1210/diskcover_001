@@ -53,7 +53,7 @@ if(isset($_GET['tipoc']))
           data:  {parametros:parametros},
           url:   '../controlador/contabilidad/incomC.php?tabs_sc_modal=true',
           type:  'post',
-          // dataType: 'json',
+          dataType: 'json',
             success:  function (response) {    
             $('#subcuentas').html(response);      
           }

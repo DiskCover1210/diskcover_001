@@ -66,12 +66,12 @@
     $('#txt_codigo').val('');
     $('#txt_nombre').val('');
     $('#txt_ruc').val('');
-    $('#ddl_provincia').val('');
-    $('#txt_localidad').val('');
+    // $('#ddl_provincia').val('');
+    // $('#txt_localidad').val('');
     $('#txt_telefono').val('');
     $('#txt_tip').val('N');    
     $('#txt_id').val('');
-    $('#txt_email').val('');
+    // $('#txt_email').val('');
     $('#btn_nu').html('<i class="fa fa-plus"></i> Nuevo cliente');
     // $('#txt_codigo').attr("readonly", false);
   }

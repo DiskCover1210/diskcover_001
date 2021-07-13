@@ -320,7 +320,8 @@ class niveles_seguriC
 		}
 		$tbl.='</tbody></table>';
 		//print_r($tbl);die();
-		return utf8_decode($tbl);
+		// return utf8_decode($tbl);
+		return $tbl;
 	}
 
 	function modulos_usuario($entidad,$usuario)

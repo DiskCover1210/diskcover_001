@@ -3175,6 +3175,21 @@ function sp_Reporte_Analitico_Mensual($tipo,$desde,$hasta)
 	   return $result;
      }
 
+     function  Tabla_Dias_Meses()
+     {
+     	$cid = Conectar::conexion();
+     	$sql = "SELECT No_D_M,Dia_Mes FROM Tabla_Dias_Meses WHERE Tipo='M' AND No_D_M<>0";
+
+        $stmt = sqlsrv_query($cid, $sql);
+	    $result = array();	
+	   while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_ASSOC) ) 
+	   {
+		$result[] = $row;
+	   }
+	   return $result;
+
+     } 
+
 }
 
 ?>

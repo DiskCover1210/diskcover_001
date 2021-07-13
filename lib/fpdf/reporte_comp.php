@@ -741,7 +741,7 @@ function imprimirDocERRORPDF($stmt,$id=null,$formato=null,$nombre_archivo=null,$
 			$ii++;
 		}
 		$pdf->SetXY($x+2, $y+2);
-		
+		$status ='';		
 		while( $row1 = sqlsrv_fetch_array( $stmt2, SQLSRV_FETCH_NUMERIC) ) 
 		{
 			$pdf->SetX($x+2);
@@ -766,8 +766,7 @@ function imprimirDocERRORPDF($stmt,$id=null,$formato=null,$nombre_archivo=null,$
 				$haber = number_format($row1[4],2, '.', ',');
 			}
 			$detalle = $row1[5];
-			$status = $row1[13];
-			
+			$status = $row1[13];			
 			$pdf->SetWidths(array(97,189,95,84,84));
 			$pdf->SetAligns(array("L","L","R","R","R"));
 			//$arr=array($arr1[$i]);
