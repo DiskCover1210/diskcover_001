@@ -29,8 +29,10 @@ if(isset($_GET['numFactura']))
   $DCLinea = $_POST['DCLinea'];
   $fact = SinEspaciosIzq($DCLinea);
   $serie = SinEspaciosDer($DCLinea);
+  $DCLinea = explode(" ", $DCLinea);
+  $autorizacion = $DCLinea[2];
   $codigo = ReadSetDataNum($fact."_SERIE_".$serie, True, False);
-  echo json_encode(array('codigo' => $codigo,'serie' => $serie));
+  echo json_encode(array('codigo' => $codigo,'serie' => $serie,'autorizacion' => $autorizacion));
   exit();
 }
 

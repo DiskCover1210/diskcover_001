@@ -27,7 +27,7 @@ class divisasM
   }
 
   public function getProductos(){
-    $sql="SELECT Producto, Codigo_Inv, Codigo_Barra, PVP
+    $sql="SELECT Producto, Codigo_Inv, Codigo_Barra, PVP, Div
           FROM Catalogo_Productos 
           WHERE Item = '".$_SESSION['INGRESO']['item']."' 
           AND Periodo = '".$_SESSION['INGRESO']['periodo']."' 

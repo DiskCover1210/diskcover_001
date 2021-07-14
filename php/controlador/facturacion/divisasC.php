@@ -37,7 +37,7 @@ class divisasC
     $productos = [];
     while ($value = sqlsrv_fetch_array( $datos, SQLSRV_FETCH_ASSOC)) {
       //$productos[] = array('id'=>utf8_decode($value['Codigo_Inv'])." ".utf8_decode($value['Producto']) ,'text'=>utf8_encode($value['Producto']));
-      $productos[] = array('id'=>$value['Codigo_Inv']."/".$value['Producto']."/".$value['PVP'] ,'text'=>$value['Producto']);
+      $productos[] = array('id'=>$value['Codigo_Inv']."/".$value['Producto']."/".$value['PVP']."/".$value['Div'] ,'text'=>$value['Producto']);
     }
     return $productos;
   }
