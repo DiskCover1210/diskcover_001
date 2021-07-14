@@ -14,6 +14,15 @@ if(isset($_GET['beneficiario']))
 	}
 	echo json_encode($controlador->cargar_beneficiario($query));
 }
+if(isset($_GET['beneficiario_C']))
+{
+	$query = '';
+	if(isset($_GET['q']))
+	{
+		$query = $_GET['q'];
+	}
+	echo json_encode($controlador->cargar_beneficiario_C($query));
+}
 if(isset($_GET['cuentas_efectivo']))
 {
 	$query = '';
@@ -187,6 +196,12 @@ if(isset($_GET['generar_xml']))
     echo json_encode($controlador->SRI_Crear_Clave_Acceso_Retenciones($parametros));
 }
 
+if(isset($_GET['borrar_asientos']))
+{
+    // $parametros = $_POST['parametros'];
+    echo json_encode($controlador->borrar_asientos());
+}
+
 class incomC
 {
 	private $modelo;
@@ -200,6 +215,17 @@ class incomC
 	function cargar_beneficiario($query)
 	{
 		$datos = $this->modelo->beneficiarios($query);
+		$bene = array();
+		foreach ($datos as $key => $value) {
+			$bene[] = array('id'=>$value['id'].'-'.$value['email'],'text'=>utf8_encode($value['nombre']));
+			// $bene[] = array('id'=>$value['id'].'-'.$value['email'],'text'=>$value['nombre']);//para produccion
+		}
+		return $bene;
+	}
+
+	function cargar_beneficiario_C($query)
+	{
+		$datos = $this->modelo->beneficiarios_c($query);
 		$bene = array();
 		foreach ($datos as $key => $value) {
 			$bene[] = array('id'=>$value['id'].'-'.$value['email'],'text'=>utf8_encode($value['nombre']));
@@ -1632,6 +1658,12 @@ class incomC
      	$tbl = $this->modelo->ListarAsientoTemSQL('',$Opcb,false,false);
      	return $tbl;
      }
+
+     function borrar_asientos()
+     {
+     	return $this->modelo->BorrarAsientos('1',true);
+     }
+
 
 }
 ?>
