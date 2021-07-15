@@ -149,14 +149,14 @@
         }else{
           TextCant = (TextVTotal * TextVUnit);
         }
-        $("#cantidad").val(TextCant);
+        $("#cantidad").val(parseFloat(TextCant).toFixed(4));
       }else if(TextCant > 0 && TextVTotal == 0){
         if (producto[3]) {
           TextVTotal = (TextCant / TextVUnit);
         }else{
           TextVTotal = (TextCant * TextVUnit);
         }
-        $("#total").val(TextVTotal);
+        $("#total").val(parseFloat(TextVTotal).toFixed(4));
       }
     //}
   }
@@ -182,6 +182,40 @@
     </tr>`;
     $("#cuerpo").append(tr);
     calcularTotal();
+
+    datosLineas = [];
+    var year = new Date().getFullYear();
+    var rowLength = table.rows.length;
+    total = 0;
+    key = 0;
+    for(var i=1; i<rowLength; i+=1){
+      datosLineas[key] = {
+        'Codigo' : $("#codigo"+i).val(),
+        'CodigoL' : $("#codigo"+i).val(),
+        'Producto' : $("#producto"+i).val(),
+        'Precio' : $("#pvp"+i).val(),
+        'Total_Desc' : 0,
+        'Total_Desc2' : 0,
+        'Iva' : 0,
+        'Total' : $("#total"+i).val(),
+        'MiMes' : '',
+        'Periodo' : year,
+      };
+      key++;
+    }
+    codigoCliente = $("#codigoCliente").val();
+    $.ajax({
+      type: "POST",
+      url: '../controlador/facturacion/divisasC.php?guardarLineas=true',
+      data: {
+        'codigoCliente' : codigoCliente,
+        'datos' : datosLineas,
+      }, 
+      success: function(data)
+      {
+        
+      }
+    });
   }
 
   function calcularTotal(){
@@ -194,6 +228,159 @@
     $("#total0").val(parseFloat(total).toFixed(2));
     $("#totalFac").val(parseFloat(total).toFixed(2));
     $("#efectivo").val(parseFloat(total).toFixed(2));
+  }
+
+  function guardarFactura(){
+    validarDatos = $("#total").val();
+    saldoTotal = $("#saldoTotal").val();
+    if (saldoTotal > 0 ) {
+      Swal.fire({
+        type: 'info',
+        title: 'Debe pagar la totalidad de la factura',
+        text: ''
+      });
+    }else if (validarDatos <= 0 ) {
+      Swal.fire({
+        type: 'info',
+        title: 'Ingrese los datos necesarios para guardar la factura',
+        text: ''
+      });
+    }else{
+      var update = false;
+      //var update = confirm("¿Desea actualizar los datos del cliente?");
+      Swal.fire({
+        title: 'Esta seguro?',
+        text: "¿Desea actualizar los datos del cliente?",
+        type: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Si!'
+      }).then((result) => {
+        if (result.value==true) {
+          update = true;
+        }else{
+          update = false;
+        }
+        TextRepresentante = '';
+        DCLinea = $("#DCLinea").val();
+        TxtDireccion = $("#direccion").val();
+        TxtTelefono = '';
+        TextFacturaNo = $("#factura").val();
+        TxtGrupo = '';
+        TextCI = $("#ci_ruc").val();
+        TD_Rep = $("#ci_ruc").val();
+        TxtEmail = $("#email").val();
+        TxtDirS = $("#direccion").val();
+        TextCheque = '';
+        DCBanco = '';
+        chequeNo = $("#chequeNo").val();
+        TxtEfectivo = $("#efectivo").val();
+        TxtNC = '';
+        DCNC = '';
+        Fecha = $("#fechaEmision").val();
+        Total = $("#total").val();
+        codigoCliente = $("#codigoCliente").val();
+        //var confirmar = confirm("Esta seguro que desea guardar \n La factura No."+TextFacturaNo);
+        Swal.fire({
+          title: 'Esta seguro?',
+          text: "Esta seguro que desea guardar \n La factura No."+TextFacturaNo,
+          type: 'warning',
+          showCancelButton: true,
+          confirmButtonColor: '#3085d6',
+          cancelButtonColor: '#d33',
+          confirmButtonText: 'Si!'
+        }).then((result) => {
+          if (result.value==true) {
+            $('#myModal_espera').modal('show');
+            $.ajax({
+            type: "POST",
+            url: '../controlador/facturacion/divisasC.php?guardarFactura=true',
+            data: {
+              'update' : update,
+              'DCLinea' : DCLinea,
+              'Total' : Total,
+              'TextRepresentante' : TextRepresentante,
+              'TxtDireccion' : TxtDireccion,
+              'TxtTelefono' : TxtTelefono,
+              'TextFacturaNo' : TextFacturaNo,
+              'TxtGrupo' : TxtGrupo,
+              'chequeNo' : chequeNo,
+              'TextCI' : TextCI,
+              'TD_Rep' : TD_Rep,
+              'TxtEmail' : TxtEmail,
+              'TxtDirS' : TxtDirS,
+              'codigoCliente' : codigoCliente,
+              'TextCheque' : TextCheque,
+              'DCBanco' : DCBanco,
+              'TxtEfectivo' : TxtEfectivo,
+              'TxtNC' : TxtNC,
+              'Fecha' : Fecha,
+              'DCNC' : DCNC, 
+            }, 
+            success: function(response)
+            {
+              
+              $('#myModal_espera').modal('hide');
+              if (response) {
+
+                response = JSON.parse(response);
+                if(response.respuesta == '3')
+                {
+                  Swal.fire({
+                       type: 'error',
+                       title: 'Este documento electronico ya esta autorizado',
+                       text: ''
+                     });
+
+                  }else if(response.respuesta == '1')
+                  {
+                    Swal.fire({
+                      type: 'success',
+                      title: 'Este documento electronico fue autorizado',
+                      text: ''
+                    }).then(() => {
+                      serie = DCLinea.split(" ");
+                      //url = '../vista/appr/controlador/imprimir_ticket.php?mesa=0&tipo=FA&CI='+TextCI+'&fac='+TextFacturaNo+'&serie='+serie[1];
+                      //window.open(url, '_blank');
+                      var url = '../controlador/detalle_estudianteC.php?ver_fac=true&codigo='+TextFacturaNo+'&ser='+serie[1]+'&ci='+TextCI;
+                      window.open(url,'_blank');
+                      location.reload();
+                      //imprimir_ticket_fac(0,TextCI,TextFacturaNo,serie[1]);
+                    });
+                  }else if(response.respuesta == '2')
+                  {
+                    Swal.fire({
+                       type: 'info',
+                       title: 'XML devuelto',
+                       text: ''
+                     });
+                    //descargar_archivos(response.url,response.ar);
+
+                  }
+                  else
+                  {
+                    Swal.fire({
+                       type: 'info',
+                       title: 'Error por: '+response,
+                       text: ''
+                     });
+
+                  }
+              }else{
+                Swal.fire({
+                  type: 'info',
+                  title: 'La factura ya se autorizo',
+                  text: ''
+                });
+              }
+            }
+            });
+          }
+        })
+      })
+    }
+    
   }
 
 </script>
@@ -216,6 +403,10 @@
             </select>
             <input type="hidden" name="codigoCliente" id="codigoCliente">
             <input type="text" class="form-control input-sm" placeholder="Ingrese nombre del nuevo cliente" name="nombreCliente" id="nombreCliente" autocomplete="off">
+            <input type="hidden" name="direccion" id="direccion">
+            <input type="hidden" name="ci" id="ci_ruc">
+            <input type="hidden" name="email" id="email">
+            <input type="hidden" name="fechaEmision" id="fechaEmision" value="<?php echo date('Y-m-d'); ?>">
           </div>
           <div class="col-sm-2">
             <textarea class="form-control input-sm"></textarea>
@@ -383,7 +574,7 @@
           </div>
           <div class="col-sm-2">
             <a title="Guardar" class="btn btn-default" tabindex="22">
-              <img src="../../img/png/salire.png" width="25" height="30" onclick="guardarFactura();">
+              <img src="../../img/png/salire.png" width="25" height="30" >
             </a>
           </div>
         </div>

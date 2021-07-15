@@ -8563,7 +8563,7 @@ function datos_tabla($tabla,$campo=false)
     {
       //$mes=$mes+1;
       //consultamos clientes
-      $sql="SELECT * FROM Clientes WHERE  (CI_RUC= '".$ruc."') AND Cliente='".$nombrec."' ";
+      $sql="SELECT * FROM Clientes WHERE CI_RUC= '".$ruc."' ";
       $stmt = sqlsrv_query($cid, $sql);
       if( $stmt === false)  
       {  
