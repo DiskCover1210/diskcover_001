@@ -286,8 +286,11 @@ if(isset($_GET['mos']))
 <!DOCTYPE html>
 <html>
 <head>
-  <meta charset="utf-8">
 <meta charset="ISO-8859-1">
+
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta charset="UTF-8"/>
+
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
    <META HTTP-EQUIV="Pragma" CONTENT="no-cache"> <META HTTP-EQUIV="Expires" CONTENT="-1">
    
@@ -800,6 +803,19 @@ if(isset($_GET['mos']))
 			var key = window.Event ? e.which : e.keyCode
 			return (key >= 48 && key <= 57)
 		}
+
+		function solo_n_numeros(id,num)
+    {  
+      var v = $('#'+id).val();
+      if(v.length >num)
+      {
+       val  = v.substr(0,num);
+        $('#'+id).val(val);
+      }else{
+        $('#'+id).val(v);
+      }
+    }
+
 		function soloNumeros12(e)
 		{
 			$("#codigo1").hide();

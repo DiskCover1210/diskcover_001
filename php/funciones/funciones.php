@@ -7843,18 +7843,34 @@ function grilla_generica_new($sql,$tabla,$id_tabla=false,$titulo=false,$botones=
   $ddl_reg = '';
   $val_pagina = '';
   $fun_pagina = '';
+  $total_registros =0;
+  $cid2=$conn->conexion();
   if($id_tabla=='' || $id_tabla == false)
   {
     $id_tabla = 'datos_t';
   }
 
-  $sql2 = " SELECT COUNT(*) as 'reg' FROM ".$tabla;
-  $cid2=$conn->conexion();
-  $stmt2 = sqlsrv_query($cid2, $sql2);
-  if( $stmt2 === false)  { echo "Error en consulta PA.\n"; return ''; die( print_r( sqlsrv_errors(), true)); }
-  $datos2 =  array();
-  while( $row = sqlsrv_fetch_array( $stmt2, SQLSRV_FETCH_ASSOC) ){$datos2[]=$row; }
-  $total_registros = $datos2[0]['reg']; 
+  $pos = strpos($sql,'UNION');
+if ($pos === false) {
+    $sql2 = " SELECT COUNT(*) as 'reg' FROM ".$tabla;
+    $stmt2 = sqlsrv_query($cid2, $sql2);
+    if( $stmt2 === false)  { echo "Error en consulta PA.\n"; return ''; die( print_r( sqlsrv_errors(), true)); }
+    $datos2 =  array();
+    while( $row = sqlsrv_fetch_array( $stmt2, SQLSRV_FETCH_ASSOC) ){$datos2[]=$row; }
+    $total_registros = $datos2[0]['reg']; 
+} else {
+     $sql2 = $sql;
+     $stmt2 = sqlsrv_query($cid2, $sql2);
+     if( $stmt2 === false)  { echo "Error en consulta PA.\n"; return ''; die( print_r( sqlsrv_errors(), true)); }
+     $datos2 =  array();
+     while( $row = sqlsrv_fetch_array( $stmt2, SQLSRV_FETCH_ASSOC) ){$datos2[]=$row; }
+      $tot_reg = count($datos2);
+     $total_registros = $tot_reg;
+
+}
+
+  // $sql2 = " SELECT COUNT(*) as 'reg' FROM ".$tabla;
+  
 
   if($num_reg && count($num_reg)>1)
   {
@@ -8239,7 +8255,8 @@ if($titulo)
              {
               if($alineado=='text-left')
               {                
-                  $tbl.='<td style="width:'.$medida.'" class="'.$alineado.'">'.utf8_encode($value1).'</td>';  
+                  // $tbl.='<td style="width:'.$medida.'" class="'.$alineado.'">'.utf8_encode($value1).'</td>';  
+                  $tbl.='<td style="width:'.$medida.'" class="'.$alineado.'">'.$value1.'</td>';  
               }else
               {
                 if(is_int($value1))

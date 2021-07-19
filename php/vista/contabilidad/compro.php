@@ -20,204 +20,207 @@
 	}
 	require_once("../controlador/contabilidad_controller.php");
 ?>
+<!-- <meta charset="ISO-8859-1"> -->
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta charset="UTF-8"/>
+
  <div class="row">
-		 <div class="col-xs-12">
 			 <div class="box" style='margin-bottom: 5px;'>
 			  <div class="box-header">
-					<table width="100%">
-						<tr>
-							<td width="35%">
-								<h4 class="box-title">
-									<a class="btn btn-default" title="Salir del modulo" href="./contabilidad.php?mod=contabilidad#">
-										<i ><img src="../../img/png/salire.png" class="user-image" alt="User Image"
-										style='font-size:20px; display:block; height:100%; width:100%;'></i> 
+			  	<div class="row">
+			  		<div class="col-sm-5 col-md-4">
+			  						  		
+			  	     <div class="col-xs-2 col-md-2 col-sm-2">
+			  		      <a class="btn btn-default" title="Salir del modulo" href="./contabilidad.php?mod=contabilidad#">
+						 	      <img src="../../img/png/salire.png">
+						      </a>			  		
+			  	     </div>
+			  	     <div class="col-xs-2 col-md-2 col-sm-2">
+			  		      <a id='l7' class="btn btn-default" title="Exportar Excel"	href="descarga.php?mod=contabilidad&acc=bacsg&acc1=Balance de Comprobacion/Situación/General&ti=<?php echo $_SESSION['INGRESO']['ti']; ?>&Opcb=6&Opcen=0&b=0&ex=1" onclick='modificar1();' target="_blank"><img src="../../img/png/table_excel.png">
+						      </a>			  		
+			  	     </div>
+			  	     <div class="col-xs-2 col-md-2 col-sm-2">
+			  		      <a id='l1' class="btn btn-default" title="Modificar el comprobante"	href="contabilidad.php?mod=contabilidad&acc=compro&acc1=Comprobantes Procesados&b=1">
+										<img src="../../img/png/modificar.png" >
+						      </a>			  		
+			  	     </div>
+			  	     <div class="col-xs-2 col-md-2 col-sm-2">
+			  		       <a id='l2' class="btn btn-default" title="Anular comprobante"	href="contabilidad.php?mod=contabilidad&acc=compro&acc1=Comprobantes Procesados&b=1"><img src="../../img/png/anular.png" >
 									</a>
-									<a id='l7' class="btn btn-default"  data-toggle="tooltip" title="Exportar Excel"
-									href="descarga.php?mod=contabilidad&acc=bacsg&acc1=Balance de Comprobacion/Situación/General&ti=<?php echo $_SESSION['INGRESO']['ti']; ?>
-									&Opcb=6&Opcen=0&b=0&ex=1" onclick='modificar1();' target="_blank">
-										<i ><img src="../../img/png/table_excel.png" class="user-image" alt="User Image"
-										style='font-size:20px; display:block; height:100%; width:100%;'></i> 
+			  		
+			  	     </div>
+			  	     <div class="col-xs-2 col-md-2 col-sm-2">
+			  		       <a id='l3' class="btn btn-default" title="Autorizar comprobante autorizado">
+										<img src="../../img/png/autorizar.png" > 
 									</a>
-									<a id='l1' class="btn btn-default"  data-toggle="tooltip" title="Modificar el comprobante"
-									href="contabilidad.php?mod=contabilidad&acc=compro&acc1=Comprobantes Procesados&b=1">
-										<i ><img src="../../img/png/modificar.png" class="user-image" alt="User Image"
-										style='font-size:20px; display:block; height:100%; width:100%;'></i> 
-									</a>
-									<a id='l2' class="btn btn-default"  data-toggle="tooltip" title="Anular comprobante"
-									href="contabilidad.php?mod=contabilidad&acc=compro&acc1=Comprobantes Procesados&b=1">
-										<i ><img src="../../img/png/anular.png" class="user-image" alt="User Image"
-										style='font-size:20px; display:block; height:100%; width:100%;'></i> 
-									</a>
-									<a id='l3' class="btn btn-default"  data-toggle="tooltip" title="Autorizar comprobante autorizado">
-										<i ><img src="../../img/png/autorizar.png" class="user-image" alt="User Image"
-										style='font-size:20px; display:block; height:100%; width:100%;'></i> 
-									</a>
-									<a id='l4' class="btn btn-default"  data-toggle="tooltip" title="Realizar una copia al comprobante"
-									href="contabilidad.php?mod=contabilidad&acc=bacsg&acc1=Presenta balance de Comprobación&ti=BALANCE DE COMPROBACIÓN&Opcb=1&Opcen=0&b=1">
-										<i ><img src="../../img/png/copiar.png" class="user-image" alt="User Image"
-										style='font-size:20px; display:block; height:100%; width:100%;'></i> 
-									</a>
-									<a id='l5' class="btn btn-default"  data-toggle="tooltip" title="Copiar a otra empresa el comprobante"
-									href="contabilidad.php?mod=contabilidad&acc=bacsg&acc1=Presenta estado de situación (general)&ti=ESTADO SITUACIÓN&Opcb=5&Opcen=1&b=0"
-									>
-										<i ><img src="../../img/png/copiare.png" class="user-image" alt="User Image"
-										style='font-size:20px; display:block; height:100%; width:100%;'></i> 
-									</a>
-									
-								</h4>
-							</td>
-							<td>
+			  		
+			  	     </div>			  	
+			  	     <div class="col-xs-2 col-md-1 col-sm-2">
+			  		        <a id='l4' class="btn btn-default" title="Realizar una copia al comprobante" href="contabilidad.php?mod=contabilidad&acc=bacsg&acc1=Presenta balance de Comprobación&ti=BALANCE DE COMPROBACIÓN&Opcb=1&Opcen=0&b=1">
+										<img src="../../img/png/copiar.png" > 
+									  </a>
+			  		
+			  	     </div>
+			  	     <div class="col-xs-2 col-md-1 col-sm-2">
+			  		       <a id='l5' class="btn btn-default" title="Copiar a otra empresa el comprobante" href="contabilidad.php?mod=contabilidad&acc=bacsg&acc1=Presenta estado de situación (general)&ti=ESTADO SITUACIÓN&Opcb=5&Opcen=1&b=0">
+										<img src="../../img/png/copiare.png" > 
+									</a>			  		
+			  	     </div>
+			      </div>
+			      <div class="col-sm-4 col-md-4 text-center">			      	
 								<?php echo $_SESSION['INGRESO']['item']; ?> 
-							</td>
-							<td>
-								<button type="submit" class="btn btn-default active" onclick="reset_('comproba','CD');" id='CD'>Diario</button>
+			      	<button type="submit" class="btn btn-default active" onclick="reset_('comproba','CD');" id='CD'>Diario</button>
 								<button type="submit" class="btn btn-default" onclick="reset_('comproba','CI');" id='CI'>Ingreso</button>
 								<button type="submit" class="btn btn-default" onclick="reset_('comproba','CE');" id='CE'>Egreso</button>
 								<button type="submit" class="btn btn-default" onclick="reset_('comproba','ND');" id='ND'>N/D</button>
 								<button type="submit" class="btn btn-default" onclick="reset_('comproba','NC');" id='NC'>N/C</button>
-								<input id="tipoc" name="tipoc" type="hidden" value="CD">
-							</td>
-							<td>
-								No.
-							</td>
-							<td>
-								<select class="form-control" name="tipo" id='mes' onchange="reset_('comproba','');">
-									<option value='0'>Todos</option>
-									
-									<?php echo  Tabla_Dias_Meses();
-									// select_option('Tabla_Dias_Meses','No_D_M','Dia_Mes',"Tipo='M' AND No_D_M<>0 "); 
-									?>
-								</select>
-							</td>
-							<td>
-								&nbsp;
-							</td>
-							<td>
-							    <div class='comproba'>
-									<select class="form-control" name="tipo" onchange="buscar('comproba');">
-										<option value='seleccione'>Seleccionar</option>
-										<?php
-										if(isset($_SESSION['FILTRO']['cam1']))
-										{
-										?>
-											<option value='<?php echo $_SESSION['FILTRO']['cam1'];?>' selected><?php echo $_SESSION['FILTRO']['cam1'];?></option>
-										<?php
-										}
-										?>
-										<?php //select_option('Trans_Documentos','TD','TD','1=1 group by TD'); ?>
-									</select>
-								</div>
-							</td>
-						</tr>
-					</table>
-								  <!--<a data-toggle="collapse" data-parent="#accordion" href="#collapseOne">
-									Collapsible Group Item #1
-								  </a> -->
+								<input id="tipoc" name="tipoc" type="hidden" value="CD">			      	
+			      </div>
+			      <div class="col-sm-3">
+			      	<div class="row">
+			      		<div class="col-sm-6">
+			      			<select class="form-control" name="tipo" id='mes' onchange="comprobante()">
+									   <option value='0'>Todos</option><?php echo  Tabla_Dias_Meses();?>
+								  </select>			      			
+			      		</div>
+			      		<div class="col-sm-6">
+			      			 <select class="form-control" name="ddl_comprobantes" id="ddl_comprobantes" onchange="listar_comprobante()">
+							    	<option value="">Seleccione</option>
+							    </select>			      			
+			      		</div>
+
+			      		
+			      	</div>
+			      	
+			      </div>
+			    </div>
 			  </div>
 			 </div>
-		 </div>
 	  </div>
-	<script>
-	function reset_(idMensaje,tipoc)
-	{
-		if(tipoc!='')
-		{
-			//creamos cookie
-			//document.cookie = "tipoco=;";
-			//if(readCookie('tipoco')==null)
-			//{
-			document.cookie = "tipoco=; ";
-			document.cookie = "tipoco="+tipoc+"; ";
-			//}
-			//alert(' 1 '+readCookie('tipoco'));
-			if(tipoc!='CD')
-			{
-				var element = document.getElementById("CD");
-				element.classList.remove("active");
-			}
-			if(tipoc!='CI')
-			{
-				var element = document.getElementById("CI");
-				element.classList.remove("active");
-			}
-			if(tipoc!='CE')
-			{
-				var element = document.getElementById("CE");
-				element.classList.remove("active");
-			}
-			if(tipoc!='ND')
-			{
-				var element = document.getElementById("ND");
-				element.classList.remove("active");
-			}
-			if(tipoc!='NC')
-			{
-				var element = document.getElementById("NC");
-				element.classList.remove("active");
-			}
-			
-			var select = document.getElementById('tipoc'); //El <select>
-			select.value = tipoc;
-		}
-		//si ya esta la cookies verificamos para que este presionado
-		//alert(' 2 '+readCookie('tipoco'));
-		if(readCookie('tipoco')!=null)
-		{
-			var element = document.getElementById(readCookie('tipoco'));
-			//element.classList.remove("active");
-			element.classList.add('active');
-			//myElemento.classList.add('nombreclase1','nombreclase2');
-			if(readCookie('tipoco')!='CD')
-			{
-				var element = document.getElementById("CD");
-				element.classList.remove("active");
-			}
-			if(readCookie('tipoco')!='CI')
-			{
-				var element = document.getElementById("CI");
-				element.classList.remove("active");
-			}
-			if(readCookie('tipoco')!='CE')
-			{
-				var element = document.getElementById("CE");
-				element.classList.remove("active");
-			}
-			if(readCookie('tipoco')!='ND')
-			{
-				var element = document.getElementById("ND");
-				element.classList.remove("active");
-			}
-			if(readCookie('tipoco')!='NC')
-			{
-				var element = document.getElementById("NC");
-				element.classList.remove("active");
-			}
-		}
-		$('div.'+idMensaje).html('<select class="form-control" name="tipo" onchange="buscar(\'comproba\');">'+
-									'<option value="seleccione">Seleccionar</option>'+
-									'</select>'); 
+	<div class="">
+		<input type="hidden" name="" id="txt_empresa" value="<?php echo $_SESSION['INGRESO']['item'];?>">
+		<input type="hidden" name="" id="TP" value="CD">
+		<input type="hidden" name="" id="" value="">
+		<input type="hidden" name="" id="" value="">
+		<input type="hidden" name="" id="" value="">
+		<input type="hidden" name="" id="" value="">
+		<div class="row">
+			<div class="col-sm-12">
+				<ul class="nav nav-tabs" id="myTab" role="tablist">
+                   <li class="nav-item active">
+                     <a class="nav-link" id="home-tab" data-toggle="tab" href="#contabilizacion" role="tab" aria-controls="contabilizacion" aria-selected="true">CONTABILIZACION</a>
+                   </li>
+                   <li class="nav-item">
+                     <a class="nav-link" id="profile-tab" data-toggle="tab" href="#retencion" role="tab" aria-controls="retencion" aria-selected="false">RETENCIONES</a>
+                   </li>
+                   <li class="nav-item">
+                     <a class="nav-link" id="contact-tab" data-toggle="tab" href="#subcuenta" role="tab" aria-controls="subcuenta" aria-selected="false">SUBCUENTAS</a>
+                   </li>
+                   <li class="nav-item">
+                     <a class="nav-link" id="contact-tab" data-toggle="tab" href="#kardex" role="tab" aria-controls="kardex" aria-selected="false">KARDEX</a>
+                   </li>
+                   <li class="nav-item">
+                     <a class="nav-link" id="contact-tab" data-toggle="tab" href="#informe" role="tab" aria-controls="informe" aria-selected="false">INFORME</a>
+                   </li>
+                 </ul>
+                 <div class="tab-content" id="myTabContent" style="height: 330px;">
+                   <div class="tab-pane active" id="contabilizacion" role="tabpanel" aria-labelledby="home-tab">
+                   	 <div class="row" ><br>
+                   	 	<div class="col-sm-12" id="tbl_contabilidad">
+                   	 		
+                   	 	</div>
+                   	 	
+                   	 </div>
+                   </div>
+                   <div class="tab-pane fade" id="retencion" role="tabpanel" aria-labelledby="profile-tab">
+                   	<div class="row">
+                   		<div class="col-sm-12" id="tbl_retenciones_co">
+                   	 		
+                   	 	</div> 
+                   	 	<div class="col-sm-12" id="tbl_retenciones_ve">
+                   	 		
+                   	 	</div> 
+                   	 	<div class="col-sm-12" id="tbl_retenciones">
+                   	 		
+                   	 	</div>                   	 	
+                   	 </div>
+                   </div>
+                   <div class="tab-pane fade" id="subcuenta" role="tabpanel" aria-labelledby="contact-tab">
+                   	<div class="row">
+                   	 	<div class="col-sm-12" id="tbl_subcuentas">
+                   	 		
+                   	 	</div>                   	 	
+                   	 </div>
+                   </div>
+                   <div class="tab-pane fade" id="kardex" role="tabpanel" aria-labelledby="contact-tab">
+                   	 <div class="row">
+                   	 	<div class="col-sm-12" id="tbl_kardex">
+                   	 		
+                   	 	</div>                   	 	
+                   	 </div>
+                   	 <div class="row">
+                   	 	<div class="col-sm-6"></div>
+                   	 	<div class="col-sm-1">
+                   	 		<b>Total compra</b>
+                   	 	</div> 
+                   	 	<div class="col-sm-2">
+                   	 		<input type="text" name="txt_total" readonly="" class="form-control input-sm" id="txt_total">
+                   	 	</div> 
+                   	 	<div class="col-sm-1">
+                   	 		<b>Total costo</b>
+                   	 	</div>                   	 	
+                   	 	<div class="col-sm-2">
+                   	 		<input type="text" name="txt_saldo" readonly="" class="form-control input-sm" id="txt_saldo">
+                   	 	</div> 
+                   	 </div>
+                   </div>                   
+                   <div class="tab-pane fade" id="informe" role="tabpanel" aria-labelledby="contact-tab">
+                   	<div class="row">
+                   		<div class="col-sm-12">
+                   			<div id='pdfcom'></div>                      			
+                   		</div>                   		
+                   	</div>                	
+                   </div>
+                 </div>
+			</div>			
+		</div>
+		<div class="row">
+			<div class="col-sm-2">
+			  <b>Elaborador por</b>				
+			</div>
+			<div class="col-sm-4">
+			  <input type="text" name="" readonly="" class="form-control input-sm">		
+			</div>
+			<div class="col-sm-2">
+			  <b>Totales</b>				
+			</div>
+			<div class="col-sm-2">			  				
+			  <input type="text" name="txt_debe" readonly="" class="form-control input-sm" id="txt_debe">
+			</div>			
+			<div class="col-sm-2">
+			  <input type="text" name="txt_haber" readonly="" class="form-control input-sm" id="txt_haber">				
+			</div>
+		</div>
 		
-		buscar('comproba');
-	}
-	
-	</script>
+	</div>
 
-<div class="panel box box-primary">
-	  
+
+<!-- <div class="panel box box-primary">	  
   <div id="collapseOne" class="panel-collapse collapse in">
 	<div class="box-body">
 		<div class="box table-responsive" width="100%" height="100%">
-			<div id='pdfcom'>
-				
-			</div>
+			
 		  </div>
 		   
 	</div>
   </div>
-</div>
+</div> -->
 <script>
 	$( document ).ready(function() {
 		buscar('comproba');
+		comprobante();
+		// listar_comprobante();
+	
 	});
 
 	//Date picker
@@ -303,4 +306,155 @@
 		}
 		
 	}
+
+
+
+	function reset_(idMensaje,tipoc)
+	{
+		$('#TP').val(tipoc);
+		if(tipoc!='')
+		{
+			//creamos cookie
+			//document.cookie = "tipoco=;";
+			//if(readCookie('tipoco')==null)
+			//{
+			document.cookie = "tipoco=; ";
+			document.cookie = "tipoco="+tipoc+"; ";
+			//}
+			//alert(' 1 '+readCookie('tipoco'));
+			if(tipoc!='CD')
+			{
+				var element = document.getElementById("CD");
+				element.classList.remove("active");
+			}
+			if(tipoc!='CI')
+			{
+				var element = document.getElementById("CI");
+				element.classList.remove("active");
+			}
+			if(tipoc!='CE')
+			{
+				var element = document.getElementById("CE");
+				element.classList.remove("active");
+			}
+			if(tipoc!='ND')
+			{
+				var element = document.getElementById("ND");
+				element.classList.remove("active");
+			}
+			if(tipoc!='NC')
+			{
+				var element = document.getElementById("NC");
+				element.classList.remove("active");
+			}
+			
+			var select = document.getElementById('tipoc'); //El <select>
+			select.value = tipoc;
+		}
+		//si ya esta la cookies verificamos para que este presionado
+		//alert(' 2 '+readCookie('tipoco'));
+		if(readCookie('tipoco')!=null)
+		{
+			var element = document.getElementById(readCookie('tipoco'));
+			//element.classList.remove("active");
+			element.classList.add('active');
+			//myElemento.classList.add('nombreclase1','nombreclase2');
+			if(readCookie('tipoco')!='CD')
+			{
+				var element = document.getElementById("CD");
+				element.classList.remove("active");
+			}
+			if(readCookie('tipoco')!='CI')
+			{
+				var element = document.getElementById("CI");
+				element.classList.remove("active");
+			}
+			if(readCookie('tipoco')!='CE')
+			{
+				var element = document.getElementById("CE");
+				element.classList.remove("active");
+			}
+			if(readCookie('tipoco')!='ND')
+			{
+				var element = document.getElementById("ND");
+				element.classList.remove("active");
+			}
+			if(readCookie('tipoco')!='NC')
+			{
+				var element = document.getElementById("NC");
+				element.classList.remove("active");
+			}
+		}
+	}
+
+	function comprobante()
+	{
+		var parametros = 
+		{
+			'MesNo':$('#mes').val(),
+			'TP':$('#tipoc').val(),
+		}
+		 $.ajax({
+      data:  {parametros:parametros},
+       url:   '../controlador/contabilidad_controller.php?comprobantes',
+      type:  'post',
+      dataType: 'json',
+        success:  function (response) {
+        	$('#ddl_comprobantes').html(response);
+      }
+    }); 
+	}
+
+
+	function listar_comprobante()
+	{
+      $('#myModal_espera').modal('show');
+		reporte_comprobante();
+		var parametros = 
+		{
+			'numero':$('#ddl_comprobantes').val(),
+			'item':$('#txt_empresa').val(),
+			'TP':$('#tipoc').val(),
+		}
+		 $.ajax({
+      data:  {parametros:parametros},
+       url:   '../controlador/contabilidad_controller.php?listar_comprobante',
+      type:  'post',
+      dataType: 'json',
+        success:  function (response) {
+        	if(response==2)
+        	{
+        		Swal.fire('El Comprobante no exite.','','info');
+        	}else
+        	{
+        		$('#tbl_contabilidad').html(response.tbl1);      		
+        		$('#tbl_retenciones').html(response.tbl2);       		
+        		$('#tbl_retenciones_co').html(response.tbl2_1);  		
+        		$('#tbl_retenciones_ve').html(response.tbl2_2);       		
+        		$('#tbl_subcuentas').html(response.tbl3);        		
+        		$('#tbl_kardex').html(response.tbl4);
+        		$('#txt_debe').val(response.Debe);
+        		$('#txt_haber').val(response.haber);        		
+        		$('#txt_total').val(response.total);
+        		$('#txt_saldo').val(response.saldo);
+
+        	}
+            $('#myModal_espera').modal('hide');
+
+      }
+    }); 
+	}
+
+	function reporte_comprobante()
+	{
+				value1 = $('#ddl_comprobantes').val();
+				//alert(value1);
+				$.post('ajax/vista_ajax.php'
+					, {ajax_page: 'comp', com: value1 }, function(data){
+						//$('div.pdfcom').load(data);
+						$('#pdfcom').html('<iframe style="width:100%; height:50vw;" src="ajax/TEMP/'+value1+'.pdf" frameborder="0" allowfullscreen></iframe>'); 
+						//alert('entrooo '+idMensaje+" ajax/TEMP/'+value1+'.pdf");
+					});
+	}
+
 </script>

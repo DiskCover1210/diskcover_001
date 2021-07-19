@@ -3188,7 +3188,220 @@ function sp_Reporte_Analitico_Mensual($tipo,$desde,$hasta)
 	   }
 	   return $result;
 
+     }
+
+     function comprobantes_procesados($parametros)
+     {
+
+     	$cid = Conectar::conexion();
+     	$sql="SELECT Numero ". 
+       "FROM Comprobantes ".
+       "WHERE Item = '".$_SESSION['INGRESO']['item']."' ".
+       "AND Periodo = '".$_SESSION['INGRESO']['periodo']."' ".
+       "AND TP = '".$parametros['TP']."' ";
+	   if($parametros['MesNo']>0)
+	   {
+		   $sql=$sql." AND MONTH(Fecha) = ".$parametros['MesNo']." ";
+	   }
+	   $sql=$sql." ORDER BY Numero ";
+	   // print_r($sql);die();
+	   $stmt = sqlsrv_query( $cid, $sql);
+	   if( $stmt === false)  
+	   	{  
+		 echo "Error en consulta PA.\n";  
+		 die( print_r( sqlsrv_errors(), true));  
+		}
+		 $result = array();	
+	   while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_ASSOC) ) 
+	   {
+		$result[] = $row;
+	   }
+	   return $result;
+     }
+
+     function transacciones_comprobante($tp,$numero,$item)
+     {
+     	 $cid = Conectar::conexion();
+     	 $sql = "SELECT T.Cta,Ca.Cuenta,T.Parcial_ME,T.Debe,T.Haber,T.Detalle,T.Cheq_Dep,T.Fecha_Efec,T.Codigo_C,Ca.Item,T.TP,T.Numero,T.Fecha,T.ID 
+             FROM Transacciones As T, Catalogo_Cuentas As Ca 
+             WHERE T.TP = '".$tp."' 
+             AND T.Numero = ".$numero." 
+             AND T.Item = '".$item."' 
+             AND T.Periodo = '".$_SESSION['INGRESO']['periodo']."' 
+             AND T.Item = Ca.Item 
+             AND T.Periodo = Ca.Periodo 
+             AND T.Cta = Ca.Codigo 
+             ORDER BY T.ID,Debe DESC,T.Cta ";
+              $stmt = sqlsrv_query($cid, $sql);
+              $result = array();	
+              while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_ASSOC) ) 
+              	{
+              		$result[] = $row;
+              	}
+
+             $tbl = grilla_generica_new($sql,'Transacciones As T, Catalogo_Cuentas As Ca ',$id_tabla='cont_tbl',$titulo=false,$botones=false,$check=false,$imagen=false,$border=1,$sombreado=1,$head_fijo=1,$tamaño_tabla=250);
+
+             return array('tbl'=>$tbl,'datos'=>$result);
+
+
      } 
+
+       function inventario_comprobante($tp,$numero,$item)
+     {
+     	 $cid = Conectar::conexion();
+     	 $sql = "SELECT TK.Codigo_Inv,CC.Producto,TK.CodBodega,TK.Entrada,TK.Salida,TK.Valor_Unitario,TK.Valor_Total,TK.Costo,TK.Total,
+               TK.Fecha,TK.TC,TK.Serie,TK.Factura,TK.Orden_No,TK.Lote_No,TK.Fecha_Fab,TK.Fecha_Exp,CC.Reg_Sanitario,TK.Modelo,
+               TK.Procedencia,TK.Serie_No,TK.Codigo_Barra,TK.Cta_Inv,TK.Contra_Cta 
+               FROM Trans_Kardex As TK,Catalogo_Productos As CC 
+               WHERE TK.Periodo = '".$_SESSION['INGRESO']['periodo']."' 
+               AND TK.Item = '".$item."' 
+               AND TK.TP = '".$tp."' 
+               AND TK.Numero = ".$numero." 
+               AND TK.Codigo_Inv = CC.Codigo_Inv 
+               AND TK.Periodo = CC.Periodo 
+               AND TK.Item = CC.Item
+               ORDER BY TK.Codigo_Inv, TK.CodBodega, TK.Fecha ";
+              $stmt = sqlsrv_query($cid, $sql);
+              $result = array();	
+              while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_ASSOC) ) 
+              	{
+              		$result[] = $row;
+              	}
+
+             $tbl = grilla_generica_new($sql,'Trans_Kardex As TK,Catalogo_Productos As CC',$id_tabla='inv_tbl',$titulo=false,$botones=false,$check=false,$imagen=false,$border=1,$sombreado=1,$head_fijo=1,$tamaño_tabla=250);
+
+             return array('tbl'=>$tbl,'datos'=>$result);
+
+
+     } 
+
+     function subcuentas_comprobante($tp,$numero,$item)
+     {
+     	  $sql1 = "SELECT TSC.TC,Be.Cliente As Detalles,Factura,Fecha_V,Parcial_ME,Debitos,Creditos,Prima,
+          TSC.Detalle_SubCta,TSC.Cta,Be.Codigo 
+          FROM Trans_SubCtas As TSC, Clientes As Be 
+          WHERE TSC.Item = '".$item."' 
+          AND TSC.Periodo = '".$_SESSION['INGRESO']['periodo']."' 
+          AND TSC.TC IN ('C','P') 
+          AND TSC.TP = '".$tp."' 
+          AND TSC.Numero = ".$numero." 
+          AND TSC.Codigo = Be.Codigo ";
+          
+          $sql2 = "SELECT Be.TC,Be.Detalle As Detalles,Factura,Fecha_V,Parcial_ME,Debitos,Creditos,Prima,
+          TSC.Detalle_SubCta,TSC.Cta,Be.Codigo 
+          FROM Trans_SubCtas As TSC, Catalogo_SubCtas As Be 
+          WHERE TSC.TP = '".$tp."' 
+          AND TSC.Numero = ".$numero." 
+          AND TSC.Item = '".$item."' 
+          AND TSC.Periodo = '".$_SESSION['INGRESO']['periodo']."' 
+          AND TSC.TC NOT IN ('C','P') 
+          AND TSC.Codigo = Be.Codigo 
+          AND TSC.Periodo = Be.Periodo 
+          AND TSC.Item = Be.Item ";
+          
+         $sql = $sql1." UNION ".$sql2."ORDER BY Cta, TC ";
+
+         // print_r($sql);die();
+
+          $tbl = grilla_generica_new($sql,'Trans_SubCtas As TSC, Clientes As Be',$id_tabla='sub_tbl',$titulo=false,$botones=false,$check=false,$imagen=false,$border=1,$sombreado=1,$head_fijo=1,$tamaño_tabla=250);
+
+          return $tbl;
+
+
+     }
+     function retenciones_comprobantes($tp,$numero,$item)
+     {
+     	 // 'Listar las Retenciones
+        $sql = "SELECT * 
+         FROM Trans_Air 
+         WHERE Periodo = '".$_SESSION['INGRESO']['periodo']."' 
+         AND Item = '".$item."' 
+         AND Numero = ".$numero." 
+         AND TP = '".$tp."' ";
+          $tbl = grilla_generica_new($sql,'Trans_Air',$id_tabla='ret_tbl',$titulo=false,$botones=false,$check=false,$imagen=false,$border=1,$sombreado=1,$head_fijo=1,$tamaño_tabla=50);
+          return $tbl;
+
+     }
+
+     function compras_comprobantes($tp,$numero,$item,$Fecha)
+     {
+       // 'Compras
+      $cid = Conectar::conexion();
+      $FechaIni = $Fecha;
+      $FechaFin = $Fecha;
+      $sql = "SELECT TC.Linea_SRI,C.Cliente,C.TD,C.CI_RUC,TC.TipoComprobante,TC.CodSustento,TC.TP,TC.Numero,
+            TC.Establecimiento,TC.PuntoEmision,TC.Secuencial,TC.Autorizacion,TC.FechaEmision,TC.FechaRegistro,
+            TC.FechaCaducidad,TC.BaseImponible,TC.BaseImpGrav,TC.PorcentajeIva,TC.MontoIva,TC.BaseImpIce,
+            TC.PorcentajeIce,TC.MontoIce,TC.MontoIvaBienes,TC.PorRetBienes,TC.ValorRetBienes,TC.MontoIvaServicios,
+            TC.PorRetServicios,TC.ValorRetServicios,TC.ContratoPartidoPolitico,TC.MontoTituloOneroso,
+            TC.MontoTituloGratuito,TC.DevIva,TC.Clave_Acceso,Estado_SRI,AutRetencion 
+            FROM Trans_Compras As TC, Clientes As C 
+            WHERE TC.Fecha Between '".$FechaIni."' AND '".$FechaFin."' 
+            AND TC.TP = '".$tp."'
+            AND TC.Numero = ".$numero."
+            AND TC.Item = '".$item."'
+            AND TC.Periodo = '".$_SESSION['INGRESO']['periodo']."'
+            AND C.Codigo = '".$_SESSION['INGRESO']['Id']."'
+            AND TC.IdProv = C.Codigo
+            ORDER BY TC.Linea_SRI,C.Cliente,C.CI_RUC,C.TD ";
+             $stmt = sqlsrv_query($cid, $sql);
+              $result = array();	
+              while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_ASSOC) ) 
+              	{
+              		$result[] = $row;
+              	}
+
+             $tbl = grilla_generica_new($sql,'Trans_Compras As TC, Clientes As C ',$id_tabla='com_tbl',$titulo=false,$botones=false,$check=false,$imagen=false,$border=1,$sombreado=1,$head_fijo=1,$tamaño_tabla=50);
+
+             return array('tbl'=>$tbl,'datos'=>$result);
+    }
+
+     function ventas_comprobantes($tp,$numero,$item,$Fecha)
+     {
+     // 'Ventas
+      $cid = Conectar::conexion();
+      $FechaIni = $Fecha;
+      $FechaFin = $Fecha;
+        $sql = "SELECT TV.Linea_SRI,C.Cliente,TV.TipoComprobante,C.CI_RUC,C.TD,TV.TP,TV.Numero,TV.Establecimiento,
+            TV.PuntoEmision,TV.NumeroComprobantes,TV.Secuencial,TV.FechaEmision,TV.FechaRegistro,TV.BaseImponible,
+            TV.BaseImpGrav,TV.PorcentajeIva,TV.MontoIva,TV.BaseImpIce,TV.PorcentajeIce,TV.MontoIce,TV.MontoIvaBienes,
+            TV.PorRetBienes,TV.ValorRetBienes,TV.MontoIvaServicios,TV.PorRetServicios,TV.ValorRetServicios,
+            TV.RetPresuntiva 
+            FROM Trans_Ventas As TV, Clientes As C
+            WHERE TV.Fecha Between '".$FechaIni."' AND '".$FechaFin."'
+            AND TV.TP = '".$tp."'
+            AND TV.Numero = ".$numero."
+            AND TV.Item = '".$item."'
+            AND TV.Periodo = '".$_SESSION['INGRESO']['periodo']."'
+            AND C.Codigo = '".$_SESSION['INGRESO']['Id']."'
+            AND TV.IdProv = C.Codigo 
+            ORDER BY TV.Linea_SRI,C.Cliente,C.CI_RUC,C.TD ";
+
+             $tbl = grilla_generica_new($sql,'Trans_Ventas As TV, Clientes As C ',$id_tabla='vnt_tbl',$titulo=false,$botones=false,$check=false,$imagen=false,$border=1,$sombreado=1,$head_fijo=1,$tamaño_tabla=50);
+             return $tbl;
+     }
+
+
+
+     function existe_comprobante($numero,$tp,$item)
+     {
+     	 $cid = Conectar::conexion();
+     	 $sql = "SELECT C.*,A.Nombre_Completo,Cl.CI_RUC,Cl.Direccion,Cl.Email,Cl.Telefono,Cl.Celular,Cl.Cliente,Cl.Ciudad 
+           FROM Comprobantes As C, Accesos As A, Clientes As Cl 
+           WHERE C.Numero = ".$numero." 
+           AND C.TP = '".$tp."' 
+           AND C.Item = '".$item."' 
+           AND C.Periodo = '".$_SESSION['INGRESO']['periodo']."' 
+           AND C.CodigoU = A.Codigo 
+           AND C.Codigo_B = Cl.Codigo ";
+           $stmt = sqlsrv_query($cid, $sql);
+	    $result = array();	
+	   while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_ASSOC) ) 
+	   {
+		$result[] = $row;
+	   }
+	   return $result;
+     }
 
 }
 

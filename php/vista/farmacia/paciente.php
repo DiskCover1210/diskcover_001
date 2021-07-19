@@ -297,6 +297,12 @@
   function paciente_existente()
   {
     var num = $('#txt_ruc').val();
+    if(num.length<10)
+    {
+      Swal.fire('La cedula no tiene 10 caracteres','','info');
+      return false;
+    }
+
     if(!num=='')
     {
       validar_ci();

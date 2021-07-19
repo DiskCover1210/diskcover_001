@@ -424,11 +424,10 @@ class niveles_seguriC
 	  	// if($resp==1)
 	  	// {
 	  	if($this->email->enviar_credenciales($archivos,$correo,$cuerpo_correo,$titulo_correo,$correo_apooyo,'Credenciales de acceso al sistema DiskCover System',$email_conexion,$email_pass,$html=1,$empresaGeneral)==1){
-	  		echo json_encode(1);
-	  		exit();
+	  		return 1;
 	  	}else{
-	  		echo json_encode(-1);
-	  		//return -1;
+	  		// echo json_encode(-1);
+	  		return -1;
 	  	}
 	  	// }else
 	  	// {
@@ -441,6 +440,8 @@ class niveles_seguriC
   		$empresaGeneral = array_map(array($this, 'encode1'), $this->empresaGeneral);
 	  	$fallo = false;
 	    $usuarios = $this->modelo->entidades_usuarios($parametros['ruc']);
+
+	    // print_r($usuarios);die();
 	    foreach ($usuarios as $datos) {
   			$datos0 = $this->modelo->entidades_usuario($datos['CI_NIC']);
 		  	$email_conexion = 'info@diskcoversystem.com';
@@ -480,7 +481,11 @@ class niveles_seguriC
 		  	$titulo_correo = 'Credenciales de acceso al sistema DiskCover System';
 		  	$archivos = false;
 		  	$correo = $datos['Email'];
+		  	$resp=1;
+
+		  	if($correo!='.'){
 		  	$resp = $this->email->enviar_credenciales($archivos,$correo,$cuerpo_correo,$titulo_correo,$correo_apooyo,'Credenciales de acceso al sistema DiskCover System',$email_conexion,$email_pass,$html=1,$empresaGeneral);
+		     }
 		    if($resp!=1)
 		    {
 		    	$fallo = true;

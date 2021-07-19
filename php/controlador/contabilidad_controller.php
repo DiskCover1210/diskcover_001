@@ -8,6 +8,17 @@ if(isset($_POST['submitlog']))
 {
 	login('', '', '');
 }
+
+if(isset($_GET['listar_comprobante'])) 
+{
+	$parametros = $_POST['parametros'];
+	echo json_encode(listar_comprobantes($parametros));
+}
+if(isset($_GET['comprobantes'])) 
+{
+	$parametros = $_POST['parametros'];
+	echo json_encode(comprobantes_procesados($parametros));
+}
 if(isset($_GET['tipo_balance']))
 {
 	echo json_encode(tipo_balance());
@@ -821,5 +832,113 @@ function reporte_pdf($parametros)
 		    $pos = $pos+1;
 		}
 	$pdf->cabecera_reporte_MC($titulo,$tablaHTML,$contenido=false,$image=false,$parametros['desde'],$parametros['hasta'],$sizetable,$mostrar,30,'L');
+}
+
+
+function listar_comprobantes($parametros)
+{
+	// print_r($parametros);die();
+	$modelo = new contabilidad_model();
+	$datos = $modelo->existe_comprobante($parametros['numero'],$parametros['TP'],$parametros['item']);
+	// print_r($datos);die();
+	// variables Co.
+	   $T = '';
+       $Fecha = '';
+       $CodigoB = '';
+       $Beneficiario = '';
+       $Concepto = '';
+       $Efectivo = '';
+       $Cheque = '';
+       $Cta_Banco='';
+       // variables FA.
+       $FA_ClaveAcceso = '';
+       $FA_Estado_SRI = '';
+       $FA_Autorizacion_R ='';
+
+	if(count($datos)>0)
+	{
+		 // LabelEst.Caption = "Normal"
+       $T = $datos[0]["T"];
+       $Fecha = $datos[0]["Fecha"]->format('Y-m-d');
+       $CodigoB = $datos[0]["Codigo_B"];
+       $Beneficiario = $datos[0]["Cliente"];
+       $Concepto = $datos[0]["Concepto"];
+       $Efectivo = $datos[0]["Efectivo"];
+       if($T == 'Anulado'){ $titulo = "Anulado";}
+       // LabelFecha.Caption = Format(Co.Fecha, FormatoFechas)
+       // LabelRecibi.Caption = Co.Beneficiario
+       // LabelConcepto.Caption = Co.Concepto
+       // LabelFormaPago.Caption = Co.Efectivo
+       // LabelUsuario.Caption = " " & .Fields("Nombre_Completo")
+       $ExisteComp = true;
+	}else
+	{
+		return 2;
+	}
+
+	if($ExisteComp)
+	{
+		// 'Llenar Cuentas de Transacciones
+		$tr = $modelo->transacciones_comprobante($parametros['TP'],$parametros['numero'],$parametros['item']);
+        $SumaDebe = 0;
+        $SumaHaber = 0;
+        // print_r($tr);die();
+
+		foreach ($tr['datos'] as $key => $value) {
+             $SumaDebe = $SumaDebe + round($value["Debe"],2);
+             $SumaHaber =$SumaHaber + round($value["Haber"],2);	
+              if(is_numeric($value["Cheq_Dep"]) &&  $value["Haber"] > 0){
+                $Cheque = $value["Cheq_Dep"];
+                $Cta_Banco = $value["Cta"];
+             }		
+		}
+	    // 'Llenar Inventario
+	    $Total = 0;
+        $Saldo = 0;
+		$in = $modelo->inventario_comprobante($parametros['TP'],$parametros['numero'],$parametros['item']);
+		foreach ($in['datos'] as $key => $value) {
+              $Total = $Total + round($value["Valor_Total"], 2);
+              $Saldo = $Saldo + round($value["Total"], 2);
+           }
+         $tbl3 = $modelo->subcuentas_comprobante($parametros['TP'],$parametros['numero'],$parametros['item']);
+
+         // 'Listar las Retenciones
+         $tbl2 = $modelo->retenciones_comprobantes($parametros['TP'],$parametros['numero'],$parametros['item']);
+         //compras
+         $co = $modelo->compras_comprobantes($parametros['TP'],$parametros['numero'],$parametros['item'],$Fecha);
+         foreach ($co['datos'] as $key => $value) {
+             $FA_ClaveAcceso = $value["Clave_Acceso"];
+             $FA_Estado_SRI = $value["Estado_SRI"];
+             $FA_Autorizacion_R =$value['AutRetencion'];
+           }
+
+           $tbl2_1 = $co['tbl'];
+          // 'ventas           
+         $tbl2_2 = $modelo->ventas_comprobantes($parametros['TP'],$parametros['numero'],$parametros['item'],$Fecha);
+
+		return array('tbl1'=>$tr['tbl'],'tbl4'=>$in['tbl'],'tbl3'=>$tbl3,'tbl2'=>$tbl2,'tbl2_1'=>$tbl2_1,'tbl2_2'=>$tbl2_2,'Debe'=>number_format($SumaDebe,2),'haber'=>number_format($SumaHaber,2),'total'=>number_format($Total,2),'saldo'=>number_format($Saldo,2));	
+	}
+}
+function comprobantes_procesados($parametros)
+{
+	// print_r($parametros);die();
+	$modelo = new contabilidad_model();
+	$datos = $modelo->comprobantes_procesados($parametros);
+	// print_r($datos);die();
+	$op = '<option value="">Seleccione</option>';
+	if(count($datos)>0)
+	{
+	foreach ($datos as $key => $value) {
+		$op.='<option value="'.$value['Numero'].'">'.$value['Numero'].'</option>';
+	}
+    }else
+    {
+
+		$op.='<option value="">No existen datos</option>';
+
+    }
+
+	return $op;
+
 }
 ?>
