@@ -107,6 +107,7 @@ if(isset($_GET['mos']))
 				$_SESSION['INGRESO']['smtp_UseAuntentificacion']=$empresa_d[0]['smtp_UseAuntentificacion'];
 				$_SESSION['INGRESO']['smtp_Puerto']=$empresa_d[0]['smtp_Puerto'];
 				$_SESSION['INGRESO']['smtp_Servidor']=$empresa_d[0]['smtp_Servidor'];
+				$_SESSION['INGRESO']['smtp_Secure']=$empresa_d[0]['smtp_Secure'];
 				//			
 				$_SESSION['INGRESO']['Formato_Cuentas']=$empresa_d[0]['Formato_Cuentas'];			
 				$_SESSION['INGRESO']['Formato_Inventario']=$empresa_d[0]['Formato_Inventario'];

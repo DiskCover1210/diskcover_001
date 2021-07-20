@@ -32,10 +32,8 @@ class enviar_emails
          $mail->isSMTP();                                            //Send using SMTP
          $mail->Host       =  $_SESSION['INGRESO']['smtp_Servidor'];// 'mail.diskcoversystem.com';            //Set the SMTP server to send through
          $mail->SMTPAuth   = true;                                   //Enable SMTP authentication
-         $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;         //Enable TLS encryption; `PHPMailer::ENCRYPTION_SMTPS` encouraged
-         // $mail->SMTPSecure = 'ssl';
-         $mail->Port     =$_SESSION['INGRESO']['smtp_Puerto'];                                  //TCP port to connect to, use 465 for `PHPMailer::ENCRYPTION_SMTPS` above
-	     $mail->Username = $EMAIL_CONEXION;  //EMAIL_CONEXION DE TABLA EMPRESA //  matriculas@diskcoversystem.com
+         $mail->SMTPSecure = $_SESSION['INGRESO']['smtp_Secure'];        //Enable TLS encryption; `PHPMailer::ENCRYPTION_SMTPS` encouraged
+         $mail->Port     =$_SESSION['INGRESO']['smtp_Puerto'];                                  //TCP port to connect to, use 465 for   $mail->Username = $EMAIL_CONEXION;  //EMAIL_CONEXION DE TABLA EMPRESA //  matriculas@diskcoversystem.com
 	     $mail->Password = $EMAIL_CONTRASEÑA; //EMAIL_CONTRASEÑA DE LA TABLA EMPRESA  //Dlcjvl1210@Matric
 	     $mail->setFrom($correo_apooyo,$nombre);
 
@@ -151,7 +149,7 @@ class enviar_emails
         $mail->Password   = $empresaGeneral[0]['Email_Contraseña'];                 //SMTP password
         // $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;         //Enable TLS encryption; `PHPMailer::ENCRYPTION_SMTPS` encouraged
         $mail->Port       = $empresaGeneral[0]['smtp_Puerto'];                                 //TCP port to connect to, use 465 for `PHPMailer::ENCRYPTION_SMTPS` above
-        $mail->SMTPSecure = 'tls';
+        $mail->SMTPSecure = $empresaGeneral[0]['smtp_Secure'];
         //$mail->SMTPSecure='STARTTLS';
         //Recipients
         $mail->setFrom($empresaGeneral[0]['Email_Conexion'], 'DiskCover System');

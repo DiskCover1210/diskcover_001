@@ -55,7 +55,7 @@
 									</a>
 			  		
 			  	     </div>			  	
-			  	     <div class="col-xs-2 col-md-1 col-sm-2">
+			  	     <div class="col-xs-2 col-md-1 col-sm-2" style="padding: 0px;">
 			  		        <a id='l4' class="btn btn-default" title="Realizar una copia al comprobante" href="contabilidad.php?mod=contabilidad&acc=bacsg&acc1=Presenta balance de Comprobación&ti=BALANCE DE COMPROBACIÓN&Opcb=1&Opcen=0&b=1">
 										<img src="../../img/png/copiar.png" > 
 									  </a>
@@ -76,7 +76,7 @@
 								<button type="submit" class="btn btn-default" onclick="reset_('comproba','NC');" id='NC'>N/C</button>
 								<input id="tipoc" name="tipoc" type="hidden" value="CD">			      	
 			      </div>
-			      <div class="col-sm-3">
+			      <div class="col-sm-3 col-sm-3">
 			      	<div class="row">
 			      		<div class="col-sm-6">
 			      			<select class="form-control" name="tipo" id='mes' onchange="comprobante()">
@@ -87,9 +87,7 @@
 			      			 <select class="form-control" name="ddl_comprobantes" id="ddl_comprobantes" onchange="listar_comprobante()">
 							    	<option value="">Seleccione</option>
 							    </select>			      			
-			      		</div>
-
-			      		
+			      		</div>			      		
 			      	</div>
 			      	
 			      </div>
