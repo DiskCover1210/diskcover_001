@@ -586,7 +586,7 @@ class usuario_model{
 		if($this->dbs!='')
 		{
 
-			$stmt = sqlsrv_query( $this->dbs, $sql);
+			$stmt = sqlsrv_query($this->dbs,$sql);
 		}
 		if( $stmt === false)  
 		{  
@@ -1042,6 +1042,46 @@ class usuario_model{
 			//echo ' vvv '.$filas['IP_VPN_RUTA'];
         }
         return $usuario;
+
+	}
+
+	function IngClave($parametros)
+	{
+
+        $this->dbs=Conectar::conexionSQL();
+		 $ClaveGeneral = '';
+	   	 $IngClaves_Caption  = '';
+		$sql = "SELECT * 
+		FROM Accesos
+		WHERE Usuario = '".$parametros['tipo']."' ";
+		// print_r($sql);die();
+        $stmt = sqlsrv_query($this->dbs,$sql);
+	   if( $stmt === false)  
+	   	{  
+		 echo "Error en consulta PA.\n";  
+		 die( print_r( sqlsrv_errors(), true));  
+		}
+		 $result = array();	
+	   while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_ASSOC) ) 
+	   {
+		$result[] = $row;
+	   }
+	   if(count($result)>0)
+	   {
+	   	 $ClaveGeneral = $result[0]["Clave"];
+	   	 $IngClaves_Caption = $result[0]["Nombre_Completo"];
+	   }
+
+	   return array('clave'=>$ClaveGeneral,'nombre'=>$IngClaves_Caption);
+
+
+  // SelectAdodc AdoSup, sSQL
+  // If AdoSup.Recordset.RecordCount > 0 Then
+  //    ClaveGeneral = AdoSup.Recordset.Fields("Clave")
+  //    IngClaves.Caption = AdoSup.Recordset.Fields("Nombre_Completo")
+  // End If
+  // Intentos = 0
+  // ResultClaveSup = False
 
 	}
 }

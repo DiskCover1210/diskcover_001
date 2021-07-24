@@ -174,6 +174,7 @@ class enviar_emails
         return 1;
         
     } catch (Exception $e) {
+      // print_r($e);die();
         return -1;
     }
   }

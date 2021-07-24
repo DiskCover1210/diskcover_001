@@ -212,7 +212,7 @@ require_once("panel.php");
     			 	console.log(response);
     			 }
 
-      usuario_empresa();
+           setTimeout('usuario_empresa()',2000);
     		}
     	});
 
@@ -704,6 +704,8 @@ function enviar_email()
            {
              Swal.fire('No se pudo enviar','asegurese que su correo sea el correcto','error');
            }
+
+           $('#myModal_espera').modal('hide');
         }
       }); 
 }

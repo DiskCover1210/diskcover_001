@@ -1,6 +1,8 @@
 <?php 
 include(dirname(__DIR__,2).'/funciones/funciones.php');
 // include(dirname(__DIR__).'/db/variables_globales.php');
+// print(dirname(__DIR__));die();
+// include(dirname(__DIR__).'/contabilidad_model.php');
 @session_start(); 
 
 /**
@@ -1338,6 +1340,200 @@ class incomM
 		 return 1;
 	  }
    }
+
+
+   function Encabezado_Comprobante($parametros)
+   {
+
+   	 $cid = $this->conn;
+   	 $sql = "SELECT C.*,Cl.CI_RUC,Cl.Cliente,Cl.Email,Cl.TD
+       FROM Comprobantes As C, Clientes As Cl
+       WHERE C.TP = '".$parametros['TP']."'
+       AND C.Numero = ".$parametros['Numero']."
+       AND C.Item = '".$parametros['Item']."'
+       AND C.Periodo = '".$_SESSION['INGRESO']['periodo']."'
+       AND C.Codigo_B = Cl.Codigo ";
+        $stmt = sqlsrv_query( $cid, $sql);
+		if( $stmt === false)  
+		{  
+			echo "Error en consulta PA.\n";  
+			die( print_r( sqlsrv_errors(), true));  
+		}
+	    while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_ASSOC) ) 
+		 {
+		 	$result[] = $row;
+		 }
+		  return $result;
+   }
+
+    function transacciones_comprobante($tp,$numero,$item)
+     {
+   	     $cid = $this->conn;
+     	 $sql = "SELECT T.Cta,Ca.Cuenta,T.Parcial_ME,T.Debe,T.Haber,T.Detalle,T.Cheq_Dep,T.Fecha_Efec,T.Codigo_C,Ca.Item,T.TP,T.Numero,T.Fecha,T.ID 
+             FROM Transacciones As T, Catalogo_Cuentas As Ca 
+             WHERE T.TP = '".$tp."' 
+             AND T.Numero = ".$numero." 
+             AND T.Item = '".$item."' 
+             AND T.Periodo = '".$_SESSION['INGRESO']['periodo']."' 
+             AND T.Item = Ca.Item 
+             AND T.Periodo = Ca.Periodo 
+             AND T.Cta = Ca.Codigo 
+             ORDER BY T.ID,Debe DESC,T.Cta ";
+              $stmt = sqlsrv_query($cid, $sql);
+              $result = array();	
+              while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_ASSOC) ) 
+              	{
+              		$result[] = $row;
+              	}
+
+             return $result;
+
+
+     } 
+     
+     function retenciones_comprobantes($tp,$numero,$item)
+     {
+   	     $cid = $this->conn;
+     	 // 'Listar las Retenciones
+        $sql = "SELECT * 
+         FROM Trans_Air 
+         WHERE Periodo = '".$_SESSION['INGRESO']['periodo']."' 
+         AND Item = '".$item."' 
+         AND Numero = ".$numero." 
+         AND TP = '".$tp."' ";
+          $stmt = sqlsrv_query($cid, $sql);
+              $result = array();	
+              while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_ASSOC) ) 
+              	{
+              		$result[] = $row;
+              	}
+
+             return array('respuesta'=>$result,'stmt'=>$stmt);
+
+     }
+
+     function Listar_Compras($tp,$numero,$item)
+     {
+   	     $cid = $this->conn;
+     	 $sql = "SELECT * 
+         FROM Trans_Compras 
+         WHERE Numero = ".$numero." 
+         AND TP = '".$tp."' 
+         AND Item = '".$item."' 
+         AND Periodo = '".$_SESSION['INGRESO']['periodo']."'";
+         $stmt = sqlsrv_query($cid, $sql);
+         $result = array();	
+         while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_ASSOC) ) 
+          {
+           $result[] = $row;
+          }
+
+        return array('respuesta'=>$result,'stmt'=>$stmt);
+
+     }
+
+     function Listar_Ventas($tp,$numero,$item)
+     {
+   	     $cid = $this->conn;
+     	$sql = "SELECT * 
+         FROM Trans_Ventas 
+         WHERE Numero = ".$numero." 
+         AND TP = '".$tp."' 
+         AND Item = '".$item."' 
+         AND Periodo = '".$_SESSION['INGRESO']['periodo']."' ";
+          $stmt = sqlsrv_query($cid, $sql);
+         $result = array();	
+         while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_ASSOC) ) 
+          {
+           $result[] = $row;
+          }
+
+        return array('respuesta'=>$result,'stmt'=>$stmt);
+     }
+     function Listar_Importaciones($tp,$numero,$item)
+     {
+   	     $cid = $this->conn;
+     	  $sql = "SELECT *
+          FROM Trans_Importaciones
+          WHERE Numero = ".$numero."
+          AND TP = '".$tp."'
+          AND Item = '".$item."'
+          AND Periodo = '".$_SESSION['INGRESO']['periodo']."' ";
+            $stmt = sqlsrv_query($cid, $sql);
+         $result = array();	
+         while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_ASSOC) ) 
+          {
+           $result[] = $row;
+          }
+          
+        return array('respuesta'=>$result,'stmt'=>$stmt);
+     	
+     }
+
+     function Listar_las_Compras($tp,$numero,$item)
+     {
+
+   	     $cid = $this->conn;
+     	$sql = "SELECT * 
+        FROM Trans_Exportaciones 
+        WHERE Numero = ".$numero." 
+        AND TP = '".$tp."' 
+        AND Item = '".$item."' 
+        AND Periodo = '".$_SESSION['INGRESO']['periodo']."' ";
+        $stmt = sqlsrv_query($cid, $sql);
+         $result = array();	
+         while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_ASSOC) ) 
+          {
+           $result[] = $row;
+          }
+        return array('respuesta'=>$result,'stmt'=>$stmt);
+     	
+     }
+     function Llenar_SubCuentas($tp,$numero,$item)
+     {
+   	     $cid = $this->conn;
+     	  $sql = "SELECT TSC.TC,TSC.Cta,Detalle,Detalle_SubCta,Factura,Prima,Fecha_V,Be.Codigo
+           Parcial_ME,(Debitos-Creditos) As VALOR
+           FROM Trans_SubCtas As TSC, Catalogo_SubCtas As Be
+           WHERE TSC.Numero = ".$numero."
+           AND TSC.TP = '".$tp."'
+           AND TSC.Item = '".$item."'
+           AND TSC.Periodo = '".$_SESSION['INGRESO']['periodo']."'
+           AND TSC.TC NOT IN ('C','P')
+           AND TSC.Codigo = Be.Codigo
+           AND TSC.Item = Be.Item
+           AND TSC.Periodo = Be.Periodo
+           ORDER BY TSC.Cta,Detalle ";
+           $stmt = sqlsrv_query($cid, $sql);
+         $result = array();	
+         while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_ASSOC) ) 
+          {
+           $result[] = $row;
+          }
+           return $result;
+     	
+     }
+     function Llenar_SubCuentas2($tp,$numero,$item)
+     {
+   	     $cid = $this->conn;
+     	  $sql = "SELECT TSC.TC,TSC.Cta,Cliente As Detalle,Detalle_SubCta,Factura,Prima,Fecha_V,Be.Codigo,Parcial_ME,(Debitos-Creditos) As VALOR 
+          FROM Trans_SubCtas As TSC, Clientes As Be 
+          WHERE TSC.TP = '".$tp."' 
+          AND TSC.Numero = ".$numero." 
+          AND TSC.Item = '".$item."' 
+          AND TSC.Periodo = '".$_SESSION['INGRESO']['periodo']."' 
+          AND TSC.TC IN ('C','P') 
+          AND TSC.Codigo = Be.Codigo 
+          ORDER BY TSC.Cta,Cliente ";
+          $stmt = sqlsrv_query($cid, $sql);
+         $result = array();	
+         while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_ASSOC) ) 
+          {
+           $result[] = $row;
+          }
+           return $result;
+     	
+     }
 
 }
 ?>

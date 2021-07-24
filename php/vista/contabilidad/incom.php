@@ -8,7 +8,8 @@
   //datos para consultar
   //CI_NIC
   //echo $_SESSION['INGRESO']['Opc'].' '.$_SESSION['INGRESO']['Sucursal'].' '.$_SESSION['INGRESO']['item'].' '.$_SESSION['INGRESO']['periodo'].' ';
-
+    $variables_mod = '';
+    if(isset($_GET["modificar"])){ $variables_mod=$_GET["variables"];}
 ?>
 <style>
   .xs {
@@ -48,7 +49,7 @@
 
 
 <script type="text/javascript">
-    var cli = '<?php if(isset($_GET["cliente"])){ echo $_GET["cliente"]; } ?>';
+    var cli = '<?php if(isset($_GET["cliente"])){ echo $_GET["cliente"]; } ?>';    
     // console.log(cli);
     if(cli!='')
     {
@@ -56,9 +57,20 @@
     }
   
   $(document).ready(function () {
+    var modificar = '<?php echo $variables_mod; ?>';
+    if(modificar!='')
+    {
+      $('#modificar').val(modificar);
+      listar_comprobante();
+      Tipo_De_Comprobante_No();
+      Llenar_Encabezado_Comprobante();
+    }else
+    {
+      numero_comprobante();
+    }
     $('#tit_sel').html('<i class="fa  fa-trash"></i>');
     $('#fecha1').focus();
-    numero_comprobante();
+    // numero_comprobante();
     cargar_totales_aseintos();
     autocoplet_bene();
     cargar_cuenta_efectivo();
@@ -1107,6 +1119,58 @@
         });
   }
 
+  function Llenar_Encabezado_Comprobante()
+  {
+     var parametros = $('#modificar').val();
+     $.ajax({
+          data:  {parametros:parametros},
+          url:   '../controlador/contabilidad/incomC.php?Llenar_Encabezado_Comprobante=true',
+          type:  'post',
+          dataType: 'json',
+            success:  function (response) { 
+              console.log(response);
+              $('#beneficiario1').append($('<option>',{value: response.CodigoB, text:response.beneficiario,selected: true }));
+              $('#ruc').val(response.RUC_CI);
+              $('#concepto').val(response.Concepto);
+              $('#email').val(response.email);
+              $('#fecha1').val(response.fecha);
+
+          }
+        });
+
+  }
+  function Tipo_De_Comprobante_No()
+  {
+    var parametros = $('#modificar').val();
+     $.ajax({
+          data:  {parametros:parametros},
+          url:   '../controlador/contabilidad/incomC.php?Tipo_De_Comprobante_No=true',
+          type:  'post',
+          dataType: 'json',
+            success:  function (response) { 
+
+            $("#num_com").html("");
+            $("#num_com").html(response);
+          }
+        });
+  }
+
+  function listar_comprobante()
+  {
+    var parametros = $('#modificar').val();
+     $.ajax({
+          data:  {parametros:parametros},
+          url:   '../controlador/contabilidad/incomC.php?listar_comprobante=true',
+          type:  'post',
+          dataType: 'json',
+            success:  function (response) { 
+
+             console.log(response);     
+            $('#div_tabla').html(response);  
+          }
+        });
+  }
+
 </script>
 
   <div class="box-body">
@@ -1124,6 +1188,7 @@
         <button type="button" class="btn btn-default btn-xs" onclick="reset_1('comproba','NC');" 
         id='NC' style="width: 15%;" title='Comprobante nota de credito'>N/C</button>
         <input id="tipoc" name="tipoc" type="hidden" value="CD">
+        <input type="hidden" name="modificar" id="modificar">
 
       </div>                      
       <div align='' width='40%'  style="float: left;width:40%; ">

@@ -201,6 +201,22 @@ if(isset($_GET['borrar_asientos']))
     // $parametros = $_POST['parametros'];
     echo json_encode($controlador->borrar_asientos());
 }
+if(isset($_GET['listar_comprobante']))
+{
+    $parametros = $_POST['parametros'];
+    echo json_encode($controlador->listar_comprobante($parametros));
+}
+if(isset($_GET['Tipo_De_Comprobante_No']))
+{
+    $parametros = $_POST['parametros'];
+    echo json_encode($controlador->Tipo_De_Comprobante_No($parametros));
+}
+if(isset($_GET['Llenar_Encabezado_Comprobante']))
+{
+    $parametros = $_POST['parametros'];
+    echo json_encode($controlador->Llenar_Encabezado_Comprobante($parametros));
+}
+
 
 class incomC
 {
@@ -1663,6 +1679,523 @@ class incomC
      {
      	return $this->modelo->BorrarAsientos('1',true);
      }
+
+    function listar_comprobante($parametros)
+    {
+
+    $parametros = base64_decode($parametros);
+    $parametros = unserialize($parametros);
+    // print_r($parametros);die();
+
+    $Trans_No = 0;
+    $Ln_No = 0;
+    $LnSC_No = 0;
+    $Ret_No = 0;
+    $C1_CodigoB = '';
+    $C1_Beneficiario ='';
+    $C1_Email ='';
+    $C1_Concepto ='';
+    $C1_Cotizacion ='';
+    $C1_Monto_Total ='';
+    $C1_Efectivo ='';
+    $C1_RUC_CI ='';
+    $C1_TD ='';
+    $C1_Item = $parametros['Item'];
+    $C1_Ctas_Modificar = '';
+
+
+// ' Determinamos espacios de memoria para grabar
+    if($Trans_No <= 0){	$Trans_No = 1;}
+    if($Ln_No <= 0){$Ln_No = 1;}
+    if($LnSC_No <= 0){$LnSC_No = 1;}
+    if($Ret_No <= 0){$Ret_No = 1;}
+    $ExisteComp = False;
+//     Co.RetNueva = True;
+//     // 'Encabezado del Comprobante
+    $enca = $this->modelo->Encabezado_Comprobante($parametros);
+    if(count($enca)>0)
+    {
+       $C1_CodigoB = $enca[0]["Codigo_B"];
+       $C1_Beneficiario = $enca[0]["Cliente"];
+       $C1_Email = $enca[0]["Email"];
+       $C1_Concepto = $enca[0]["Concepto"];
+       $C1_Cotizacion = $enca[0]["Cotizacion"];
+       $C1_Monto_Total = $enca[0]["Monto_Total"];
+       $C1_Efectivo = $enca[0]["Efectivo"];
+       $C1_RUC_CI = $enca[0]["CI_RUC"];
+       $C1_TD = $enca[0]["TD"];
+       $ExisteComp = True;
+
+    }else
+    {
+       $C1_CodigoB = G_NINGUNO;
+       $C1_Beneficiario = G_NINGUNO;
+       $C1_Email = Ninguno;
+       $C1_Concepto = G_NINGUNO;
+       $C1_Cotizacion = 0;
+       $C1_Monto_Total = 0;
+       $C1_Efectivo = 0;
+       $C1_RUC_CI = G_NINGUNO;
+       $C1_TD = G_NINGUNO;
+
+    }
+//  'Si existe el comprobante lo presentamos
+    if($ExisteComp){
+        // 'Llenar Cuentas de Transacciones
+     	$AdoRegistros = $this->modelo->transacciones_comprobante($parametros['TP'],$parametros['Numero'],$parametros['Item']);
+     	if(count($AdoRegistros)>0)
+     	{
+     		foreach ($AdoRegistros as $key => $value) {
+     		 $Si_No = 0;
+             if($value["Parcial_ME"] <> 0){$Si_No = 1;}
+             $datos[0]['campo'] =  "CODIGO";
+             $datos[0]['dato'] =  $value["Cta"];
+             $datos[1]['campo'] =  "CUENTA";
+             $datos[1]['dato'] =  $value["Cuenta"];
+             $datos[2]['campo'] =  "PARCIAL_ME";
+             $datos[2]['dato'] =  $value["Parcial_ME"];
+             $datos[3]['campo'] =  "DEBE";
+             $datos[3]['dato'] =  $value["Debe"];
+             $datos[4]['campo'] =  "HABER";
+             $datos[4]['dato'] =  $value["Haber"];
+             $datos[5]['campo'] =  "ME";
+             $datos[5]['dato'] =  $Si_No;
+             $datos[6]['campo'] =  "CHEQ_DEP";
+             $datos[6]['dato'] =  $value["Cheq_Dep"];
+             $datos[7]['campo'] =  "EFECTIVIZAR";
+             $datos[7]['dato'] =  $value["Fecha_Efec"]->format('Y-m-d');
+             $datos[8]['campo'] =  "DETALLE";
+             $datos[8]['dato'] =  str_replace(',','',$value["Detalle"]);
+             $datos[9]['campo'] =  "CODIGO_C";
+             $datos[9]['dato'] =  $value["Codigo_C"];
+             $datos[10]['campo'] =  "T_No";
+             $datos[10]['dato'] =  $Trans_No;
+             $datos[11]['campo'] =  "Item";
+             $datos[11]['dato'] =  $C1_Item;
+             $datos[12]['campo'] =  "CodigoU";
+             $datos[12]['dato'] =  $_SESSION['INGRESO']['CodigoU'];
+             $datos[13]['campo'] =  "A_No";
+             $datos[13]['dato'] =  $Ln_No;
+
+             // print_r($datos);die();
+             $resp = $this->modelo->insertar_ingresos_tabla('Asiento',$datos);
+             $pos = strpos($C1_Ctas_Modificar, $value["Cta"]);
+             if ($pos === false) {
+             	 $C1_Ctas_Modificar = $C1_Ctas_Modificar.$value["Cta"].",";
+             } 
+             $Ln_No = $Ln_No + 1;
+     		}
+
+     	}
+     	     
+        //'Llenar Bancos
+     	if(count($AdoRegistros)>0)
+     	{
+     		$datos = array();
+     		foreach ($AdoRegistros as $key => $value) {
+     			if($value["Cheq_Dep"] <> G_NINGUNO){
+                    $Si_No = 0;
+                    if($value["Parcial_ME"] <> 0){$Si_No = 1;}
+                       $datos[0]['campo']= "CTA_BANCO";
+                       $datos[0]['dato'] = $value["Cta"];
+                       $datos[1]['campo']= "BANCO";
+                       $datos[1]['dato'] = $value["Cuenta"];
+                       $datos[2]['campo']= "CHEQ_DEP";
+                       $datos[2]['dato'] = $value["Cheq_Dep"];
+                       $datos[3]['campo']= "EFECTIVIZAR";
+                       $datos[3]['dato'] = $value["Fecha_Efec"]->format('Y-m-d');
+                       $datos[4]['campo']= "VALOR";
+                       $datos[4]['dato'] = abs($value["Debe"]-$value["Haber"]);
+                       $datos[5]['campo']= "ME"; 
+                       $datos[5]['dato'] = $Si_No;
+                       $datos[6]['campo']= "T_No"; 
+                       $datos[6]['dato'] = $Trans_No;
+                       $datos[7]['campo']= "Item"; 
+                       $datos[7]['dato'] = $C1_Item;
+                       $datos[8]['campo']= "CodigoU"; 
+                       $datos[8]['dato'] = $_SESSION['INGRESO']['CodigoU'];
+
+     	              // print_r($datos);die();
+                      $resp = $this->modelo->insertar_ingresos_tabla('Asiento_B',$datos);
+     			}    			
+     		}
+     	}
+
+
+        //'Listar las Retenciones Air
+        $Ret_No = 1;
+        $AdoRegistros = $this->modelo->retenciones_comprobantes($parametros['TP'],$parametros['Numero'],$parametros['Item']);
+        // print_r($AdoRegistros);
+        if(count($AdoRegistros['respuesta'])>0)
+        {       	
+     		$datos = array();
+        	foreach ($AdoRegistros['respuesta'] as $key => $value) {
+
+             $K = sqlsrv_field_metadata($AdoRegistros['stmt']); 
+             $count = 0;         
+
+        		foreach ($K as $key1 => $value1) {
+        			// print_r($value);die();
+        			if($value1['Name']!='CodigoU' && $value1['Name']!='T_No' && $value1['Name']!='Item' && $value1['Name']!='A_No')
+        			{
+          			$datos[$count]['campo']= $value1['Name'];
+          			if(is_object($value[$value1['Name']])) 
+          			{
+                    $datos[$count]['dato']= $value[$value1['Name']]->format('Y-m-d');  
+
+          			}else
+          			{
+                    $datos[$count]['dato']= $value[$value1['Name']];  
+
+          			}   
+                    $count = $count+1; 
+                    }     			
+          		}
+
+             $datos[$count]['campo']= "CodigoU";
+             $datos[$count]['dato'] =  $_SESSION['INGRESO']['CodigoU'];
+             $datos[$count+1]['campo']= "T_No";
+             $datos[$count+1]['dato'] =  $Trans_No;
+             $datos[$count+2]['campo']= "Item";
+             $datos[$count+2]['dato'] =  $C1_Item;
+             $datos[$count+3]['campo']= "A_No";
+             $datos[$count+3]['dato'] =  $Ret_No;
+
+     	// print_r($datos);die();
+            
+             $Ret_No = $Ret_No + 1;
+             $resp = $this->modelo->insertar_ingresos_tabla('Asiento_Air',$datos);
+        	}
+
+        }
+     
+        //'Listar las Compras
+        $Ret_No = 1;
+        $AdoRegistros = $this->modelo->Listar_Compras($parametros['TP'],$parametros['Numero'],$parametros['Item']);
+        if(count($AdoRegistros['respuesta'])>0)
+        {
+     		$datos = array();
+        	foreach ($AdoRegistros['respuesta'] as $key => $value) {
+        		if($value['SecRetencion']>0)
+        		{
+        			$Co_RetNueva = False;
+                    $Co_Serie_R = $value["Serie_Retencion"];
+                    $Co_Retencion = $value["SecRetencion"];
+        		}
+        		$count = 1;
+        		 $K = sqlsrv_field_metadata($AdoRegistros['stmt']); 
+                 $count = 0;         
+
+        		foreach ($K as $key1 => $value1) {
+        			// print_r($value);die();
+        			if($value1['Name']!='CodigoU' && $value1['Name']!='T_No' && $value1['Name']!='Item' && $value1['Name']!='A_No')
+        			{
+          			$datos[$count]['campo']= $value1['Name'];
+          			if(is_object($value[$value1['Name']])) 
+          			{
+                    $datos[$count]['dato']= $value[$value1['Name']]->format('Y-m-d');  
+
+          			}else
+          			{
+                    $datos[$count]['dato']= $value[$value1['Name']];  
+
+          			}   
+                    $count = $count+1; 
+                    }     			
+          		}
+        		 // For K = 0 To .Fields.Count - 1
+            //     SetAdoFields .Fields(K).Name, .Fields(K)
+            // Next K
+
+                $datos[$count]['campo']= "CodigoU";
+                $datos[$count]['dato'] =  $_SESSION['INGRESO']['CodigoU'];
+                $datos[$count+1]['campo']= "T_No";
+                $datos[$count+1]['dato'] =  $Trans_No;
+                $datos[$count+2]['campo']= "Item";
+                $datos[$count+2]['dato'] =  $C1_Item;
+                $datos[$count+3]['campo']= "A_No";
+                $datos[$count+3]['dato'] =  $Ret_No;
+                // print_r($datos);die();
+                $Ret_No = $Ret_No + 1;                
+                $resp = $this->modelo->insertar_ingresos_tabla('Asiento_Compras',$datos);
+
+        	}
+        }
+     
+        //'Listar las Ventas
+        $Ret_No = 1;
+        $AdoRegistros = $this->modelo->Listar_Ventas($parametros['TP'],$parametros['Numero'],$parametros['Item']);
+        if(count($AdoRegistros['respuesta'])>0)
+        {
+     		$datos = array();
+        	foreach ($AdoRegistros['respuesta'] as $key => $value) {        		
+        		$count = 1;
+        		 $K = sqlsrv_field_metadata($AdoRegistros['stmt']); 
+                 $count = 0;         
+
+        		foreach ($K as $key1 => $value1) {
+        			// print_r($value);die();
+        			if($value1['Name']!='CodigoU' && $value1['Name']!='T_No' && $value1['Name']!='Item' && $value1['Name']!='A_No')
+        			{
+          			$datos[$count]['campo']= $value1['Name'];
+          			if(is_object($value[$value1['Name']])) 
+          			{
+                    $datos[$count]['dato']= $value[$value1['Name']]->format('Y-m-d');  
+
+          			}else
+          			{
+                    $datos[$count]['dato']= $value[$value1['Name']];  
+
+          			}   
+                    $count = $count+1; 
+                    }     			
+          		}
+           //  For K = 0 To .Fields.Count - 1
+           //    SetAdoFields .Fields(K).Name, .Fields(K)
+           //  Next K
+                $datos[$count]['campo']= "CodigoU";
+                $datos[$count]['dato'] = $_SESSION['INGRESO']['CodigoU'];
+                $datos[$count+1]['campo']= "T_No";
+                $datos[$count+1]['dato'] = $Trans_No;
+                $datos[$count+2]['campo']= "Item";
+                $datos[$count+2]['dato'] = $C1_Item;
+                $datos[$count+3]['campo']= "A_No";
+                $datos[$count+3]['dato'] = $Ret_No;
+                $Ret_No = $Ret_No + 1;
+                $resp = $this->modelo->insertar_ingresos_tabla('Asiento_Ventas',$datos);
+        	}
+
+        }
+
+     
+        //'Listar las Importaciones
+        $Ret_No = 1;
+        $AdoRegistrosdo = $this->modelo->Listar_Importaciones($parametros['TP'],$parametros['Numero'],$parametros['Item']);
+        // print_r($AdoRegistros);die();
+        if(count($AdoRegistros['respuesta'])>0)
+        {
+     		$datos = array();
+        	foreach ($AdoRegistros as $key => $value) {
+        		$count = 1;
+        		 $K = sqlsrv_field_metadata($AdoRegistros['stmt']); 
+                 $count = 0;         
+
+        		foreach ($K as $key1 => $value1) {
+        			// print_r($value);die();
+        			if($value1['Name']!='CodigoU' && $value1['Name']!='T_No' && $value1['Name']!='Item' && $value1['Name']!='A_No')
+        			{
+          			$datos[$count]['campo']= $value1['Name'];
+          			if(is_object($value[$value1['Name']])) 
+          			{
+                    $datos[$count]['dato']= $value[$value1['Name']]->format('Y-m-d');  
+
+          			}else
+          			{
+                    $datos[$count]['dato']= $value[$value1['Name']];  
+
+          			}   
+                    $count = $count+1; 
+                    }     			
+          		}
+        		$datos[$count]['campo']= "CodigoU";
+        		$datos[$count]['dato'] = $_SESSION['INGRESO']['CodigoU'];
+                $datos[$count+1]['campo']= "T_No";
+                $datos[$count+1]['dato'] = $Trans_No;
+                $datos[$count+2]['campo']= "Item";
+                $datos[$count+2]['dato'] = $C1_Item;
+                $datos[$count+3]['campo']= "A_No";
+                $datos[$count+3]['dato'] = $Ret_No;
+                $Ret_No = $Ret_No + 1;                
+                $resp = $this->modelo->insertar_ingresos_tabla('Asiento_Importaciones',$datos);
+        		
+        	}
+        }
+
+
+        //'Listar las Compras
+        $Ret_No = 1;
+        $AdoRegistros = $this->modelo->Listar_las_Compras($parametros['TP'],$parametros['Numero'],$parametros['Item']);
+        if(count($AdoRegistros['respuesta'])>0)
+        {
+        	foreach ($AdoRegistros as $key => $value) {
+        		$count = 1;
+        		 $K = sqlsrv_field_metadata($AdoRegistros['stmt']); 
+                 $count = 0;         
+
+        		foreach ($K as $key1 => $value1) {
+        			// print_r($value);die();
+        			if($value1['Name']!='CodigoU' && $value1['Name']!='T_No' && $value1['Name']!='Item' && $value1['Name']!='A_No')
+        			{
+          			$datos[$count]['campo']= $value1['Name'];
+          			if(is_object($value[$value1['Name']])) 
+          			{
+                    $datos[$count]['dato']= $value[$value1['Name']]->format('Y-m-d');  
+
+          			}else
+          			{
+                    $datos[$count]['dato']= $value[$value1['Name']];  
+
+          			}   
+                    $count = $count+1; 
+                    }     			
+          		}
+        	    $datos[$count]['campo']= "CodigoU";
+        	    $datos[$count]['dato'] = $_SESSION['INGRESO']['CodigoU'];
+                $datos[$count+1]['campo']= "T_No";
+                $datos[$count+1]['dato'] = $Trans_No;
+                $datos[$count+2]['campo']= "Item";
+                $datos[$count+2]['dato'] = $C1_Item;
+                $datos[$count+3]['campo']= "A_No";
+                $datos[$count+3]['dato'] = $Ret_No;
+                $Ret_No = $Ret_No + 1;
+                $resp = $this->modelo->insertar_ingresos_tabla('Asiento_Exportaciones',$datos);        		
+        	}
+        }
+     
+        // 'Llenar SubCuentas
+        $AdoRegistros =  $this->modelo->Llenar_SubCuentas($parametros['TP'],$parametros['Numero'],$parametros['Item']);
+       if(count($AdoRegistros)>0)
+       {
+    	 foreach ($AdoRegistros as $key => $value) {
+                $datos[0]['campo']= "FECHA_V";
+                $datos[0]['dato'] = $value["Fecha_V"]->format('Y-m-d');
+                $datos[1]['campo']= "TC";
+                $datos[1]['dato'] = $value["TC"];
+                $datos[2]['campo']= "Codigo";
+                $datos[2]['dato'] = $value["Codigo"];
+                $datos[3]['campo']= "Beneficiario";
+                $datos[3]['dato'] = $value["Detalle"];
+                $datos[4]['campo']= "Factura";
+                $datos[4]['dato'] = $value["Factura"];
+                $datos[5]['campo']= "Prima";
+                $datos[5]['dato'] = $value["Prima"];
+                $datos[6]['campo']= "Valor";
+                $datos[6]['dato'] = Abs($value["VALOR"]);
+                $datos[7]['campo']= "Valor_Me";
+                $datos[7]['dato'] = abs($value["Parcial_ME"]);
+                $datos[8]['campo']= "Detalle_SubCta";
+                $datos[8]['dato'] = $value["Detalle_SubCta"];
+                $datos[9]['campo']= "Cta";
+                $datos[9]['dato'] = $value["Cta"];
+                $datos[10]['campo']= "TM";
+                $datos[10]['dato'] = "1";
+                $datos[11]['campo']= "DH";
+                $datos[11]['dato'] = "1";
+                if($value["Parcial_ME"] > 0){
+                    $datos[12]['campo']= "TM";
+                    $datos[12]['dato'] = "2";
+                }
+                if($value["VALOR"] < 0 ){                    
+                	$datos[13]['campo']= "DH";
+                	$datos[13]['dato'] = "2";
+                }
+                $datos[14]['campo']= "T_No";
+                $datos[14]['dato'] = $Trans_No;
+                $datos[15]['campo']= "Item";
+                $datos[15]['dato'] = $C1_Item;
+                $datos[16]['campo']= "SC_No";
+                $datos[16]['dato'] = $LnSC_No;
+                $datos[17]['campo']= "CodigoU";
+                $datos[17]['dato'] = $_SESSION['INGRESO']['CodigoU'];
+                $LnSC_No = $LnSC_No + 1;
+
+                $resp = $this->modelo->insertar_ingresos_tabla('Asiento_SC',$datos);  
+    		
+    	    }
+       }     
+
+                // print_r($AdoRegistros);die();
+
+        $AdoRegistros =  $this->modelo->Llenar_SubCuentas2($parametros['TP'],$parametros['Numero'],$parametros['Item']);
+         // print_r($AdoRegistros);die();
+       if(count($AdoRegistros)>0)
+       {
+    	foreach ($AdoRegistros as $key => $value) {
+              $datos[0]['campo']= "FECHA_V";
+              $datos[0]['dato'] =$value["Fecha_V"]->format('Y-m-d');
+              $datos[1]['campo']= "TC";
+              $datos[1]['dato'] =$value["TC"];
+              $datos[2]['campo']= "Codigo";
+              $datos[2]['dato'] =$value["Codigo"];
+              $datos[3]['campo']= "Beneficiario";
+              $datos[3]['dato'] =$value["Detalle"];
+              $datos[4]['campo']= "Factura";
+              $datos[4]['dato'] =$value["Factura"];
+              $datos[5]['campo']= "Prima";
+              $datos[5]['dato'] =$value["Prima"];
+              $datos[6]['campo']= "Valor";
+              $datos[6]['dato'] =abs($value["VALOR"]);
+              $datos[7]['campo']= "Valor_Me";
+              $datos[7]['dato'] =abs($value["Parcial_ME"]);
+              $datos[8]['campo']= "Detalle_SubCta";
+              $datos[8]['dato'] =$value["Detalle_SubCta"];
+              $datos[9]['campo']= "Cta";
+              $datos[9]['dato'] =$value["Cta"];             
+              $datos[10]['campo']= "T_No";
+              $datos[10]['dato'] = $Trans_No;
+              $datos[11]['campo']= "Item";
+              $datos[11]['dato'] = $C1_Item;
+              $datos[12]['campo']= "SC_No";
+              $datos[12]['dato'] = $LnSC_No;
+              $datos[13]['campo']= "CodigoU";
+              $datos[13]['dato'] = $_SESSION['INGRESO']['CodigoU'];
+              if($value["Parcial_ME"] > 0){
+                  $datos[14]['campo']= "TM";
+                  $datos[14]['dato'] ="2";
+              }else
+              {
+
+               $datos[14]['campo']= "TM";
+               $datos[14]['dato'] ="1";
+              }
+              if($value["VALOR"] < 0){
+                  $datos[15]['campo']= "DH";
+                  $datos[15]['dato'] = "2";
+              }else
+              {
+                $datos[15]['campo']= "DH";
+                $datos[15]['dato'] ="1"; 
+              }
+
+              $LnSC_No = $LnSC_No + 1;
+    		  $resp = $this->modelo->insertar_ingresos_tabla('Asiento_SC',$datos);  
+    	}
+       }
+   }
+}
+
+function Tipo_De_Comprobante_No($parametros)
+{
+	$parametros = base64_decode($parametros);
+    $parametros = unserialize($parametros);
+    $y = explode('-',$parametros['fecha']);
+
+	return $ret = 'Comprobante de '.$parametros['TP'].' No. '.$y[0].'-'.generaCeros($parametros['Numero'],8);
+}
+function Llenar_Encabezado_Comprobante($parametros)
+{
+	$parametros = base64_decode($parametros);
+    $parametros = unserialize($parametros);
+    $bene = $this->modelo->beneficiarios($parametros['beneficiario']);
+    // print_r($bene);
+    // print_r($parametros); die();
+
+    return  array('beneficiario'=>$parametros['beneficiario'],'RUC_CI'=>$bene[0]['id'],'email'=>$bene[0]['email'],'Concepto'=>$parametros['Concepto'],'CodigoB'=>$parametros['CodigoB'],'fecha'=>$parametros['fecha']);  
+// 	Public Sub 
+//   TextCotiza = Co.Cotizacion
+//   LabelTotal.Caption = Monto_Total
+//   Monto_Total = Co.Monto_Total
+//   Abono = Co.Efectivo
+//   TextCantidad = Abono
+// '  EmailOld = TxtEmail
+//   TipoDoc = Co.TD
+//   TipoBenef = Co.TD
+//   CICliente = Co.RUC_CI
+//   CodigoBenef = Co.CodigoB
+//   CodigoCliente = Co.CodigoB
+//   NombreCliente = Co.Beneficiario
+// End Sub
+}
 
 
 }

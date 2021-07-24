@@ -5940,8 +5940,9 @@ function insert_generico($tabla=null,$datos=null)
 		$longitud_cad = strlen($sql_v); 
 		$v2 = substr_replace($sql_v,")",$longitud_cad-1,1);
 		//echo $ll =  $cam2.$v2;
-		// print_r($cam2.$v2);
-		// die();
+//     if($tabla=='Asiento_SC'){
+// 		print_r($cam2.$v2);
+// }
 		$stmt = sqlsrv_query( $cid, $cam2.$v2);
   //   if($tabla == 'Transacciones')
   //   {

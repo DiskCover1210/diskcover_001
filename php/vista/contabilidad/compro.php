@@ -21,53 +21,48 @@
 	require_once("../controlador/contabilidad_controller.php");
 ?>
 <!-- <meta charset="ISO-8859-1"> -->
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-<meta charset="UTF-8"/>
 
  <div class="row">
 			 <div class="box" style='margin-bottom: 5px;'>
 			  <div class="box-header">
 			  	<div class="row">
-			  		<div class="col-sm-5 col-md-4">
-			  						  		
-			  	     <div class="col-xs-2 col-md-2 col-sm-2">
-			  		      <a class="btn btn-default" title="Salir del modulo" href="./contabilidad.php?mod=contabilidad#">
-						 	      <img src="../../img/png/salire.png">
-						      </a>			  		
-			  	     </div>
-			  	     <div class="col-xs-2 col-md-2 col-sm-2">
-			  		      <a id='l7' class="btn btn-default" title="Exportar Excel"	href="descarga.php?mod=contabilidad&acc=bacsg&acc1=Balance de Comprobacion/Situación/General&ti=<?php echo $_SESSION['INGRESO']['ti']; ?>&Opcb=6&Opcen=0&b=0&ex=1" onclick='modificar1();' target="_blank"><img src="../../img/png/table_excel.png">
-						      </a>			  		
-			  	     </div>
-			  	     <div class="col-xs-2 col-md-2 col-sm-2">
-			  		      <a id='l1' class="btn btn-default" title="Modificar el comprobante"	href="contabilidad.php?mod=contabilidad&acc=compro&acc1=Comprobantes Procesados&b=1">
-										<img src="../../img/png/modificar.png" >
-						      </a>			  		
-			  	     </div>
-			  	     <div class="col-xs-2 col-md-2 col-sm-2">
-			  		       <a id='l2' class="btn btn-default" title="Anular comprobante"	href="contabilidad.php?mod=contabilidad&acc=compro&acc1=Comprobantes Procesados&b=1"><img src="../../img/png/anular.png" >
+			  		<div class="col-sm-4">
+            <div class="btn-group"> 
+               <div class="col-xs-2 col-md-1 col-sm-1 col-lg-1" style=" width: fit-content;padding: 0px;">
+                 <a class="btn btn-default" title="Salir del modulo" href="./contabilidad.php?mod=contabilidad#">
+					           <img src="../../img/png/salire.png">
+			           </a>
+               </div>    
+               <div class="col-xs-2 col-md-1 col-sm-1 col-lg-1" style="width: fit-content;padding: 0px;">
+                   <a id='l7' class="btn btn-default" title="Exportar Excel"	href="descarga.php?mod=contabilidad&acc=bacsg&acc1=Balance de Comprobacion/Situación/General&ti=<?php echo $_SESSION['INGRESO']['ti']; ?>&Opcb=6&Opcen=0&b=0&ex=1" onclick='modificar1();' target="_blank"><img src="../../img/png/table_excel.png"></a>	      
+               </div>
+               <div class="col-xs-2 col-md-1 col-sm-1 col-lg-1" style="width: fit-content;padding: 0px;">                 
+                <button class="btn btn-default" title="Modificar el comprobante" onclick="modificar_comprobante()">
+										 <img src="../../img/png/modificar.png" >
+			           </button>		   
+              </div>
+              <div class="col-xs-2 col-md-1 col-sm-1 col-lg-1" style="width: fit-content;padding: 0px;">
+                  <a id='l2' class="btn btn-default" title="Anular comprobante"	href="contabilidad.php?mod=contabilidad&acc=compro&acc1=Comprobantes Procesados&b=1"><img src="../../img/png/anular.png" >
 									</a>
-			  		
-			  	     </div>
-			  	     <div class="col-xs-2 col-md-2 col-sm-2">
-			  		       <a id='l3' class="btn btn-default" title="Autorizar comprobante autorizado">
+              </div>
+              <div class="col-xs-2 col-md-1 col-sm-1 col-lg-1" style="width: fit-content;padding: 0px;">
+                <a id='l3' class="btn btn-default" title="Autorizar comprobante autorizado">
 										<img src="../../img/png/autorizar.png" > 
 									</a>
-			  		
-			  	     </div>			  	
-			  	     <div class="col-xs-2 col-md-1 col-sm-2" style="padding: 0px;">
-			  		        <a id='l4' class="btn btn-default" title="Realizar una copia al comprobante" href="contabilidad.php?mod=contabilidad&acc=bacsg&acc1=Presenta balance de Comprobación&ti=BALANCE DE COMPROBACIÓN&Opcb=1&Opcen=0&b=1">
+              </div>
+              <div class="col-xs-2 col-md-1 col-sm-1 col-lg-1" style="width: fit-content;padding: 0px;">
+                  <a id='l4' class="btn btn-default" title="Realizar una copia al comprobante" href="contabilidad.php?mod=contabilidad&acc=bacsg&acc1=Presenta balance de Comprobación&ti=BALANCE DE COMPROBACIÓN&Opcb=1&Opcen=0&b=1">
 										<img src="../../img/png/copiar.png" > 
-									  </a>
-			  		
-			  	     </div>
-			  	     <div class="col-xs-2 col-md-1 col-sm-2">
-			  		       <a id='l5' class="btn btn-default" title="Copiar a otra empresa el comprobante" href="contabilidad.php?mod=contabilidad&acc=bacsg&acc1=Presenta estado de situación (general)&ti=ESTADO SITUACIÓN&Opcb=5&Opcen=1&b=0">
+									             </a>
+              </div>
+              <div class="col-xs-2 col-md-1 col-sm-1 col-lg-1" style="width: fit-content;padding: 0px;">
+                 <a id='l5' class="btn btn-default" title="Copiar a otra empresa el comprobante" href="contabilidad.php?mod=contabilidad&acc=bacsg&acc1=Presenta estado de situación (general)&ti=ESTADO SITUACIÓN&Opcb=5&Opcen=1&b=0">
 										<img src="../../img/png/copiare.png" > 
-									</a>			  		
-			  	     </div>
-			      </div>
-			      <div class="col-sm-4 col-md-4 text-center">			      	
+									</a>		
+              </div>      
+            </div>
+            </div>
+           <div class="col-sm-4 col-md-4 text-center">			      	
 								<?php echo $_SESSION['INGRESO']['item']; ?> 
 			      	<button type="submit" class="btn btn-default active" onclick="reset_('comproba','CD');" id='CD'>Diario</button>
 								<button type="submit" class="btn btn-default" onclick="reset_('comproba','CI');" id='CI'>Ingreso</button>
@@ -91,15 +86,17 @@
 			      	</div>
 			      	
 			      </div>
-			    </div>
+</div>
+
+			  	
 			  </div>
 			 </div>
 	  </div>
 	<div class="">
 		<input type="hidden" name="" id="txt_empresa" value="<?php echo $_SESSION['INGRESO']['item'];?>">
 		<input type="hidden" name="" id="TP" value="CD">
-		<input type="hidden" name="" id="" value="">
-		<input type="hidden" name="" id="" value="">
+		<input type="hidden" name="" id="beneficiario" value="">
+		<input type="hidden" name="" id="Co" value="">
 		<input type="hidden" name="" id="" value="">
 		<input type="hidden" name="" id="" value="">
 		<div class="row">
@@ -435,6 +432,8 @@
         		$('#txt_haber').val(response.haber);        		
         		$('#txt_total').val(response.total);
         		$('#txt_saldo').val(response.saldo);
+        		$('#beneficiario').val(response.beneficiario);
+        		$('#Co').val(response.Co);
 
         	}
             $('#myModal_espera').modal('hide');
@@ -454,5 +453,53 @@
 						//alert('entrooo '+idMensaje+" ajax/TEMP/'+value1+'.pdf");
 					});
 	}
+
+	function modificar_comprobante()
+	{
+		var com = $('#ddl_comprobantes').val();
+		if(com!='')
+		{
+		 $('#clave_contador').modal('show');
+		 $('#titulo_clave').text('Contador General');
+		 $('#TipoSuper').val('Contador');
+	  }else
+	  {
+	  	Swal.fire('Seleccione un comprobante','','info');
+	  }
+	}
+
+	// funcion de respuesta para la clave
+	 function resp_clave_ingreso(response)
+	 {
+	 	 if(response['respuesta']==1)
+	 	 {
+	 	 	 confirmar_edicion(response);
+	 	 }else
+	 	 {
+
+	 	 }
+	 }
+	 //------------------------------------
+
+	 function confirmar_edicion(response)
+	 {
+	 	var ti = $('#tipoc').val();
+	 	var be = $('#beneficiario').val(); 
+	 	var co = $('#ddl_comprobantes').val();
+	 	var va = $('#Co').val();
+	 	 Swal.fire({
+                 title: 'Esta seguro que quiere modificar el comprobante '+ti+ 'No. '+co+' de '+be,
+                 text: "Esta usted seguro de que quiere modificar!",
+                 type: 'warning',
+                 showCancelButton: true,
+                 confirmButtonColor: '#3085d6',
+                 cancelButtonColor: '#d33',
+                 confirmButtonText: 'Si!'
+               }).then((result) => {
+                 if (result.value==true) {
+                 	location.href='../vista/contabilidad.php?mod=contabilidad&acc=incom&acc1=Ingresar%20Comprobantes&b=1&modificar=1&variables='+va+'#';
+                 }
+               })
+	 }
 
 </script>

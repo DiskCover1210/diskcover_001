@@ -783,7 +783,8 @@ function dtaAsiento_sc($Trans_No){
 	   }
 	    while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_ASSOC) ) 
 	   {
-		$datos[]=['Codigo'=>$row['Codigo'],'Cuentas'=>utf8_encode($row['Cuentas'])];	
+		$datos[]=['Codigo'=>$row['Codigo'],'Cuentas'=>utf8_encode($row['Cuentas'])];
+		// $datos[]=['Codigo'=>$row['Codigo'],'Cuentas'=>$row['Cuentas']];	
 		// $datos[] = $row;
 	   }
        return $datos;

@@ -50,12 +50,12 @@
       type:  'post',
       dataType: 'json',
       success:  function (response) { 
-        console.log();
-        if(response)
-        {
+        // console.log();
+        // if(response)
+        // {
           $('#tbl_pacientes').html(response.tr);
           $('#tbl_pag').html(response.pag);
-        }
+        // }
       }
     });
   }
@@ -113,15 +113,21 @@
         {
           if(parametros.tip=='E')
           {
-           Swal.fire('','Cliente Editado.','success');
-           cargar_clientes();
+            cargar_clientes();
            limpiar();
+           Swal.fire('Cliente Editado.','','success');
+           
            }else
            {
-            Swal.fire('','Nuevo Cliente Registrado.','success');
             cargar_clientes();
             limpiar();
+            Swal.fire('Nuevo Cliente Registrado.','','success');
+            
            }          
+        }else if(response==-2)
+        {
+           Swal.fire('Cedula incorrecta','','error');
+
         }else
         {
           Swal.fire('','Existio algun tipo de problema intente mas tarde.','error');
@@ -400,18 +406,18 @@
             <input type="hidden" class="form-control" id="txt_tip" value="N">
             <input type="hidden" class="form-control" id="txt_id">   
             <div class="input-group">
-                <input type="text" class="form-control input-sm" id="txt_codigo" onblur="validar_num_historia()">                
+                <input type="text" class="form-control input-sm" id="txt_codigo" onblur="validar_num_historia()" autocomplete="off">                
                 <span class="input-group-addon" title="Buscar" onclick="buscar_cod('C1','txt_codigo')"><i class="fa fa-search"></i></span>
                 <!-- <span class="input-group-addon" title="Buscar"><i class="fa fa-search"></i></span> -->
             </div>            
           </div>
           <div class="col-sm-5">
              <b>Nombre</b>
-              <input type="text" name="txt_nombre" id="txt_nombre" class="form-control input-sm" onblur="nombres(this.value)">            
+              <input type="text" name="txt_nombre" id="txt_nombre" class="form-control input-sm" onblur="nombres(this.value)" autocomplete="off">            
           </div>
           <div class="col-sm-4">
              <b>RUC / CI:</b>
-            <input type="text" name="txt_ruc" id="txt_ruc" class="form-control input-sm" onblur="paciente_existente()" onkeyup="num_caracteres('txt_ruc',10)">            
+            <input type="text" name="txt_ruc" id="txt_ruc" class="form-control input-sm" onblur="paciente_existente()" onkeyup="num_caracteres('txt_ruc',10)" autocomplete="off">            
           </div>
         </div>
         <div class="row">
@@ -423,15 +429,15 @@
           </div>
           <div class="col-sm-3">
              <b>Localidad:</b>
-            <input type="text" name="txt_localidad" id="txt_localidad" class="form-control input-sm" value="QUITO">
+            <input type="text" name="txt_localidad" id="txt_localidad" class="form-control input-sm" value="QUITO" autocomplete="off">
           </div>
           <div class="col-sm-3">
             <b>Teléfono:</b>
-            <input type="text" name="txt_telefono" id="txt_telefono" class="form-control input-sm">            
+            <input type="text" name="txt_telefono" id="txt_telefono" class="form-control input-sm" autocomplete="off">            
           </div>
           <div class="col-sm-3">
             <b>Email:</b>
-            <input type="text" name="txt_email" id="txt_email" class="form-control input-sm" value="comprobantes@clinicasantabarbara.com.ec">            
+            <input type="text" name="txt_email" id="txt_email" class="form-control input-sm" value="comprobantes@clinicasantabarbara.com.ec" autocomplete="off">            
           </div>
           
         </div> 

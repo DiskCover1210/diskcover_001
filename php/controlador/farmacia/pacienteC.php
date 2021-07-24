@@ -122,7 +122,13 @@ class pacienteC
 
 		if($parametros['tip']=='E')
 		{
-			$codig = digito_verificador_nuevo($parametros['ruc']);
+		
+		$codig = digito_verificador_nuevo($parametros['ruc']);
+		// print_r($codig);die();
+		if($codig['Tipo']!='C')
+		{
+			return -2;
+		}
 		$datos[7]['campo'] = 'Codigo';
 		$datos[7]['dato']=$codig['Codigo'];
 		$datos[8]['campo'] = 'TD';
@@ -134,7 +140,13 @@ class pacienteC
 			return  $this->modelo->insertar_paciente($datos,$campoWhere,$parametros['tip']);
 		}else
 		{
-			$codig = digito_verificador_nuevo($parametros['ruc']);
+		
+		$codig = digito_verificador_nuevo($parametros['ruc']);
+		// print_r($codig);die();
+		if($codig['Tipo']!='C')
+		{
+			return -2;
+		}
 		$datos[7]['campo'] = 'T';
 		$datos[7]['dato']='N';
 		$datos[8]['campo'] = 'Codigo';

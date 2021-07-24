@@ -3246,7 +3246,7 @@ function sp_Reporte_Analitico_Mensual($tipo,$desde,$hasta)
 
      } 
 
-       function inventario_comprobante($tp,$numero,$item)
+     function inventario_comprobante($tp,$numero,$item)
      {
      	 $cid = Conectar::conexion();
      	 $sql = "SELECT TK.Codigo_Inv,CC.Producto,TK.CodBodega,TK.Entrada,TK.Salida,TK.Valor_Unitario,TK.Valor_Total,TK.Costo,TK.Total,
