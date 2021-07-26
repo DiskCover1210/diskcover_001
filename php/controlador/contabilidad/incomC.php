@@ -541,7 +541,14 @@ class incomC
          else if($parametros['tip']=='ND'){$tip = 'NotaDebito';}
          else if($parametros['tip']=='NC'){$tip= 'NotaCredito';}
 
-         $num_com = numero_comprobante1($tip,true,true,$parametros['fecha']);
+         if($parametros['modificado']==0)
+         {
+         	$num_com = numero_comprobante1($tip,true,true,$parametros['fecha']);
+         }else
+         {
+         	$num_com = explode('-',$parametros['num_com']);
+         	$num_com = $num_com[1];
+         }
          // $num_com = '123654789';
 
      	$parametro_comprobante = array(

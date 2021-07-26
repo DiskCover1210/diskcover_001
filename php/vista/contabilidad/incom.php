@@ -9,7 +9,10 @@
   //CI_NIC
   //echo $_SESSION['INGRESO']['Opc'].' '.$_SESSION['INGRESO']['Sucursal'].' '.$_SESSION['INGRESO']['item'].' '.$_SESSION['INGRESO']['periodo'].' ';
     $variables_mod = '';
-    if(isset($_GET["modificar"])){ $variables_mod=$_GET["variables"];}
+    $modificar = 0;
+    $load = 0;
+    if(isset($_GET["modificar"])){ $variables_mod=$_GET["variables"]; $modificar=1;}
+    if(isset($_GET["num_load"])){$load = 1;}
 ?>
 <style>
   .xs {
@@ -58,10 +61,20 @@
   
   $(document).ready(function () {
     var modificar = '<?php echo $variables_mod; ?>';
+    var load = '<?php echo $load; ?>';
     if(modificar!='')
     {
+      // console.log(load);
       $('#modificar').val(modificar);
-      listar_comprobante();
+      if(load==0)
+      {
+       listar_comprobante();
+       let url = window.location.href; 
+       // console.log(url);
+       urln =  url.toString().slice(0,url.length-1);
+       // console.log(url);
+       window.location.href= urln+"&num_load=1#";
+      }
       Tipo_De_Comprobante_No();
       Llenar_Encabezado_Comprobante();
     }else
@@ -887,6 +900,7 @@
     var concepto = $('#concepto').val();
     var haber = $('#txt_haber').val();
     var com = $('#num_com').text();
+     var modificar = '<?php echo $modificar; ?>';
     // var comprobante = com.split('.');
     if((debe != haber) || (debe==0 && haber==0) )
     {
@@ -915,6 +929,7 @@
       'email':$('#email').val(),
       'Cta_modificar':$('#txt_cta_modificar').val(),
       'T':'N',
+      'modificado':modificar,
     }
     Swal.fire({
       title: "Esta seguro de Grabar el "+$('#num_com').text(),
@@ -971,8 +986,9 @@
                    cancelButtonColor: '#d33',
                    confirmButtonText: 'OK!'
                  }).then((result) => {
-                   if (result.value==true) {
-                    location.reload();
+                   if (result.value==true) { 
+                    var url = location.href; 
+                    location.reload(url+'&reload=1');
                    }
                  });
           
@@ -1189,6 +1205,7 @@
         id='NC' style="width: 15%;" title='Comprobante nota de credito'>N/C</button>
         <input id="tipoc" name="tipoc" type="hidden" value="CD">
         <input type="hidden" name="modificar" id="modificar">
+        <input type="hidden" name="num_load" id="num_load" value="0">
 
       </div>                      
       <div align='' width='40%'  style="float: left;width:40%; ">
