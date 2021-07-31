@@ -61,6 +61,11 @@ if(isset($_SESSION['INGRESO']['IP_VPN_RUTA']) && $_SESSION['INGRESO']['Tipo_Base
 						{
 							require_once("facturacion/divisas.php");
 						}
+						//listar y anular facturas 
+						if ($_SESSION['INGRESO']['accion']=='listarFactura') 
+						{
+							require_once("facturacion/listar_facturas.php");
+						}
 						if ($_SESSION['INGRESO']['accion']=='facturarLista') 
 						{
 							require_once("facturacion/lista_facturas.php");

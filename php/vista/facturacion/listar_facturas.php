@@ -1,8 +1,8 @@
 <?php
-  include "../controlador/facturacion/divisasC.php";
-  $divisas = new divisasC();
+  include "../controlador/facturacion/listar_facturasC.php";
   $serie = $_SESSION['INGRESO']['Serie_FA'];
   $codigo = ReadSetDataNum("FA_SERIE_".$serie , True, False);
+  $facturar = new listar_facturasC();
 ?>
 <style type="text/css">
   #container1{
@@ -65,9 +65,12 @@
       e.preventDefault();
     }
   });
+
   $(document).ready(function () {
-    autocomplete_cliente();
-    numeroFactura();
+    //autocomplete_cliente();
+    serie();
+    secuencial();
+    envioDatos();
     $("#nombreCliente").hide();
     //enviar datos del cliente
     $('#cliente').on('select2:select', function (e) {
@@ -80,6 +83,35 @@
       $('#codigoCliente').val(data.codigo);
       $('#celular').val(data.celular);
     });
+    
+    //habilitar o desahibilitar botones
+    NombreUsuario = $('#nombre_completo').val();
+    if (NombreUsuario == 'Administrador de Red') {
+      $("#Cambio_Emision_Facturas").attr('disabled', false); 
+      $("#Cambio_Vencimiento_Facturas").attr('disabled',false);
+      $("#Cambia_Autorizacion_Facturas").attr('disabled',false);
+      $("#Cambia_Numero_de_Facturas").attr('disabled',false);
+      $("#Reprocesar_Saldos_Facturas").attr('disabled',false);
+      $("#Eliminar_Facturas").attr('disabled',false);
+      $("#Revertir_Facturas").attr('disabled',false);
+      $("#Actualizar_Representantes").attr('disabled',false);
+      $("#Liberar_FA_SRI").attr('disabled',false);
+      $("#Ejecutivo").attr('disabled',false);
+      $("#Kardex").attr('disabled',false);
+    }else{
+      $("#Cambio_Emision_Facturas").attr('disabled',true);
+      $("#Cambio_Vencimiento_Facturas").attr('disabled',true);
+      $("#Cambia_Autorizacion_Facturas").attr('disabled',true);
+      $("#Cambia_Numero_de_Facturas").attr('disabled',true);
+      $("#Reprocesar_Saldos_Facturas").attr('disabled',true);
+      $("#Eliminar_Facturas").attr('disabled',true);
+      $("#Revertir_Facturas").attr('disabled',true);
+      $("#Actualizar_Representantes").attr('disabled',true);
+      $("#Liberar_FA_SRI").attr('disabled',true);
+      $("#Ejecutivo").attr('disabled',true);
+      $("#Kardex").attr('disabled',true);
+    }
+    
   });
 
   function autocomplete_cliente(){
@@ -110,23 +142,67 @@
     console.log(producto);
   }
 
-  function numeroFactura(){
-    DCLinea = $("#DCLinea").val();
+  function serie(){
+    TC = $("#TC").val();
     $.ajax({
       type: "POST",
-      url: '../controlador/facturacion/facturar_pensionC.php?numFactura=true',
+      url: '../controlador/facturacion/listar_facturasC.php?serie=true',
       data: {
-        'DCLinea' : DCLinea,
+        'TC' : TC,
       }, 
       success: function(data)
       {
+        const $select = $("#serie");
+        $select.empty();
         datos = JSON.parse(data);
-        labelFac = "("+datos.autorizacion+") No. "+datos.serie;
-        document.querySelector('#numeroSerie').innerText = labelFac;
-        console.log(DCLinea);
-        $("#factura").val(datos.codigo);
+        for (var indice in datos) {
+          $select.append($("<option>",{
+            value: datos[indice].serie ,
+            text: datos[indice].serie ,
+          }));
+          console.log(datos[indice]);
+        }
       }
     });
+  }
+
+  function secuencial(){
+    TC = $("#TC").val();
+    serie = $("#serie").val();
+    $.ajax({
+      type: "POST",
+      url: '../controlador/facturacion/listar_facturasC.php?secuencial=true',
+      data: {
+        'TC' : TC,
+        'serie' : serie,
+      }, 
+      success: function(data)
+      {
+        const $select = $("#secuencial");
+        $select.empty();
+        datos = JSON.parse(data);
+        for (var indice in datos) {
+          $select.append($("<option>",{
+            value: datos[indice].texto ,
+            text: datos[indice].factura ,
+          }));
+        }
+      }
+    });
+  }
+
+  function envioDatos(){
+    secuencial0 = $("#secuencial").val();
+    datos = secuencial0.split('/');
+    autorizacion = datos[0];
+    clave_acceso = datos[1];
+    codigo = datos[2];
+    cliente = datos[3];
+    console.log(datos);
+    $("#autorizacion").val(autorizacion);
+    $("#clave_acceso").val(clave_acceso);
+    $("#codigo_cliente").val(codigo);
+    $("#cliente").val(cliente);
   }
 
   function calcular(){
@@ -382,7 +458,6 @@
         })
       })
     }
-    
   }
 
 </script>
@@ -391,83 +466,209 @@
     <div class="panel panel-primary">
       <div class="panel-body">
         <div class="row">
-          <div class="col-sm-2 col-sm-offset-1">
-            <label>Fecha</label>
-            <input type="date" class="form-control input-sm" name="fecha" value="<?php echo date('Y-m-d'); ?>" onkeyup="numeroFactura();">
-          </div>
-          <div class="col-sm-6 col-xs-12">
-            <label class="text-right">Cliente</label>
-            <a title="Agregar nuevo cliente" style="padding-left: 20px" onclick="addCliente();">
-              <img src="../../img/png/mostrar.png" width="20" height="20">
+          <div class="col-sm-12">
+            <a id="salir" title="Historia del cliente"  class="btn btn-default" onclick="historiaCliente();">
+              <img src="../../img/png/salire.png" width="25" height="30">
             </a>
-            <select class="form-control input-sm" id="cliente" name="cliente">
-              <option value="">Seleccione un cliente</option>
-            </select>
-            <input type="hidden" name="codigoCliente" id="codigoCliente">
-            <input type="text" class="form-control input-sm" placeholder="Ingrese nombre del nuevo cliente" name="nombreCliente" id="nombreCliente" autocomplete="off">
-            <input type="hidden" name="direccion" id="direccion">
-            <input type="hidden" name="ci" id="ci_ruc">
-            <input type="hidden" name="email" id="email">
-            <input type="hidden" name="fechaEmision" id="fechaEmision" value="<?php echo date('Y-m-d'); ?>">
-          </div>
-          <div class="col-sm-2">
-            <textarea class="form-control input-sm"></textarea>
+            <a title="Historia del cliente"  class="btn btn-default" onclick="historiaCliente();">
+              <img src="../../img/png/impresora.png" width="25" height="30">
+            </a>
+            <a title="Historia del cliente"  class="btn btn-default" onclick="historiaCliente();">
+              <img src="../../img/png/fa.png" width="25" height="30">
+            </a>
+            <a title="Historia del cliente"  class="btn btn-default" onclick="historiaCliente();">
+              <img src="../../img/png/generapdf.png" width="25" height="30">
+            </a>
+            <a title="Historia del cliente"  class="btn btn-default" onclick="historiaCliente();">
+              <img src="../../img/png/mes.png" width="25" height="30">
+            </a>
+            <a title="Historia del cliente"  class="btn btn-default" onclick="historiaCliente();">
+              <img src="../../img/png/calendario.png" width="25" height="30">
+            </a>
+            <a title="Historia del cliente"  class="btn btn-default" onclick="historiaCliente();">
+              <img src="../../img/png/modificar.png" width="25" height="30">
+            </a>
+            <a title="Historia del cliente"  class="btn btn-default" onclick="historiaCliente();">
+              <img src="../../img/png/data.png" width="25" height="30">
+            </a>
+            <a title="Historia del cliente"  class="btn btn-default" onclick="historiaCliente();">
+              <img src="../../img/png/document.png" width="25" height="30">
+            </a>
+            <a title="Historia del cliente"  class="btn btn-default" onclick="historiaCliente();">
+              <img src="../../img/png/archivero.png" width="25" height="30">
+            </a>
+            <a title="Historia del cliente"  class="btn btn-default" onclick="historiaCliente();">
+              <img src="../../img/png/copiare.png" width="25" height="30">
+            </a>
+            <a title="Historia del cliente"  class="btn btn-default" onclick="historiaCliente();">
+              <img src="../../img/png/team.png" width="25" height="30">
+            </a>
+            <a title="Historia del cliente"  class="btn btn-default" onclick="historiaCliente();">
+              <img src="../../img/png/bloqueo.png" width="25" height="30">
+            </a>
+            <a title="Historia del cliente"  class="btn btn-default" onclick="historiaCliente();">
+              <img src="../../img/png/borrar_archivo.png" width="25" height="30">
+            </a>
+            <a title="Historia del cliente"  class="btn btn-default" onclick="historiaCliente();">
+              <img src="../../img/png/modificar1.png" width="25" height="30">
+            </a>
+            <a title="Historia del cliente"  class="btn btn-default" onclick="historiaCliente();">
+              <img src="../../img/png/sriama.png" width="25" height="30">
+            </a>
+            <a title="Historia del cliente"  class="btn btn-default" onclick="historiaCliente();">
+              <img src="../../img/png/sri.png" width="25" height="30">
+            </a>
+            <a title="Historia del cliente"  class="btn btn-default" onclick="historiaCliente();">
+              <img src="../../img/png/hom.png" width="25" height="30">
+            </a>
+            <a title="Historia del cliente"  class="btn btn-default" onclick="historiaCliente();">
+              <img src="../../img/png/modificar1.png" width="25" height="30">
+            </a>
           </div>
         </div>
+        <br>
         <div class="row">
-          <div class="col-sm-2 col-sm-offset-1">
-            <label class="text-right">TIPO DE PROCESO</label>
+          <div class="col-sm-1">
+            <input type="hidden" id="nombre_completo" value="<?php echo $_SESSION['INGRESO']['Nombre_Completo']; ?>" class="form-control input-sm">
+            <label>Tipo Documento</label>
           </div>
-          <div class="col-sm-4">
-            <select class="form-control input-sm" name="DCLinea" id="DCLinea" onchange="numeroFactura();">
+          <div class="col-sm-1">
+            <select class="form-control input-sm" id="TC" onchange="serie();secuencial();" style="width: 80px;">
               <?php
-                $cuentas = $divisas->getCatalogoLineas();
+                $cuentas = $facturar->factura_formatos();
                 foreach ($cuentas as $cuenta) {
-                  echo "<option value='".$cuenta['id']."'>".$cuenta['text']."</option>";
+                  echo "<option value='".$cuenta['TC']."'>".$cuenta['TC']."</option>";
                 }
               ?>
             </select>
           </div>
-          <div class="col-sm-2">
-            <label id="numeroSerie" class="red">() No.</label>
+          <div class="col-sm-1">
+            <label>Serie</label>
           </div>
-          <div class="col-sm-2">
-            <input type="text" name="factura" id="factura" value="1" class="form-control input-sm">
+          <div class="col-sm-1">
+            <select class="form-control input-sm" id="serie" onchange="secuencial();" style="width: 80px;">
+              <option>001001</option>
+            </select>
           </div>
-        </div>
-        <div class="row">
-          <div class="col-sm-6 col-sm-offset-1">
-            <label>PRODUCTO</label>
-            <select class="form-control input-sm" id="producto" onchange="setPVP();">
-              <?php
-                $productos = $divisas->getProductos();
-                foreach ($productos as $producto) {
-                  echo "<option value='".$producto['id']."'>".$producto['text']."</option>";
-                }
-              ?>
+          <div class="col-sm-1">
+            <label>Secuencial No.</label>
+          </div>
+          <div class="col-sm-1">
+            <select class="form-control input-sm" id="secuencial" onchange="envioDatos();" style="width: 80px;">
+              <option>0000000</option>
             </select>
           </div>
           <div class="col-sm-2">
-            <label>Precio Unitario</label>
-            <input type="text" name="preciounitario" id="preciounitario" value="101.7900" class="form-control input-sm">
+            <input type="date" class="form-control input-sm" name="">
+          </div>
+          <div class="col-sm-1">
+            <input type="text" name="" value="9999" class="form-control input-sm" disabled>
+          </div>
+          <div class="col-sm-2">
+            <input type="text" name="" value="99999999999" class="form-control input-sm" id="codigo_cliente">
+          </div>
+          <div class="col-sm-1">
+            <label>Pendiente</label>
           </div>
         </div>
         <div class="row">
-          <div class="col-sm-4 col-sm-offset-1">
-            <label>TOTAL EN S/.</label>
-            <input type="text" name="total" id="total" value="0.00" class="form-control input-sm">
+          <div class="col-sm-1">
+            <label>Clave</label>
           </div>
-          <div class="col-sm-4">
-            <label>Cantidad Cambio</label>
-            <input type="text" name="cantidad" id="cantidad" value="0.00" class="form-control input-sm">
+          <div class="col-sm-5">
+            <input type="text" name="" class="form-control input-sm" id="clave_acceso">
           </div>
-          <div class=" col-sm-2">
-              <a title="Calcular" class="btn btn-default" tabindex="22">
-                <img src="../../img/png/calculadora.png" width="25" height="30" onclick="calcular();">
-              </a>
-              <a title="Aprobar" class="btn btn-default" tabindex="23" onclick="aceptar();">
-                <img src="../../img/png/aprobar.png" width="25" height="30">
-              </a>
+          <div class="col-sm-1">
+            <label>Autorización</label>
+          </div>
+          <div class="col-sm-5">
+            <input type="text" name="" class="form-control input-sm" id="autorizacion">
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-sm-12">
+            <label>En Bloque</label>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-sm-1">
+            <label>Desde:</label>
+          </div>
+          <div class="col-sm-1">
+            <input type="text" name="" value="000000000" class="form-control input-sm">
+          </div>
+          <div class="col-sm-1">
+            <label>Hasta:</label>
+          </div>
+          <div class="col-sm-1">
+            <input type="text" name="" value="000000000" class="form-control input-sm">
+          </div>
+          <div class="col-sm-1">
+            <label>A</label>
+            <label>A</label>
+          </div>
+          <div class="col-sm-1">
+            <input type="date" name="" value="<?php echo date('Y-m-d'); ?>" class="form-control input-sm">
+          </div>
+          <div class="col-sm-1">
+            <input type="checkbox" name="">
+            <label>Sin Deuda Pendiente</label>
+          </div>
+          <div class="col-sm-1">
+            <input type="checkbox" name="">
+            <label>Imprimir Solo Copia</label>
+          </div>
+          <div class="col-sm-2">
+            <input type="checkbox" name="">
+            <label>Imprimir sin codigo de alumna</label>
+          </div>
+          <div class="col-sm-2">
+            <input type="submit" name="" value="Actualizar Alumnos" class="form-control input-sm">
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-sm-2">
+            <label>Cliente:</label>
+          </div>
+          <div class="col-sm-10">
+            <input type="text" name="" class="form-control input-sm" id="cliente">
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-sm-2">
+            <label>No. de Bultos:</label>
+          </div>
+          <div class="col-sm-10">
+            <input type="text" name="" class="form-control input-sm">
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-sm-2">
+            <label>Entregado en:</label>
+          </div>
+          <div class="col-sm-10">
+            <input type="text" name="" class="form-control input-sm">
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-sm-2">
+            <label>Observación:</label>
+          </div>
+          <div class="col-sm-10">
+            <input type="text" name="" class="form-control input-sm">
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-sm-2">
+            <label>Nota:</label>
+          </div>
+          <div class="col-sm-10">
+            <input type="text" name="" class="form-control input-sm">
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-sm-12">
+            <label>Detalle de Factura</label>
           </div>
         </div>
         <div class="row">
@@ -479,129 +680,81 @@
             <table class="table table-responsive table-borfed thead-dark" id="customers">
               <thead>
                 <tr>
-                  <th width="200px">Codigo</th>
-                  <th width="200px">Cantidad</th>
-                  <th width="200px">Cant Bonf</th>
-                  <th width="500px">Producto</th>
-                  <th width="200px">Precio</th>
-                  <th width="200px">Total</th>
-                  <!--
-                  <th width="200px">Total Desc2</th>
-                  <th width="200px">Total IVA</th>
-                  <th width="200px">SERVICIO</th>
-                  <th width="200px">TOTAL</th>
-                  <th width="200px">VALOR TOTAL</th>
-                  <th width="200px">COSTO</th>
-                  <th width="200px">Fecha IN</th>
-                  <th width="200px">Fecha OUT</th>
-                  <th width="200px">Cant Hab</th>
-                  <th width="200px">Tipo Hab</th>
-                  <th width="200px">Orden No</th>
-                  <th width="200px">Mes</th>
-                  <th width="200px">Cod Ejec</th>
-                  <th width="200px">Porc C</th>
-                  <th width="200px">REP</th>
-                  <th width="200px">Fecha</th>
-                  <th width="200px">CODIGO L</th>
-                  <th width="200px">HABIT</th>
-                  <th width="200px">TICKET</th>
-                  <th width="200px">Cta</th>
-                  <th width="200px">Cta SubMod</th>
-                  <th width="200px">Item</th>
-                  <th width="200px">Codigo U</th>
-                  <th width="200px">CodBod</th>
-                  <th width="200px">CodBar</th>
-                  <th width="200px">TONELAJE</th>
-                  <th width="200px">CORTE</th>
-                  <th width="200px">A_No</th>
-                  <th width="200px">Codigo_Cliente</th>
-                  <th width="200px">Numero</th>
-                  <th width="200px">Serie</th>
-                  <th width="200px">Autorizacion</th>
-                  <th width="200px">Codigo B</th>
-                  <th width="200px">PRECIO2</th>
-                  <th width="200px">COD_BAR</th>
-                  <th width="200px">Fecha_V</th>
-                  <th width="200px">Lote No</th>
-                  <th width="200px">Fecha Fab</th>
-                  <th width="200px">Fecha Exp</th>
-                  <th width="200px">Reg Sanitario</th>
-                  <th width="200px">Modelo</th>
-                  <th width="200px">Procedencia</th>
-                  <th width="200px">Serie No</th>
-                  <th width="200px">Cta Inv</th>
-                  <th width="200px">Cta Costo</th>
-                  <th width="200px">Estado</th>
-                  -->
+                  <th width="200px">aaaa</th>
+                  <th width="200px">aaa</th>
+                  <th width="200px">aaa</th>
+                  <th width="500px">aaa</th>
+                  <th width="200px">aaa</th>
+                  <th width="200px">aaa</th>
                 </tr>
               </thead>
-              <tbody id="cuerpo">
-                
+              <tbody>
+                <tr>
+                  <td width="200px"></td>
+                  <td width="200px"></td>
+                  <td width="200px"></td>
+                  <td width="500px"></td>
+                  <td width="200px"></td>
+                  <td width="200px"></td>
+                </tr>
               </tbody>
             </table>          
           </div>
         </div>
         <br>
         <div class="row">
-          <div class="col-sm-2 col-sm-offset-1">
-            <label>Total Tarifa 0%</label>
+          <div class="col-sm-2">
+            <label>Subtotal sin IVA</label>
           </div>
           <div class="col-sm-2">
-            <input type="text" name="total0" id="total0" class="form-control input-sm red" value="0.00">
+            <label>Subtotal con IVA</label>
+          </div>
+          <div class="col-sm-1">
+            <label>Descuento</label>
+          </div>
+          <div class="col-sm-1">
+            <label>Subtotal</label>
+          </div>
+          <div class="col-sm-1">
+            <label>I.V.A.</label>
           </div>
           <div class="col-sm-2">
-            <label>Total Factura</label>
+            <label>Subtotal Servicio</label>
           </div>
           <div class="col-sm-2">
-            <input type="text" name="totalFac" id="totalFac" class="form-control input-sm red" value="0.00">
+            <label>Total Facturado</label>
           </div>
-          <div class="col-sm-2">
-            <a title="Guardar" class="btn btn-default" tabindex="22">
-              <img src="../../img/png/save.png" width="25" height="30" onclick="guardarFactura();">
-            </a>
+          <div class="col-sm-1">
+            <label>Saldo Actual</label>
           </div>
         </div>
         <div class="row">
-          <div class="col-sm-2 col-sm-offset-1">
-            <label>Total Tarifa 12%</label>
+          <div class="col-sm-2">
+            <input type="text" name="" class="form-control input-sm">
           </div>
           <div class="col-sm-2">
-            <input type="text" name="total12" id="total12" class="form-control input-sm red" value="0.00">
+            <input type="text" name="" class="form-control input-sm">
+          </div>
+          <div class="col-sm-1">
+            <input type="text" name="" class="form-control input-sm">
+          </div>
+          <div class="col-sm-1">
+            <input type="text" name="" class="form-control input-sm">
+          </div>
+          <div class="col-sm-1">
+            <input type="text" name="" class="form-control input-sm">
           </div>
           <div class="col-sm-2">
-            <label>Total Fact. (ME)</label>
+            <input type="text" name="" class="form-control input-sm">
           </div>
           <div class="col-sm-2">
-            <input type="text" name="totalFacMe" id="totalFacMe" class="form-control input-sm red" value="0.00">
+            <input type="text" name="" class="form-control input-sm">
           </div>
-          <div class="col-sm-2">
-            <a title="Guardar" class="btn btn-default" tabindex="22">
-              <img src="../../img/png/salire.png" width="25" height="30" >
-            </a>
+          <div class="col-sm-1">
+            <input type="text" name="" class="form-control input-sm">
           </div>
         </div>
-        <div class="row">
-          <div class="col-sm-2 col-sm-offset-1">
-            <label>I.V.A. 12%</label>
-          </div>
-          <div class="col-sm-2">
-            <input type="text" name="iva12" id="iva12" class="form-control input-sm red" value="0.00">
-          </div>
-          <div class="col-sm-2">
-            <label>EFECTIVO</label>
-          </div>
-          <div class="col-sm-2">
-            <input type="text" name="efectivo" id="efectivo" class="form-control input-sm red" value="0.00">
-          </div>
-        </div>
-        <div class="row">
-          <div class="col-sm-2 col-sm-offset-3">
-            <label>Cambio</label>
-          </div>
-          <div class="col-sm-2">
-            <input type="text" name="cambio" id="cambio" class="form-control input-sm red" value="0.00">
-          </div>
-        </div>
+
         </div>
       </div>
     </div>

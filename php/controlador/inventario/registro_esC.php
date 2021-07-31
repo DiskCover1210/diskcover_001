@@ -1,5 +1,5 @@
 <?php 
-include('../../modelo/inventario/kardex_ingM.php');
+include('../../modelo/inventario/registro_esM.php');
 // include('../../modelo/contabilidad/incomM.php');
 /**
  * 
@@ -201,7 +201,7 @@ if(isset($_GET['validar_factura']))
    echo  json_encode($controlador->validar_factura($parametros));
 
 }
-class kardex_ingC
+class registro_esC
 {
 	private $modelo;
   // private $incom ;

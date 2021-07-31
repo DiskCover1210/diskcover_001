@@ -6,7 +6,7 @@ include(dirname(__DIR__,2).'/funciones/funciones.php');
 /**
  * 
  */
-class kardex_ingM
+class registro_esM
 {
 	
 	private $conn ;

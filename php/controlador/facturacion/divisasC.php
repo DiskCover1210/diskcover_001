@@ -291,6 +291,8 @@ class divisasC
       $FA['num_fac'] = $FA['Factura'];
       $FA['tc'] = $FA['TC'];
       $FA['cod_doc'] = '01';
+      print_r($FA);
+      exit();
       $resultado = $this->autorizar_sri->Autorizar($FA);
       echo json_encode($resultado);
       exit();

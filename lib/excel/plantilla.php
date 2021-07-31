@@ -4639,6 +4639,346 @@ function historiaClienteExcel($datos,$ti='HistoriaCliente',$camne=null,$b=null,$
     }
 }
 
+function kardexExcel($titulos,$datos,$ti='ControlExistencias',$camne=null,$b=null,$base=null,$download=true)
+{
+
+	//header('Content-type: application/vnd.ms-excel;charset=iso-8859-15');
+    header('Content-Disposition: attachment; filename='.trim($ti).".xlsx");
+	//require_once __DIR__ . '/vendor/phpoffice/phpspreadsheet/src/Bootstrap.php';
+
+	$spreadsheet = new Spreadsheet();
+	$sheet = $spreadsheet->getActiveSheet();
+	//$sheet->setCellValue('A1', 'Hello World !');
+
+	// Set document properties
+	$spreadsheet->getProperties()->setCreator('Maarten Balliauw')
+		->setLastModifiedBy('Maarten Balliauw')
+		->setTitle('Office 2007 XLSX Test Document')
+		->setSubject('Office 2007 XLSX Test Document')
+		->setDescription('Test document for Office 2007 XLSX, generated using PHP classes.')
+		->setKeywords('office 2007 openxml php')
+		->setCategory('Test result file');
+
+	//echo $base.' entrooo ';
+	//para las celdas de excel
+	$ie = 1;
+	$je = 'B';
+	//para sabar hasta donde unir celdas
+	$je1=$je;
+	//verificamos los campos
+	//cantidad de campos
+	$cant=0;
+	//guardamos los campos
+	$campo='';
+	//obtenemos los campos 
+	$cabecera = explode(",", $titulos);
+	foreach( $cabecera as $fieldMetadata ) 
+	{
+		$cant++;
+		$je1++;
+	}
+	//cabecera
+	//diseño de nombres de campos
+	//'horizontal' => Alignment::HORIZONTAL_RIGHT,
+	//nos posicionamos 3 posiciones anteriores campo
+	$je2='B';
+	for($i=0;$i<($cant-3);$i++)
+	{
+		$je2++;
+	}
+	$je1=$je2;
+	$je3=$je2;
+	$je3++;
+	$estilo_cabecera = array(
+		
+				'font' => [
+					'bold' => true,
+				],
+				'alignment' => [
+					'horizontal' => Alignment::HORIZONTAL_CENTER,
+				],
+				'borders' => [
+					'top' => [
+						'borderStyle' => Border::BORDER_THIN,
+					],
+				],
+				'fill' => [
+					'fillType' => Fill::FILL_GRADIENT_LINEAR,
+					'rotation' => 90,
+					'startColor' => [
+						/*'argb' => 'FFA0A0A0',*/
+						'argb' => '0086c7',
+					],
+					'endColor' => [
+						'argb' => 'FFFFFFFF',
+					],
+				],
+			
+	);
+	$spreadsheet->getActiveSheet()->getStyle('A2:'.$je1.'2')->applyFromArray($estilo_cabecera);
+	//redimencionar
+	//$spreadsheet->getActiveSheet()->getColumnDimension($je.''.$ie.':'.$je1.''.$ie)->setAutoSize(true);
+	$spreadsheet->getActiveSheet()->getStyle('B1')->applyFromArray(
+		[
+				'alignment' => [
+					'horizontal' => Alignment::HORIZONTAL_CENTER,
+				],
+				
+		]
+	);
+	//logo empresa
+	//echo __DIR__ ;
+	////die();
+	$drawing = new Drawing();
+	$drawing->setName('Logo');
+	$drawing->setDescription('Logo');
+	//windows
+	//$drawing->setPath(__DIR__ . '\logosMod.gif');
+	//linux
+	//$drawing->setPath(__DIR__ . '/logosMod.gif');
+
+		if(isset($_SESSION['INGRESO']['Logo_Tipo'])) 
+		{
+			$logo=$_SESSION['INGRESO']['Logo_Tipo'];
+			//si es jpg
+			$src = __DIR__ . '/../../img/logotipos/'.$logo.'.jpg'; 
+			if (@getimagesize($src)) 
+			{ 
+				$logo=$logo.'.jpg';
+			}
+			else
+			{
+				//si es gif
+				$src = __DIR__ . '/../../img/logotipos/'.$logo.'.gif'; 
+				if (@getimagesize($src)) 
+				{ 
+					$logo=$logo.'.gif';
+				}
+				else
+				{
+					//si es png
+					$src = __DIR__ . '/../../img/logotipos/'.$logo.'.png'; 
+					if (@getimagesize($src)) 
+					{ 
+						$logo=$logo.'.png';
+					}
+					else
+					{
+						$logo="DEFAULT.jpg";
+					}
+				}
+			}
+		}
+		else
+		{
+			$logo="DEFAULT.jpg";
+		}
+		/*if(isset($_SESSION['INGRESO']['Logo_Tipo'])) 
+		{
+			$logo=$_SESSION['INGRESO']['Logo_Tipo'];
+		}
+		else
+		{
+			$logo="DEFAULT";
+		}*/
+		$drawing->setPath(__DIR__ . '/../../img/logotipos/'.$logo);
+		//$drawing->setPath('logosMod.gif');
+		$drawing->setHeight(36);
+		$drawing->setCoordinates('A1');
+		$drawing->setOffsetX(10);
+		$drawing->setOffsetY(20);
+		$drawing->setWorksheet($spreadsheet->getActiveSheet());
+		//otro logo
+		$drawing = new Drawing();
+		$drawing->setName('Logo1');
+		$drawing->setDescription('Logo1');
+		//windows
+		//$drawing->setPath(__DIR__ . '\logosMod.gif');
+		//linux
+		$drawing->setPath(__DIR__ . '/logosMod.gif');
+		//$drawing->setPath('logosMod.gif');
+		$drawing->setHeight(36);
+		$drawing->setCoordinates($je3.'1');
+		$drawing->setOffsetX(100);
+		$drawing->setOffsetY(10);
+		$drawing->setWorksheet($spreadsheet->getActiveSheet());
+		//unir celdas
+		$je2++;
+		$spreadsheet->getActiveSheet()->mergeCells($je.''.$ie.':'.$je1.''.$ie);
+		if($_SESSION['INGRESO']['Razon_Social']!=$_SESSION['INGRESO']['noempr'])
+		{
+			$richText2 = new RichText();
+			$richText2->createText($_SESSION['INGRESO']['noempr'].' ');
+
+			$red = $richText2->createTextRun($_SESSION['INGRESO']['Razon_Social']);
+			$red->getFont()->setColor(new Color(Color::COLOR_WHITE));
+			$spreadsheet->getActiveSheet()->setCellValue('B1', $richText2);
+			//ampliar columna
+			//$spreadsheet->getActiveSheet()->getStyle('B1')->getAlignment()->setWrapText(true);
+		}
+		else
+		{
+			$spreadsheet->getActiveSheet()->setCellValue('B1', $_SESSION['INGRESO']['noempr'].'');
+		}
+
+		$spreadsheet->getActiveSheet()->getStyle('B1')->getFont()->setName('Candara');
+		$spreadsheet->getActiveSheet()->getStyle('B1')->getFont()->setSize(20);
+		$spreadsheet->getActiveSheet()->getStyle('B1')->getFont()->setBold(true);
+		$spreadsheet->getActiveSheet()->getStyle('B1')->getFont()->setUnderline(Font::UNDERLINE_SINGLE);
+		$spreadsheet->getActiveSheet()->getStyle('B1')->getFont()->getColor()->setARGB(Color::COLOR_WHITE);
+		
+		$spreadsheet->getActiveSheet()->getStyle('B1')->getProtection()->setLocked(Protection::PROTECTION_UNPROTECTED);
+		$spreadsheet->getActiveSheet()->getColumnDimension('B1')->setAutoSize(true);
+		$je1++;$je1++;
+
+		$richText1 = new RichText();
+		$richText1->createText(''."\n");
+
+		
+		$redf=$richText1->createTextRun("Hora: ");
+		$redf->getFont()->setColor(new Color(Color::COLOR_WHITE));
+		$redf->getFont()->setSize(8);
+		$redf->getFont()->setBold(true);
+		
+		$redf=$richText1->createTextRun(date("H:i")."\n");
+		$redf->getFont()->setColor(new Color(Color::COLOR_WHITE));
+		$redf->getFont()->setSize(8);
+		
+		$redf=$richText1->createTextRun("Fecha: ");
+		$redf->getFont()->setColor(new Color(Color::COLOR_WHITE));
+		$redf->getFont()->setSize(8);
+		$redf->getFont()->setBold(true);
+		
+		$redf=$richText1->createTextRun(date("d-m-Y") ."\n");
+		$redf->getFont()->setColor(new Color(Color::COLOR_WHITE));
+		$redf->getFont()->setSize(8);
+		
+		$redf=$richText1->createTextRun("Usuario: ");
+		$redf->getFont()->setColor(new Color(Color::COLOR_WHITE));
+		$redf->getFont()->setSize(8);
+		$redf->getFont()->setBold(true);
+		
+		$red = $richText1->createTextRun($_SESSION['INGRESO']['Nombre']);
+		$red->getFont()->setColor(new Color(Color::COLOR_WHITE));
+		$red->getFont()->setSize(8);
+			
+		$spreadsheet->getActiveSheet()
+			->getCell($je1.''.$ie)
+			->setValue($richText1);
+         
+			//ampliar columna
+		$spreadsheet->getActiveSheet()->getStyle($je1.''.$ie)->getAlignment()->setWrapText(true);
+		//$spreadsheet->getActiveSheet()->setCellValue($je1.''.$ie, Date::PHPToExcel(gmmktime(0, 0, 0, date('m'), date('d'), date('Y'))));
+		//$spreadsheet->getActiveSheet()->getStyle($je1.''.$ie)->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_DATE_XLSX15);
+		$spreadsheet->getActiveSheet()->getStyle($je1.''.$ie)->getFont()->getColor()->setARGB(Color::COLOR_WHITE);
+		//$spreadsheet->getActiveSheet()->getColumnDimension($je1)->setAutoSize(true);
+
+	    $spreadsheet->getActiveSheet()->getColumnDimension($je2)->setWidth(23);
+	    $spreadsheet->getActiveSheet()->getRowDimension('1')->setRowHeight(50);
+        
+		//$je1++;
+		//$spreadsheet->getActiveSheet()->setCellValue($je1.''.$ie, '');
+		//$spreadsheet->getActiveSheet()->getStyle($je1.''.$ie)->getFont()->getColor()->setARGB(Color::COLOR_WHITE);
+		
+		$spreadsheet->getActiveSheet()->getStyle('A'.$ie.':'.$je2.''.$ie)->getFill()->setFillType(Fill::FILL_SOLID);
+		//$spreadsheet->getActiveSheet()->getStyle('A'.$ie.':'.$je1.''.$ie)->getFill()->getStartColor()->setARGB('FF808080');
+
+		$spreadsheet->getActiveSheet()->getStyle('A'.$ie.':'.$je2.''.$ie)->getFill()->getStartColor()->setARGB('0086c7');
+
+		//si lleva o no border
+		$bor='';
+		if($b!=null and $b!='0')
+		{
+			$bor='table-bordered1';
+			//style="border-top: 1px solid #bce8f1;"
+		}
+		//nombre de columnas
+		//para las celdas de excel
+		$ie = 2;
+		$je = 'A';
+		//cantidad campos
+		$cant=0;
+		//guardamos los campos
+		$campo='';
+		//tipo de campos
+		$tipo_campo=array();
+		//guardamos posicion de un campo ejemplo fecha
+		$cam_fech=array();
+		//contador para fechas
+		$cont_fecha=0;
+		//obtenemos los campos 
+	$border = array(
+		'borders' => [
+			'allBorders' => [
+				 	'borderStyle' => Border::BORDER_THIN,
+				 		 ],
+				 	 ],
+		);
+		$cabecera = explode(",", $titulos);
+		foreach($cabecera as $value) {
+				
+			$spreadsheet->getActiveSheet()->setCellValue($je.''.$ie, $value);			
+		    $spreadsheet->getActiveSheet()->getStyle('A2:'.$je3.'2')->applyFromArray($estilo_cabecera);
+			// $spreadsheet->getActiveSheet()->getColumnDimension($je)->setAutoSize(true);
+			$je++;
+		}
+		$ie = 3;
+		$je = 'A';
+		$temp = '';
+        $total_debe= 0;
+		$total_haber = 0;
+		$cont = $ie;
+		$spreadsheet->getActiveSheet()->mergeCells('E2:F2');
+		//---------------------------------------------INICIO DE TODO------------------------------
+	$i = 0;
+	while ($value = sqlsrv_fetch_array( $datos, SQLSRV_FETCH_ASSOC)) {
+		$spreadsheet->getActiveSheet()->mergeCells('E'.$cont.':F'.$cont);
+    	$spreadsheet->getActiveSheet()->setCellValue($je.$cont, utf8_encode($value[$i]));
+    	$cont++;
+    	$je++;
+    	$i++;
+    }
+
+    	$je = 'A';
+	    $tamano = count($cabecera);
+	    $cont = 1;
+	    $i= 3;
+	    foreach ($datos as $value) {
+	    	$spreadsheet->getActiveSheet()->setCellValue($je.''.$i, $value);
+	    	//$spreadsheet->getActiveSheet()->mergeCells($je.$cont.':F'.$cont);
+	    	$je++;
+	    	$cont++;
+	    	if ( $cont > $tamano) {
+	    		$je = 'A';
+	    		$cont = 1;
+	    		$i++;
+	    	}
+	    }
+		//--------------------------------------------FIN DE TODO---------------------------------
+
+		    $ie = $ie+1;
+				
+	$spreadsheet->setActiveSheetIndex(0);
+
+	$writer = new Xlsx($spreadsheet);
+	if($ti == '' OR $ti==null)
+	{
+		$writer->save(dirname(__DIR__,2).'/php/vista/TEMP/'.trim($_SESSION['INGRESO']['ti']).'.xlsx');
+		//$writer->save('php://output');
+		if ($download) {
+			download_file(dirname(__DIR__,2).'/php/vista/TEMP/'.trim($_SESSION['INGRESO']['ti']).".xlsx", trim($_SESSION['INGRESO']['ti']).".xlsx");
+		}
+    }else
+    {
+		$writer->save(dirname(__DIR__,2).'/php/vista/TEMP/'.trim($ti).'.xlsx');
+		//$writer->save('php://output');
+		if ($download) {
+	    	download_file(dirname(__DIR__,2).'/php/vista/TEMP/'.trim($ti).".xlsx", trim($ti).".xlsx");
+		}
+
+    }
+}
+
 function excel_file_diario($re,$ti=null,$camne=null,$b=null,$base=null) 
 {
 
