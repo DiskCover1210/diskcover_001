@@ -4,294 +4,119 @@
  * Mail:  diskcover@msn.com
  * web:   www.diskcoversystem.com
  * distribuidor: PrismaNet Profesional S.A.
+ * 
+ * 
+ * modificcado por javier farinango
+ * 
+ * 
  */
-require_once("../db/db.php");
+// require_once("../db/db.php");
+require_once("../db/db1.php");
+
 class usuario_model{
-    public $db;
 	private $dbs;
-    private $contacto;
 	private $ID_Entidad="";
-    private $Entidad ="";
-    private $Nombre_Entidad="";
-    private $ID_Usuario="";
-    private $Nombre_Usuario="";
-    private $Mail="";
-    private $Contrasena="";
-    private $IP_Usuario="";
-    private $Hora="";
-    private $Fecha="";
-    public $Mensaje="";
-    private $accesos = "";
-	var $vQuery;
+	
+	// nuevas variables javier farinango
+	private $db1;
  
     public function __construct(){
 		//parent::__construct();
-        $this->db=Conectar::conexion();
-        $this->contacto=array();
-    }
-	//para conexion sql server
-	public function conexionSQL(){
-        $this->dbs=Conectar::conexionSQL();
-        $this->contacto=array();
-    }
-    public function get_contacto(){
-        $consulta=$this->db->query("select * from contacto;");
-        while($filas=$consulta->fetch_assoc()){
-            $this->contacto[]=$filas;
-        }
-        return $this->contacto;
+       // $this->db=Conectar::conexion();
+        $this->db1 = new db();
+      //  $this->contacto=array();
     }
 
-	public function set_contacto($sTabla, $vValores, $sCampos=NULL){
-		$sInsert="";
-		if ($sCampos==NULL):
-			$sInsert = "INSERT INTO {$sTabla} VALUES({$vValores});";			
-		else:
-			$sInsert = "INSERT INTO {$sTabla} ({$sCampos}) VALUES ({$vValores});";
-		endif;
-		//echo $sInsert;
-		
-		$this->vQuery = $this->db->query($sInsert);
-		return $this->vQuery;
-	}
+	
 	// Metdo devuelve true o false para ingresar a la sesccion de pagina de administracion
-	public function Ingresar($Entidad,$Mail,$Pasword){
-		$this->Entidad=$Entidad;
-		$this->Mail=$Mail;
-		$this->Contrasena=$Pasword;
-		//determinamos cada uno de los metodos devueltos
-	  if($this->ValidarEntidad()==false){
-		  $this->Mensaje=$this->Mensaje;
-		  if (!empty($_SERVER['HTTPS']) && ('on' == $_SERVER['HTTPS'])) {
-						$uri = 'https://';
-					}else{
-						$uri = 'http://';
-					}
-					$uri .= $_SERVER['HTTP_HOST'];
-					//echo $uri;
-			echo "<script type='text/javascript'>window.location='".$uri.$_SERVER["REQUEST_URI"]."/../../../php/vista/login.php?men=".$this->Mensaje."'</script>";
-			//echo "<script type='text/javascript'>window.location='".$uri."/diskcover/nuevo/index.php?men=".$this->Mensaje."'</script>";
-		//echo $this->Mensaje;		  
-		}else{
-			if($this->ValidarUser()==false){
-				$this->Mensaje=$this->Mensaje;
-				  if (!empty($_SERVER['HTTPS']) && ('on' == $_SERVER['HTTPS'])) {
-								$uri = 'https://';
-							}else{
-								$uri = 'http://';
-							}
-							$uri .= $_SERVER['HTTP_HOST'];
-							//echo $uri;
-					echo "<script type='text/javascript'>window.location='".$uri.$_SERVER["REQUEST_URI"]."/../../../php/vista/login.php?men=".$this->Mensaje."'</script>";
-					//echo "<script type='text/javascript'>window.location='".$uri."/diskcover/nuevo/index.php?men=".$this->Mensaje."'</script>";
-			}else{
-				//echo $this->Mensaje;	
-				if($this->Pasword_usr()==false){
-					if (!empty($_SERVER['HTTPS']) && ('on' == $_SERVER['HTTPS'])) {
-								$uri = 'https://';
-							}else{
-								$uri = 'http://';
-							}
-							$uri .= $_SERVER['HTTP_HOST'];
-							//echo $uri;
-					echo "<script type='text/javascript'>window.location='".$uri.$_SERVER["REQUEST_URI"]."/../../../php/vista/login.php?men=".$this->Mensaje."'</script>";
-					//echo "<script type='text/javascript'>window.location='".$uri."/diskcover/nuevo/index.php?men=".$this->Mensaje."'</script>";
-				}else{
-					//por lo es correcto el logeo realizamos la redireccion
-					if (!empty($_SERVER['HTTPS']) && ('on' == $_SERVER['HTTPS'])) {
-						$uri = 'https://';
-					}else{
-						$uri = 'http://';
-					}
-					$uri .= $_SERVER['HTTP_HOST'];
-					//die();
-					//Aqui modificar si el pag de aministracion esta 
-					//en un subdirectorio
-					// "<script type=\"text/javascript\">
-					// window.location=\"".$uri."/wp-admin/admin.php\";
-					// </script>";
-					// print_r($_SESSION['INGRESO']);
-
-					if($_SESSION['INGRESO']['Accesos'] == 1)
-					{
-					  header('Location: '.$uri.$_SERVER["REQUEST_URI"].'/../../../php/vista/panel.php');
-				    }else
-				    {
-				    	// echo "<script type='text/javascript'>Este usuario no eiene acceso</script>";
-				    	header('Location: ../vista/login.php?accs=0');
-				    }
-					// echo "<script type='text/javascript'>window.location='".$uri.$_SERVER["REQUEST_URI"]."/../../../php/vista/panel.php'</script>";
-					//echo "<script type='text/javascript'>window.location='".$uri.$_SERVER["REQUEST_URI"]."/diskcover_php/vista/panel.php'</script>";
-				} 
-			}
+	function Ingresar($usuario,$pass,$entidad){
+		$query = "SELECT * 
+		          FROM acceso_usuarios AU
+		          INNER JOIN acceso_empresas AE ON AU.CI_NIC = AE.CI_NIC 
+		          WHERE AU.Usuario = '".$usuario."' 
+		          and AE.ID_Empresa = '".$entidad."' 
+		          and AU.Clave = '".$pass."'
+		          LIMIT 1";
+		$datos = $this->db1->datos($query,$tipo='MY SQL');
+		if(count($datos)>0)
+		{
+			// variables de entidad y usuario logueado en mysql
+			$_SESSION['INGRESO']['CodigoU'] = $datos[0]['CI_NIC'] ;
+			$_SESSION['INGRESO']['item'] =  $datos[0]['Item'];
+			$_SESSION['INGRESO']['Nombre_Completo']=$datos[0]['Nombre_Usuario'];
+			$_SESSION['autentificado'] = 'VERDADERO';
+			$_SESSION['INGRESO']['IDEntidad'] = $datos[0]['ID_Empresa'];
+			$_SESSION['INGRESO']['Entidad_No'] = $datos[0]['ID_Empresa'];
+			$_SESSION['INGRESO']['Nombre'] = $datos[0]['Nombre_Usuario'];
+			$_SESSION['INGRESO']['Id'] = $datos[0]['CI_NIC'];
+			$_SESSION['INGRESO']['Clave'] = $datos[0]['Clave'];
+			$_SESSION['INGRESO']['Mail'] = $datos[0]['Usuario'];
+	// print_r($datos);die();
+			return 'panel.php';
+		}else
+		{
+			return -1;
 		}
 	}
-	private function ValidarEntidad(){
-		 $retornar=false;
-		 $entidadfilter =preg_match("/^[0-9]{13}$/", $this->Entidad);
-		 $entidadfilter1 =preg_match("/^[0-9]{10}$/", $this->Entidad);
-		 if ($entidadfilter or $entidadfilter1){
-			//Creamos una query sencilla
+
+
+	function ValidarEntidad1($entidad){		
+		$num = strlen($entidad);
+		if($num==10 || $num == 13 && is_numeric($entidad))
+		{
 			$query = "SELECT *
 					  FROM entidad
-					  WHERE RUC_CI_NIC = '".$this->Entidad."';";
-			// echo $query; die();
-					
-			$consulta=$this->db->query($query) or die($this->db->error);
-			//Realizamos un bucle para ir obteniendo los resultados
-			while($filas=$consulta->fetch_assoc()){
-				$this->ID_Entidad=$filas['ID_Empresa'];
-				$_SESSION['INGRESO']['Entidad_No'] = $filas['ID_Empresa'];				
-				//echo $filas['ID_Empresa'];
-				$this->Nombre_Entidad=$filas['Nombre_Entidad'];
-				$this->Mensaje=$this->EscribirMsg("Ok!","Entidad encontrada.");
-				
-				$retornar=true;
-			}
-			//die();	
-			if($this->ID_Entidad=='')
+					  WHERE RUC_CI_NIC = '".$entidad."';";
+			$datos = $this->db1->datos($query,$tipo='MY SQL');
+			if(count($datos)>0)
 			{
-				$this->Mensaje=$this->EscribirMsg("Error Entidad!","Servidor de datos no econtrado, vuelva a intentar mas tarde.");
+				return array('respuesta'=>1,'entidad'=>$datos[0]['ID_Empresa'],'Nombre'=>$datos[0]['Nombre_Entidad']);
+			}else
+			{
+				//retorna -1 cuando no se encuentra la empresa 			
+				return array('respuesta'=>-1,'entidad'=>'','Nombre'=>'');
 			}
-			
-			// cerrar la conexión
-			$consulta->close();
-		 }else{
-			 //echo " tgtgtg ";
-		   //Se muesta al usuario el mensaje de error sobre el formato de la entidad
-			 $this->Mensaje=$this->EscribirMsg("Error Entidad!","La entidad que ingresaste no tiene el formato correcto.");
-		 }
-	return $retornar;
+		}else
+		{
+			//retorna -2 cuando no tiene el formato o la extencion correcta
+			return array('respuesta'=>-2,'entidad'=>'','Nombre'=>'');
+
+		// print_r($num);die();
+		}
 	}
+
+
 	/*
 	 * Validamos la entrada de correo
 	 * electronico
 	 * @param [String mail]
 	 */
-	private function ValidarUser(){
-		 $retornar=false;
-		 $mailfilter =filter_var($this->Mail);//filtramos el correo
-		 // Validamos el formato  de correo electronico utilizando expresiones 
-	   // regulares:"/[a-zAZ0-9\_\-]+\@[a-zA-Z0-9]+\.[a-zA-Z0-9]/"	
-	   if ($mailfilter){  
-			// Creamos una query sencilla
-			$query = "SELECT * 
-					  FROM acceso_usuarios 
-					  WHERE Usuario = '".$this->Mail."'";
-					  //"AND ID_Empresa = ".$this->ID_Entidad.";";
-			// Ejecutamos la query
-					  // print_r($query);die();
-			$consulta=$this->db->query($query) or die($this->db->error);
-			// Realizamos un bucle para ir obteniendo los resultados
-			$this->Mail='';
-			while($filas=$consulta->fetch_assoc()){
-				$this->Mail=$mailfilter;
-				$this->Mensaje=$this->EscribirMsg("Ok!","Email/Usuario encontrada.");
-				$retornar=true;
-			}
-			if($this->Mail=='')
-			{
-				$this->Mensaje=$this->EscribirMsg("Error Usuario!","Servidor de datos no econtrado, vuelva a intentar mas tarde.");
-			}
-		
-			// cerrar la conexión
-			$consulta->close();
-		 }else{
-			   // Se muesta al usuario el mensaje de error sobre el formato de correo
-			$this->Mensaje=$this->EscribirMsg("Error Usuario!","El correo/usuario que ingresaste no tiene formato correcto.");    
-		 }
-	return $retornar;
+	function ValidarUser1($usuario,$entidad){
+
+		$query = "SELECT * 
+		          FROM acceso_usuarios AU
+		          INNER JOIN acceso_empresas AE ON AU.CI_NIC = AE.CI_NIC 
+		          WHERE AU.Usuario = '".$usuario."' and AE.ID_Empresa = '".$entidad."' LIMIT 1";
+		 // print_r($query);die();
+	    $datos = $this->db1->datos($query,$tipo='MY SQL');
+	    if(count($datos)>0)
+	    {
+	    	if($datos[0]['TODOS']==1)
+	    	{
+	    		return array('respuesta'=>1);
+	    	}else
+	    	{
+	    		return array('respuesta'=>-2);
+	    	}
+	    }else
+	    {
+	    	return array('respuesta'=>-1);
+
+	    }
+	    // print_r($datos);die();
 	}
-	/*
-	 * Metodo para determinar
-	 * la existencia de la contraseña y verificacion 
-	 * @param [type] $pasword [ingresar contraseña]
-	 */
-	private function Pasword_usr(){
-		$retornar = false;
-		//saneamos la entrada de los caracteres
-		$contra = filter_var($this->Contrasena, FILTER_SANITIZE_STRING, FILTER_FLAG_NO_ENCODE_QUOTES | FILTER_FLAG_ENCODE_AMP);
-		if ($contra==""){
-		//si que no existen ningun contraseña mostramos el mensaje de error
-		 $this->Mensaje=$this->EscribirMsg("Error!","Escriba su contraseña.");        
-		}else{
-			//Realizamos la consulta sql a la bd verificamos la contraseña
-			
-			// Creamos una query sencilla
-			$query = "SELECT * 
-					  FROM acceso_usuarios 
-					  WHERE Usuario = '".$this->Mail."' 
-					  AND Clave = '".$this->Contrasena."'";
-					  
-					  //"AND ID_Empresa = ".$this->ID_Entidad." LIMIT 1;";
 
-			// Ejecutamos la query
-			//echo $query;
-			//die();
 
-			$consulta=$this->db->query($query) or die($this->db->error);
-			// Realizamos un bucle para ir obteniendo los resultados
-			while($filas=$consulta->fetch_assoc()){				
-				$this->ID_Usuario = ''.$filas['CI_NIC'];
-				$this->Nombre_Usuario = $filas['Nombre_Usuario'];
-				$this->IP_Usuario = $this->IPuser();
-				$this->accesos = $filas['TODOS'];
-				//Recuperando la hora en el que ingreso
-				$this->Hora = date('H:i:s', time());
-				$this->Fecha = date("Y-m-d");
-
-				//$Clave=Conectar::encryption($this->Contrasena);
-				//echo $filas['CI_NIC'].'  '.$this->IP_Usuario;
-				//die();
-				//echo $this->ID_Usuario.' wwwwwwwwwwwww ';
-				//hacemos sesion
-					if(!isset($_SESSION)) 
-					{ 
-							session_start(); 
-					}
-					else
-					{
-							// session_destroy();
-							// session_start(); 
-					} 
-					$_SESSION['Nombre'] = $this->Nombre_Usuario;
-					$_SESSION['autentificado'] = "VERDADERO";
-					$_SESSION['INGRESO'] = array("Id"      =>''.$this->ID_Usuario,
-												 "IP"      =>$this->IP_Usuario,
-												 "RUCEnt"  =>$this->Entidad,
-												 "Entidad" =>$this->Nombre_Entidad,
-												 "Nombre"  =>$this->Nombre_Usuario,
-												 "Hora"    =>$this->Hora,
-												 "Fecha"   =>$this->Fecha,
-												 "Mail"    =>$this->Mail,
-												 "Clave"   =>$this->Contrasena,
-												 "IDEntidad" =>$this->ID_Entidad,
-												 "Cambio" =>$filas['Cambio'],
-												 "ID" =>$filas['ID'],
-												 "ERROR" =>'1',
-												 "Accesos"=>$this->accesos,
-												 "Tipo_Usuario" =>$filas['Tipo_Usuario'],
-												 "LOCAL_MYSQL"=>$_SESSION['INGRESO']['LOCAL_MYSQL'],
-												 "LOCAL_SQLSERVER"=>$_SESSION['INGRESO']['LOCAL_SQLSERVER'],
-												 'Entidad_No'=>$_SESSION['INGRESO']['Entidad_No']
-												 //"ClaveEncriptada" =>$Clave
-												 ); 
-				//Asignamos el valor verdadero para retornarlo
-				
-				$this->Mensaje=$this->EscribirMsg("Ok!","El Usuario se ha registrado correctamente.");
-				//echo $_SESSION['Nombre'];
-				//die();
-				$retornar=true;// se retorna un valor verdadero
-			}
-			if($this->ID_Usuario =='')
-			{
-				$this->Mensaje=$this->EscribirMsg("Error!","Contraseña incorrecta escriba nuevamente.");
-			}
-			
-			$consulta->close();
-		}
-	 return $retornar; //Retornaos el valor true o false
-	}
 		
 	/*
 	 * Returna el IP de usuario
@@ -307,42 +132,20 @@ class usuario_model{
 		 $returnar=$_SERVER['REMOTE_ADDR'];}
 	return $returnar;
 	}
-	public function MostrarMsg(){
-		return $this->Mensaje;
-	}
+
+	
 		
-	private function EscribirMsg($Alerta,$Mensajes){
-		/*$MsgStrong = " Swal.fire({
-				  type: 'error',
-				  title: 'No se pudo realizar sesion',
-				  text: '".$Mensajes."'
-				});
-				";*/
-				$MsgStrong = $Mensajes;
-	    /*$MsgStrong= "<div class=\'alert alert-danger alert-dismissible fade in\' role=\'alert\'>".
-	    "<button type=\'button\' class=\'close\' data-dismiss=\'alert\' aria-label=\'Close\'>".
-				   "<span aria-hidden=\'true\'>x</span>".
-				   "</button>".
-				   "<strong>".$Alerta." </strong>".$Mensajes."".
-				   "</div>";*/
-	  return $MsgStrong;
-	}
-		
-	function MsgBox($Mensajes){
-		echo "<script>alert('".$Mensajes."');</script>";
-	}
-	//devuelve empresas asociadas a la entidad del usuario
 
 	function getEmpresas($id_entidad){
 	    $empresa_2 = array();	    
-		 $empresa= array();
+		$empresa= array();
 		$items = '';
-		$sql2 = "SELECT  DISTINCT Item FROM acceso_empresas WHERE ID_Empresa = '".$id_entidad."' AND CI_NIC = '".$_SESSION['INGRESO']['Id']."';";
-		 $consulta_emp=$this->db->query($sql2);
-		   while($filas=$consulta_emp->fetch_assoc()){
-            $empresa_2[]=$filas;
-        }
-        foreach ($empresa_2 as $key => $value) {
+		$sql2 = "SELECT  DISTINCT Item 
+		         FROM acceso_empresas 
+		         WHERE ID_Empresa = '".$id_entidad."' 
+		         AND CI_NIC = '".$_SESSION['INGRESO']['Id']."';";
+		  $datos = $this->db1->datos($sql2,$tipo='MY SQL');
+        foreach ($datos as $key => $value) {
         	$items.='"'.$value['Item'].'",';
         }
         $items = substr($items,0,-1);
@@ -351,402 +154,161 @@ class usuario_model{
 		{
 		$sql = "SELECT * 
 				FROM `lista_empresas`  where							 
-				 `ID_Empresa`='".$id_entidad."' AND Item in (".$items.");";
+				 `ID_Empresa`='".$id_entidad."' 
+				 AND Item in (".$items.");";
 				// print_r($sql);die();
-		 $consulta=$this->db->query($sql);		
-		   while($filas=$consulta->fetch_assoc()){
-            $empresa[]=$filas;
-            }
+		 $empresa = $this->db1->datos($sql,$tipo='MY SQL');
 
 		// print_r($sql);die();
 	  }
 	  // print_r($empresa);die();
         return $empresa;
 	}
+
+
 	//devuelve empresa seleccionada por id 
 	function getEmpresasId($id_empresa){
+
 		    $sql = "SELECT * 
-									FROM `lista_empresas` 
-									WHERE IP_VPN_RUTA<>'.' 
-									 AND Base_Datos<>'.' 
-									 AND Usuario_DB<>'.' 
-									 AND Contrasena_DB<>'.' 
-									 AND Tipo_Base<>'.' 
-									 AND Puerto<>'0' 
-									 AND`ID`=".$id_empresa.";";
-									 // print_r($sql);die();
-			$consulta=$this->db->query($sql);
-		
-		//echo "SELECT * FROM `Lista_Empresas` 
-		//							WHERE `ID`=".$id_empresa.";";
-		//$filas=$consulta->fetch_assoc();
-		//echo $filas['IP_VPN_RUTA'];
-
-		$empresa = array();
-		 if ($consulta) {
-
-			/* Obtener la información del campo para todas las columnas */
-			$info_campo = $consulta->fetch_fields();
-			$i=0;
-			foreach ($info_campo as $valor) {
-				if($i==15)
-				{
-					$contra=$valor->name;
-				}
-				$i++;
-			}
-		}
-        while($filas=$consulta->fetch_assoc()){
-            $empresa[]=$filas;
-
-			//$_SESSION['INGRESO']['Contraseña_DB']=$filas[$contra];
-			// print_r($_SESSION['INGRESO']['Contraseña_DB']);die();
-			//echo ' vvv '.$filas['IP_VPN_RUTA'];
-        }
-        // print_r('expression');
-        // print_r($empresa);die();
-        return $empresa;
+					FROM lista_empresas L
+					INNER JOIN entidad E ON L.ID_Empresa = E.ID_Empresa
+					WHERE IP_VPN_RUTA<>'.' 
+					AND Base_Datos<>'.' 
+					AND Usuario_DB<>'.' 
+					AND Contrasena_DB<>'.' 
+					AND Tipo_Base<>'.' 
+					AND Puerto<>'0' 
+					AND L.ID=".$id_empresa.";";
+					// print_r($sql);die();
+		$datos = $this->db1->datos($sql,$tipo='MY SQL');
+		return $datos;
 	}
 
 	function getEmpresasId_sin_sqlserver($id_empresa){
-		    $sql = "SELECT * FROM `lista_empresas` WHERE  `ID`=".$id_empresa.";";
-									 // print_r($sql);die();
-			$consulta=$this->db->query($sql);
-		
-		//echo "SELECT * FROM `Lista_Empresas` 
-		//							WHERE `ID`=".$id_empresa.";";
-		//$filas=$consulta->fetch_assoc();
-		//echo $filas['IP_VPN_RUTA'];
-
-		$empresa = array();
-		 if ($consulta) {
-
-			/* Obtener la información del campo para todas las columnas */
-			$info_campo = $consulta->fetch_fields();
-			$i=0;
-			foreach ($info_campo as $valor) {
-				if($i==15)
-				{
-					$contra=$valor->name;
-				}
-				$i++;
-			}
-		}
-        while($filas=$consulta->fetch_assoc()){
-            $empresa[]=$filas;
-
-			//$_SESSION['INGRESO']['Contraseña_DB']=$filas[$contra];
-			// print_r($_SESSION['INGRESO']['Contraseña_DB']);die();
-			//echo ' vvv '.$filas['IP_VPN_RUTA'];
-        }
-        // print_r('expression');
-        // print_r($empresa);die();
-        return $empresa;
+		    $sql = "SELECT * 
+		    FROM lista_empresas E
+		    LEFT JOIN entidad L ON E.ID_Empresa = L.ID_Empresa 
+		    WHERE  E.ID=".$id_empresa.";";
+			// print_r($sql);die();
+			$datos = $this->db1->datos($sql,$tipo='MY SQL');
+		    return $datos;
 	}
 
-	//consultar periodo mysql
-	function getPeriodoActualMYSQL($Opcem=null){
-		$empresa=array();
-		if($Opcem==null)
+
+	//consultaperido nuevo  modificado 
+	function get_periodo($Opcem=false)
+	{
+		if($Opcem)
 		{
-			$sql="SELECT * 
-			FROM Fechas_Balance 
-			where detalle='Balance' 
-			and Item='".$_SESSION['INGRESO']['item']."' 
-			AND periodo='.'";
-		}
-		else
-		{
-			//verificamos si es mes o año
-			$sql="SELECT * 
-			FROM Fechas_Balance 
-			where detalle='Balance' 
-			and Item='".$_SESSION['INGRESO']['item']."' 
-			AND periodo='.'";
-			 If ($Opcem=='1')
-				  {
-					 $sql= $sql."AND Detalle = 'Balance Mes' ";
-				  }
-				  Else
-				  {
-					  $sql= $sql."AND Detalle = 'Balance' ";
-				  }
-		
-		}
-		//echo $sql;
-		$consulta=$this->db->query($sql);
-		while($filas=$consulta->fetch_assoc()){
-            $empresa[]=$filas;
-			//echo ' vvv '.$filas['IP_VPN_RUTA'];
-        }
-        return $empresa;
-	}
-	//consulta periodo sql server
-	function getPeriodoActualSQL($Opcem=null){
-		$empresa=array();
-		if($Opcem==null)
-		{
-			$sql="SELECT * 
-			FROM Fechas_Balance 
-			where detalle='Balance' 
-			and Item='".$_SESSION['INGRESO']['item']."' 
-			AND periodo='.' ";
-		}
-		else
-		{
-			//verificamos si es mes o año
 			$sql="SELECT * 
 			FROM Fechas_Balance 
 			where detalle='Balance' 
 			and Item='".$_SESSION['INGRESO']['item']."'  
 			AND periodo='.'";
 			 If ($Opcem=='1')
-				  {
-					 $sql= $sql." AND Detalle = 'Balance Mes' ";
-				  }
-				  Else
-				  {
-					  $sql= $sql." AND Detalle = 'Balance' ";
-				  }
-		
-		}
-		//echo $sql;
-		$stmt = false;
-		if($this->dbs!='')
-		{
-			$stmt = sqlsrv_query( $this->dbs, $sql);
-		}
-		if( $stmt === false)  
-		{  
-			//echo "Error en consulta PA.\n";  
-			 echo "<script>
-							/*Swal.fire({
-								type: 'error',
-								title: 'Fallo',
-								text: 'Error en consulta PA.',
-								footer: ''
-							})*/
-							alert('Error en consulta');
-					</script>";
-			 if($_SESSION['INGRESO']['ERROR']==1)
-			 {
-				die( print_r( sqlsrv_errors(), true)); 
-			 }
-			 die();
-		} 
-		else
-		{
-			$i=0;
-			while( $obj = sqlsrv_fetch_object( $stmt)) 
-			{
-				$cam=date_format($obj->Fecha_Inicial,'Y-m-d H:i:s');
-				$empresa[$i]['Fecha_Inicial']=$cam;
-				$cam=date_format($obj->Fecha_Final,'Y-m-d H:i:s');
-				$empresa[$i]['Fecha_Final']=$cam;
-				//echo $empresa[$i]['Fecha_Inicial'];
-				$i++;
-			}
-			if($i==0)
-			{
-				$_SESSION['INGRESO']['Fechai']='';
-				$_SESSION['INGRESO']['Fechaf']='';
-			}
-			else
-			{
-				$_SESSION['INGRESO']['Fechai']=$empresa[0]['Fecha_Inicial'];
-				$_SESSION['INGRESO']['Fechaf']=$empresa[0]['Fecha_Final'];
-			}
-			sqlsrv_close( $this->dbs );
-		}
-		
-        return $empresa;
-	}
-	//detalle de la empresa sql server
-	function getEmpresasDESQL($item,$nombre){
-		$empresa=array();
-		$sql = '';
-		if($item!=null and $nombre!=null)
-		{
-			/*$sql="SELECT * 
-			FROM Empresas 
-			where Item='".$_SESSION['INGRESO']['item']."' 
-			and Empresa='".$_SESSION['INGRESO']['noempr']."'
-			 ";*/
-			$sql="SELECT * 
-			FROM Empresas 
-			where Item='".$_SESSION['INGRESO']['item']."' ";
-		}
-		else
-		{
-			$sql="SELECT * 
-			FROM Empresas 
-			where Item='".$_SESSION['INGRESO']['item']."' ";
-		}
-		$stmt = false;
-		if($this->dbs!='')
-		{
-
-			$stmt = sqlsrv_query($this->dbs,$sql);
-		}
-		if( $stmt === false)  
-		{  
-			 //echo "Error en consulta PA.\n";  
-			 echo "<script>
-							/*Swal.fire({
-								type: 'error',
-								title: 'Fallo',
-								text: 'Error en consulta PA.',
-								footer: ''
-							})*/
-							alert('Error en consulta');
-					</script>";
-			 if($_SESSION['INGRESO']['ERROR']==1)
-			 {
-				die( print_r( sqlsrv_errors(), true)); 
-			 }	
-			die();			 
-		}  
-		else
-		{
-
-			$i=0;
-			while( $obj = sqlsrv_fetch_object($stmt)) 
-			{
-
-				$cam=date_format($obj->Fecha,'Y-m-d H:i:s');
-				$empresa[$i]['Fecha']=$cam;
-				$empresa[$i]['Gerente']=$obj->Gerente;
-				$empresa[$i]['Telefono1']=$obj->Telefono1;
-				$empresa[$i]['Telefono2']=$obj->Telefono2;
-				$empresa[$i]['FAX']= $obj->FAX;
-				$empresa[$i]['Direccion']=$obj->Direccion;
-				$empresa[$i]['Email']=$obj->Email;
-				$empresa[$i]['Contador']=$obj->Contador;
-				$empresa[$i]['CI_Representante']=$obj->CI_Representante;
-				$empresa[$i]['RUC_Contador']=$obj->RUC_Contador;
-				$empresa[$i]['Email_Contabilidad']=$obj->Email_Contabilidad;
-				$empresa[$i]['Nombre_Comercial']=$obj->Nombre_Comercial;
-				$empresa[$i]['Razon_Social']=$obj->Razon_Social;
-				$empresa[$i]['Det_Comp']=$obj->Det_Comp;
-				$empresa[$i]['Signo_Dec']=$obj->Signo_Dec;
-				$empresa[$i]['Signo_Mil']=$obj->Signo_Mil;
-				$empresa[$i]['Ciudad']=$obj->Ciudad;
-				$empresa[$i]['Ruta_Certificado'] = $obj->Ruta_Certificado;
-				$empresa[$i]['Clave_Certificado'] = $obj->Clave_Certificado;
-				$empresa[$i]['Ambiente'] = $obj->Ambiente;		
-
-				$empresa[$i]['Dec_PVP'] = $obj->Dec_PVP;		
-				$empresa[$i]['Dec_Costo'] = $obj->Dec_Costo;		
-				//$empresa[$i]['Sucursal']=$obj->Sucursal;
-				//consultar sucursal
-				$empresa[$i]['Sucursal']=false;
-				$sql="select * from Acceso_Sucursales where Sucursal<>'.'  ";
-				$stmt1 = false;
-				$ii=0;
-				if($this->dbs!='')
+			   {
+			   $sql= $sql." AND Detalle = 'Balance Mes' ";
+			   }else
 				{
-					$stmt1 = sqlsrv_query( $this->dbs, $sql);
-					while( $obj1 = sqlsrv_fetch_object( $stmt1)) 
-					{
-						$ii++;
-					}
-					if($ii>0)
-					{
-						$empresa[$i]['Sucursal'] = true;
-					}
+					$sql= $sql." AND Detalle = 'Balance' ";
 				}
-				
-				$empresa[$i]['Opc']=$obj->Opc;
-				$empresa[$i]['Empresa']=$obj->Empresa;		
-				$empresa[$i]['S_M']=$obj->S_M;	
-				$empresa[$i]['Num_CD']=$obj->Num_CD;
-				$empresa[$i]['Num_CE']=$obj->Num_CE;
-				$empresa[$i]['Num_CI']=$obj->Num_CI;
-				$empresa[$i]['Num_ND']=$obj->Num_ND;		
-				$empresa[$i]['Num_NC']=$obj->Num_NC;
-				$empresa[$i]['Email_Conexion_CE']=$obj->Email_Conexion_CE;
-				$empresa[$i]['Email_Conexion']=$obj->Email_Conexion;
-				//$empresa[$i]['Email_Contrasena']=array_map(array($this, 'encode1'), $obj->Email_Contraseña);
-				$empresa[$i]['smtp_SSL']=$obj->smtp_SSL;
-				$empresa[$i]['smtp_UseAuntentificacion']=$obj->smtp_UseAuntentificacion;
-				$empresa[$i]['smtp_Puerto']=$obj->smtp_Puerto;
-				$empresa[$i]['smtp_Servidor']=$obj->smtp_Servidor;
-				$empresa[$i]['smtp_Secure']=$obj->smtp_Secure;
-				$empresa[$i]['Formato_Cuentas']=$obj->Formato_Cuentas;
-				$empresa[$i]['Formato_Inventario']=$obj->Formato_Inventario;
-				$empresa[$i]['Obligado_Conta']=$obj->Obligado_Conta;
-				$empresa[$i]['Ambiente']=$obj->Ambiente;
-				$empresa[$i]['LeyendaFA']=$obj->LeyendaFA;	
-				$empresa[$i]['RUC']=$obj->RUC;
-				$empresa[$i]['Gerente']=$obj->Gerente;	
-				$empresa[$i]['Cotizacion']=$obj->Cotizacion;
-				$empresa[$i]['No_Autorizar']=$obj->No_Autorizar;
-				$empresa[$i]['Serie_FA']=$obj->Serie_FA;				
-							
-				//IVA ACTUAL
-				$sql="SELECT ROUND((Porc/100), 2) AS porc FROM Tabla_Por_ICE_IVA WHERE IVA <> '0' 
+		}else
+		{			
+			$sql="SELECT * 
+			FROM Fechas_Balance 
+			where detalle='Balance' 
+			and Item='".$_SESSION['INGRESO']['item']."' 
+			AND periodo='.' ";
+		}
+
+		if( $_SESSION['INGRESO']['Tipo_Base']=='MY SQL')
+		{
+			return $datos = $this->db1->datos($sql,$tipo='MY SQL');
+		}else
+		{
+			return $datos = $this->db1->datos($sql);
+
+		}
+	}
+	function datos_empresa($item,$nombre)
+	{
+		$sql="SELECT * 
+			FROM Empresas 
+			where Item='".$_SESSION['INGRESO']['item']."' ";
+		if( $_SESSION['INGRESO']['Tipo_Base']=='MY SQL')
+		{			
+			return $datos = $this->db1->datos($sql,$tipo='MY SQL');
+		}else
+		{			
+		    $datos = $this->db1->datos($sql);
+		    $sql2 = "select * from Acceso_Sucursales where Sucursal<>'.' ";
+		    //las fechas estaban quemadas desde un inicio de sql3
+		    $sql3="SELECT ROUND((Porc/100), 2) AS porc FROM Tabla_Por_ICE_IVA WHERE IVA <> '0' 
 				 AND Fecha_Inicio <= '20200408' AND Fecha_Final >= '20200408'
 				 ORDER BY Porc ";
-				 $stmt1 = false;
-				if($this->dbs!='')
-				{
-					$stmt1 = sqlsrv_query( $this->dbs, $sql);
-				}
-				if( $stmt1 === false)  
-				{  
-					 //echo "Error en consulta PA.\n";  
-					 echo "<script>
-									/*Swal.fire({
-										type: 'error',
-										title: 'Fallo',
-										text: 'Error en consulta PA.',
-										footer: ''
-									})*/
-									alert('Error en consulta');
-							</script>";
-					 if($_SESSION['INGRESO']['ERROR']==1)
-					 {
-						die( print_r( sqlsrv_errors(), true)); 
-					 }	
-					die();			 
-				} 
-				else
-				{
-					while( $row = sqlsrv_fetch_array( $stmt1, SQLSRV_FETCH_NUMERIC) ) 
-					{
-						$empresa[$i]['porc']=$row[0];
-					}
-				}
-				//echo $empresa[$i]['Opc'].' '.$empresa[$i]['Sucursal'];
-				//die(); 			
-				//echo $empresa[$i]['Fecha_Inicial'];
-				$i++;
-			}
-		
-			sqlsrv_close( $this->dbs );
+
+		    $suc = $this->db1->datos($sql2);
+		    $porc = $this->db1->datos($sql3);
+
+		    // print_r($porc);die();
+		    $datos[0]['porc'] = 0;
+		    $datos[0]['Sucursal'] = 0;
+		    if(count($suc)>0)
+		    {
+		    	$datos[0]['Sucursal'] = 1;
+		    }
+		    if(count($porc))
+		    {
+		       $datos[0]['porc'] = $porc[0]['porc'];
+		    }
+
+			return $datos;
 		}
-        return $empresa;
+
 	}
-	//consultar periodo mysql
-	function getEmpresasDEMYSQL($item,$nombre){
-		$empresa=array();
-		if($item!=null and $nombre!=null)
+
+	function getAccesoEmpresasSQL()
+	{
+		// print_r($_SESSION['INGRESO']);die();
+		$permiso=array();
+		$_SESSION['INGRESO']['modulo']=array();
+		$sql="SELECT * 
+		FROM Acceso_Empresa 
+		WHERE  Codigo='".$_SESSION['INGRESO']['CodigoU']."' ";
+
+			// print_r($sql);die();
+		if($_SESSION['INGRESO']['Tipo_Base']!='MY SQL')
 		{
-			$sql="SELECT * 
-			FROM Empresas 
-			where Item='".$_SESSION['INGRESO']['item']."' 
-			and Empresa='".$_SESSION['INGRESO']['noempr']."'
-			 ";
+			$datos = $this->db1->datos($sql);
+
+		}else
+		{
+			$datos = $this->db1->datos($sql,$tipo='MY SQL');
+
 		}
-		//echo $sql;
-		$consulta=$this->db->query($sql);
-		while($filas=$consulta->fetch_assoc()){
-            $empresa[]=$filas;
-			//echo ' vvv '.$filas['IP_VPN_RUTA'];
-        }
-        return $empresa;
+
+			// print_r($datos);die();
+		if(count($datos)>0)
+		{
+			foreach ($datos as $key => $value) {
+				// print_r($value);die();
+			  $_SESSION['INGRESO']['accesoe']='1';
+			  $_SESSION['INGRESO']['modulo'][$key]=$value['Modulo'];
+		    }
+
+		}else
+		{
+			$_SESSION['INGRESO']['accesoe']='TODOS';
+			$_SESSION['INGRESO']['modulo'][0]='TODOS';
+		}
+		
+
 	}
-	//detalle ddl usuario en sql server
+
+	//----------------- funcion que no se an tocado 
+		//detalle ddl usuario en sql server
+
+
 	function getUsuarioSQL()
 	{
 		$usuario=array();
@@ -818,35 +380,35 @@ class usuario_model{
       }
         return $usuario;
 	}
-	//verificar acceso usuario
-	function getAccesoEmpresasSQL()
+
+	function getAccesoEmpresasSQL1()
 	{
-		$permiso=array();
-		$_SESSION['INGRESO']['modulo']=array();
-		$sql="SELECT    * FROM Acceso_Empresa 
-				WHERE  Codigo='".$_SESSION['INGRESO']['CodigoU']."' ";
-		$stmt = false;
-		if($this->dbs!='')
-		{
-			$stmt = sqlsrv_query( $this->dbs, $sql);
-		}
+		// $permiso=array();
+		// $_SESSION['INGRESO']['modulo']=array();
+		// $sql="SELECT    * FROM Acceso_Empresa 
+		// 		WHERE  Codigo='".$_SESSION['INGRESO']['CodigoU']."' ";
+		// $stmt = false;
+		// if($this->dbs!='')
+		// {
+		// 	$stmt = sqlsrv_query( $this->dbs, $sql);
+		// }
 		if( $stmt === false)  
 		{  
-			 //echo "Error en consulta PA.\n";  
-			 echo "<script>
-							/*Swal.fire({
-								type: 'error',
-								title: 'Fallo',
-								text: 'Error en consulta PA.',
-								footer: ''
-							})*/
-							alert('Error en consulta');
-					</script>";
-			 if($_SESSION['INGRESO']['ERROR']==1)
-			 {
-				die( print_r( sqlsrv_errors(), true)); 
-			 }
-			 die();
+			 // //echo "Error en consulta PA.\n";  
+			 // echo "<script>
+				// 			/*Swal.fire({
+				// 				type: 'error',
+				// 				title: 'Fallo',
+				// 				text: 'Error en consulta PA.',
+				// 				footer: ''
+				// 			})*/
+				// 			alert('Error en consulta');
+				// 	</script>";
+			 // if($_SESSION['INGRESO']['ERROR']==1)
+			 // {
+				// die( print_r( sqlsrv_errors(), true)); 
+			 // }
+			 // die();
 		} 
 		else
 		{
@@ -1012,24 +574,22 @@ class usuario_model{
 	function cerrarSQLSERVER(){
 		sqlsrv_close( $this->dbs );
 	}
-
+	///fin de unciones que no se ana tocado
 
 	function modulos_registrados()
 	{
 		$usuario=array();
-		 $this->db=Conectar::conexion('MYSQL');
-		$sql="SELECT A.Modulo as 'modulo',M.Aplicacion as 'apli',M.link as 'link',M.icono as 'icono' FROM acceso_empresas A JOIN modulos M on A.Modulo = M.modulo WHERE CI_NIC='".$_SESSION['INGRESO']['Id']."' AND Item='".$_SESSION['INGRESO']['item']."' AND ID_Empresa='".$_SESSION['INGRESO']['IDEntidad']."' ";
+		$sql="SELECT A.Modulo as 'modulo',M.Aplicacion as 'apli',M.link as 'link',M.icono as 'icono' 
+		FROM acceso_empresas A 
+		JOIN modulos M on A.Modulo = M.modulo 
+		WHERE CI_NIC='".$_SESSION['INGRESO']['Id']."' 
+		AND Item='".$_SESSION['INGRESO']['item']."' 
+		AND ID_Empresa='".$_SESSION['INGRESO']['IDEntidad']."' ";
 		//echo $sql;
-		$consulta=$this->db->query($sql);
-		// echo $consulta;
-		while($filas=$consulta->fetch_assoc()){
-            $usuario[]=$filas;
-			//echo ' vvv '.$filas['IP_VPN_RUTA'];
-        }
-        // print_r($usuario);die();
-        return $usuario;
-
+		$datos = $this->db1->datos($sql,$tipo='MY SQL');
+		return $datos;
 	}
+
 	function modulos_todos()
 	{
 		$usuario=array();
@@ -1073,15 +633,6 @@ class usuario_model{
 	   }
 
 	   return array('clave'=>$ClaveGeneral,'nombre'=>$IngClaves_Caption);
-
-
-  // SelectAdodc AdoSup, sSQL
-  // If AdoSup.Recordset.RecordCount > 0 Then
-  //    ClaveGeneral = AdoSup.Recordset.Fields("Clave")
-  //    IngClaves.Caption = AdoSup.Recordset.Fields("Nombre_Completo")
-  // End If
-  // Intentos = 0
-  // ResultClaveSup = False
 
 	}
 }

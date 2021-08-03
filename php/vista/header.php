@@ -172,6 +172,29 @@ $("#datos").fadeIn();
 }
 });
 });
+
+  function logout()
+  { 
+     
+     $.ajax({
+      // data:  {parametros:parametros},
+      url:   '../controlador/login_controller.php?logout=true',
+      type:  'post',
+      dataType: 'json',
+      /*beforeSend: function () {   
+           var spiner = '<div class="text-center"><img src="../../img/gif/proce.gif" width="100" height="100"></div>'     
+         $('#tabla_').html(spiner);
+      },*/
+        success:  function (response) { 
+          console.log(response);
+        if(response == 1)
+        {
+          location.href = 'login.php';          
+        }     
+      }
+    });
+
+  }
 </script> 
 
 <header class="main-header">	
@@ -890,7 +913,7 @@ $("#datos").fadeIn();
             </ul>
           </li>
           <div class="btn-group">
-         	<a href="logout.php" class="btn btn-sm btn-primary" title="Salir"><img src="../../img/png/salirs.png"  style="height: 55%; width:55%"></a>
+         	<button  class="btn btn-sm btn-primary" title="Salir" onclick="logout()"><img src="../../img/png/salirs.png"  style="height: 55%; width:55%"></button>
    			  <a href="panel.php?mos2=e" class="btn btn-sm btn-primary" title="Salir de Empresa"><img src="../../img/png/salire.png"  style="height: 55%; width:55%"></a>          	
           </div>
           </ul>

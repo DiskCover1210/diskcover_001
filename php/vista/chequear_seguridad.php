@@ -11,7 +11,7 @@ if(!isset($_SESSION))
 							$uri .= $_SERVER['HTTP_HOST'];
 							
 							//echo $uri;
-					echo "<script type='text/javascript'>window.location='".$uri."/php/vista/login.php'</script>";
+					echo "<script type='text/javascript'>window.location='../vista/login.php'</script>";
 			
 			exit(); 
 		}
@@ -40,7 +40,7 @@ if(!isset($_SESSION))
 							}
 							$uri .= $_SERVER['HTTP_HOST'];
 							//echo $uri;
-					echo "<script type='text/javascript'>window.location='".$uri."/php/vista/login.php'</script>";
+					echo "<script type='text/javascript'>window.location='../vista/login.php'</script>";
 			exit(); 
 		}
 		else

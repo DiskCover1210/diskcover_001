@@ -1,17 +1,27 @@
 <?php
 //Llamada al modelo
 require_once("../modelo/usuario_model.php");
+/**
+ * Mail:  diskcover@msn.com
+ * web:   www.diskcoversystem.com
+ * distribuidor: PrismaNet Profesional S.A.
+ * obse: 1.- esta controlador desde un inicio no fue una clase;
+ *       2.- se usa el isset si se esta llamdo por ajax
+ *       3.- las fuciones realizadas se estan llamando desde otro php (tener cuidado si se quiere borrar algo)
+ * 
+ * modificcado por javier farinango
+ * 
+ * 
+ */
 
-if(isset($_POST['submitlog'])) 
-{
-	login('', '', '');
-}
+
 if(isset($_GET['IngClaves']))
 {
 	$parametros = $_POST['parametros'];
 	// print_r($parametro);die();
 	echo json_encode(IngClaves($parametros));
 }
+
 function IngClaves($parametros)
 {
 	// print_r($_SESSION['INGRESO']);die();
@@ -51,7 +61,167 @@ function IngClaves($parametros)
 	}
 	
 }
-//devuelve empresas asociadas al usuario
+
+function variables_sistema($EmpresaEntidad,$NombreEmp,$ItemEmp)
+{
+	$_SESSION['INGRESO']['empresa']=$EmpresaEntidad;
+	$_SESSION['INGRESO']['noempr']=$NombreEmp;
+	$_SESSION['INGRESO']['item']=$ItemEmp;
+	$_SESSION['INGRESO']['ninguno']='.';
+
+	$cod = explode('-', $EmpresaEntidad);
+	$empresa=getEmpresasId($cod[0]);
+	// print_r($empresa);die();
+	if(count($empresa)>0)
+	{
+		    $empresa[0]['Servicio'] = 0;
+		    //datos base de mysql
+		    $_SESSION['INGRESO']['RUCEnt'] =  $empresa[0]['RUC_CI_NIC']; //ruc de la entidad
+		    $_SESSION['INGRESO']['Entidad'] = $empresa[0]['Nombre_Entidad'];
+	      $_SESSION['INGRESO']['IP_VPN_RUTA']=$empresa[0]['IP_VPN_RUTA'];
+        $_SESSION['INGRESO']['Base_Datos']=$empresa[0]['Base_Datos'];
+        $_SESSION['INGRESO']['Usuario_DB']=$empresa[0]['Usuario_DB'];
+        $_SESSION['INGRESO']['Contraseña_DB']=$empresa[0]['Contrasena_DB'];
+        $_SESSION['INGRESO']['Tipo_Base']=$empresa[0]['Tipo_Base'];
+        $_SESSION['INGRESO']['Puerto']=$empresa[0]['Puerto'];
+        $_SESSION['INGRESO']['Fecha']=$empresa[0]['Fecha'];
+        $_SESSION['INGRESO']['Logo_Tipo']=$empresa[0]['Logo_Tipo'];
+        $_SESSION['INGRESO']['periodo']='.';/////////
+        $_SESSION['INGRESO']['Razon_Social']=$empresa[0]['Razon_Social'];
+        $_SESSION['INGRESO']['Fecha_ce']=$empresa[0]['Fecha_CE'];
+        $_SESSION['INGRESO']['Porc_Serv']= round($empresa[0]['Servicio'] / 100,2) ;
+
+        //datos de empresa seleccionada
+        $empresa = getEmpresasDE($_SESSION['INGRESO']['item'],$_SESSION['INGRESO']['noempr']);
+
+        // print_r($empresa);die();
+
+  	
+
+        $_SESSION['INGRESO']['Direccion']=$empresa[0]['Direccion'];
+        $_SESSION['INGRESO']['Telefono1']=$empresa[0]['Telefono1'];
+        $_SESSION['INGRESO']['FAX']=$empresa[0]['FAX'];
+        $_SESSION['INGRESO']['Nombre_Comercial']=$empresa[0]['Nombre_Comercial'];
+        $_SESSION['INGRESO']['Razon_Social']=$empresa[0]['Razon_Social'];
+        $_SESSION['INGRESO']['Sucursal']=$empresa[0]['Sucursal'];
+        $_SESSION['INGRESO']['Opc']=$empresa[0]['Opc'];
+        $_SESSION['INGRESO']['noempr']=$empresa[0]['Empresa'];
+        $_SESSION['INGRESO']['S_M']=$empresa[0]['S_M'];
+        $_SESSION['INGRESO']['Num_CD']=$empresa[0]['Num_CD'];
+        $_SESSION['INGRESO']['Num_CE']=$empresa[0]['Num_CE'];
+        $_SESSION['INGRESO']['Num_CI']=$empresa[0]['Num_CI'];
+        $_SESSION['INGRESO']['Num_ND']=$empresa[0]['Num_ND'];
+        $_SESSION['INGRESO']['Num_NC']=$empresa[0]['Num_NC'];
+        $_SESSION['INGRESO']['Email_Conexion_CE']=$empresa[0]['Email_Conexion_CE'];
+        $_SESSION['INGRESO']['Formato_Cuentas']=$empresa[0]['Formato_Cuentas'];
+        $_SESSION['INGRESO']['Formato_Inventario']=$empresa[0]['Formato_Inventario'];
+        $_SESSION['INGRESO']['porc']=$empresa[0]['Por_CxC'];////////////
+        $_SESSION['INGRESO']['Ambiente']=$empresa[0]['Ambiente'];
+        $_SESSION['INGRESO']['Obligado_Conta']=$empresa[0]['Obligado_Conta'];
+        $_SESSION['INGRESO']['LeyendaFA']=$empresa[0]['LeyendaFA'];
+        $_SESSION['INGRESO']['Email']=$empresa[0]['Email'];
+        $_SESSION['INGRESO']['RUC']=$empresa[0]['RUC'];
+        $_SESSION['INGRESO']['Gerente']=$empresa[0]['Gerente'];;
+        $_SESSION['INGRESO']['Det_Comp']=$empresa[0]['Det_Comp'];
+        $_SESSION['INGRESO']['Signo_Dec']=$empresa[0]['Signo_Dec'];
+        $_SESSION['INGRESO']['Signo_Mil']=$empresa[0]['Signo_Mil'];
+        $_SESSION['INGRESO']['RUC_Contador'] = $empresa[0]['RUC_Contador'];
+        $_SESSION['INGRESO']['CI_Representante'] = $empresa[0]['CI_Representante'];
+        $_SESSION['INGRESO']['Ruta_Certificado'] = $empresa[0]['Ruta_Certificado'];
+        $_SESSION['INGRESO']['Clave_Certificado'] = $empresa[0]['Clave_Certificado'];
+        $_SESSION['INGRESO']['Dec_PVP'] = $empresa[0]['Dec_PVP'];
+        $_SESSION['INGRESO']['Dec_Costo'] = $empresa[0]['Dec_Costo'];
+        $_SESSION['INGRESO']['Cotizacion'] = $empresa[0]['Cotizacion'];
+        // print_r($empresa_d);die();
+        $_SESSION['INGRESO']['Ciudad'] = $empresa[0]['Ciudad'];;       
+        $_SESSION['INGRESO']['accesoe']='0';
+        $_SESSION['INGRESO']['Email_Conexion']=$empresa[0]['Email_Conexion'];
+				// $_SESSION['INGRESO']['Email_Contrasena']=$empresa[0]['Email_Contraseña'];
+				$_SESSION['INGRESO']['smtp_SSL']=$empresa[0]['smtp_SSL'];
+				$_SESSION['INGRESO']['smtp_UseAuntentificacion']=$empresa[0]['smtp_UseAuntentificacion'];
+				$_SESSION['INGRESO']['smtp_Puerto']=$empresa[0]['smtp_Puerto'];
+				$_SESSION['INGRESO']['smtp_Servidor']=$empresa[0]['smtp_Servidor'];
+				$_SESSION['INGRESO']['smtp_Secure']=$empresa[0]['smtp_Secure'];
+				$_SESSION['INGRESO']['Serie_FA'] = $empresa[0]['Serie_FA'];
+				$_SESSION['INGRESO']['modulo']=modulos_habiliatados();
+				//datos del periodo periodo
+				$periodo = getPeriodoActualSQL();
+				$_SESSION['INGRESO']['Fechai']=$periodo[0]['Fecha_Inicial']->format('Y-m-d');
+				$_SESSION['INGRESO']['Fechaf']=$periodo[0]['Fecha_Final']->format('Y-m-d');
+        $permiso=getAccesoEmpresas();
+
+				//get usuario
+				
+  }else
+  {
+  	$modelo=new usuario_model();
+	   $empresa=$modelo->getEmpresasId_sin_sqlserver($cod[0]);
+	  // print_r($empresa);die();
+
+        $_SESSION['INGRESO']['IP_VPN_RUTA']='mysql.diskcoversystem.com';
+        $_SESSION['INGRESO']['Base_Datos']='diskcover_empresas';
+        $_SESSION['INGRESO']['Usuario_DB']='diskcover';
+        $_SESSION['INGRESO']['Contraseña_DB']='disk2017Cover';
+        $_SESSION['INGRESO']['Tipo_Base']='My SQL';
+        $_SESSION['INGRESO']['Puerto']=13306;
+     //    $this->usuario = 'diskcover';
+	    // $this->password =  'disk2017Cover';  // en mi caso tengo contraseña pero en casa caso introducidla aquí.
+	    // $this->servidor ='mysql.diskcoversystem.com';
+	    // $this->database = 'diskcover_empresas';
+	    // $this->puerto = 13306;	 
+
+
+     $_SESSION['INGRESO']['Logo_Tipo']=$empresa[0]['Logo_Tipo'];
+     $_SESSION['INGRESO']['Razon_Social']=$empresa[0]['Razon_Social'];
+     $_SESSION['INGRESO']['Razon_Social']=$empresa[0]['Razon_Social'];
+     $_SESSION['INGRESO']['noempr']=$empresa[0]['Empresa'];
+     $_SESSION['INGRESO']['RUC']=$empresa[0]['RUC_CI_NIC']; // ruc de la empresa
+     $_SESSION['INGRESO']['Gerente']=$empresa[0]['Gerente'];
+     $_SESSION['INGRESO']['Ciudad'] = $empresa[0]['Ciudad'];
+     $_SESSION['INGRESO']['Direccion']='';
+     $_SESSION['INGRESO']['Telefono1']='';
+     $_SESSION['INGRESO']['FAX']='';
+     $_SESSION['INGRESO']['Email']=''; 
+     $_SESSION['INGRESO']['RUCEnt'] =  $empresa[0]['RUC_CI_NIC']; //ruc de la entidad
+		 $_SESSION['INGRESO']['Entidad'] = $empresa[0]['Nombre_Entidad'];
+
+	  // print_r($_SESSION['INGRESO']);die();
+  	
+         
+  }
+}
+
+function eliminar_variables()
+{
+	//destruimos la sesion
+		unset( $_SESSION['INGRESO']['empresa'] ); 
+		unset( $_SESSION['INGRESO']['noempr'] );  	
+		unset( $_SESSION['INGRESO']['modulo_']);
+		unset( $_SESSION['INGRESO']['accion']);
+		unset($_SESSION['INGRESO']['IP_VPN_RUTA']);
+		unset($_SESSION['INGRESO']['Base_Datos']);
+		unset($_SESSION['INGRESO']['Usuario_DB']);
+		unset($_SESSION['INGRESO']['Contraseña_DB']);
+		unset($_SESSION['INGRESO']['Tipo_Base']);
+		unset($_SESSION['INGRESO']['Puerto']);
+		unset($_SESSION['INGRESO']['Fecha']);
+		unset($_SESSION['INGRESO']['Fechai']);
+		unset($_SESSION['INGRESO']['Fechaf']);
+		unset($_SESSION['INGRESO']['Logo_Tipo']);
+		unset($_SESSION['INGRESO']['Razon_Social']);
+		unset($_SESSION['INGRESO']['Direccion']);
+		unset($_SESSION['INGRESO']['Telefono1']);
+		unset($_SESSION['INGRESO']['FAX']);
+		unset($_SESSION['INGRESO']['Nombre_Comercial']);
+		unset($_SESSION['INGRESO']['Razon_Social']);
+		unset($_SESSION['INGRESO']['S_M']);
+		unset($_SESSION['INGRESO']['porc']);
+		//eliminar permisos
+		unset($_SESSION['INGRESO']['accesoe']);
+		unset($_SESSION['INGRESO']['modulo']);
+}
+
+//devuelve empresas asociadas al usuario  * modificado: javier fainango.
 function getEmpresas($id_entidad)
 {
 	$per=new usuario_model();
@@ -59,12 +229,11 @@ function getEmpresas($id_entidad)
 	// print_r($empresa);die();
 	return $empresa;
 }
-//devuelve empresas seleccionada por el usuario
+//devuelve empresas seleccionada por el usuario ---* modificado: javier fainango.
 function getEmpresasId($id_empresa)
-{
-	//echo ' dd '.$id_empresa;
-	$per=new usuario_model();
-	$empresa=$per->getEmpresasId($id_empresa);
+{	
+	$modelo = new usuario_model();
+	$empresa=$modelo-> getEmpresasId($id_empresa);
 	// print_r($empresa);die();
 	// print_r($_SESSION); die();
 	return $empresa;
@@ -79,50 +248,20 @@ function empresa_sin_creenciales_sqlserver($id_empresa)
 	// print_r($_SESSION); die();
 	return $empresa;
 }
-//devuelve inf del detalle de la empresa seleccionada por el usuario
+//devuelve inf del detalle de la empresa seleccionada por el usuario -------* modificado: javier fainango.
 function getEmpresasDE($item,$nombre)
 {
-	//echo ' dd '.$id_empresa;
-	//echo ' dd '.$id_empresa;
-	if(isset($_SESSION['INGRESO']['Tipo_Base']) and $_SESSION['INGRESO']['Tipo_Base']=='SQL SERVER') 
-	{
-		$per=new usuario_model();
-		//hacemos conexion en sql
-		$per->conexionSQL();
-		$empresa=$per->getEmpresasDESQL($item,$nombre);
-	}
-	//mysql
-	if(isset($_SESSION['INGRESO']['Tipo_Base']) and $_SESSION['INGRESO']['Tipo_Base']=='MySQL') 
-	{
-		//echo ' sss '.$_SESSION['INGRESO']['Tipo_Base'];
-		$per=new usuario_model();
-		
-		$empresa=$per->getEmpresasDEMYSQL($item,$nombre);
-	}
-	
-	return $empresa;
+	$modelo =new usuario_model();
+	$datos = $modelo->datos_empresa($item,$nombre);
+	// print_r($datos);die();
+	return $datos;
 }
-//perido actual funcion sql server
+//perido actual funcion sql server --* modificado: javier fainango.
 function getPeriodoActualSQL()
 {
-	//echo ' dd '.$id_empresa;
-	if(isset($_SESSION['INGRESO']['Tipo_Base']) and $_SESSION['INGRESO']['Tipo_Base']=='SQL SERVER') 
-	{
-		$per=new usuario_model();
-		//hacemos conexion en sql
-		$per->conexionSQL();
-		$empresa=$per->getPeriodoActualSQL();
-	}
-	//mysql
-	if(isset($_SESSION['INGRESO']['Tipo_Base']) and $_SESSION['INGRESO']['Tipo_Base']=='MySQL') 
-	{
-		//echo ' sss '.$_SESSION['INGRESO']['Tipo_Base'];
-		$per=new usuario_model();
-		
-		$empresa=$per->getPeriodoActualMYSQL();
-	}
-	
-	return $empresa;
+		$modulo=new usuario_model();
+		$periodo=$modulo->get_periodo();
+		return $periodo;
 }
 
 //obtener datos de usuario  
@@ -147,29 +286,16 @@ function getUsuario()
 	
 	return $empresa;
 }
-//verificar acceso usuario
-function getAccesoEmpresas()
-{
-	// echo ' dd '.$id_empresa;
-	if(isset($_SESSION['INGRESO']['Tipo_Base']) and $_SESSION['INGRESO']['Tipo_Base']=='SQL SERVER') 
-	{
 
-	// echo ' dd '.$id_empresa;
-		$per=new usuario_model();
-		//hacemos conexion en sql
-		$per->conexionSQL();
-		$empresa=$per->getAccesoEmpresasSQL();
-	}
-	//mysql
-	if(isset($_SESSION['INGRESO']['Tipo_Base']) and $_SESSION['INGRESO']['Tipo_Base']=='MySQL') 
-	{
-		// echo ' sss '.$_SESSION['INGRESO']['Tipo_Base'];
-		$per=new usuario_model();		
-		$empresa=$per->getAccesoEmpresasMYSQL();
-	}
-	
-	return $empresa;
-} 
+
+//verificar acceso usuario ------  * modificado: javier fainango.
+ function getAccesoEmpresas()
+ {
+ 	$modelo =new usuario_model();
+ 	$modelo->getAccesoEmpresasSQL();
+ }
+
+
 //consultar modulo
 function getModulo()
 {
@@ -299,4 +425,6 @@ function contruir_todos_modulos()
 	//style="display:block; height:80%; width:100%;"
 
 }
+
+
 ?>

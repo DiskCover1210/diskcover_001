@@ -55,7 +55,7 @@
 				  text: 'No existe su usuario a esta empresa!'
 				}).then((result) => {
 				  if (result.value) {
-					location.href="logout.php";
+					window.location.href="login.php";
 				  } 
 				});
 			</script>

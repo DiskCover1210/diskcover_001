@@ -4,7 +4,7 @@ include('../../modelo/inventario/registro_esM.php');
 /**
  * 
  */
-$controlador =  new kardex_ingC();
+$controlador =  new registro_esC();
 if(isset($_GET['iniciar_aseinto']))
 {
 	echo  json_encode($controlador->IniciarAsientosAdo($_POST['Trans_No']));
@@ -207,7 +207,7 @@ class registro_esC
   // private $incom ;
 	function __construct()
 	{
-		$this->modelo = new kardex_ingM();
+		$this->modelo = new  registro_esM();
     // $this->incom = new  incomM();
 	}
 
@@ -439,6 +439,8 @@ class registro_esC
   }
    function DCSustento($parametros)
   {
+     // print_r($parametros);die();
+
     $fecha = $parametros['fecha'];
     $datos = $this->modelo->DCSustento($fecha);
      // print_r($datos);die();
@@ -1013,6 +1015,8 @@ class registro_esC
 
   function Ult_fact_Prove($parametros)
   {
+    // print_r($parametros);die();
+    // print_r('sss');die();
     $datos = $this->modelo->Ult_fact_Prove($parametros['proveedor']);
     // print_r($datos);die();
     if(count($datos)>0)

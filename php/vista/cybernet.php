@@ -7,22 +7,12 @@
 error_reporting(E_ALL);
 ini_set('display_errors', '1');
 require_once("panel.php");
-require_once("chequear_seguridad_e.php");
+require_once("chequear_seguridad.php");
 require_once("../controlador/contabilidad_controller.php");
 $_SESSION['INGRESO']['modulo_']='01';
 //verificamos sesion sql
 if(isset($_SESSION['INGRESO']['IP_VPN_RUTA']) && $_SESSION['INGRESO']['Tipo_Base'] =='SQL SERVER') 
 {
-	$database=$_SESSION['INGRESO']['Base_Datos'];
-	$server=$_SESSION['INGRESO']['IP_VPN_RUTA'];
-	$user=$_SESSION['INGRESO']['Usuario_DB'];
-	$password=$_SESSION['INGRESO']['Contraseña_DB'];
-	$usuario=getUsuario();
-	$_SESSION['INGRESO']['CodigoU']=$usuario[0]['CodigoU'];
-	$_SESSION['INGRESO']['Nombre_Completo']=$usuario[0]['Nombre_Completo'];
-	//verificamos en acceso si puede ingresar a esa empresa
-	$_SESSION['INGRESO']['accesoe']='0';
-	$_SESSION['INGRESO']['modulo'][0]='0';
 	$permiso=getAccesoEmpresas();
 }else
 {

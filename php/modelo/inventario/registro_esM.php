@@ -1201,6 +1201,7 @@ function dtaAsiento_sc($Trans_No){
 
    function Ult_fact_Prove($codCli)
    {
+   	// print_r($codCli);die();
    	 $cid=$this->conn;
    	 $sql = "SELECT TOP 1 * 
           FROM Trans_Compras 

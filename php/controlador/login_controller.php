@@ -3,63 +3,63 @@
 error_reporting(E_ALL);
 ini_set('display_errors', '1');
 require_once("../modelo/usuario_model.php");
-//require_once("afe.php");
-
-if(isset($_POST['submitlog'])) 
+$login = new login_controller();
+if(isset($_GET['Entidad']))
 {
-	login('', '', '');
+	$entidad = $_POST['entidad'];
+	echo json_encode($login->validar_entidad($entidad));
+} 
+if(isset($_GET['Usuario']))
+{
+	$parametro = $_POST['parametros'];
+	echo json_encode($login->validar_usuario($parametro));
 }
- function login($sTabla, $vValores, $sCampos=NULL)
+if(isset($_GET['Ingresar']))
 {
-	//validar digito verificador
-	//digito_verificador($_POST['entidad']);
-	//echo "entroooo";
-	
-	//vemos los campos a enviar
-	if (isset($_POST['entidad']) )
+	$parametro = $_POST['parametros'];
+	echo json_encode($login->login($parametro));
+}
+if(isset($_GET['logout']))
+{
+	echo json_encode($login->logout());
+}
+
+/**
+ * 
+ */
+class login_controller
+{
+	private $modelo;
+	function __construct()
 	{
-		$ent=$_POST['entidad'];
+		$this->modelo = new  usuario_model();
 	}
-	if (isset($_POST['correo']) )
+
+	function validar_entidad($entidad)
 	{
-		$cor=$_POST['correo'];
+		$datos = $this->modelo->ValidarEntidad1($entidad);
+		return $datos;
+		// print_r($datos);die();
 	}
-	if (isset($_POST['contra']) )
+
+	function validar_usuario($parametro)
 	{
-		$pas=$_POST['contra'];
+		$datos = $this->modelo->ValidarUser1($parametro['usuario'],$parametro['entidad']);
+		return $datos;
 	}
-	
-	
-	if(!isset($_SESSION['INGRESO']['CodigoU']))
+	function login($parametro)
 	{
-		//llamamos al modelo
-		$per=new usuario_model();
-		 $per->Ingresar($ent,$cor,$pas);
-		//die();
-		//$datos=$per->get_contacto();
-		//Llamada a la vista
-		require_once("../vista/contacto_view.php");
+		$datos = $this->modelo->Ingresar($parametro['usuario'],$parametro['pass'],$parametro['entidad']);
+		return $datos;
 	}
-	else
+
+	function logout()
 	{
-		//por lo es correcto el logeo realizamos la redireccion
-		if (!empty($_SERVER['HTTPS']) && ('on' == $_SERVER['HTTPS'])) {
-			$uri = 'https://';
-		}else{
-			$uri = 'http://';
-		}
-		$uri .= $_SERVER['HTTP_HOST'];
-		//die();
-		//Aqui modificar si el pag de aministracion esta 
-		//en un subdirectorio
-		// "<script type=\"text/javascript\">
-		// window.location=\"".$uri."/wp-admin/admin.php\";
-		// </script>";
-		echo "<script type='text/javascript'>window.location='".$uri.$_SERVER["REQUEST_URI"]."/../../../php/vista/panel.php'</script>";
+		session_destroy(); 
+		return 1;
 	}
-}	
-//$per=new contacto_model();
-//$datos=$per->get_contacto();
-//Llamada a la vista
-//require_once("../vista/contacto_view.php");
+
+}
+
+
 ?>

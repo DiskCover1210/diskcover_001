@@ -31,16 +31,6 @@ if(isset($_POST['ajax_page']) )
 		// print_r('expression');die();
 		validarCiu();
 	}
-	//verificar entidad
-	if($_REQUEST['ajax_page']=='Entidad')
-	{
-		validarEnt();
-	}
-	//verificar usuario en login
-	if($_REQUEST['ajax_page']=='USER')
-	{
-		validarUser();
-	}
 	//verificar entidad-usuario
 	if($_REQUEST['ajax_page']=='entidad_u')
 	{
@@ -4193,99 +4183,8 @@ function contar_reg($stmt,$detalle=null)
 	}
 	return $i;
 }
-//validar usuario en login
-function validarUser(){
-	$respuesta = '';	 
-	//$cid=cone_ajaxMYSQL();
-	$cid = Conectar::conexion('MYSQL');
-	if($cid!=null)
-	{	
-		/* if ($cid>connect_errno) 
-		 {
-			 echo '<div id="alerta" class="alert alert-warning visible">Entidad no encontrada</div>';
-			 die();
-		 }*/
-		//$_POST['TP']='CD';
-		$i=0;
-		if(isset($_SESSION['INGRESO']['ID_Empresa']))
-		{
-			//$_POST['MesNo']=0;
-			$sql="SELECT * FROM acceso_usuarios 
-			WHERE Usuario='".$_POST['user']."'";
-			//echo $sql;
-			// die();
-			$consulta=$cid->query($sql) or die($cid->error);
-			//Realizamos un bucle para ir obteniendo los resultados
-			//echo count($consulta->fetch_assoc());
-			//die();
-			while($filas=$consulta->fetch_assoc())
-			{
-				if($_SESSION['INGRESO']['Nombre_Entidad'] !='')
-				{
-				if(isset($_SESSION['TIPOCON']))
-				{
-					if($_SESSION['TIPOCON']==3)
-					{
-						$respuesta =  '<div id="alerta" class="alert alert-success visible" align="center">"'.$_SESSION['INGRESO']['Nombre_Entidad'].'"</div>';
-					}
-					if($_SESSION['TIPOCON']==0)
-					{
-						$respuesta =  '<div id="alerta" class="alert alert-success visible" align="center">'.$_SESSION['INGRESO']['Nombre_Entidad'].'</div>';
-					}
-				}
-				//echo '<div id="alerta" class="alert alert-success visible" align="center">ENTIDAD: '.$_SESSION['INGRESO']['Nombre_Entidad'].'</div>';
-				$i++;
-			  }
-			}
-		}
-		if($i==0)
-		{
-			//echo '<div id="alerta" class="alert alert-warning visible" align="center">Entidad no encontrada</div>';
-			if(isset($_SESSION['INGRESO']['Nombre_Entidad']))
-			{
-				if($_SESSION['INGRESO']['Nombre_Entidad']!='')
-				{
-				$respuesta =  "<script> 
-					
-					Swal.fire({
-					  type: 'error',
-					  title: 'Este usuario no esta registrado en la base de datos',
-					  text: 'No se pudo realizar sesion(4)'
-					});
-					
-					</script>";
-				}
-			}
-			else
-			{
-				$respuesta =  "<script> 
-					
-					Swal.fire({
-					  type: 'error',
-					  title: 'este usuario no pertenece a esta entidad',
-					  text: 'No se pudo realizar sesion(4)'
-					});
-					
-					</script>";
-			}
-		}
-		$cid->close();
-	}
-	else
-	{
-		 $respuesta =  "<script> 
 
-		 Swal.fire({
-			  type: 'error',
-			  title: 'No se pudo realizar sesion, verifique conexion (2)',
-			  text: 'Error de conexion.'
-			});
 
-			</script>";
-	}
-	echo $respuesta;
-	
-}
 //verificar ciudad
 function validarCiu()
 {
@@ -4327,82 +4226,8 @@ function validarCiu()
 		
 	 $cid->close();
 }
-//verificar entidad
-function validarEnt(){
-	 $respuesta ='';
-	 $_SESSION['INGRESO']['Nombre_Entidad']='';
-	 $_SESSION['INGRESO']['ID_Empresa']='';
-	 $retornar=false;
-	 $entidadfilter =preg_match("/^[0-9]{13}$/", $_POST['com']);
-	 $entidadfilter1 =preg_match("/^[0-9]{10}$/", $_POST['com']);
-	if ($entidadfilter or $entidadfilter1)
-	{
-		 //$cid=cone_ajaxMYSQL();
-		 $cid = Conectar::conexion('MYSQL');
-		if($cid!=null)
-		{	
+//verificar entidad  norrar funcion 
 
-			/* if ($cid>connect_errno) 
-			 {
-				 echo '<div id="alerta" class="alert alert-warning visible">Entidad no encontrada</div>';
-				 die();
-			 }*/
-			//$_POST['TP']='CD';
-			//$_POST['MesNo']=0;
-			$sql = "SELECT *
-					  FROM entidad
-					  WHERE RUC_CI_NIC = '".$_POST['com']."';";
-			// echo $sql;
-			//die();
-			$consulta=$cid->query($sql) or die($cid->error);
-			//Realizamos un bucle para ir obteniendo los resultados
-			$i=0;
-			while($filas=$consulta->fetch_assoc())
-			{
-
-
-				$_SESSION['INGRESO']['Nombre_Entidad']=$filas['Nombre_Entidad'];
-				$_SESSION['INGRESO']['ID_Empresa']=$filas['ID_Empresa'];
-				$_SESSION['TIPOCON']='';
-				// print_r($_SESSION['INGRESO']['Nombre_Entidad']);
-				if(isset($_SESSION['TIPOCON']))
-				{
-					if($_SESSION['TIPOCON']==3)
-					{
-						$respuesta= array('resp'=>'1','enti'=>$filas['Nombre_Entidad']);
-					}
-					if($_SESSION['TIPOCON']==0)
-					{
-						$respuesta= array('resp'=>'1','enti'=>$filas['Nombre_Entidad']);
-					}
-				}
-				
-				$i++;
-			}
-			if($i==0)
-			{
-				//echo '<div id="alerta" class="alert alert-warning visible" align="center">Entidad no encontrada</div>';
-				$respuesta= array('resp'=>'2','enti'=>'');
-			}
-			$cid->close();
-		}
-		else
-		{
-			 // $respuesta="3";
-			 $respuesta= array('resp'=>'2','enti'=>'');
-		}
-	 }
-	 else
-	 {
-		 
-	  // echo '<div id="alerta" class="alert alert-danger visible" align="center">La entidad que ingresaste no tiene el formato correcto.</div>';
-	    // $respuesta="-1";
-	    $respuesta= array('resp'=>'-1','enti'=>'');
-	 }
-	 // print_r($respuesta);die();
-	 echo json_encode($respuesta);
-	 // print_r($respuesta);
-}
 
 //cambiar periodo
 function cambiarPeriodo()

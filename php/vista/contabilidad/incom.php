@@ -61,6 +61,7 @@
   
   $(document).ready(function () {
     var modificar = '<?php echo $variables_mod; ?>';
+    var modificar = '<?php echo $variables_mod; ?>';
     var load = '<?php echo $load; ?>';
     if(modificar!='')
     {
@@ -76,7 +77,10 @@
        window.location.href= urln+"&num_load=1#";
       }
       Tipo_De_Comprobante_No();
-      Llenar_Encabezado_Comprobante();
+      if(cli=='')
+      {
+       Llenar_Encabezado_Comprobante();
+      }
     }else
     {
       numero_comprobante();
@@ -153,7 +157,9 @@
     {
       var valor = $('#beneficiario1').val();
       parte = valor.split('-');
-      var url ="../vista/contabilidad.php?mod=contabilidad&acc=incom&acc1=Ingresar%20Comprobantes&b=1";
+      let url = window.location.href;
+       url =  url.toString().slice(0,url.length-1);
+      // var url ="../vista/contabilidad.php?mod=contabilidad&acc=incom&acc1=Ingresar%20Comprobantes&b=1";
       // console.log(data);
       window.location.href= url+"&cliente="+parte[0]+'#';
       // $('#ruc').val(parte[0]);

@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<comprobanteRetencion id="comprobante" version="1.0.0">
+  <infoTributaria>
+    <ambiente>1</ambiente>
+    <tipoEmision>1</tipoEmision>
+    <razonSocial>VACA PRIETO WALTER JALIL</razonSocial>
+    <nombreComercial>DISKCOVER SYSTEM</nombreComercial>
+    <ruc>0702164179001</ruc>
+    <claveAcceso>0807202107070216417900110050010000016451234567819</claveAcceso>
+    <codDoc>07</codDoc>
+    <estab>005</estab>
+    <ptoEmi>001</ptoEmi>
+    <secuencial>000001645</secuencial>
+    <dirMatriz>JUAN DE DIOS MARTINEZ N36-245 Y CARLOS JULIO AROSEMENA</dirMatriz>
+  </infoTributaria>
+  <infoCompRetencion>
+    <fechaEmision>08/07/2021</fechaEmision>
+    <dirEstablecimiento>JUAN DE DIOS MARTINEZ N36-245 Y CARLOS JULIO AROSEMENA</dirEstablecimiento>
+    <obligadoContabilidad>NO</obligadoContabilidad>
+    <tipoIdentificacionSujetoRetenido>04</tipoIdentificacionSujetoRetenido>
+    <razonSocialSujetoRetenido>ABB ECUADOR S.A</razonSocialSujetoRetenido>
+    <identificacionSujetoRetenido>1790331806001</identificacionSujetoRetenido>
+    <periodoFiscal>07/2021</periodoFiscal>
+  </infoCompRetencion>
+  <impuestos>
+    <impuesto>
+      <codigo>2</codigo>
+      <codigoRetencion>9</codigoRetencion>
+      <baseImponible>3.06</baseImponible>
+      <porcentajeRetener>10</porcentajeRetener>
+      <valorRetenido>0.31</valorRetenido>
+      <codDocSustento>01</codDocSustento>
+      <numDocSustento>001001000000025</numDocSustento>
+      <fechaEmisionDocSustento>08/07/2021</fechaEmisionDocSustento>
+    </impuesto>
+  </impuestos>
+  <infoAdicional>
+    <campoAdicional nombre="Direccion">AV. ATAHUALPA OE1-198 Y 10 DE AGOSTO</campoAdicional>
+    <campoAdicional nombre="Telefono">003994100</campoAdicional>
+    <campoAdicional nombre="Comprobante No">CD-007001568</campoAdicional>
+    <campoAdicional nombre="Contribuyente Regimen Microempresas"> </campoAdicional>
+  </infoAdicional>
+</comprobanteRetencion>

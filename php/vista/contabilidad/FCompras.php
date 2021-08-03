@@ -71,7 +71,7 @@ if(isset($_GET['fec']))
       $('#ddl_familia').select2({
         placeholder: 'Seleccione una Familia',
         ajax: {
-           url:   '../controlador/inventario/kardex_ingC.php?familias=true',
+           url:   '../controlador/inventario/registro_esC.php?familias=true',
           dataType: 'json',
           delay: 250,
           processResults: function (data) {
@@ -91,7 +91,7 @@ if(isset($_GET['fec']))
     $('#ddl_producto').select2({
         placeholder: 'Seleccione producto',
         ajax: {
-           url:   '../controlador/inventario/kardex_ingC.php?producto=true&fami='+fami,
+           url:   '../controlador/inventario/registro_esC.php?producto=true&fami='+fami,
           dataType: 'json',
           delay: 250,
           processResults: function (data) {
@@ -111,7 +111,7 @@ function contracuenta()
     $('#DCCtaObra').select2({
         placeholder: 'Seleccione Contracuenta',
         ajax: {
-           url:   '../controlador/inventario/kardex_ingC.php?contracuenta=true',
+           url:   '../controlador/inventario/registro_esC.php?contracuenta=true',
           dataType: 'json',
           delay: 250,
           processResults: function (data) {
@@ -135,13 +135,14 @@ function contracuenta()
     }
     $.ajax({
       data:  {parametros:parametros},
-      url:   '../controlador/inventario/kardex_ingC.php?leercodigo=true',
+      url:   '../controlador/inventario/registro_esC.php?leercodigo=true',
       type:  'post',
       dataType: 'json',
         success:  function (response) {
             if (response.length !=0) 
             {
-                Ult_fact_Prove(response);
+                // console.log(response[0].Codigo)
+                Ult_fact_Prove(response[0].Codigo);
             }
          
       }
@@ -158,7 +159,7 @@ function contracuenta()
     }
     $.ajax({
       data:  {parametros:parametros},
-      url:   '../controlador/inventario/kardex_ingC.php?leercuenta=true',
+      url:   '../controlador/inventario/registro_esC.php?leercuenta=true',
       type:  'post',
       dataType: 'json',
         success:  function (response) {
@@ -183,7 +184,7 @@ function contracuenta()
   { 
     $.ajax({
      // data:  {parametros:parametros},
-      url:   '../controlador/inventario/kardex_ingC.php?Trans_Kardex=true',
+      url:   '../controlador/inventario/registro_esC.php?Trans_Kardex=true',
       type:  'post',
       dataType: 'json',
         success:  function (response) {
@@ -201,7 +202,7 @@ function contracuenta()
     var option = '<option value="">Seleccione bodega</option>';
     $.ajax({
      // data:  {parametros:parametros},
-      url:   '../controlador/inventario/kardex_ingC.php?bodega=true',
+      url:   '../controlador/inventario/registro_esC.php?bodega=true',
       type:  'post',
       dataType: 'json',
         success:  function (response) {
@@ -224,7 +225,7 @@ function contracuenta()
     var option = '<option value="">Seleccione marca</option>';
     $.ajax({
      // data:  {parametros:parametros},
-      url:   '../controlador/inventario/kardex_ingC.php?marca=true',
+      url:   '../controlador/inventario/registro_esC.php?marca=true',
       type:  'post',
       dataType: 'json',
         success:  function (response) {
@@ -250,7 +251,7 @@ function contracuenta()
     $('#DCBenef').select2({
         placeholder: 'Seleccione Cliente',
         ajax: {
-           url:   '../controlador/inventario/kardex_ingC.php?ListarProveedorUsuario=true&cta='+cta+'&contra='+contra,
+           url:   '../controlador/inventario/registro_esC.php?ListarProveedorUsuario=true&cta='+cta+'&contra='+contra,
           dataType: 'json',
           delay: 250,
           processResults: function (data) {
@@ -293,7 +294,7 @@ function contracuenta()
     }
     $.ajax({
       data:  {parametros:parametros},
-      url:   '../controlador/inventario/kardex_ingC.php?detalle_articulos=true',
+      url:   '../controlador/inventario/registro_esC.php?detalle_articulos=true',
       type:  'post',
       dataType: 'json',
         success:  function (response) {
