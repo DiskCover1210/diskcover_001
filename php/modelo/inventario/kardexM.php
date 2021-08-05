@@ -48,7 +48,8 @@ class kardexM
           AND Item = '".$_SESSION['INGRESO']['item']."' 
           AND Periodo = '".$_SESSION['INGRESO']['periodo']."'";
     $stmt = sqlsrv_query( $this->dbs, $sql);
-    return $stmt;
+    $tabla = grilla_generica_new($sql,'Trans_Kardex','myTable','',false,false,false,1,1,1,100);
+    return $tabla;
   }
 
   public function consulta_kardex($desde,$hasta,$codigo,$cbBodega,$bodega){
@@ -70,8 +71,8 @@ class kardexM
             GROUP BY K.Codigo_Inv, K.Codigo_Barra
             HAVING SUM(Entrada-Salida) >=1 
             ORDER BY K.Codigo_Inv, K.Codigo_Barra ";
-    $stmt = sqlsrv_query( $this->dbs, $sql);
-    return $stmt;
+    $tabla = grilla_generica_new($sql,'Trans_Kardex As K, Comprobantes As C','myTable','',false,false,false,1,1,1,100);
+    return $tabla;
   }
 
   public function kardex_total($desde,$hasta,$codigo,$cbBodega,$bodega){
@@ -133,7 +134,8 @@ class kardexM
             AND TK.Codigo_P = C.Codigo 
             ORDER BY TK.Codigo_Inv, TK.Fecha, TK.Entrada DESC, TK.Salida, TK.TP, TK.Numero, TK.ID ";
     $stmt = sqlsrv_query( $this->dbs, $sql);
-    return $stmt;
+    $tabla = grilla_generica_new($sql,'Trans_Kardex','myTable','',false,false,false,1,1,1,100);
+    return $tabla;
   }
 } 
 ?>

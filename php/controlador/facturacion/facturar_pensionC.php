@@ -239,7 +239,7 @@ class facturar_pensionC
     $cuentas[0] = array('codigo'=>$value['Codigo'],'nombre'=>'No existen datos.');
     $i = 0;
 		while ($value = sqlsrv_fetch_array( $datos, SQLSRV_FETCH_ASSOC)) {
-			$cuentas[$i] = array('codigo'=>$value['Codigo'],'nombre'=>utf8_encode($value['Codigo'])." - ".utf8_encode($value['NomCuenta']));
+			$cuentas[$i] = array('codigo'=>$value['Codigo']."/".$value['TC'],'nombre'=>utf8_encode($value['Codigo'])." - ".utf8_encode($value['NomCuenta']));
       $i++;
 		}
 		return $cuentas;

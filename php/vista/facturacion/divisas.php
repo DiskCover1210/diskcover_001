@@ -359,6 +359,21 @@
                      });
                     //descargar_archivos(response.url,response.ar);
 
+                  }else if(response.respuesta == '4')
+                  {
+                    Swal.fire({
+                      type: 'success',
+                      title: 'Factura guardada correctamente',
+                      text: ''
+                    }).then(() => {
+                      serie = DCLinea.split(" ");
+                      //url = '../vista/appr/controlador/imprimir_ticket.php?mesa=0&tipo=FA&CI='+TextCI+'&fac='+TextFacturaNo+'&serie='+serie[1];
+                      //window.open(url, '_blank');
+                      var url = '../controlador/detalle_estudianteC.php?ver_fac=true&codigo='+TextFacturaNo+'&ser='+serie[1]+'&ci='+TextCI;
+                      window.open(url,'_blank');
+                      location.reload();
+                      //imprimir_ticket_fac(0,TextCI,TextFacturaNo,serie[1]);
+                    });
                   }
                   else
                   {
