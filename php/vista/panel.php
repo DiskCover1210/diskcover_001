@@ -14,7 +14,8 @@ if(isset($_GET['mos2']))
 ?>
 <!DOCTYPE html>
 <html>
-<head>   
+<head>
+
 <!-- <script src="https://code.jquery.com/jquery-1.10.2.min.js"></script> -->
  
   <!-- Tell the browser to be responsive to screen width -->

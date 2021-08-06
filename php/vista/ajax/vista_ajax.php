@@ -4209,7 +4209,7 @@ function validarCiu()
 		<?php
 		while($filas=$consulta->fetch_assoc()){
 			?>
-				<option value='<?php echo $filas['Ciudad']; ?>'><?php echo $filas['Ciudad']; ?></option>
+				<option value='<?php echo $filas['Ciudad']; ?>'><?php echo utf8_encode($filas['Ciudad']); ?></option>
 			<?php
 			//echo '<div id="alerta" class="alert alert-success visible">'.$filas['Empresa'].'</div>';
 			$i++;

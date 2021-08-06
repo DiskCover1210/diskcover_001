@@ -296,7 +296,6 @@ class divisasC
         $resultado = array('respuesta'=>4);
       }
       echo json_encode($resultado);
-      exit();
     }
   }
         

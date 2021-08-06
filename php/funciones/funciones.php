@@ -4557,8 +4557,8 @@ function insert_generico($tabla=null,$datos=null) // optimizado pero falta
   $cid = $conn->conexion();
 	$sql = "SELECT * from Information_Schema.Tables where TABLE_TYPE = 'BASE TABLE' AND TABLE_NAME='".$tabla."' ORDER BY TABLE_NAME";
 	// $stmt = sqlsrv_query( $cid, $sql);
-  $datos = $conn->datos($sql);
-  $tabla_ = $datos[0]['TABLE_NAME'];
+  $datos1 = $conn->datos($sql);
+  $tabla_ = $datos1[0]['TABLE_NAME'];
 	if($tabla_!='')
 	{
 		//buscamos los campos
@@ -4568,8 +4568,8 @@ function insert_generico($tabla=null,$datos=null) // optimizado pero falta
 		WHERE   (sys.sysobjects.xtype = 'U') AND (sys.sysobjects.name = '".$tabla_."')
 		ORDER BY sys.sysindexes.indid";
     $tabla_cc=0;
-    $datos = $conn->datos($sql);
-    $tabla_cc=$datos[0]['rows'];
+    $datos1 = $conn->datos($sql);
+    $tabla_cc=$datos1[0]['rows'];
 		
 		$sql="SELECT COLUMN_NAME,DATA_TYPE,IS_NULLABLE,CHARACTER_MAXIMUM_LENGTH
 		FROM Information_Schema.Columns
@@ -4593,7 +4593,7 @@ function insert_generico($tabla=null,$datos=null) // optimizado pero falta
 			{
 				$sql_=$sql_.$obj->COLUMN_NAME.",";
 			}
-			
+		
 			//recorremos los datos
 			$ban=0;
 			for($i=0;$i<count($datos);$i++)
