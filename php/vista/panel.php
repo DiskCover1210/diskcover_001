@@ -35,7 +35,7 @@ if(isset($_GET['mos2']))
  
   
   
-  <script src="../../lib/bower_components/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js"></script>
+  <!-- <script src="../../lib/bower_components/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js"></script> -->
   <!-- jQuery 3 -->
 <script src="../../lib/bower_components/jquery/dist/jquery.min.js"></script>
 <!-- Bootstrap 3.3.7 -->
@@ -95,19 +95,233 @@ if(isset($_GET['mos2']))
 <script type="text/javascript">
 		function cambiar_1(){
 			$('#myModal_espera').modal('show');
-			//var select = document.getElementById(id), //El <select>
-			var value =  $('#sempresa').val(); //El valor seleccionado
-			//partimos cadenas
+			var value =  $('#sempresa').val(); 
 			separador = "-"; // un espacio en blanco
 			limite    = 2;
 			arregloDeSubCadenas = value.split(separador, limite);
 			text =$('#sempresa option:selected').html(); //El texto de la opción seleccionada
-			//console.log(text);
-			// alert(value);
-			// alert(text);
-			//redireccionamos
 			window.location="panel.php?mos="+value+"&mos1="+text+"&mos3="+arregloDeSubCadenas[1]+"";
 		}
+			function descargar_archivos(url,archivo)
+		{
+            var link = document.createElement("a");
+            link.download = archivo;
+            link.href = url;
+            link.click();
+        }
+
+		function validar_year_mayor(nombre)
+		{
+
+			var fecha = $('#'+nombre+'').val();
+			var partes = fecha.split('-');
+			console.log(partes);
+			if(partes[0].length > 4 || partes[0] > 2050)
+			{
+				$('#'+nombre+'').val('2050-'+partes[1]+'-'+partes[2]);
+			}
+			
+
+		}
+		function validar_year_menor(nombre)
+		{
+
+			var fecha = $('#'+nombre+'').val();
+			var partes = fecha.split('-');
+			console.log(partes);
+			if(partes[0] < 2000)
+			{
+				alert('Año seleccionado menor a 1999');
+				$('#'+nombre+'').val('1999-'+partes[1]+'-'+partes[2]);
+			}
+		}
+
+	function addCommas(nStr) 
+		{
+    nStr += '';
+    var x = nStr.split('.');
+    var x1 = x[0];
+    var x2 = x.length > 1 ? '.' + x[1] : '';
+    var rgx = /(\d+)(\d{3})/;
+    while (rgx.test(x1)) {
+        x1 = x1.replace(rgx, '$1' + ',' + '$2');
+    }
+    return x1 + x2;
+  }
+
+  String.prototype.ucwords = function() {
+			str = this.toLowerCase();
+			// return str.replace(/(^([a-zA-Z\p{M}]))|([ -][a-zA-Z\p{M}])/g,
+			// 	function($1){
+			// 		return $1.toUpperCase();
+			// 		});
+			return str.toUpperCase(); 
+		}
+function num_caracteres(campo,num)
+{
+	var val = $('#'+campo).val();
+	var cant = val.length;
+	console.log(cant+'-'+num);
+
+	if(cant>num)
+	{
+		$('#'+campo).val(val.substr(0,num));
+		return false;
+	}
+
+}
+
+
+  //revisar esta funcion
+  function buscar(idMensaje)
+		{
+			//caso comprobantes procesados
+			if(idMensaje=='comproba')
+			{
+				var select = document.getElementById('mes'); //El <select>
+				value = select.value;
+				var select = document.getElementById('tipoc'); //El <select>
+				value1 = select.value;
+				//alert(value);
+				$.post('ajax/vista_ajax.php'
+					, {ajax_page: idMensaje, MesNo: value, TP: value1 }, function(data){
+						$('div.'+idMensaje).html(data); 
+						//alert('entrooo '+idMensaje);
+					});
+			}
+			//caso buscar
+			if(idMensaje=='comp')
+			{
+				var select = document.getElementById(idMensaje); //El <select>
+				value1 = select.value;
+				//alert(value1);
+				$.post('ajax/vista_ajax.php'
+					, {ajax_page: idMensaje, com: value1 }, function(data){
+						//$('div.pdfcom').load(data);
+						$('#pdfcom').html('<iframe style="width:100%; height:50vw;" src="ajax/TEMP/'+value1+'.pdf" frameborder="0" allowfullscreen></iframe>'); 
+						//alert('entrooo '+idMensaje+" ajax/TEMP/'+value1+'.pdf");
+					});
+			}
+			//caso entidad-ciudad
+			if(idMensaje=='ciudad')
+			{
+				//alert(idMensaje+' entro ');
+				//solo para el caso de gestion empresa
+				var select = document.getElementById('entidad'); //El <select>
+				value1 = select.value;
+				//alert(value1);
+				$.post('ajax/vista_ajax.php'
+					, {ajax_page: idMensaje, com: value1 }, function(data){
+						//alert('#'+idMensaje+'1');
+						//$('div.pdfcom').load(data);
+						//$('#pdfcom').html('<iframe style="width:100%; height:50vw;" src="ajax/TEMP/'+value1+'.pdf" frameborder="0" allowfullscreen></iframe>'); 
+						$('#'+idMensaje+'1').html(data); 
+					});
+			}
+			//caso entidad-empresa-ciudad
+			if(idMensaje=='entidad')
+			{
+				var select = document.getElementById('ciudad'); //El <select>
+				value2 = select.value;
+				var select = document.getElementById(idMensaje); //El <select>
+				value1 = select.value;
+				//alert(value1);
+				$.post('ajax/vista_ajax.php'
+					, {ajax_page: idMensaje, com: value1, ciu: value2 }, function(data){
+						//alert('#'+idMensaje+'1');
+						//$('div.pdfcom').load(data);
+						//$('#pdfcom').html('<iframe style="width:100%; height:50vw;" src="ajax/TEMP/'+value1+'.pdf" frameborder="0" allowfullscreen></iframe>'); 
+						$('#'+idMensaje+'1').html(data); 
+					});
+			}
+			//caso entidad-empresa
+			if(idMensaje=='entidad_u')
+			{
+				var select = document.getElementById(idMensaje); //El <select>
+				var ch = '0';
+				var isChecked = document.getElementById('entidadch').checked;
+				if(isChecked){
+					ch = '1';
+				}
+				value1 = select.value;
+				$.post('ajax/vista_ajax.php'
+					, {ajax_page: idMensaje, com: value1, ch: ch }, function(data){
+						//alert('#'+idMensaje+'1');
+						//$('div.pdfcom').load(data);
+						//$('#pdfcom').html('<iframe style="width:100%; height:50vw;" src="ajax/TEMP/'+value1+'.pdf" frameborder="0" allowfullscreen></iframe>'); 
+						$('#'+idMensaje+'1').html(data); 
+					});
+			}
+			//caso entidad-empresa
+			if(idMensaje=='usuario')
+			{
+				var select = document.getElementById(idMensaje); //El <select>
+				value1 = select.value;
+				//var value2 = document.getElementById('item1').value; //
+				//alert(value2);
+				//alert(value1);
+				$.post('ajax/vista_ajax.php'
+					, {ajax_page: idMensaje, com: value1 }, function(data){
+						//alert('#'+idMensaje+'1');
+						//$('div.pdfcom').load(data);
+						//$('#pdfcom').html('<iframe style="width:100%; height:50vw;" src="ajax/TEMP/'+value1+'.pdf" frameborder="0" allowfullscreen></iframe>'); 
+						$('#'+idMensaje+'1').html(data); 
+					});
+			}
+			if(idMensaje=='buscarusu')
+			{
+				var value1 = document.getElementById('entidad_u').value;
+				var ch1 = '0';
+				var isChecked = document.getElementById('entidadch').checked;
+				if(isChecked)
+				{
+					ch1 = '1';
+				}
+				var value3 = document.getElementById('usuario').value;
+				var ch2 = '0';
+				var isChecked = document.getElementById('usuarioch').checked;
+				if(isChecked)
+				{
+					ch2 = '1';
+				}
+				var ch3 = '0';
+				var isChecked = document.getElementById('empresach').checked;
+				if(isChecked)
+				{
+					ch3 = '1';
+				}
+				var value7 = document.getElementById('empresa').value;
+				var value5 = document.getElementById('FechaI').value;
+				var value6 = document.getElementById('FechaF').value;
+				//alert(value1+' '+value3+' '+value5+' '+value6+' '+value7+' '+ch1+' '+ch2+' '+ch3);
+				$.post('ajax/vista_ajax.php'
+					, {ajax_page: idMensaje, value1: value1, value3: value3, value5: value5, value6: value6,
+					value7: value7, ch1: ch1, ch2: ch2, ch3: ch3 }, function(data){
+						//alert('#'+idMensaje+'1');
+						//$('div.pdfcom').load(data);
+						//$('#pdfcom').html('<iframe style="width:100%; height:50vw;" src="ajax/TEMP/'+value1+'.pdf" frameborder="0" allowfullscreen></iframe>'); 
+						$('#'+idMensaje+'1').html(data); 
+					});
+			}
+			//caso empresa
+			if(idMensaje=='empresa')
+			{
+				var select = document.getElementById(idMensaje); //El <select>
+				var sms = $('#Mensaje').val();
+				value1 = select.value;
+				//alert(value1);
+				$.post('ajax/vista_ajax.php'
+					, {ajax_page: idMensaje, com: value1,sms:sms }, function(data){
+						//alert('#'+idMensaje+'1');
+						//$('div.pdfcom').load(data);
+						//$('#pdfcom').html('<iframe style="width:100%; height:50vw;" src="ajax/TEMP/'+value1+'.pdf" frameborder="0" allowfullscreen></iframe>'); 
+						$('#'+idMensaje+'1').html(data); 
+					});
+			}
+			
+		}
+
+
 </script>
 
 
