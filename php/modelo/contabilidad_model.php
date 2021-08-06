@@ -3204,7 +3204,7 @@ function sp_Reporte_Analitico_Mensual($tipo,$desde,$hasta)
 		   $sql=$sql." AND MONTH(Fecha) = ".$parametros['MesNo']." ";
 	   }
 	   $sql=$sql." ORDER BY Numero ";
-	   print_r($sql);die();
+	   // print_r($sql);die();
 	   $stmt = sqlsrv_query( $cid, $sql);
 	   if( $stmt === false)  
 	   	{  

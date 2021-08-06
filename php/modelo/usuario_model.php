@@ -3,12 +3,10 @@
  * Autor: Diskcover System.
  * Mail:  diskcover@msn.com
  * web:   www.diskcoversystem.com
- * distribuidor: PrismaNet Profesional S.A.
- * 
+ * distribuidor: PrismaNet Profesional S.A. * 
  * 
  * modificcado por javier farinango
- * 
- * 
+ *  * 
  */
 // require_once("../db/db.php");
 require_once("../db/db1.php");
@@ -67,10 +65,12 @@ class usuario_model{
 			$query = "SELECT *
 					  FROM entidad
 					  WHERE RUC_CI_NIC = '".$entidad."';";
+
+		// print_r($query);die();
 			$datos = $this->db1->datos($query,$tipo='MY SQL');
 			if(count($datos)>0)
 			{
-				return array('respuesta'=>1,'entidad'=>$datos[0]['ID_Empresa'],'Nombre'=>$datos[0]['Nombre_Entidad']);
+				return array('respuesta'=>1,'entidad'=>$datos[0]['ID_Empresa'],'Nombre'=>utf8_encode($datos[0]['Nombre_Entidad']));
 			}else
 			{
 				//retorna -1 cuando no se encuentra la empresa 			
@@ -608,30 +608,18 @@ class usuario_model{
 	function IngClave($parametros)
 	{
 
-        $this->dbs=Conectar::conexionSQL();
-		 $ClaveGeneral = '';
-	   	 $IngClaves_Caption  = '';
+    $ClaveGeneral = '';
+	  $IngClaves_Caption  = '';
 		$sql = "SELECT * 
 		FROM Accesos
 		WHERE Usuario = '".$parametros['tipo']."' ";
-		// print_r($sql);die();
-        $stmt = sqlsrv_query($this->dbs,$sql);
-	   if( $stmt === false)  
-	   	{  
-		 echo "Error en consulta PA.\n";  
-		 die( print_r( sqlsrv_errors(), true));  
+		
+		$datos = $this->db1->datos($sql);
+		if(count($datos)>0)
+		{
+			 $ClaveGeneral = $datos[0]["Clave"];
+	   	 $IngClaves_Caption = $datos[0]["Nombre_Completo"];
 		}
-		 $result = array();	
-	   while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_ASSOC) ) 
-	   {
-		$result[] = $row;
-	   }
-	   if(count($result)>0)
-	   {
-	   	 $ClaveGeneral = $result[0]["Clave"];
-	   	 $IngClaves_Caption = $result[0]["Nombre_Completo"];
-	   }
-
 	   return array('clave'=>$ClaveGeneral,'nombre'=>$IngClaves_Caption);
 
 	}
