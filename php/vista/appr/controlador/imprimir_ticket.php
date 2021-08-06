@@ -59,6 +59,13 @@ $controlador = new MesaCon();
 <hr>       			
  </pre>
         	<?php
+            if (isset($_GET['ticket'])) {
+                $ci = $_GET['CI'];
+                $serie = $_GET['serie'];
+                $fac = $_GET['fac'];
+                $parametros = array('tipo'=>'FA','ci'=>$ci,'serie'=>$serie,'factura'=>$fac);
+                echo $controlador->datos_fac_ticket($parametros);
+            }
         	   if(isset($_GET['mesa']))
         	   {
         	   	 $mesa = $_GET['mesa'];

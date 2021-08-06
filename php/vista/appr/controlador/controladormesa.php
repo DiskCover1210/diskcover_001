@@ -1140,6 +1140,74 @@ class MesaCon
 
 	}
 
+	function datos_fac_ticket($parametros)
+	{
+		date_default_timezone_set('America/Guayaquil');
+		$datos_pre  ="";
+		$datos_pre =  $this->modelo->datos_factura($parametros);
+		$cabe ='Transaccion (FA): No. '.$datos_pre['lineas'][0]['Factura'].' <br>
+				Fecha: '.date('Y-m-d').' - Hora: </b>'.date('H:m:s').' <br>
+				Cliente: <br>'.$datos_pre["cliente"]["Cliente"].'<br>
+				R.U.C/C.I.: '.$datos_pre['cliente']['CI_RUC'].'<br> 
+				Cajero: '.$_SESSION['INGRESO']['Nombre'].' <br>
+				Telefono: '.$datos_pre['cliente']['Telefono'].'<br>
+				Dirección: '.$datos_pre['cliente']['Direccion'].'<br>
+        		<table style="font-size:12px;"><tr><td>'.$datos_pre['lineas'][0]['Autorizacion'].'</td></tr></table>';
+        $lineas = "<hr><pre>";
+        foreach ($datos_pre['lineas'] as $key => $value) {
+    		$lineas.='<tr>Cant: <td>'.$value['Cantidad'].'</td></br>';
+            if($value['Total_IVA']==0)
+            {
+                $lineas.= '<td>PROD:'.$value['Producto'].' </td><br>';
+            }else
+            {
+                $lineas.= '<td>PROD:'.$value['Producto'].'</td><br>';
+            }
+            $lineas.='<td style="text-align: right;">PRE:'.number_format($value['Precio'],2).'</td><br><td style="text-align: right;">TOT'.number_format($value['Total'],2).'</td></tr>';
+        }              
+        $lineas.="</pre>";
+        $totales = "<hr>
+         <table style='font-size: 10px;'>
+           <tr>
+             <td style='width: 250px;'><b>Cajero:</b><br></td>
+             <td><b>SUBTOTAL:</b></td>
+             <td style='text-align: right;'>".number_format($datos_pre['preciot'],2) ."</td>
+           </tr>
+           <tr>
+             <td>".$_SESSION['INGRESO']['Nombre']."</td>
+             <td><b>DESCUENTO:</b></td>
+             <td style='text-align: right;'>0.00</td>
+           </tr>
+           <tr>
+             <td rowspan='3'>Su factura sera enviada al correo electronico registrado</td>
+             <td><b>I.V.A 12%:</b> </td>
+             <td style='text-align: right;'>".number_format($datos_pre['iva'],2) ."</td>
+           </tr>
+           <tr>
+             <td><b>TOTAL:</b></td>
+             <td style='text-align: right;'>".number_format($datos_pre['tota'],2)."</td>
+           </tr>
+           <tr>
+             <td><b>Propina:</b></td>
+             <td style='text-align: right;'>0.00</td>
+           </tr>
+         </table>
+     	";
+
+         $datos_extra = "<hr><pre>
+         <table style='width:100%'>
+            <tr>
+            <td style='text-align:center'>Fue un placer atenderle <br>www.cofradiadelvino.com <br>
+                </td>
+           </tr>
+         </table>
+		</pre>
+         ";
+        return $cabe.$lineas.$totales.$datos_extra;
+		
+
+	}
+
 
 	function lista_clientes($query)
 	{
