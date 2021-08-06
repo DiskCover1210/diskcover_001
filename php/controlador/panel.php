@@ -69,6 +69,9 @@ function variables_sistema($EmpresaEntidad,$NombreEmp,$ItemEmp)
 	$_SESSION['INGRESO']['item']=$ItemEmp;
 	$_SESSION['INGRESO']['ninguno']='.';
 
+	 $_SESSION['INGRESO']['LOCAL_SQLSERVER']='NO'; //quitar despues
+
+
 	$cod = explode('-', $EmpresaEntidad);
 	$empresa=getEmpresasId($cod[0]);
 	// print_r($empresa);die();
