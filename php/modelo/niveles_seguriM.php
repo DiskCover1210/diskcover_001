@@ -45,7 +45,7 @@ class niveles_seguriM
 		 	while($filas=$consulta->fetch_assoc())
 			{
 				/*$datos[]=['id'=>utf8_encode($filas['ID_Empresa']),'text'=>utf8_encode($filas['Nombre_Entidad']),'RUC'=>utf8_encode($filas['RUC_CI_NIC'])];*/
-				$datos[]=['id'=>$filas['ID_Empresa'],'text'=>$filas['Nombre_Entidad'],'RUC'=>$filas['RUC_CI_NIC']];				
+				$datos[]=['id'=>$filas['ID_Empresa'],'text'=>utf8_encode($filas['Nombre_Entidad']),'RUC'=>$filas['RUC_CI_NIC']];				
 			}
 		}
 	    return $datos;
