@@ -6372,7 +6372,7 @@ function costo_venta($codigo_inv)  // optimizado
     End If
     Leer_Datos_Clientes = TBenef
     End Function*/
-  }
+  // }
 
   function SinEspaciosDer($texto = ""){
     $resultado = explode(" ", $texto);
@@ -6401,13 +6401,13 @@ function grilla_generica_new($sql,$tabla,$id_tabla=false,$titulo=false,$botones=
   $pos = strpos($sql,'UNION');
 if ($pos === false) {
     $sql2 = " SELECT COUNT(*) as 'reg' FROM ".$tabla;
-    $datos2 =  $conn->datos($sql2)
+    $datos2 =  $conn->datos($sql2);
     $total_registros = $datos2[0]['reg']; 
 } else {
     $sql2 = $sql;
     $datos2 =  $conn->datos($sql2);
     $tot_reg = count($datos2);
-     $total_registros = $tot_reg;
+    $total_registros = $tot_reg;
 
 }
 
