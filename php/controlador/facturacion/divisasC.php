@@ -207,7 +207,6 @@ class divisasC
       $this->modelo->updateClientesFacturacion1($Valor,$Anio1,$Codigo1,$Codigo,$Codigo3,$Codigo2);
       //Grabamos el numero de factura
       Grabar_Factura($FA);
-
       //Seteos de Abonos Generales para todos los tipos de abonos
       $TA['T'] = $FA['T'];
       $TA['TP'] = $FA['TC'];
@@ -291,9 +290,11 @@ class divisasC
       $FA['num_fac'] = $FA['Factura'];
       $FA['tc'] = $FA['TC'];
       $FA['cod_doc'] = '01';
-      print_r($FA);
-      exit();
-      $resultado = $this->autorizar_sri->Autorizar($FA);
+      if (strlen($FA['Autorizacion']) == 13) {
+        $resultado = $this->autorizar_sri->Autorizar($FA);
+      }else{
+        $resultado = array('respuesta'=>4);
+      }
       echo json_encode($resultado);
       exit();
     }

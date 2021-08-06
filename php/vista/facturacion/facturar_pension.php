@@ -40,11 +40,34 @@
     font-size: 14px;
     font-weight: bold;
   }
-  #customers th {
-    text-align: left;
-    background-color: #ddd;
-    color: black;
+  #customers table {
+    border-collapse: collapse;
   }
+  #customers table, th, td {
+    /*border: solid 1px black;*/
+    padding: 2px;
+  }
+  #customers tbody tr:nth-child(even) {
+    background:#fffff;
+  }
+  #customers tbody tr:nth-child(odd) {
+    background: #e2fbff;;
+  }
+  #customers tbody tr:nth-child(even):hover {
+    background: #DDB;
+  }
+  #customers tbody tr:nth-child(odd):hover {
+    background: #DDA;
+  }
+  .sombra {
+    width: 99%;
+    box-shadow: 10px 10px 6px rgba(0, 0, 0, 0.6);
+  }
+  .sinborde{
+    border: 0;
+  }
+
+ 
 </style>
 
 <script type="text/javascript">
@@ -63,6 +86,7 @@
     autocomplete_cliente();
     catalogoLineas();
     totalRegistros();
+    verificarTJ();
     //enviar datos del cliente
     $('#cliente').on('select2:select', function (e) {
       var data = e.params.data.data;
@@ -166,15 +190,15 @@
           for (var indice in datos) {
             subtotal = (parseFloat(datos[indice].valor) + (parseFloat(datos[indice].valor) * parseFloat(datos[indice].iva) / 100)) - parseFloat(datos[indice].descuento) - parseFloat(datos[indice].descuento2);
             var tr = `<tr>
-              <td><input type="checkbox" id="checkbox`+clave+`" onclick="totalFactura('checkbox`+clave+`','`+subtotal+`','`+datos[indice].iva+`','`+datos[indice].descuento+`','`+datos.length+`')" name="`+datos[indice].mes+`"></td>
-              <td><input type ="text" id="Mes`+clave+`" value ="`+datos[indice].mes+`" disabled/></td>
-              <td><input type ="text" id="Codigo`+clave+`" value ="`+datos[indice].codigo+`" disabled/></td>
-              <td><input type ="text" id="Periodo`+clave+`" value ="`+datos[indice].periodo+`" disabled/></td>
-              <td><input type ="text" id="Producto`+clave+`" value ="`+datos[indice].producto+`" disabled/></td>
-              <td><input size="10px" type ="text" id="valor`+clave+`" value ="`+parseFloat(datos[indice].valor).toFixed(2)+`" disabled/></td>
-              <td><input size="10px" type ="text" id="descuento`+clave+`" value ="`+parseFloat(datos[indice].descuento).toFixed(2)+`" disabled/></td>
-              <td><input size="10px" type ="text" id="descuento2`+clave+`" value ="`+parseFloat(datos[indice].descuento2).toFixed(2)+`" disabled/></td>
-              <td><input size="10px" type ="text" id="subtotal`+clave+`" value ="`+parseFloat(subtotal).toFixed(2)+`" disabled/></td>
+              <td><input class="sinborde" type="checkbox" id="checkbox`+clave+`" onclick="totalFactura('checkbox`+clave+`','`+subtotal+`','`+datos[indice].iva+`','`+datos[indice].descuento+`','`+datos.length+`')" name="`+datos[indice].mes+`"></td>
+              <td><input class="sinborde" type ="text" id="Mes`+clave+`" value ="`+datos[indice].mes+`" disabled/></td>
+              <td><input class="sinborde" type ="text" id="Codigo`+clave+`" value ="`+datos[indice].codigo+`" disabled/></td>
+              <td><input class="sinborde" type ="text" id="Periodo`+clave+`" value ="`+datos[indice].periodo+`" disabled/></td>
+              <td><input class="sinborde" type ="text" id="Producto`+clave+`" value ="`+datos[indice].producto+`" disabled/></td>
+              <td><input class="sinborde text-right" size="10px" type ="text" id="valor`+clave+`" value ="`+parseFloat(datos[indice].valor).toFixed(2)+`" disabled/></td>
+              <td><input class="sinborde text-right" size="10px" type ="text" id="descuento`+clave+`" value ="`+parseFloat(datos[indice].descuento).toFixed(2)+`" disabled/></td>
+              <td><input class="sinborde text-right" size="10px" type ="text" id="descuento2`+clave+`" value ="`+parseFloat(datos[indice].descuento2).toFixed(2)+`" disabled/></td>
+              <td><input class="sinborde text-right" size="10px" type ="text" id="subtotal`+clave+`" value ="`+parseFloat(subtotal).toFixed(2)+`" disabled/></td>
               <input size="10px" type ="hidden" id="CodigoL`+clave+`" value ="`+datos[indice].CodigoL+`"/>
               <input size="10px" type ="hidden" id="Iva`+clave+`" value ="`+datos[indice].iva+`"/>
             </tr>`;
@@ -210,17 +234,17 @@
           $("#cuerpoHistoria").empty();
           for (var indice in datos) {
             var tr = `<tr>
-              <td><input size="1" type ="text" id="TD`+clave+`" value ="`+datos[indice].TD+`" disabled/></td>
-              <td><input size="7" type ="text" id="Fecha`+clave+`" value ="`+datos[indice].Fecha+`" disabled/></td>
-              <td><input size="6" type ="text" id="Serie`+clave+`" value ="`+datos[indice].Serie+`" disabled/></td>
-              <td><input size="6" type ="text" id="Factura`+clave+`" value ="`+datos[indice].Factura+`" disabled/></td>
-              <td><input size="70" type ="text" id="Detalle`+clave+`" value ="`+datos[indice].Detalle+`" disabled/></td>
-              <td><input size="2" class="text-right" type ="text" id="Anio`+clave+`" value ="`+datos[indice].Anio+`" disabled/></td>
-              <td><input size="10" type ="text" id="Mes`+clave+`" value ="`+datos[indice].Mes+`" disabled/></td>
-              <td><input size="6" class="text-right" size="10px" type ="text" id="Total`+clave+`" value ="`+parseFloat(datos[indice].Total).toFixed(2)+`" disabled/></td>
-              <td><input size="6" class="text-right" type ="text" id="Abonos`+clave+`" value ="`+parseFloat(datos[indice].Abonos).toFixed(2)+`" disabled/></td>
-              <td><input size="2" class="text-right" type ="text" id="Mes_No`+clave+`" value ="`+datos[indice].Mes_No+`" disabled/></td>
-              <td><input size="2" class="text-right" type ="text" id="No`+clave+`" value ="`+datos[indice].No+`" disabled/></td>
+              <td><input class="sinborde" size="1" type ="text" id="TD`+clave+`" value ="`+datos[indice].TD+`" disabled/></td>
+              <td><input class="sinborde" size="7" type ="text" id="Fecha`+clave+`" value ="`+datos[indice].Fecha+`" disabled/></td>
+              <td><input class="sinborde" size="6" type ="text" id="Serie`+clave+`" value ="`+datos[indice].Serie+`" disabled/></td>
+              <td><input class="sinborde" size="6" type ="text" id="Factura`+clave+`" value ="`+datos[indice].Factura+`" disabled/></td>
+              <td><input class="sinborde" size="70" type ="text" id="Detalle`+clave+`" value ="`+datos[indice].Detalle+`" disabled/></td>
+              <td><input class="sinborde" size="2" class="text-right" type ="text" id="Anio`+clave+`" value ="`+datos[indice].Anio+`" disabled/></td>
+              <td><input class="sinborde" size="10" type ="text" id="Mes`+clave+`" value ="`+datos[indice].Mes+`" disabled/></td>
+              <td><input class="sinborde" size="6" class="text-right" size="10px" type ="text" id="Total`+clave+`" value ="`+parseFloat(datos[indice].Total).toFixed(2)+`" disabled/></td>
+              <td><input class="sinborde" size="6" class="text-right" type ="text" id="Abonos`+clave+`" value ="`+parseFloat(datos[indice].Abonos).toFixed(2)+`" disabled/></td>
+              <td><input size="2" class="text-right sinborde" type ="text" id="Mes_No`+clave+`" value ="`+datos[indice].Mes_No+`" disabled/></td>
+              <td><input size="2" class="text-right sinborde" type ="text" id="No`+clave+`" value ="`+datos[indice].No+`" disabled/></td>
             </tr>`;
             $("#cuerpoHistoria").append(tr);
             clave++;
@@ -405,6 +429,7 @@
 
   function numeroFactura(){
     DCLinea = $("#DCLinea").val();
+    console.log(DCLinea);
     $.ajax({
       type: "POST",
       url: '../controlador/facturacion/facturar_pensionC.php?numFactura=true',
@@ -433,6 +458,17 @@
         $("#registros").val(datos.registros);
       }
     });
+  }
+
+  function verificarTJ(){
+    TC = $("#cuentaBanco").val();
+    TC = TC.split("/");
+    //console.log("entra");
+    if (TC[1] == "TJ") {
+      $("#divInteres").show();
+    }else{
+      $("#divInteres").hide();
+    }
   }
 
   function guardarPension(){
@@ -479,6 +515,8 @@
         TxtDirS = $("#direccion1").val();
         TextCheque = $("#valorBanco").val();
         DCBanco = $("#cuentaBanco").val();
+        DCBanco = DCBanco.split("/");
+        DCBanco = DCBanco[0];
         chequeNo = $("#chequeNo").val();
         TxtEfectivo = $("#efectivo").val();
         TxtNC = $("#cuentaNC").val();
@@ -585,7 +623,6 @@
         })
       })
     }
-    
   }
 
 </script>
@@ -742,28 +779,33 @@
           </div>
         </div>
         <div class="row">
-          <div class="col-sm-12" style="
-              height: 150px;
-              overflow: auto;
-              display: block;
-          ">
-            <table class="table table-responsive table-borfed thead-dark" id="customers" tabindex="14">
-              <thead>
-                <tr>
-                  <th></th>
-                  <th>Mes</th>
-                  <th>Código</th>
-                  <th>Año</th>
-                  <th>Producto</th>
-                  <th width="100px">Valor</th>
-                  <th width="100px">Descuento</th>
-                  <th width="100px">Desc. P. P.</th>
-                  <th width="100px">Total</th>
-                </tr>
-              </thead>
-              <tbody id="cuerpo">
-              </tbody>
-            </table>          
+
+          <div class="col-sm-12">
+            <div class="tab-content" style="background-color:#E7F5FF">
+              <div id="home" class="tab-pane fade in active">
+                <div class="table-responsive" id="tabla_" style="overflow-y: scroll; height:250px; width: auto;">
+                  <div class="sombra" style>
+                    <table border class="table table-striped table-hover" id="customers" tabindex="14" >
+                      <thead>
+                        <tr>
+                          <th style="border: #b2b2b2 1px solid;"></th>
+                          <th style="border: #b2b2b2 1px solid;">Mes</th>
+                          <th style="border: #b2b2b2 1px solid;">Código</th>
+                          <th style="border: #b2b2b2 1px solid;">Año</th>
+                          <th style="border: #b2b2b2 1px solid;" width="300px">Producto</th>
+                          <th style="border: #b2b2b2 1px solid;" width="100px">Valor</th>
+                          <th style="border: #b2b2b2 1px solid;" width="100px">Descuento</th>
+                          <th style="border: #b2b2b2 1px solid;" width="100px">Desc. P. P.</th>
+                          <th style="border: #b2b2b2 1px solid;" width="100px">Total</th>
+                        </tr>
+                      </thead>
+                      <tbody id="cuerpo">
+                      </tbody>
+                    </table>          
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
         <br>
@@ -827,7 +869,7 @@
             <label>Bancos/Tarjetas</label>
           </div>
           <div class="col-sm-7">
-            <select class="form-control input-sm" name="cuentaBanco" id="cuentaBanco" tabindex="15">
+            <select class="form-control input-sm" name="cuentaBanco" id="cuentaBanco" tabindex="15" onchange="verificarTJ();">
               <?php
                 $cuentas = $facturar->getCatalogoCuentas();
                 foreach ($cuentas as $cuenta) {
@@ -896,6 +938,14 @@
             <input tabindex="20" type="text" name="efectivo" id="efectivo" onkeyup="calcularSaldo();" class="form-control input-sm red text-right">
           </div>
         </div>
+        <div class="row" id="divInteres">
+          <div class="col-sm-2 col-sm-offset-8 text-right">
+            <b>Interés Tarjeta USD</b>
+          </div>
+          <div class="col-sm-2">
+            <input tabindex="20" type="text" name="interesTarjeta" id="interesTarjeta" class="form-control input-sm red text-right">
+          </div>
+        </div>
         <div class="row">
           <div class="col-sm-1 text-center justify-content-center align-items-center">
             <input style="width: 50px" type="text" id="registros" class="form-control input-sm text-center justify-content-center align-items-center" readonly>
@@ -962,31 +1012,34 @@
       </div>
       <div class="modal-body">
         <div class="row">
-          <div class="col-sm-12" style="
-              height: 400px;
-              overflow: auto;
-              display: block;
-          ">
-            <table class="table table-responsive table-borfed thead-dark" id="customers" tabindex="14">
-              <thead>
-                <tr>
-                  <th>TD</th>
-                  <th>Fecha</th>
-                  <th>Serie</th>
-                  <th>Factura</th>
-                  <th>Detalle</th>
-                  <th>Año</th>
-                  <th>Mes</th>
-                  <th>Total</th>
-                  <th>Abonos</th>
-                  <th>Mes No</th>
-                  <th>No</th>
-                </tr>
-              </thead>
-              <tbody id="cuerpoHistoria">
-              </tbody>
-            </table>          
-          </div>
+          <div class="col-sm-12">
+            <div class="tab-content" style="background-color:#E7F5FF">
+              <div id="home" class="tab-pane fade in active">
+                <div class="table-responsive" id="tabla_" style="overflow-y: scroll; height:450px; width: auto;">
+                  <div class="sombra" style>
+                    <table border class="table table-striped table-hover" id="customers" tabindex="14" >
+                      <thead>
+                        <tr>
+                          <th>TD</th>
+                          <th>Fecha</th>
+                          <th>Serie</th>
+                          <th>Factura</th>
+                          <th>Detalle</th>
+                          <th>Año</th>
+                          <th>Mes</th>
+                          <th>Total</th>
+                          <th>Abonos</th>
+                          <th>Mes No</th>
+                          <th>No</th>
+                        </tr>
+                      </thead>
+                      <tbody id="cuerpoHistoria">
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>  
         </div>
       </div>
       <div class="modal-footer">

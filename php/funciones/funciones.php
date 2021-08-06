@@ -7250,7 +7250,6 @@ function datos_tabla($tabla,$campo=false)
            echo "Error en consulta PA.\n";  
            die( print_r( sqlsrv_errors(), true));  
         }       
-        
         $cod_cue='.';
         $TC='.';
         $cuenta='.';
@@ -7341,7 +7340,7 @@ function datos_tabla($tabla,$campo=false)
              (C,T ,TC,ME,Factura,CodigoC ,Fecha,Fecha_C ,Fecha_V,SubTotal,Con_IVA ,Sin_IVA,IVA,Total_MN
              ,Cta_CxP,Cta_Venta,Item ,CodigoU,Periodo,Cod_CxC,Com_Pag
              ,Hora ,X,Serie,Vencimiento,P,Fecha_Aut,RUC_CI,TB,Razon_Social,Total_Efectivo,Total_Banco,Otros_Abonos,Total_Abonos,
-             Abonos_MN,Tipo_Pago,Porc_IVA)
+             Abonos_MN,Tipo_Pago,Porc_IVA,Autorizacion)
          VALUES
            (1
            ,'C'
@@ -7380,8 +7379,11 @@ function datos_tabla($tabla,$campo=false)
            ,".$total_abono."
            ,'20'
            ,".$_SESSION['INGRESO']['porc']."
+           ,".$datos1['Autorizacion']."
           )";
         //echo $query;
+        //exit();
+        $stmt = sqlsrv_query($cid, $query);
         $propina_a = 0;
         $dato[0]['campo']='C';
         $dato[0]['dato']=1;
@@ -7537,6 +7539,9 @@ function datos_tabla($tabla,$campo=false)
     $conn = new Conectar();
     $cid=$conn->conexion();
     $DiarioCaja = ReadSetDataNum("Recibo_No", True, True);
+    if ($TA['Abono'] == '') {
+      $TA['Abono'] = 0;
+    }
     
     if ($TA['T'] == "" || $TA['T'] == G_NINGUNO || $TA['T'] == "A") {
       $TA['T'] = G_NORMAL;
@@ -7610,13 +7615,15 @@ function datos_tabla($tabla,$campo=false)
     $dato[17]['dato'] = $_SESSION['INGRESO']['CodigoU'];
     $dato[18]['campo'] = 'Cod_Ejec';
     $dato[18]['dato'] = $_SESSION['INGRESO']['CodigoU'];
+    $dato[19]['campo'] = 'Total';
+    $dato[19]['dato'] = $TA['Abono'];
     if ($TA['Banco'] == "NOTA DE CREDITO") {
-      $dato[19]['campo'] = 'Serie_NC';
-      $dato[19]['dato'] = $TA['Serie_NC'];
-      $dato[20]['campo'] = 'Autorizacion_NC';
-      $dato[20]['dato'] = $TA['Autorizacion_NC'];
-      $dato[21]['campo'] = 'Secuencial_NC';
-      $dato[21]['dato'] = $TA['Nota_Credito'];
+      $dato[20]['campo'] = 'Serie_NC';
+      $dato[20]['dato'] = $TA['Serie_NC'];
+      $dato[21]['campo'] = 'Autorizacion_NC';
+      $dato[21]['dato'] = $TA['Autorizacion_NC'];
+      $dato[22]['campo'] = 'Secuencial_NC';
+      $dato[22]['dato'] = $TA['Nota_Credito'];
     }
       /*
        If .Banco = "NOTA DE CREDITO" Then

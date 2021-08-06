@@ -35,7 +35,6 @@
     minimo = producto[1];
     maximo = producto[2];
     unidad = producto[3];
-    console.log(producto);
     $("#codigo").val(codigo);
     $("#minimo").val(parseFloat(minimo).toFixed(2));
     $("#maximo").val(parseFloat(maximo).toFixed(2));
@@ -61,17 +60,20 @@
     $.ajax({
       type: "POST",                 
       url: '../controlador/inventario/kardexC.php?consulta_kardex_producto=true',
+      dataType: 'json',
       data: {
               'desde' : desde,
               'hasta' : hasta,
               'productoP' : codigo,
               'productoI' : productoI[0],
               'bodega' : bodega 
-            }, 
+            },
+
       success: function(data)             
       {
+        console.log(data);
         if (data) {
-          $('#myTable').html(data);   
+          $('#myTable1').html(data);   
         }else{
           console.log("No tiene datos");
         }        
@@ -90,6 +92,7 @@
     $.ajax({
       type: "POST",                 
       url: '../controlador/inventario/kardexC.php?consulta_kardex=true',
+      dataType: 'json',
       data: {
               'desde' : desde,
               'hasta' : hasta,
@@ -101,7 +104,7 @@
       success: function(data)             
       {
         if (data) {
-          $('#myTable').html(data);   
+          $('#myTable1').html(data);   
         }else{
           console.log("No tiene datos");
         }        
@@ -120,6 +123,7 @@
     $.ajax({
       type: "POST",                 
       url: '../controlador/inventario/kardexC.php?kardex_total=true',
+      dataType : 'json',
       data: {
               'desde' : desde,
               'hasta' : hasta,
@@ -131,10 +135,10 @@
       success: function(data)             
       {
         if (data) {
-          $('#myTable').html(data);   
+          $('#myTable1').html(data);   
         }else{
           console.log("No tiene datos");
-        }        
+        }
       }
     });
   }
@@ -305,14 +309,10 @@
     </div>
   </div>
     <!--seccion de panel-->
+    <br>
     <div class="row">
-      <input type="input" name="OpcU" id="OpcU" value="true" hidden="">
-      <div class="col-sm-12">
-        <div class="table-responsive">
-          <br>
-          <table id="myTable">
-          </table>              
-        </div> 
+      <div class="table-responsive" id="myTable1">
+                     
       </div>
     </div>
   </div>

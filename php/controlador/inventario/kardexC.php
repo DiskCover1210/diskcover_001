@@ -78,8 +78,7 @@ class kardexC
 		$desde = $_POST['desde'];
 		$hasta = $_POST['hasta'];
 		$codigo = $_POST['productoP'];
-		$stmt = $this->modelo->consulta_kardex_producto($desde,$hasta,$codigo);
-		$tabla = grilla_generica($stmt,null,null,1,null,null,null,true);
+		$tabla = $this->modelo->consulta_kardex_producto($desde,$hasta,$codigo);
 		return $tabla;
 	}
 
@@ -89,8 +88,7 @@ class kardexC
 		$codigo = $_POST['productoP'];
 		$cbBodega = $_POST['cbBodega'];
 		$bodega = $_POST['bodega'];
-		$stmt = $this->modelo->consulta_kardex($desde,$hasta,$codigo,$cbBodega,$bodega);
-		$tabla = grilla_generica($stmt,null,null,1,null,null,null,true);
+		$tabla = $this->modelo->consulta_kardex($desde,$hasta,$codigo,$cbBodega,$bodega);
 		return $tabla;
 	}
 
@@ -100,8 +98,7 @@ class kardexC
 		$codigo = $_POST['productoP'];
 		$cbBodega = $_POST['cbBodega'];
 		$bodega = $_POST['bodega'];
-		$stmt = $this->modelo->kardex_total($desde,$hasta,$codigo,$cbBodega,$bodega);
-		$tabla = grilla_generica($stmt,null,null,1,null,null,null,true);
+		$tabla = $this->modelo->kardex_total($desde,$hasta,$codigo,$cbBodega,$bodega);
 		return $tabla;
 	}
 
