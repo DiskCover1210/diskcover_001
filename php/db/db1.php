@@ -26,7 +26,7 @@ class db
 	{
 		if($tipo=='MYSQL')
 		{
-		  $this->MySQL();
+		  return $this->MySQL();
 		  // $this->MySQL2();
 
 		}else
@@ -115,44 +115,60 @@ class db
 	
 	}
 
-	function String_Sql()
+	function String_Sql($sql,$tipo=false)
 	{
 		if($tipo=='MY SQL')
 		{
 			$conn = $this->MySQL();
 			$resultado = mysqli_query($conn, $sql);
-			if(!$resultado)
-			{
-				echo "Error: " . $sql . "<br>" . mysqli_error($conn);
-				return false;
-			}
-			$datos = array();
-			while ($row = mysqli_fetch_assoc($resultado)) {
-				$datos[] = $row;
-			}
-			mysqli_close($conn);
-			return $datos;
+		    if(!$resultado)
+		    {
+			  echo "Error: " . $sql . "<br>" . mysqli_error($conn);
+			  return -1;
+		    }
+
+		    mysqli_close($conn);
+		    return 1;
 
 		}else
 		{
-			$conn = $this->SQLServer();	
-			$stmt = sqlsrv_query($conn,$sql);
-			// print_r($sql);die();
-			$result = array();	
-			if( $stmt === false) {
-				die( print_r( sqlsrv_errors(), true) );
-			}
-			while( $row = sqlsrv_fetch_array($stmt,SQLSRV_FETCH_ASSOC) ) 
-	     	{
-	     		$result[] = $row;
-	     	}
-	     	sqlsrv_close($conn);
-	     	return $result;
+		   $conn = $this->SQLServer();
+           $stmt = sqlsrv_query($conn, $sql);
+		   if(!$stmt)
+		   {
+			   echo "Error: " . $sql . "<br>" . sqlsrv_errors($conn);
+			   sqlsrv_close($conn);
+			return -1;
+		   }
+
+		   sqlsrv_close($conn);
+		   return 1;
 
 		}
 
 	}
 
+	function ejecutar_procesos_almacenados($sql,$parametros,$tipo=false)
+	{
+		if($tipo=='MY SQL')
+		{
+			// colocar funcion para ejecutar procesos almacenados en mysql
+
+		}else
+		{
+		   $conn = $this->SQLServer();
+           $stmt = sqlsrv_prepare($conn, $sql, $parametros);
+           if (!sqlsrv_execute($stmt)) 
+           {
+           	echo "Error en consulta PA.\n";  
+           	$respuesta = -1;
+           	die( print_r( sqlsrv_errors(), true));  
+           }
+		   sqlsrv_close($conn);
+		   return 1;
+		}
+
+	}
 	
 }
 ?>
