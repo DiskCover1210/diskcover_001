@@ -378,6 +378,8 @@ foreach ($datos as $key => $value) {
  $tabla1.=$tablatemp;
  $tabla1.='</ul></div><script  src="../../lib/dist/js/script_acordeon.js"></script>';
  $tabla = $tabla1;
+
+ // $tabla = utf8_encode($tabla);
 return $tabla;
 	}
 

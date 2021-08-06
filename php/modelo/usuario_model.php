@@ -62,7 +62,7 @@ class usuario_model{
 		$num = strlen($entidad);
 		if($num==10 || $num == 13 && is_numeric($entidad))
 		{
-			$query = "SELECT *
+			$query = "SELECT ID_Empresa,Nombre_Entidad
 					  FROM entidad
 					  WHERE RUC_CI_NIC = '".$entidad."';";
 

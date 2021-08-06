@@ -127,7 +127,7 @@ class anexos_transC
                         // print_r('expression');die(); 
   $this->modelo->Numerar_Lineas_SRI("Trans_Anulados","",$FechaIni,$FechaFin,$ConSucursal=false);
   
-       // print_r('expression');die();
+       // print_r('expresaaasion');die();
 				// print_r('expression');die();
 
   $this->modelo->Numerar_Lineas_SRI("Trans_Compras","C",$FechaIni,$FechaFin,$ConSucursal=false);
@@ -346,6 +346,8 @@ class anexos_transC
      ORDER BY CProvincia, Descripcion_Rubro ";
  //  SelectAdodc AdoCiudades, sSQL
      $resultado = array('clientes' => $CLIENTES,'anulados'=>$ANULADOS,'compras'=>$COMPRAS,'importaciones'=> $IMPORTACIONES,'exportaciones'=>$EXPORTACIONES,'ventas'=>$VENTAS,'punto_venta'=>$PUNTO_VENTA);
+
+     // print_r($resultado);die();
 
      return $resultado;
 	}
@@ -1320,7 +1322,8 @@ return 1;
              $tabla_RE_FU[$count]['medidas']=array(100,55,35);
              $tabla_RE_FU[$count]['alineado']=array('R','R','R');
              $tabla_RE_FU[$count]['datos']=array("TOTAL",$Total,$Real5);
-             $totales = count($tabla_RE_FU);  
+             $totales = count($tabla_RE_FU); 
+             // print_r($tabla_RE_FU);die(); 
              foreach ($tabla_RE_FU as $key => $value){
                 $this->pdf->SetFont('Arial','',8); 
                 $this->pdf->SetWidths($value['medidas']);
