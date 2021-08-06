@@ -13,7 +13,8 @@ if(!isset($_SESSION))
 	}
 //require_once("../../lib/excel/plantilla.php");
 require_once(dirname(__DIR__,2)."/lib/excel/plantilla.php");
-require_once(dirname(__DIR__,1)."/db/db.php");
+// require_once(dirname(__DIR__,1)."/db/db.php");
+require_once(dirname(__DIR__,1)."/db/db1.php");
 require_once(dirname(__DIR__,1)."/db/variables_globales.php");
 
 //Lutgarda6018
@@ -64,6 +65,9 @@ function generate_clave($strength = 16) {
     return $random_string;
 }
 
+
+
+//----------------------------------- fin funciones en duda--------------------------- 
 //Configuración del algoritmo de encriptación
 
 //Debes cambiar esta cadena, debe ser larga y unica
@@ -97,6 +101,8 @@ $iv = base64_decode("C9fBxl1EWtYTL1/M8jfstw==");
  $getIV = function () use ($method) {
      return base64_encode(openssl_random_pseudo_bytes(openssl_cipher_iv_length($method)));
  };
+
+//----------------------------------- fin funciones en duda--------------------------- 
 function control_procesos($TipoTrans,$Tarea,$opcional_proceso)
 {  
   $TMail_Credito_No = G_NINGUNO;
@@ -138,32 +144,21 @@ function control_procesos($TipoTrans,$Tarea,$opcional_proceso)
   }
 }
 
-function Actualizar_Datos_ATS_SP($Items,$MBFechaI,$MBFechaF,$Numero)
+function Actualizar_Datos_ATS_SP($Items,$MBFechaI,$MBFechaF,$Numero) //-------------optimizado javier farinango
 {
-  $respuesta = 1;
-  $conn = new Conectar();
-  $cid=$conn->conexion();
-  $FechaIni = $MBFechaI;
-  $FechaFin = $MBFechaF;
-
-$parametros = array(
-array(&$Items, SQLSRV_PARAM_IN),
-array(&$_SESSION['INGRESO']['periodo'], SQLSRV_PARAM_IN),
-array(&$FechaIni, SQLSRV_PARAM_IN),
-array(&$FechaFin, SQLSRV_PARAM_IN),
-array(&$Numero, SQLSRV_PARAM_IN)
-);
-$sql = "EXEC sp_Actualizar_Datos_ATS @Item= ?,@Periodo=?,@FechaDesde=?,@FechaHasta=?,@Numero=?";
-$stmt = sqlsrv_prepare($cid, $sql, $parametros);
-    if (!sqlsrv_execute($stmt)) {
-   
-      echo "Error en consulta PA.\n";  
-      $respuesta = -1;
-      die( print_r( sqlsrv_errors(), true));  
-    die;
-}
-
-    return $respuesta;
+    $respuesta = 1;
+    $conn = new db();
+    $FechaIni = $MBFechaI;
+    $FechaFin = $MBFechaF;
+    $parametros = array(
+      array(&$Items, SQLSRV_PARAM_IN),
+      array(&$_SESSION['INGRESO']['periodo'], SQLSRV_PARAM_IN),
+      array(&$FechaIni, SQLSRV_PARAM_IN),
+      array(&$FechaFin, SQLSRV_PARAM_IN),
+      array(&$Numero, SQLSRV_PARAM_IN)
+    );
+    $sql = "EXEC sp_Actualizar_Datos_ATS @Item= ?,@Periodo=?,@FechaDesde=?,@FechaHasta=?,@Numero=?";
+    return $conn->ejecutar_procesos_almacenados($sql,$parametros,$tipo=false);
 }
 
 
@@ -207,11 +202,10 @@ if($ATMes == 'Todos')
   return $fechas_ats;
 }
 
-function copiar_tabla_empresa($NombreTabla,$OldItemEmpresa,$PeriodoCopy,$si_periodo,$AdoStrCnnCopy=false,$NoBorrarTabla=false)
+function copiar_tabla_empresa($NombreTabla,$OldItemEmpresa,$PeriodoCopy,$si_periodo,$AdoStrCnnCopy=false,$NoBorrarTabla=false) //optimizado
 {
 
- $conn = new Conectar();
- $cid=$conn->conexion();
+ $conn = new db();
 
  $NombreTabla = trim($NombreTabla);
  $campos_db = dimenciones_tabla($NombreTabla);
@@ -232,13 +226,7 @@ function copiar_tabla_empresa($NombreTabla,$OldItemEmpresa,$PeriodoCopy,$si_peri
    }
  }
 
- $stmt = sqlsrv_query($cid, $sqld);
-  if( $stmt === false)  
-   {  
-      echo "Error en consulta PA.\n";  
-      return '';
-      die( print_r( sqlsrv_errors(), true));  
-    }
+ $conn->String_Sql($sql);
 
   if($PeriodoCopy == '.')
   {
@@ -273,22 +261,8 @@ $tabla_sistema = substr($tabla_sistema,0,-1);
              $sql1 = "select '".$_SESSION['INGRESO']['item']."',".$tabla_sistema." FROM ".$NombreTabla."  WHERE Item = '".$OldItemEmpresa."'";
             $sql = "INSERT INTO ".$NombreTabla." (Item,".$tabla_sistema.") ";
           }
-
-
- $sql = $sql.$sql1;
-  $stmt = sqlsrv_query($cid, $sql);
-   if( $stmt === false)  
-        {  
-         // echo "Error en consulta PA.\n";  
-         return -1;
-         die( print_r( sqlsrv_errors(), true));  
-        } else
-        {
-          return 1;
-        } 
-
-
-
+           $sql = $sql.$sql1;
+         return  $conn->String_Sql($sql);
 
 }
 
@@ -351,7 +325,7 @@ function Rubro_Rol_Pago($Detalle_Rol)
 
 
 
-function ReadSetDataNum($sqls,$ParaEmpresa =false,$Incrementar = false)
+function ReadSetDataNum($sqls,$ParaEmpresa =false,$Incrementar = false) // optimizado por javier farinango // pendiente a revicion repetida
 {
   $result = '';
   $NumCodigo = 0;
@@ -426,27 +400,12 @@ function ReadSetDataNum($sqls,$ParaEmpresa =false,$Incrementar = false)
     {
     	$MesComp = '01';
     }
-    $conn = new Conectar();
-	  $cid=$conn->conexion();
+    $conn = new db();
     $sql = "SELECT Numero, ID FROM Codigos
             WHERE Concepto = '".$sqls. "' 
             AND Periodo = '".$_SESSION['INGRESO']['periodo']. "'
             AND Item = '".$_SESSION['INGRESO']['item']."'" ;
-		$stmt = sqlsrv_query($cid, $sql);
-	  if( $stmt === false)  
-	  {  
-		  echo "Error en consulta PA.\n";  
-		  return '';
-		  die( print_r( sqlsrv_errors(), true));  
-	  }   
-    //echo $sql;
-	  $result = array();	
-	  while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_ASSOC) ) 
-	  {
-	    $result[] =$row;
-		  //echo $row[0];
-	  }
-
+		$result = $conn->datos($sql);
 	  if(count($result)>0)
 	  {
 	    $NumCodigo = $result[0]["Numero"];
@@ -484,7 +443,7 @@ function ReadSetDataNum($sqls,$ParaEmpresa =false,$Incrementar = false)
 }
 
 
-function paginancion($tabla,$function,$pag=false,$where=false)
+function paginancion($tabla,$function,$pag=false,$where=false) //optimizado
 {
   $num_index = 6;
 
@@ -492,25 +451,12 @@ function paginancion($tabla,$function,$pag=false,$where=false)
   $fin = 6;
 
   $sql = 'SELECT count(*) as total FROM '.$tabla.' WHERE 1=1 ';
-  $conn = new Conectar();
-  $cid=$conn->conexion();
+  $conn = new db();  
   // print_r($sql);die();
-  $stmt = sqlsrv_query($cid, $sql);
-    if($stmt === false)  
-      {  
-        echo "Error en consulta PA.\n";  
-        return '';
-        die( print_r( sqlsrv_errors(), true));  
-      }   
-      $result = 0;  
-      while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_ASSOC) ) 
-        {
-        $result =$row;
-        //echo $row[0];
-        }
-       $total = $result['total'];
-       // print_r($total);die();
-       $partes = $total/25;
+   $result = $conn->datos($sql);
+  $total = $result['total'];
+  // print_r($total);die();
+  $partes = $total/25;
   $html='<div class="row text-right" id="paginacion"><ul class="pagination">
   <li class="paginate_button" onclick="$(\'#txt_pag\').val(this.value);'.$function.'();" value="0"><a href="#">Inicio</a></li>';
 
@@ -812,80 +758,44 @@ return $monthNameSpanish;
 
 //verificar si tiene sucursales
 
-  function existe_sucursales()
+  function existe_sucursales()  //--------------- optimizado javier farinango
   {
-  	$conn = new Conectar();
-	$cid=$conn->conexion();
+  	$conn = new db();
     $sql = "SELECT * FROM Acceso_Sucursales where Item='".$_SESSION['INGRESO']['item']."'";
-		$stmt = sqlsrv_query($cid, $sql);
-	    if($stmt === false)  
-	      {  
-		     echo "Error en consulta PA.\n";  
-		     return '';
-		     die( print_r( sqlsrv_errors(), true));  
-	      }   
-         //echo $sql;
-	    $result = array();	
-	    while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_ASSOC) ) 
-	      {
-	    	$result[] =$row;
-		    //echo $row[0];
-	      }
-	      if(count($result) == 0)
-	      {
-	      	return -1;
-	      }else
-	      {
-	      	return 1;
-	      }
+    $result = $conn->datos($sql);		  
+	  if(count($result) == 0)
+    {
+      return -1;
+    }else
+    {
+      return 1;
+    }
   }
 
 //año bisiesto
-function provincia_todas()
+function provincia_todas()  // optimizado
 {
-	$conn = new Conectar();
-	$cid=$conn->conexion();
+	$conn = new db();
     $sql = "SELECT * FROM Tabla_Naciones WHERE CPais = '593' AND TR ='P' ORDER BY CProvincia";
-		$stmt = sqlsrv_query($cid, $sql);
-	    if( $stmt === false)  
-	      {  
-		     echo "Error en consulta PA.\n";  
-		     return '';
-		     die( print_r( sqlsrv_errors(), true));  
-	      }   
-         //echo $sql;
-	    $result = array();	
-	    while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_ASSOC) ) 
-	      {
-	    	$result[] =array('Codigo'=>$row['CProvincia'],'Descripcion_Rubro'=>utf8_encode($row['Descripcion_Rubro']));
-		    //echo $row[0];
-	      }
-
-	      return $result;
+		$datos = $conn->datos($sql);
+    $result = array();  
+    foreach ($datos as $key => $value) {
+      $result[] =array('Codigo'=>$value['CProvincia'],'Descripcion_Rubro'=>utf8_encode($value['Descripcion_Rubro']));
+    }
+	 return $result;
 	     //print_r($result);
 }
 
-function todas_ciudad($idpro)
+function todas_ciudad($idpro) //otimizado
 {
-	$conn = new Conectar();
-	$cid=$conn->conexion();
+	$conn = new db();
     $sql = "SELECT * FROM Tabla_Naciones WHERE CPais = '593' AND TR ='C' AND CProvincia='".$idpro."' ORDER BY CCiudad";
-		$stmt = sqlsrv_query($cid, $sql);
-	    if( $stmt === false)  
-	      {  
-		     echo "Error en consulta PA.\n";  
-		     return '';
-		     die( print_r( sqlsrv_errors(), true));  
-	      }   
-        // echo $sql;
-	    $result = array();	
-	    while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_ASSOC) ) 
-	      {
-	    	$result[] =array('Codigo'=>$row['Codigo'],'Descripcion_Rubro'=>utf8_encode($row['Descripcion_Rubro']));
-		    //echo $row[0];
-	      }
-
-	      return $result;
+		$datos = $conn->datos($sql);
+    $result = array();  
+    foreach ($datos as $key => $value) {
+      $result[] =array('Codigo'=>$value['Codigo'],'Descripcion_Rubro'=>utf8_encode($value['Descripcion_Rubro']));
+    }
+   return $result;
 	     //print_r($result);
 
 }
@@ -1152,21 +1062,8 @@ function digito_verificador_nuevo($NumeroRUC){
                         AND TD NOT IN ('C','R') 
                         AND ISNUMERIC(Codigo) <> 0 ";
 
-             $conn = new Conectar();
-             $cid=$conn->conexion();
-             $stmt = sqlsrv_query($cid, $SQLRUC);
-             if( $stmt === false)  
-               {  
-                 echo "Error en consulta PA.\n";  
-                 die( print_r( sqlsrv_errors(), true));  
-                 return '';
-
-               }   
-              $result = array();
-              while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_ASSOC) ) 
-                {
-                  $result[] = $row;
-                }
+             $conn = new db();
+             $result = $conn->datos($sql);
                 if(count($result)>0)
                 {                  
                   if(is_null($result[0]['Cod_RUC']))
@@ -1794,974 +1691,8 @@ function digito_verificadorf($ruc,$solovar=null,$pag=null,$idMen=null,$item=null
 		}
 	}
 }
-//C 12345678
-//grilla generica
-/*public function Data_Grid($Encabezado){
-      $num = mysqli_num_fields($this->stmt);
-      $campos="";
-      for ($x=0;$x<$num;$x++){
-          $campo[$x] = $this->stmt->fetch_field_direct($x);
-          $campos=$campos."<th>".$campo[$x]->name."</th>";   
-      }                     
-      $malla="<div id='encabezado'>
-                  <a>".$Encabezado."</a>
-              </div>
-              <div class='datagrid'>
-               <table>
-                  <thead>
-                     <tr>".$campos."</tr>
-                  </thead>";
-      echo $malla;
-      $malla=" <tfoot>
-                  <tr>
-                     <td colspan='4'>
-                        <div id='paging'>
-                           <ul>
-                              <li>
-                                 <a href='#><span>Previous</span></a>
-                              </li>
-                              <li>
-                                 <a href='# class='active'><span>1</span></a>
-                              </li>
-                              <li>
-                                 <a href='#'><span>2</span></a>
-                              </li>
-                              <li>
-                                 <a href='#'><span>3</span></a>
-                              </li>
-                              <li>
-                                 <a href='#'><span>4</span></a>
-                              </li>
-                              <li>
-                                 <a href='#'><span>5</span></a>
-                              </li>
-                              <li>
-                                 <a href='#'><span>Next</span></a>
-                              </li>
-                           </ul>
-                        </div>
-                  </tr>
-               </tfoot>";
-      echo $malla;
-      $fila=0;
-      $campos="";
-      while ($fila<$this->num_regs()){
-         if (($fila % 2) == 0){
-            $campos=$campos."<tr>";
-         }else{
-            $campos=$campos."<tr class='alt'>";
-         }   
-         //$registro=mysqli_fetch_array($this->stmt);
-         $registro=$this->obtener_fila($this->stmt,$fila);
-         for ($x=0;$x<$num;$x++){
-             $campos=$campos."<td>".$registro[$x]."</td>";
-         }             
-         $campos=$campos."</tr>";
-         $fila++;
-      }
-      $malla="<tbody>
-               ".$campos."
-              </tbody>
-            </table>
-         </div>";
-   echo $malla;
-   }*/
-//devuelve empresas asociadas al usuario
-/*function getEntidades($id_entidad=null)
-{
-	$per=new entidad_model();
-	$entidades=$per->getEntidades($id_entidad);
-	return $entidades;
-}*/
-/*
-	funcion grilla generica 
-	$stmt: codigo sql ya ejecutado en el modelo, 
-	$ti: titulo, 
-	$camne: para poner alguna fila en negrita en base a condiones,
-	$b: para border de tabla
-	$ch lleva check-box posicion,nombre del check
-	$tabla caso donde sean necesaria varias grillas
-*/
 
-function grilla_generica_old($stmt,$ti=null,$camne=null,$b=null,$ch=null,$tabla=null)
-{
-	//cantidad de campos
-		$cant=0;
-		//guardamos los campos
-		$campo='';
-		//obtenemos los campos 
-		foreach( sqlsrv_field_metadata( $stmt ) as $fieldMetadata ) {
-			foreach( $fieldMetadata as $name => $value) {
-				if(!is_numeric($value))
-				{
-					if($value!='')
-					{
-						$cant++;
-					}
-				}
-			}
-		}
-		if($ch!=null)
-		{
-			$ch1 = explode(",", $ch);
-			$cant++;
-		}
-		//si lleva o no border
-		$bor='';
-		if($b!=null and $b!='0')
-		{
-			$bor='table-bordered1';
-			//style="border-top: 1px solid #bce8f1;"
-		}
-		//colocar cero a tabla en caso de no existir definida ninguna
-		if($tabla==null OR $tabla=='0' OR $tabla=='')
-		{
-			$tabla=0;
-		}
-		?>
-		<div class="box-body no-padding">
-            <table class="table table-striped w-auto <?php echo $bor; ?>" >
-			<?php
-				if($ti!='' or $ti!=null)
-				{
-			?>
-				<tr>
-					<th colspan='<?php echo $cant; ?>' style='text-align: center;background-color: #0086c7;color: #FFFFFF;' ><?php echo $ti; ?></th>
-				</tr>
-			<?php
-				}
-			?>
-                <tr>
-					<?php
-					//cantidad campos
-					$cant=0;
-					//guardamos los campos
-					$campo='';
-					//tipo de campos
-					$tipo_campo=array();
-					//guardamos posicion de un campo ejemplo fecha
-					$cam_fech=array();
-					//contador para fechas
-					$cont_fecha=0;
-					//obtenemos los campos 
-					//en caso de tener check
-					if($ch!=null)
-					{
-						echo "<th style='text-align: left;' id='tit_sel'>SEL</th>";
-					}
-					foreach( sqlsrv_field_metadata( $stmt ) as $fieldMetadata ) {
-						//$camp='';
-						$i=0;
-						//tipo de campo
-						$ban=0;
-						//texto
-						if($fieldMetadata['Type']==-9)
-						{
-							$tipo_campo[($cant)]="style='text-align: left;'";
-							$ban=1;
-						}
-						//numero
-						if($fieldMetadata['Type']==3)
-						{
-							//number_format($item_i['nombre'],2, ',', '.')
-							$tipo_campo[($cant)]="style='text-align: right;'";
-							$ban=1;
-						}
-						//echo $fieldMetadata['Type'].' ccc <br>';
-						//echo $fieldMetadata['Name'].' ccc <br>';
-						//caso fecha
-						if($fieldMetadata['Type']==93)
-						{
-							$tipo_campo[($cant)]="style='text-align: left;'";
-							$ban=1;
-							$cam_fech[$cont_fecha]=$cant;
-							//contador para fechas
-							$cont_fecha++;
-						}
-						//caso bit
-						if($fieldMetadata['Type']==-7)
-						{
-							$tipo_campo[($cant)]="style='text-align: left;'";
-							$ban=1;
-						}
-						//caso int
-						if($fieldMetadata['Type']==4)
-						{
-							$tipo_campo[($cant)]=" style='text-align: right;'";
-							$ban=1;
-						}
-						//caso tinyint
-						if($fieldMetadata['Type']==-6)
-						{
-							$tipo_campo[($cant)]="style='text-align: right;'";
-							$ban=1;
-						}
-						//caso smallint
-						if($fieldMetadata['Type']==5)
-						{
-							$tipo_campo[($cant)]="style='text-align: right;'";
-							$ban=1;
-						}
-						//caso real
-						if($fieldMetadata['Type']==7)
-						{
-							$tipo_campo[($cant)]="style='text-align: right;'";
-							$ban=1;
-						}
-						//caso float
-						if($fieldMetadata['Type']==6)
-						{
-							$tipo_campo[($cant)]="style='text-align: right;'";
-							$ban=1;
-						}
-						//uniqueidentifier
-						if($fieldMetadata['Type']==-11)
-						{
-							$tipo_campo[($cant)]="style='text-align: right;'";
-							$ban=1;
-						}
-						//ntext
-						if($fieldMetadata['Type']==-10)
-						{
-							$tipo_campo[($cant)]="style='text-align: left;'";
-							$ban=1;
-						}
-						//rownum
-						if($fieldMetadata['Type']==-5)
-						{
-							//echo " dddd ";
-							$tipo_campo[($cant)]="style='text-align: left;'";
-							$ban=1;
-						}
-						//ntext
-						if($fieldMetadata['Type']==12)
-						{
-							$tipo_campo[($cant)]="style='text-align: left;'";
-							$ban=1;
-						}
-						if($ban==0)
-						{
-							echo ' no existe tipo '.$value.' '.$fieldMetadata['Name'].' '.$fieldMetadata['Type'];
-						}
-						
-						foreach( $fieldMetadata as $name => $value) {
-							
-							if(!is_numeric($value))
-							{
-								if($value!='')
-								{
-									echo "<th ".$tipo_campo[$cant].">".$value."</th>";
-									$camp=$value;
-									$campo[$cant]=$camp;
-									//echo ' dd '.$campo[$cant];
-									$cant++;
-									//echo $value.' cc '.$cant.' ';
-								}
-							}
-						   //echo "$name: $value<br />";
-						}
-						
-						  //echo "<br />";
-					}
-					/*for($i=0;$i<$cant;$i++)
-					{
-						echo $i.' gfggf '.$tipo_campo[$i];
-					}*/
-					?>
-				</tr>
-				
-                 
-					<?php
-					//echo $cant.' fffff ';
-					//obtener la configuracion para celdas personalizadas
-					//campos a evaluar
-					$campoe=array();
-					//valor a verificar
-					$campov=array();
-					//campo a afectar 
-					$campoaf=array();
-					//adicional
-					$adicional=array();
-					//signos para comparar
-					$signo=array();
-					//titulo de proceso
-					$tit=array();
-					//indice de registros a comparar con datos
-					$ind=0;
-					//obtener valor en caso de mas de una condicion
-					$con_in=0;
-					if($camne!=null)
-					{
-						for($i=0;$i<count($camne['TITULO']);$i++)
-						{
-							if($camne['TITULO'][$i]=='color_fila')
-							{	
-								$tit[$ind]=$camne['TITULO'][$i];
-								//temporar para indice
-								//$temi=$i;
-								//buscamos campos a evaluar
-								$camneva = explode(",", $camne['CAMPOE'][$i]);
-								//si solo es un campo
-								if(count($camneva)==1)
-								{
-									$camneva1 = explode("=", $camneva[0]);
-									$campoe[$ind]=$camneva1[0];
-									$campov[$ind]=$camneva1[1];
-									//echo ' pp '.$campoe[$ind].' '.$campov[$ind];
-								}
-								else
-								{
-									//hacer bucle
-								}
-								//para los campos a afectar
-								if(count($camne['CAMPOA'])==1 AND $i==0)
-								{
-									if($camne['CAMPOA'][$i]=='TODOS' OR $camne['CAMPOA'][$i]='')
-									{
-										$campoaf[$ind]='TODOS';
-									}
-									else
-									{
-										//otras opciones
-									}
-								}
-								else
-								{
-									//bucle
-									if(!empty($camne['CAMPOA'][$i]))
-									{
-										if($camne['CAMPOA'][$i]=='TODOS' OR $camne['CAMPOA'][$i]='')
-										{
-											$campoaf[$ind]='TODOS';
-										}
-										else
-										{
-											//otras opciones
-										}
-									}
-								}
-								//valor adicional en este caso color
-								if(count($camne['ADICIONAL'])==1 AND $i==0)
-								{
-									$adicional[$ind]=$camne['ADICIONAL'][$i];
-								}
-								else
-								{
-									//bucle
-									if(!empty($camne['ADICIONAL'][$i]))
-									{
-										$adicional[$ind]=$camne['ADICIONAL'][$i];
-									}
-								}
-								//signo de comparacion
-								if(count($camne['SIGNO'])==1 AND $i==0)
-								{
-									$signo[$ind]=$camne['SIGNO'][$i];
-								}
-								else
-								{
-									//bucle
-									if(!empty($camne['SIGNO'][$i]))
-									{
-										$signo[$ind]=$camne['SIGNO'][$i];
-									}
-								}
-								$ind++;
-								//echo ' pp '.count($camneva);
-							}
-							//caso de indentar columna
-							/*if($camne['TITULO'][$i]=='indentar')
-							{
-								$tit[$ind]=$camne['TITULO'][$i];
-									//buscamos campos a evaluar
-								$camneva = explode(",", $camne['CAMPOE'][$i]);
-								//si solo es un campo
-								if(count($camneva)==1)
-								{
-									$camneva1 = explode("=", $camneva[0]);
-									$campoe[$ind]=$camneva1[0];
-									$campov[$ind]=$camneva1[1];
-									//echo ' pp '.$campoe[$ind].' '.$campov[$ind];
-								}
-								else
-								{
-									//hacer bucle
-								}
-								//para los campos a afectar
-								if(count($camne['CAMPOA'])==1 AND $i==0)
-								{
-									$campoaf[$ind]=$camne['CAMPOA'][$i];
-								}
-								else
-								{
-									//bucle
-									if(!empty($camne['CAMPOA'][$i]))
-									{
-										//otras opciones
-										$campoaf[$ind]=$camne['CAMPOA'][$i];
-									}
-								}
-								//valor adicional en este caso color
-								if(count($camne['ADICIONAL'])==1 AND $i==0)
-								{
-									$adicional[$ind]=$camne['ADICIONAL'][$i];
-								}
-								else
-								{
-									//bucle
-									if(!empty($camne['ADICIONAL'][$i]))
-									{
-										$adicional[$ind]=$camne['ADICIONAL'][$i];
-									}
-								}
-								//signo de comparacion
-								if(count($camne['SIGNO'])==1 AND $i==0)
-								{
-									$signo[$ind]=$camne['SIGNO'][$i];
-								}
-								else
-								{
-									//bucle
-									if(!empty($camne['SIGNO'][$i]))
-									{
-										$signo[$ind]=$camne['SIGNO'][$i];
-									}
-								}
-								$ind++;
-							}*/
-							//caso italica, subrayar, indentar
-							if($camne['TITULO'][$i]=='italica' OR $camne['TITULO'][$i]=='subrayar' OR $camne['TITULO'][$i]=='indentar')
-							{
-								$tit[$ind]=$camne['TITULO'][$i];
-									//buscamos campos a evaluar
-								if(!is_array($camne['CAMPOE'][$i]))
-								{
-									$camneva = explode(",", $camne['CAMPOE'][$i]);
-									//si solo es un campo
-									if(count($camneva)==1)
-									{
-										$camneva1 = explode("=", $camneva[0]);
-										$campoe[$ind]=$camneva1[0];
-										$campov[$ind]=$camneva1[1];
-										//echo ' pp '.$campoe[$ind].' '.$campov[$ind];
-									}
-									else
-									{
-										//hacer bucle
-									}
-								}
-								else
-								{
-									//es mas de un campo
-									$con_in = count($camne['CAMPOE'][$i]);
-									//recorremos registros
-									for($j=0;$j<$con_in;$j++)
-									{
-										//echo $camne['CAMPOE'][$i][$j].' ';
-										$camneva = explode(",", $camne['CAMPOE'][$i][$j]);
-										//si solo es un campo
-										if(count($camneva)==1)
-										{
-											$camneva1 = explode("=", $camneva[0]);
-											$campoe[$ind][$j]=$camneva1[0];
-											$campov[$ind][$j]=$camneva1[1];
-											//echo ' pp '.$campoe[$ind][$j].' '.$campov[$ind][$j];
-										}
-									}
-								}
-								//para los campos a afectar
-								if(!is_array($camne['CAMPOA'][$i]))
-								{
-									if(count($camne['CAMPOA'])==1 AND $i==0)
-									{
-										$campoaf[$ind]=$camne['CAMPOA'][$i];
-									}
-									else
-									{
-										//bucle
-										if(!empty($camne['CAMPOA'][$i]))
-										{
-											//otras opciones
-											$campoaf[$ind]=$camne['CAMPOA'][$i];
-										}
-									}
-								}
-								else
-								{
-									//recorremos el ciclo
-									//es mas de un campo
-									$con_in = count($camne['CAMPOA'][$i]);
-									//recorremos registros
-									for($j=0;$j<$con_in;$j++)
-									{
-										$campoaf[$ind][$j]=$camne['CAMPOA'][$i][$j];
-										//echo ' pp '.$campoaf[$ind][$j];
-									}
-								}
-								//valor adicional en este caso color
-								
-									if(count($camne['ADICIONAL'])==1 AND $i==0)
-									{
-										$adicional[$ind]=$camne['ADICIONAL'][$i];
-									}
-									else
-									{
-										//bucle
-										if(!empty($camne['ADICIONAL'][$i]))
-										{
-											//es mas de un campo
-											$con_in = count($camne['ADICIONAL'][$i]);
-											for($j=0;$j<$con_in;$j++)
-											{
-												$adicional[$ind][$j]=$camne['ADICIONAL'][$i][$j];
-												//echo ' pp '.$adicional[$ind][$j];
-											}
-										}
-									}
-								
-								
-								//signo de comparacion
-								if(!is_array($camne['SIGNO'][$i]))
-								{
-									if(count($camne['SIGNO'])==1 AND $i==0)
-									{
-										$signo[$ind]=$camne['SIGNO'][$i];
-									}
-									else
-									{
-										//bucle
-										if(!empty($camne['SIGNO'][$i]))
-										{
-											$signo[$ind]=$camne['SIGNO'][$i];
-										}
-									}
-								}
-								else
-								{
-									//es mas de un campo
-									$con_in = count($camne['SIGNO'][$i]);
-									for($j=0;$j<$con_in;$j++)
-									{
-										$signo[$ind][$j]=$camne['SIGNO'][$i][$j];
-										//echo ' pp '.$signo[$ind][$j];
-									}
-								}
-								$ind++;
-							}
-						}
-					}
-					$i=0;
-					while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_NUMERIC) ) {
-							//para colocar identificador unicode_decode
-							if($ch!=null)
-							{
-								if(count($ch1)==2)
-								{
-									$cch=$ch1[0];
-									?>
-										<tr <?php echo "id=ta_".$row[$cch]."";?> >
-									<?php
-								}
-								else
-								{
-									//casos con mas id
-									$cch='';
-									$camch='';
-									//no manda fechas se debe colocar $row[$i]->format('Y-m-d');
-									for($ca=0;$ca<count($ch1);$ca++)
-									{
-										if($ca<(count($ch1)-1))
-										{
-											$cch=$ch1[$ca];
-											$camch=$camch.$row[$cch].'--';
-										}
-									}
-									$ca=$ca-1;
-									?>
-										<tr <?php echo "id=ta_".$camch."";?> >
-									<?php
-								}
-							}
-							else
-							{
-								?>
-								<tr >
-								<?php
-							}
-							if($ch!=null)
-							{
-								if(count($ch1)==2)
-								{
-									$cch=$ch1[0];
-									echo "<td style='text-align: left;'><input type='checkbox' id='id_".$row[$cch]."' name='".$ch1[1]."' value='".$row[$cch]."'
-									onclick='validarc(\"id_".$row[$cch]."\",\"".$tabla."\")'></td>";
-								}
-								else
-								{
-									//casos con mas id
-									$cch='';
-									$camch='';
-									//no manda fechas se debe colocar $row[$i]->format('Y-m-d');
-									for($ca=0;$ca<count($ch1);$ca++)
-									{
-										if($ca<(count($ch1)-1))
-										{
-											$cch=$ch1[$ca];
-											$camch=$camch.$row[$cch].'--';
-										}
-									}
-									$ca=$ca-1;
-									echo "<td style='text-align: left;'><input type='checkbox' id='id_".$camch."' name='".$ch1[$ca]."' value='".$camch."'
-									onclick='validarc(\"id_".$camch."\",\"".$tabla."\")'></td>";
-									//die();
-								}
-							}
-							//comparamos con los valores de los array para personalizar las celdas
-							//para titulo color fila
-							$cfila1='';
-							$cfila2='';
-							//indentar
-							$inden='';
-							$indencam=array();
-							$indencam1=array();
-							//contador para caso indentar
-							$conin=0;
-							//contador caso para saber si cumple varias condiciones ejemplo italica TC=P OR TC=C
-							$ca_it=0;
-							//variable para colocar italica
-							$ita1='';
-							$ita2='';
-							//contador para caso italicas
-							$conita=0;
-							//valores de campo a afectar
-							$itacam1=array();
-							//variables para subrayar
-							//valores de campo a afectar en caso subrayar
-							$subcam1=array();
-							//contador caso subrayar
-							$consub=0;
-							//contador caso para saber si cumple varias condiciones ejemplo subrayar TC=P OR TC=C
-							$ca_sub=0;
-							//variable para colocar subrayar
-							$sub1='';
-							$sub2='';
-							for($i=0;$i<$ind;$i++)
-							{
-								if($tit[$i]=='color_fila')
-								{
-									if(!is_array($campoe[$i]))
-									{
-										//campo a comparar
-										$tin=$campoe[$i];
-										//comparamos valor
-										if($signo[$i]=='=')
-										{
-											if($row[$tin]==$campov[$i])
-											{
-												if($adicional[$i]=='black')
-												{
-													//activa condicion
-													$cfila1='<B>';
-													$cfila2='</B>';
-												}
-											}
-										}
-									}
-								}
-								if($tit[$i]=='indentar')
-								{	
-									if(!is_array($campoe[$i]))
-									{
-										//campo a comparar
-										$tin=$campoe[$i];
-										//comparamos valor
-										if($signo[$i]=='=')
-										{
-											if($campov[$i]=='contar')
-											{
-												$inden1 = explode(".", $row[$tin]);
-												//echo ' '.count($inden1);
-												//hacemos los espacios
-												//$inden=str_repeat("&nbsp;&nbsp;", count($inden1));
-												if(count($inden1)>1)
-												{
-													$indencam1[$conin]=str_repeat("&nbsp;&nbsp;&nbsp;&nbsp;", (count($inden1)-1));
-												}
-												else
-												{
-													$indencam1[$conin]="";
-												}
-												/*if(count($inden1)==1)
-												{
-													$inden='';
-												}
-												if(count($inden1)==2)
-												{
-													$inden='&nbsp;';
-												}
-												if(count($inden1)==3)
-												{
-													$inden='&nbsp;&nbsp;';
-												}
-												if(count($inden1)==3)
-												{
-													$inden='&nbsp;&nbsp;&nbsp;';
-												}*/
-											}
-											$indencam[$conin]=$campoaf[$i];
-											//echo $indencam[$conin].' dd ';
-											$conin++;
-										}
-									}
-								}
-								if($tit[$i]=='italica')
-								{	
-									if(!is_array($campoe[$i]))
-									{
-										
-									}
-									else
-									{
-										//es mas de un campo
-										$con_in = count($campoe[$i]);
-										$ca_it=0;
-										for($j=0;$j<$con_in;$j++)
-										{
-											$tin=$campoe[$i][$j];
-											//echo ' pp '.$tin[$i][$j];
-											//comparamos valor
-											if($signo[$i][$j]=='=')
-											{
-												//echo $row[$tin].' wwww '.$campov[$i][$j].'<br/>';
-												if($row[$tin]==$campov[$i][$j])
-												{
-													$ca_it++;
-												}
-											}
-											//si es diferente
-											if($signo[$i][$j]=='<>')
-											{
-												//echo $row[$tin].' wwww '.$campov[$i][$j].'<br/>';
-												if($row[$tin]<>$campov[$i][$j])
-												{
-													$ca_it++;
-												}
-											}
-											
-										}
-										$con_in = count($campoaf[$i]);
-										for($j=0;$j<$con_in;$j++)
-										{
-											$itacam1[$conita]=$campoaf[$i][$j];
-											//echo $itacam1[$conita].' ';
-											$conita++;
-										}
-										//echo $ca_it.' cdcd '.count($campoe[$i]).'<br/>';
-										if($ca_it==count($campoe[$i]))
-										{
-											$ita1='<em>';
-											$ita2='</em>';
-										}
-										else
-										{
-											$ita1='';
-											$ita2='';
-										}
-									}
-									
-								}
-								if($tit[$i]=='subrayar')
-								{	
-									if(!is_array($campoe[$i]))
-									{
-										
-									}
-									else
-									{
-										//es mas de un campo
-										$con_in = count($campoe[$i]);
-										$ca_sub=0;
-										$ca_sub1=0;
-										for($j=0;$j<$con_in;$j++)
-										{
-											$tin=$campoe[$i][$j];
-											//echo ' pp '.$tin[$i][$j];
-											//comparamos valor
-											if($signo[$i][$j]=='=')
-											{
-												//echo $row[$tin].' wwww '.$campov[$i][$j].'<br/>';
-												if($row[$tin]==$campov[$i][$j])
-												{
-													$ca_sub++;
-													$ca_sub1++;
-												}
-											}
-											//si es diferente
-											if($signo[$i][$j]=='<>')
-											{
-												//echo $row[$tin].' wwww '.$campov[$i][$j].'<br/>';
-												if($row[$tin]<>$campov[$i][$j])
-												{
-													$ca_sub++;
-												}
-											}
-											
-										}
-										$con_in = count($campoaf[$i]);
-										for($j=0;$j<$con_in;$j++)
-										{
-											$subcam1[$consub]=$campoaf[$i][$j];
-											//echo $subcam1[$consub].' ';
-											$consub++;
-										}
-										//echo $ca_it.' cdcd '.count($campoe[$i]).'<br/>';
-										$sub1='';
-										$sub2='';
-										//condicion para verificar si signo es "=" o no
-										if($ca_sub1==0)
-										{
-											//condicion en caso de distintos
-											if($ca_sub==count($campoe[$i]))
-											{
-												$sub1='<u>';
-												$sub2='</u>';
-											}
-											else
-											{
-												$sub1='';
-												$sub2='';
-											}
-										}
-										else
-										{
-											$sub1='<u>';
-											$sub2='</u>';
-										}
-									}
-								}
-							}
-							//para check box
-						
-						for($i=0;$i<$cant;$i++)
-						{
-							//caso indentar
-							for($j=0;$j<count($indencam);$j++)
-							{
-								if($indencam[$j]==$i)
-								{
-									$inden=$indencam1[$j];
-								}
-								else
-								{
-									$inden='';
-								}
-							}
-							//caso italica
-							$ita3="";
-							$ita4="";
-							for($j=0;$j<count($itacam1);$j++)
-							{
-								//echo $itacam1[$j].' ssscc '.$i;
-								if($itacam1[$j]==$i)
-								{
-									$ita3=$ita1;
-									$ita4=$ita2;
-								}
-								
-							}
-							//caso subrayado
-							$sub3="";
-							$sub4="";
-							for($j=0;$j<count($subcam1);$j++)
-							{
-								//echo $itacam1[$j].' ssscc '.$i;
-								if($subcam1[$j]==$i)
-								{
-									$sub3=$sub1;
-									$sub4=$sub2;
-								}
-								
-							}
-							//caso de campos fechas
-							for($j=0;$j<count($cam_fech);$j++)
-							{
-								//echo $itacam1[$j].' ssscc '.$i;
-								if($cam_fech[$j]==$i)
-								{
-									//$row[$i]=$row[$i]->format('Y-m-d H:i:s');
-									$row[$i]=$row[$i]->format('Y-m-d');
-								}
-								
-							}
-							//echo "<br/>";
-							//formateamos texto si es decimal
-							if($tipo_campo[$i]=="style='text-align: right;'")
-							{
-								//si es cero colocar -
-								if(number_format($row[$i],2, ',', '.')==0 OR number_format($row[$i],2, ',', '.')=='0.00')
-								{
-									echo "<td ".$tipo_campo[$i].">".$cfila1.$ita3.$sub3.$inden."-".$sub4.$ita4.$cfila2."</td>";
-								}
-								else
-								{
-									//si es negativo colocar rojo
-									if($row[$i]<0)
-									{
-										//reemplazo una parte de la cadena por otra
-										$longitud_cad = strlen($tipo_campo[$i]); 
-										$cam2 = substr_replace($tipo_campo[$i],"color: red;'",$longitud_cad-1,1); 
-										echo "<td ".$cam2." > ".$cfila1.$ita3.$inden.$sub3."".number_format($row[$i],2, ',', '.')."".$sub4.$ita4.$cfila2."</td>";
-									}
-									else
-									{
-										echo "<td ".$tipo_campo[$i].">".$cfila1.$ita3.$inden.$sub3."".number_format($row[$i],2, ',', '.')."".$sub4.$ita4.$cfila2."</td>";
-									}
-								}
-								
-							}
-							else
-							{
-								if(strlen($row[$i])<=50)
-								{
-									echo "<td ".$tipo_campo[$i].">".$cfila1.$ita3.$inden.$sub3."".$row[$i]."".$sub4.$ita4.$cfila2."</td>";
-								}
-								else
-								{
-									$resultado = substr($row[$i], 0, 50);
-									//echo $resultado; // imprime "ue"
-									echo "<td ".$tipo_campo[$i]." data-toggle='tooltip' data-placement='left' title='".$row[$i]."'>".$cfila1.$ita3.$inden.$sub3."".$resultado."...".$sub4.$ita4.$cfila2."</td>";
-								}
-							}
-						}
-						/*$cam=$campo[$i];
-						echo "<td>".$row['DG']."</td>";
-						echo "<td>".$row['Codigo']."</td>";
-						echo "<td>".$row['Cuenta']."</td>";
-						echo "<td>".$row['Saldo_Anterior']."</td>";
-						echo "<td>".$row['Debitos']."</td>";
-						echo "<td>".$row['Creditos']."</td>";
-						echo "<td>".$row['Saldo_Total']."</td>";
-						echo "<td>".$row['TC']."</td>";*/
-						 ?>
-						  </tr>
-						  <?php
-						
-						//$campo
-						  //echo $row[$i].", <br />";
-						  $i++;
-						  if($cant==($i))
-						  {
-							  
-							  //echo $cant.' ddddd '.$i;
-							  $i=0;
-							 
-						  }
-					}
-		 ?>
-			</table>
-		</div>
-		  <?php
-}	
+
 //excel
 function exportar_excel_generico($stmt,$ti=null,$camne=null,$b=null,$base=null)
 {
@@ -3041,7 +1972,7 @@ function porcion_xml($xml,$eti,$etf)
 	return $resul4;
 }
 //crear select option
-function select_option_aj($tabla,$value,$mostrar,$filtro=null,$sel=null)
+function select_option_aj($tabla,$value,$mostrar,$filtro=null,$sel=null)//------------------------------por revisar //////
 {
 	//realizamos conexion
 	if(isset($_SESSION['INGRESO']['IP_VPN_RUTA'])) 
@@ -3235,6 +2166,7 @@ function select_option($tabla,$value,$mostrar,$filtro=null,$click=null,$id_html=
 	sqlsrv_close( $cid );
   return $op;
 }
+
 //crear select option para mysql
 function select_option_mysql($tabla,$value,$mostrar,$filtro=null)
 {
@@ -3328,31 +2260,25 @@ function select_menu_mysql()
 }
 
 //consulta niveles del menu
-function select_nivel_menu_mysql($padre)
+function select_nivel_menu_mysql($padre) // otimizado
 {
   require_once("../db/db.php");
-  $cid = Conectar::conexion('MYSQL');
-
+  $conn  =  new db(); 
   //seleccionar los niveles del menu
   $sql = "SELECT * FROM menu_modulos WHERE codMenu LIKE '".$padre.".%' ORDER BY codMenu ASC";
-  $submenu=$cid->query($sql) or die($cid->error);
+  $datos = $conn->datos($sql,'MY SQL');
   $array_menu = array();
-  $i = 0;
-  while ($menu_item = $submenu->fetch_assoc()) {
-    //echo $menu_item['codMenu']." ".$menu_item['descripcionMenu']."<br>";
-    $array_menu[$i]['codMenu'] = $menu_item['codMenu'];
-    $array_menu[$i]['descripcionMenu'] = $menu_item['descripcionMenu'];
-    $array_menu[$i]['accesoRapido'] = $menu_item['accesoRapido'];
-    $array_menu[$i]['rutaProceso'] = $menu_item['rutaProceso'];
-    $i++;
-  }
+  foreach ($datos as $key => $value) {
+    $array_menu[$key]['codMenu'] = $value['codMenu'];
+    $array_menu[$key]['descripcionMenu'] = $value['descripcionMenu'];
+    $array_menu[$key]['accesoRapido'] = $value['accesoRapido'];
+    $array_menu[$key]['rutaProceso'] = $value['rutaProceso'];
+  } 
   return $array_menu;
-  $cid->close();
-  exit();
 }
 
 //contar registros se usa para determinar tamaños de ventanas
-function contar_option($tabla,$value,$mostrar,$filtro=null)
+function contar_option($tabla,$value,$mostrar,$filtro=null)  ///------------------------revicion para optimizar
 {
 	//realizamos conexion
 	if(isset($_SESSION['INGRESO']['IP_VPN_RUTA'])) 
@@ -3409,7 +2335,7 @@ function contar_option($tabla,$value,$mostrar,$filtro=null)
 	return $cont;
 }
 //crear list option
-function list_option($tabla,$value,$mostrar,$filtro=null)
+function list_option($tabla,$value,$mostrar,$filtro=null)  //---------------------------para revicion
 {
 	//realizamos conexion
 	if(isset($_SESSION['INGRESO']['IP_VPN_RUTA'])) 
@@ -3480,72 +2406,13 @@ function list_option($tabla,$value,$mostrar,$filtro=null)
 	<?php
 	sqlsrv_close( $cid );
 }
-function cone_ajaxMYSQL1()
-{
-	//verificamos si es sql server o mysql para consultar periodos
-	if(isset($_SESSION['INGRESO']['Tipo_Base']) and $_SESSION['INGRESO']['Tipo_Base']=='MySQL') 
-	{
-		$server=$_SESSION['INGRESO']['IP_VPN_RUTA'];
-		$Base_Datos=$_SESSION['INGRESO']['Base_Datos'];
-		$Usuario_DB=$_SESSION['INGRESO']['Usuario_DB'];
-		$Contrase=$_SESSION['INGRESO']['Contraseña_DB'];
-		$Puerto=$_SESSION['INGRESO']['Puerto'];
-		$conexion=new mysqli($server.":".$Puerto, $Usuario_DB, $Contrase, $Base_Datos);
-	}
-	else
-	{
-		//$conexion=new mysqli("mysql.diskcoversystem.com:13306", "diskcoverMigra", "diskcover2019Migra@", "DiskCover_Empresas");
-		$conexion=new mysqli("localhost:13306", "diskcoverMigra", "diskcover2019Migra@", "diskcover_empresas");
-		//$conexion=new mysqli("mysql.diskcoversystem.com:13306", "diskcover", "disk2017Cover", "diskcover_empresas");
-		//$conexion=new mysqli("localhost", "root", "", "diskcover_empresas");
-		/*$connection = ssh2_connect('mysql.diskcoversystem.com', 22); 
 
-		ssh2_auth_password($connection, 'diskcover', 'Dlcjvl1210');
-
-		$tunnel = ssh2_tunnel($connection, 'DESTINATION IP', 3307);
-
-		$db = new mysqli_connect('localhost', 'diskcover', 'disk2017Cover', 
-								 'diskcover_empresas', 13306, $tunnel)
-			or die ('Fail: ' . mysql_error()); */
-	}
-	$conexion->query("SET NAMES 'utf8'");
-	return $conexion;
-}
 //crear select option
-function cone_ajax()
+function cone_ajax() //optimizado
 {
-	//realizamos conexion
-  $cid ='';
-	if(isset($_SESSION['INGRESO']['IP_VPN_RUTA'])) 
-	{
-		$database=$_SESSION['INGRESO']['Base_Datos'];
-		//$server=$_SESSION['INGRESO']['IP_VPN_RUTA'];
-		$server=''.$_SESSION['INGRESO']['IP_VPN_RUTA'].', '.$_SESSION['INGRESO']['Puerto'];
-		$user=$_SESSION['INGRESO']['Usuario_DB'];
-		$password=$_SESSION['INGRESO']['Contraseña_DB'];
-	}
-	else
-	{
-		$database="DiskCover_Prismanet";
-		$server="tcp:mysql.diskcoversystem.com, 11433";
-		$user="sa";
-		$password="disk2017Cover";
-	}
-	/*$database="DiskCover_Prismanet";
-	$server="mysql.diskcoversystem.com";
-	$user="sa";
-	$password="disk2017Cover";*/
-	if(isset($_SESSION['INGRESO']['IP_VPN_RUTA']) and $_SESSION['INGRESO']['Tipo_Base']=='SQL SERVER') 
-	{
-		$connectionInfo = array("Database"=>$database, "UID" => $user, "PWD" => $password);
-
-		$cid = sqlsrv_connect($server, $connectionInfo); //returns false
-		if( $cid === false )
-		{
-			echo "fallo conecion sql server";
-		}
-	}
-	return $cid;
+   $conn = new db();
+   $cid = $conn->conexion();
+	 return $cid;
 }
 //cerrar sesion caso de usar funciones para hacer consultas rapidas fuera del MVC
 function cerrarSQLSERVERFUN($cid)
@@ -3570,65 +2437,44 @@ function impuesto_re($codigo)
 	}
 	return $resul4;
 }
-function concepto_re($codigo)
+function concepto_re($codigo)  //optimizado
 {
+  $conn = new db();
 	$resul4='';
-	//conectamos
-	$cid=cone_ajax();
 	$sql="select Concepto from Tipo_Concepto_Retencion where '".date('Y-m-d')."'  BETWEEN Fecha_Inicio AND Fecha_Final;";
-	$stmt = sqlsrv_query( $cid, $sql);
-	if( $stmt === false)  
-	{  
-		 echo "Error en consulta PA.\n";  
-		 die( print_r( sqlsrv_errors(), true));  
-	}
-	
-	while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_NUMERIC) ) 
-	{
-		$resul4 = $row[0];
-		//echo $row[0];
-	}
-	/*if($codigo=='332')
-	{
-		$resul4='Otras compras de bienes y servicios no sujetas a retención';
-	}
-	if($codigo==1)
-	{
-		$resul4='IVA';
-	}
-	if($codigo==1)
-	{
-		$resul4='ISD';
-	}*/
-	//cerramos
-	cerrarSQLSERVERFUN($cid);
+  $resul4 = $conn->datos($sql);
+  $resul4 = $resul4[0];
 	return $resul4;
 }
 //caso guia de remision buscar el cliente
-function buscar_cli($serie,$factura)
+function buscar_cli($serie,$factura) // optimizado - revision
 {
 	$resul4=array();
-	//conectamos
-	$cid=cone_ajax();
-	/*select * from Facturas where
-	TC='FA' and serie='001005' and factura='674' and periodo='.'*/
+	//conectamos  
+  $conn = new db();
 	$sql="select Razon_Social,RUC_CI from Facturas where
 	TC='FA' and serie='".$serie."' and factura=".$factura." and periodo='".$_SESSION['INGRESO']['periodo']."';";
-	$stmt = sqlsrv_query( $cid, $sql);
-	if( $stmt === false)  
-	{  
-		 echo "Error en consulta PA.\n";  
-		 die( print_r( sqlsrv_errors(), true));  
-	}
+
+  $datos = $conn->datos($sql);
+  foreach ($datos as $key => $value) {
+    $resul4[0] = $value[0];
+    $resul4[1] = $value[1];    
+  }
+	// $stmt = sqlsrv_query( $cid, $sql);
+	// if( $stmt === false)  
+	// {  
+	// 	 echo "Error en consulta PA.\n";  
+	// 	 die( print_r( sqlsrv_errors(), true));  
+	// }
 	
-	while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_NUMERIC) ) 
-	{
-		$resul4[0] = $row[0];
-		$resul4[1] = $row[1];
-		//echo $row[0];
-	}
-	//cerramos
-	cerrarSQLSERVERFUN($cid);
+	// while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_NUMERIC) ) 
+	// {
+	// 	$resul4[0] = $row[0];
+	// 	$resul4[1] = $row[1];
+	// 	//echo $row[0];
+	// }
+	// //cerramos
+	// cerrarSQLSERVERFUN($cid);
 	return $resul4;
 }
 //generica para contar registros $stmt= consulta generada
@@ -3641,8 +2487,9 @@ function contar_registros($stmt)
 	}
 	return $i;
 }
+
 //contar registros caso paginador por ejemplo (sql server y MYSQL) 
-function cantidaREGSQL_AJAX($tabla,$filtro=null,$base=null)
+function cantidaREGSQL_AJAX($tabla,$filtro=null,$base=null)  // revision
 {
 	//echo $filtro.' gg ';
 	if($base==null or $base=='SQL SEVER')
@@ -3700,7 +2547,7 @@ function cantidaREGSQL_AJAX($tabla,$filtro=null,$base=null)
 	//$row_count = sqlsrv_num_rows( $stmt );
 	return $row_count;
 }
-function paginador($tabla,$filtro=null,$link=null)
+function paginador($tabla,$filtro=null,$link=null) // revision
 {
 	//saber si hay paginador
 	$pag=1;
@@ -5652,46 +4499,13 @@ function grilla_generica($stmt,$ti=null,$camne=null,$b=null,$ch=null,$tabla=null
 		}
 	}
 }	
-//para mandar correo con archivo adjunto
-function mail_attachment($filename, $path, $mailto, $from_mail, $from_name, $replyto, $subject, $message) 
-{
-    $file = $path.$filename;
-    $file_size = filesize($file);
-    $handle = fopen($file, "r");
-    $content = fread($handle, $file_size);
-    fclose($handle);
-    $content = chunk_split(base64_encode($content));
-    $uid = md5(uniqid(time()));
-    $name = basename($file);
-    $header = "From: ".$from_name." <".$from_mail.">\r\n";
-    $header .= "Reply-To: ".$replyto."\r\n";
-    $header .= "MIME-Version: 1.0\r\n";
-    $header .= "Content-Type: multipart/mixed; boundary=\"".$uid."\"\r\n\r\n";
-    $header .= "This is a multi-part message in MIME format.\r\n";
-    $header .= "--".$uid."\r\n";
-    $header .= "Content-type:text/plain; charset=iso-8859-1\r\n";
-    $header .= "Content-Transfer-Encoding: 7bit\r\n\r\n";
-    $header .= $message."\r\n\r\n";
-    $header .= "--".$uid."\r\n";
-    $header .= "Content-Type: application/octet-stream; name=\"".$filename."\"\r\n"; // use different content types here
-    $header .= "Content-Transfer-Encoding: base64\r\n";
-    $header .= "Content-Disposition: attachment; filename=\"".$filename."\"\r\n\r\n";
-    $header .= $content."\r\n\r\n";
-    $header .= "--".$uid."--";
-	//echo $mailto." ".$subject." "."envio"." ".$header;
-    if (mail($mailto, $subject, "envio", $header)) {
-        echo "Correo Enviado ... OK ".$filename; // or use booleans here
-    } else {
-        echo "No se Envio Correo ... ERROR! ".$filename;
-    }
-}
+
 
 //FUNCION PARA ADCTUALIZAR GENERICA
-function update_generico($datos,$tabla,$campoWhere)
+function update_generico($datos,$tabla,$campoWhere) // optimizado javier farinango
 {
 	$campos_db = dimenciones_tabla($tabla);
-	$conn = new Conectar();
-	$cid=$conn->conexion();	
+	$conn = new db();
 	$wherelist ='';
    	$sql = 'UPDATE '.$tabla.' SET '; 
    	 $set='';
@@ -5703,11 +4517,11 @@ function update_generico($datos,$tabla,$campoWhere)
    					if($value1->CHARACTER_MAXIMUM_LENGTH != '' && $value1->CHARACTER_MAXIMUM_LENGTH != null)
    						{
    							$set .=$value['campo']."='".substr($value['dato'],0,$value1->CHARACTER_MAXIMUM_LENGTH)."',";
-   				        }else
-   				        {
-   				        	$set .=$value['campo']."='".$value['dato']."',";
-   				        }
-   	            }
+   				    }else
+   				    {
+   				      $set .=$value['campo']."='".$value['dato']."',";
+   				    }
+   	       }
 
    		}
    		//print_r($value['campo']);
@@ -5732,39 +4546,19 @@ function update_generico($datos,$tabla,$campoWhere)
    	$wherelist = substr($wherelist,0,-5);
    	$where = "WHERE ".$wherelist;   
    	$sql = $sql.$set.$where;
-   	// print_r($sql);	die();
-   	$stmt = sqlsrv_query($cid, $sql);
-	    if( $stmt === false)  
-	      {  
-		     echo "Error en consulta PA.\n";  
-		     return -1;
-		     die( print_r( sqlsrv_errors(), true));  
-	      }
-	      else{
-	      	return 1;
-	      }  
+   	return $conn->String_Sql($sql);
 }
 
 
 //FUNCION DE INSERTAR GENERICO
-function insert_generico($tabla=null,$datos=null)
+function insert_generico($tabla=null,$datos=null) // optimizado pero falta 
 {
-	$conn = new Conectar();
-	$cid=$conn->conexion();
+	$conn = new db();
+  $cid = $conn->conexion();
 	$sql = "SELECT * from Information_Schema.Tables where TABLE_TYPE = 'BASE TABLE' AND TABLE_NAME='".$tabla."' ORDER BY TABLE_NAME";
-	$stmt = sqlsrv_query( $cid, $sql);
-	if( $stmt === false)  
-	{  
-		 echo "Error en consulta.\n";  
-		 die( print_r( sqlsrv_errors(), true));  
-	}  
-	$i=0;
-	$tabla_="";
-	while( $obj = sqlsrv_fetch_object( $stmt)) 
-	{
-		//echo $obj->TABLE_NAME."<br />";
-		$tabla_=$obj->TABLE_NAME;
-	}
+	// $stmt = sqlsrv_query( $cid, $sql);
+  $datos = $conn->datos($sql);
+  $tabla_ = $datos[0]['TABLE_NAME'];
 	if($tabla_!='')
 	{
 		//buscamos los campos
@@ -5773,19 +4567,10 @@ function insert_generico($tabla=null,$datos=null)
 		sys.sysobjects ON sys.sysindexes.id = sys.sysobjects.id
 		WHERE   (sys.sysobjects.xtype = 'U') AND (sys.sysobjects.name = '".$tabla_."')
 		ORDER BY sys.sysindexes.indid";
+    $tabla_cc=0;
+    $datos = $conn->datos($sql);
+    $tabla_cc=$datos[0]['rows'];
 		
-		$stmt = sqlsrv_query( $cid, $sql);
-		if( $stmt === false)  
-		{  
-			echo "Error en consulta.\n";  
-			die( print_r( sqlsrv_errors(), true));  
-		} 
-		$tabla_cc=0;
-		while( $obj = sqlsrv_fetch_object( $stmt)) 
-		{
-			//cantidad de campos
-			$tabla_cc=$obj->rows;
-		}
 		$sql="SELECT COLUMN_NAME,DATA_TYPE,IS_NULLABLE,CHARACTER_MAXIMUM_LENGTH
 		FROM Information_Schema.Columns
 		WHERE TABLE_NAME = '".$tabla_."'";
@@ -5939,68 +4724,32 @@ function insert_generico($tabla=null,$datos=null)
 		$cam2 = substr_replace($sql_,")",$longitud_cad-1,1); 
 		$longitud_cad = strlen($sql_v); 
 		$v2 = substr_replace($sql_v,")",$longitud_cad-1,1);
-		//echo $ll =  $cam2.$v2;
-//     if($tabla=='Asiento_SC'){
-// 		print_r($cam2.$v2);
-// }
-		$stmt = sqlsrv_query( $cid, $cam2.$v2);
-  //   if($tabla == 'Transacciones')
-  //   {
-		// echo  $cam2.$v2 ;
-  //   }
-		if( $stmt === false)  
-		{  
-      // return -1;
-			echo "Error en consulta PA.\n";  
-			die( print_r( sqlsrv_errors(), true));  
-		}
-    // no colocar return 1  en el sistema se esta comparando con null
-      // else{
-  //     return 1;
-  //   }
-		
-		  // cerrarSQLSERVERFUN($cid);
+
+     $res = $conn->String_Sql($cam2.$v2);
+     if($res==1)
+     {
+       return null;
+     }
 		
 	}
 }
 
 
-function dimenciones_tabla($tabla)
+function dimenciones_tabla($tabla) //---------optimizado por javier farinango
 {
-	$conn = new Conectar();
+	$conn = new db();
 	$cid=$conn->conexion();
+  $tabla_="";
 	$sql = "SELECT * from Information_Schema.Tables where TABLE_TYPE = 'BASE TABLE' AND TABLE_NAME='".$tabla."' ORDER BY TABLE_NAME";
-	$stmt = sqlsrv_query( $cid, $sql);
-	if( $stmt === false)  
-	{  
-		 echo "Error en consulta.\n";  
-		 die( print_r( sqlsrv_errors(), true));  
-	}  
-	$i=0;
-	$tabla_="";
-	while($obj = sqlsrv_fetch_object( $stmt)) 
-	{
-		//echo $obj->TABLE_NAME."<br />";
-		$tabla_=$obj->TABLE_NAME;
-	}
+  $datos = $conn->datos($sql);
+  // print_r($datos);die();
+  $tabla_ = $datos[0]['TABLE_NAME'];
 	if($tabla_ != '')
 	{
 		$sql="SELECT COLUMN_NAME,DATA_TYPE,IS_NULLABLE,CHARACTER_MAXIMUM_LENGTH
 		FROM Information_Schema.Columns
 		WHERE TABLE_NAME = '".$tabla_."'";
-		
-		$stmt = sqlsrv_query( $cid, $sql);
-		if( $stmt === false)  
-		{  
-			 echo "Error en consulta.\n";  
-			 die( print_r( sqlsrv_errors(), true));  
-		} 
-		$campos = array();
-		while( $obj = sqlsrv_fetch_object( $stmt)) 
-		{
-			$campos[]=$obj;
-		}
-    // print_r($campos);die();
+		$campos = $conn->datos($sql);
 		return $campos;
 	}
 }
@@ -6092,29 +4841,14 @@ function dimenciones_tabl($len)
 
     }
 
-    $conn = new Conectar();
-    $cid=$conn->conexion();
-    
+    $conn = new db(); 
+    $Result = array();
     $sql = "SELECT Numero, ID 
            FROM Codigos 
            WHERE Concepto = '".$query."' 
            AND Periodo = '".$_SESSION['INGRESO']['periodo']."' 
            AND Item = '".$_SESSION['INGRESO']['item']."' ";
-
-           // print_r($sql);die();
-            $stmt = sqlsrv_query( $cid, $sql);
-    if( $stmt === false)  
-    {  
-        echo "Error en consulta PA.\n";  
-        die( print_r( sqlsrv_errors(), true));  
-    }
-    $Result = array();
-    while( $row = sqlsrv_fetch_array($stmt,SQLSRV_FETCH_ASSOC)){
-        $Result[] = $row;
-      }
-
-      // print_r($Result);die();
-
+    $Result = $conn->datos($sql);
       if(count($Result)>0)
       {
         $NumCodigo = $Result[0]['Numero'];
@@ -6135,12 +4869,7 @@ function dimenciones_tabl($len)
         {
           $sql = "INSERT INTO Codigos (Periodo,Item,Concepto,Numero) 
                 VALUES ('".$_SESSION['INGRESO']['periodo']."','".$_SESSION['INGRESO']['item']."','".$query."',".$NumCodigo.") ";
-                 $stmt = sqlsrv_query( $cid, $sql);
-          if( $stmt === false)  
-          {  
-              echo "Error en consulta PA.\n";  
-              die( print_r( sqlsrv_errors(), true));  
-          }
+          $conn->String_Sql($sql);
         }
         if($incrementa)
         {
@@ -6149,20 +4878,14 @@ function dimenciones_tabl($len)
                 WHERE Concepto = '".$query."'
                 AND Periodo = '".$_SESSION['INGRESO']['periodo']."'
                 AND Item = '".$_SESSION['INGRESO']['item']."' ";
-                 $stmt = sqlsrv_query( $cid, $sql);
-           if( $stmt === false)  
-             {  
-               echo "Error en consulta PA.\n";  
-               die( print_r( sqlsrv_errors(), true));  
-              }
-
+                $conn->String_Sql($sql);
         }
       }
       return $NumCodigo;
   
   }
 
-  function numero_comprobante($parametros)
+  function numero_comprobante($parametros) // por revisar repetida
   {
     $conn = new Conectar();
     $cid=$conn->conexion();
@@ -6365,7 +5088,7 @@ function dimenciones_tabl($len)
     } 
   }
 
-function ingresar_asientos_SC($parametros)
+function ingresar_asientos_SC($parametros)  //revision parece repetida
 {
     $conn = new Conectar();
     $cid=$conn->conexion(); 
@@ -6691,7 +5414,7 @@ function ingresar_asientos_SC($parametros)
 }
 
 
-function ingresar_asientos($parametros)
+function ingresar_asientos($parametros) //revision parece repetida
 {
 
     $conn = new Conectar();
@@ -6906,7 +5629,7 @@ function ingresar_asientos($parametros)
     }    
 }
 
-function generar_comprobantes($parametros)
+function generar_comprobantes($parametros) //revision parece repetida
   {
     $conn = new Conectar();
     $cid=$conn->conexion();
@@ -7289,15 +6012,14 @@ function generar_comprobantes($parametros)
       }
   }
 
-  function mayorizar_inventario_sp()
+  function mayorizar_inventario_sp() // optimizado
   {
     // set_time_limit(1024);
     // ini_set("memory_limit", "-1");
     // $desde = '2019/10/28';
     // $hasta = '2019/11/29';
     $_SESSION['INGRESO']['modulo_']='01';
-    $conn = new Conectar();
-      $cid=$conn->conexion();
+      $conn = new db();
       $parametros = array(
       array(&$_SESSION['INGRESO']['item'], SQLSRV_PARAM_IN),
       array(&$_SESSION['INGRESO']['periodo'], SQLSRV_PARAM_IN),
@@ -7307,34 +6029,19 @@ function generar_comprobantes($parametros)
       array(&$_SESSION['INGRESO']['Dec_Costo'], SQLSRV_PARAM_IN)
       );     
      $sql="EXEC sp_Mayorizar_Inventario @Item=?, @Periodo=?, @Usuario=?, @NumModulo=?, @DecPVP=?, @DecCosto=?";
-     // print_r($_SESSION['INGRESO']);die();
-
-      $stmt = sqlsrv_prepare($cid, $sql,$parametros);
-      if(!$stmt)
-      {
-        die( print_r( sqlsrv_errors(), true));
-      }
-      if (!sqlsrv_execute($stmt)) {
-   
-         echo "Error en consulta PA.\n";         
-         $respuesta = -1;
-         die( print_r( sqlsrv_errors(), true));
-         return $respuesta;  
-       die;
-      }
-     $respuesta =  1;
-       return $respuesta;   
+     // print_r($_SESSION['INGRESO']);die();}
+      $respuesta = $conn->ejecutar_procesos_almacenados($sql,$parametros);
+      return $respuesta;   
   }
 
-  function sp_Reindexar_Periodo()
+  function sp_Reindexar_Periodo() //optimizado
   {
     // set_time_limit(1024);
     // ini_set("memory_limit", "-1");
     // $desde = '2019/10/28';
     // $hasta = '2019/11/29';
     $_SESSION['INGRESO']['modulo_']='01';
-    $conn = new Conectar();
-      $cid=$conn->conexion();
+    $conn = new db();
       $parametros = array(
       array(&$_SESSION['INGRESO']['item'], SQLSRV_PARAM_IN),
       array(&$_SESSION['INGRESO']['periodo'], SQLSRV_PARAM_IN)
@@ -7342,63 +6049,27 @@ function generar_comprobantes($parametros)
      $sql="EXEC sp_Reindexar_Periodo @Item=?, @Periodo=?";
      // print_r($_SESSION['INGRESO']);die();
 
-      $stmt = sqlsrv_prepare($cid, $sql,$parametros);
-      if(!$stmt)
-      {
-        die( print_r( sqlsrv_errors(), true));
-      }
-      if (!sqlsrv_execute($stmt)) {
-   
-         echo "Error en consulta PA.\n";         
-         $respuesta = -1;
-         die( print_r( sqlsrv_errors(), true));
-         return $respuesta;  
-       die;
-      }
-     $respuesta =  1;
-       return $respuesta;   
+      $respuesta = $conn->ejecutar_procesos_almacenados($sql,$parametros);
+      return $respuesta;   
   }
 
-  function Leer_Campo_Empresa($query)
+  function Leer_Campo_Empresa($query)//  optimizado
   {
-     $conn = new Conectar();
-     $cid=$conn->conexion();
+     $conn = new db();
     $sql = "SELECT ".$query." 
             FROM Empresas 
             WHERE Item = '".$_SESSION['INGRESO']['item']."'";
-    $stmt = sqlsrv_query( $cid, $sql);
-      if( $stmt === false)  
-      {  
-         echo "Error en consulta PA.\n";  
-         die( print_r( sqlsrv_errors(), true));  
-      }
-       $result = 0;  
-      while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_ASSOC) ) 
-        {
-           $result =$row;
-        }
-        return $result[$query];
+    $datos = $conn->datos($sql);
+    return $datos[0][$query];
 
   }
 
-function buscar_cta_iva_inventario()
+function buscar_cta_iva_inventario()//  optimizado
   {
-    $conn = new Conectar();
-    $cid=$conn->conexion();
+    $conn = new db();
     $sql = "SELECT * FROM Ctas_Proceso WHERE Periodo = '".$_SESSION['INGRESO']['periodo']."' AND Item='".$_SESSION['INGRESO']['item']."' AND Detalle = 'Cta_Iva_Inventario'";
     // print_r($sql); die();
-    $stmt = sqlsrv_query($cid, $sql);
-        $datos =  array();
-     if( $stmt === false)  
-     {  
-     echo "Error en consulta PA.\n";  
-     return '';
-     die( print_r( sqlsrv_errors(), true));  
-     }
-      while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_ASSOC) ) 
-     {
-            $datos[]=$row;
-     }
+    $datos = $conn->datos($sql);
      if(count($datos)>0)
      {
        return $datos[0]['Codigo'];
@@ -7409,10 +6080,9 @@ function buscar_cta_iva_inventario()
 
   }
 
-function LeerCta($CodigoCta )
+function LeerCta($CodigoCta ) //optimizado
 {
-  $conn = new Conectar();
-  $cid=$conn->conexion();
+  $conn = new db();
   $Cuenta = G_NINGUNO;
   $Codigo = G_NINGUNO;
   $TipoCta = "G";
@@ -7426,22 +6096,8 @@ function LeerCta($CodigoCta )
              WHERE Codigo = '".$CodigoCta."'
              AND Item = '".$_SESSION['INGRESO']['item']."'
              AND Periodo = '".$_SESSION['INGRESO']['periodo']."' ";
-    $stmt = sqlsrv_query($cid, $sql);
-    $datos =  array();
+    $datos = $conn->datos($sql);
     $datoscta = array();
-     if( $stmt === false)  
-     {  
-     echo "Error en consulta PA.\n";  
-     return '';
-     die( print_r( sqlsrv_errors(), true));  
-     }
-      while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_ASSOC) ) 
-     {
-            $datos[]=$row;
-     }
-
-     // print_r($datos);die();
-     // print_r('expression');
      if (count($datos)>0) {
        foreach ($datos as $key => $value) {
          
@@ -7450,26 +6106,13 @@ function LeerCta($CodigoCta )
        }
      }
      return $datoscta;
-     // DataReg.open sSQL, AdoStrCnn, , , adCmdText
-     // With DataReg
-     //  If .RecordCount > 0 Then
-     //      $Codigo = .Fields("Codigo")
-     //      $Cuenta = .Fields("Cuenta")
-     //      $SubCta = .Fields("TC")
-     //      $Moneda_US = .Fields("ME")
-     //      $TipoCta = .Fields("DG")
-     //      $TipoPago = .Fields("Tipo_Pago")
-     //      If Val(TipoPago) <= 0 Then TipoPago = "01"
-     //  End If
-     // End With
-     // DataReg.Close
+
   }
 }
 
-function costo_venta($codigo_inv)
+function costo_venta($codigo_inv)  // optimizado
   {
-  $conn = new Conectar();
-  $cid=$conn->conexion();
+    $conn = new db();
     $sql = "SELECT  SUM(Entrada-Salida) as 'Existencia' 
     FROM Trans_Kardex
     WHERE Fecha <= '".date('Y-m-d')."'
@@ -7478,88 +6121,77 @@ function costo_venta($codigo_inv)
     AND Periodo = '".$_SESSION['INGRESO']['periodo']."'
     AND T <> 'A'";
     // print_r($sql);die();
-    $stmt = sqlsrv_query($cid, $sql);
-        $datos =  array();
-     if( $stmt === false)  
-     {  
-     echo "Error en consulta PA.\n";  
-     return '';
-     die( print_r( sqlsrv_errors(), true));  
-     }
-      while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_ASSOC) ) 
-     {
-    $datos[]=$row;  
-     }
-       return $datos;
+    $datos = $conn->datos($sql);
+    return $datos;
 
   }
   
 
-function crear_variables_session($empresa)
-{
+// function crear_variables_session($empresa)
+// {
 
-  // print_r($empresa);die();
-        $_SESSION['INGRESO']['IP_VPN_RUTA']='mysql.diskcoversystem.com';
-        $_SESSION['INGRESO']['Base_Datos']='diskcover_empresas';
-        $_SESSION['INGRESO']['Usuario_DB']='diskcover';
-        $_SESSION['INGRESO']['Contraseña_DB']='disk2017Cover';
-        $_SESSION['INGRESO']['Tipo_Base']='MySQL';
-        $_SESSION['INGRESO']['Puerto']='13306';
-        $_SESSION['INGRESO']['Fecha']='';
-        $_SESSION['INGRESO']['Logo_Tipo']=$empresa[0]['Logo_Tipo'];
-        $_SESSION['INGRESO']['periodo']='.';
-        $_SESSION['INGRESO']['Razon_Social']=$empresa[0]['Razon_Social'];
-        $_SESSION['INGRESO']['Fecha_ce']='';
-        //echo $_SESSION['INGRESO']['IP_VPN_RUTA'];
-        //obtenemos el resto de inf. de la empresa tales como correo direccion
-        // print_r($empresa_d);die();
-        $_SESSION['INGRESO']['Direccion']='';
-        $_SESSION['INGRESO']['Telefono1']='';
-        $_SESSION['INGRESO']['FAX']='';
-        $_SESSION['INGRESO']['Nombre_Comercial']='';
-        $_SESSION['INGRESO']['Razon_Social']=$empresa[0]['Razon_Social'];
-        $_SESSION['INGRESO']['Sucursal']='';
-        $_SESSION['INGRESO']['Opc']='';
-        $_SESSION['INGRESO']['noempr']=$empresa[0]['Empresa'];
-        $_SESSION['INGRESO']['S_M']='';
-        $_SESSION['INGRESO']['Num_CD']='';
-        $_SESSION['INGRESO']['Num_CE']='';
-        $_SESSION['INGRESO']['Num_CI']='';
-        $_SESSION['INGRESO']['Num_ND']='';
-        $_SESSION['INGRESO']['Num_NC']='';
-        $_SESSION['INGRESO']['Email_Conexion_CE']='';
-        $_SESSION['INGRESO']['Formato_Cuentas']='';
-        $_SESSION['INGRESO']['Formato_Inventario']='';
-        $_SESSION['INGRESO']['porc']='';
-        $_SESSION['INGRESO']['Ambiente']='';
-        $_SESSION['INGRESO']['Obligado_Conta']='';
-        $_SESSION['INGRESO']['LeyendaFA']='';
-        $_SESSION['INGRESO']['Email']='';
-        $_SESSION['INGRESO']['RUC']=$empresa[0]['RUC_CI_NIC'];
-        $_SESSION['INGRESO']['Gerente']=$empresa[0]['Gerente'];;
-        $_SESSION['INGRESO']['Det_Comp']='';
-        $_SESSION['INGRESO']['Signo_Dec']='';
-        $_SESSION['INGRESO']['Signo_Mil']='';
-        $_SESSION['INGRESO']['Sucursal']='';
-        $_SESSION['INGRESO']['RUC_Contador'] = '';
-        $_SESSION['INGRESO']['CI_Representante'] = '';
-        $_SESSION['INGRESO']['Ruta_Certificado'] = '';
-        $_SESSION['INGRESO']['Clave_Certificado'] = '';
-        $_SESSION['INGRESO']['Ambiente'] = '';
-        $_SESSION['INGRESO']['Dec_PVP'] = '';
-        $_SESSION['INGRESO']['Dec_Costo'] = '';
-        $_SESSION['INGRESO']['Cotizacion'] = '';
-        // print_r($empresa_d);die();
-        $_SESSION['INGRESO']['Ciudad'] = $empresa[0]['Ciudad'];;       
-        $_SESSION['INGRESO']['accesoe']='0';
-        $_SESSION['INGRESO']['CodigoU']='';
-         $_SESSION['INGRESO']['Nombre_Completo']='';
-}
+//   // print_r($empresa);die();
+//         $_SESSION['INGRESO']['IP_VPN_RUTA']='mysql.diskcoversystem.com';
+//         $_SESSION['INGRESO']['Base_Datos']='diskcover_empresas';
+//         $_SESSION['INGRESO']['Usuario_DB']='diskcover';
+//         $_SESSION['INGRESO']['Contraseña_DB']='disk2017Cover';
+//         $_SESSION['INGRESO']['Tipo_Base']='MySQL';
+//         $_SESSION['INGRESO']['Puerto']='13306';
+//         $_SESSION['INGRESO']['Fecha']='';
+//         $_SESSION['INGRESO']['Logo_Tipo']=$empresa[0]['Logo_Tipo'];
+//         $_SESSION['INGRESO']['periodo']='.';
+//         $_SESSION['INGRESO']['Razon_Social']=$empresa[0]['Razon_Social'];
+//         $_SESSION['INGRESO']['Fecha_ce']='';
+//         //echo $_SESSION['INGRESO']['IP_VPN_RUTA'];
+//         //obtenemos el resto de inf. de la empresa tales como correo direccion
+//         // print_r($empresa_d);die();
+//         $_SESSION['INGRESO']['Direccion']='';
+//         $_SESSION['INGRESO']['Telefono1']='';
+//         $_SESSION['INGRESO']['FAX']='';
+//         $_SESSION['INGRESO']['Nombre_Comercial']='';
+//         $_SESSION['INGRESO']['Razon_Social']=$empresa[0]['Razon_Social'];
+//         $_SESSION['INGRESO']['Sucursal']='';
+//         $_SESSION['INGRESO']['Opc']='';
+//         $_SESSION['INGRESO']['noempr']=$empresa[0]['Empresa'];
+//         $_SESSION['INGRESO']['S_M']='';
+//         $_SESSION['INGRESO']['Num_CD']='';
+//         $_SESSION['INGRESO']['Num_CE']='';
+//         $_SESSION['INGRESO']['Num_CI']='';
+//         $_SESSION['INGRESO']['Num_ND']='';
+//         $_SESSION['INGRESO']['Num_NC']='';
+//         $_SESSION['INGRESO']['Email_Conexion_CE']='';
+//         $_SESSION['INGRESO']['Formato_Cuentas']='';
+//         $_SESSION['INGRESO']['Formato_Inventario']='';
+//         $_SESSION['INGRESO']['porc']='';
+//         $_SESSION['INGRESO']['Ambiente']='';
+//         $_SESSION['INGRESO']['Obligado_Conta']='';
+//         $_SESSION['INGRESO']['LeyendaFA']='';
+//         $_SESSION['INGRESO']['Email']='';
+//         $_SESSION['INGRESO']['RUC']=$empresa[0]['RUC_CI_NIC'];
+//         $_SESSION['INGRESO']['Gerente']=$empresa[0]['Gerente'];;
+//         $_SESSION['INGRESO']['Det_Comp']='';
+//         $_SESSION['INGRESO']['Signo_Dec']='';
+//         $_SESSION['INGRESO']['Signo_Mil']='';
+//         $_SESSION['INGRESO']['Sucursal']='';
+//         $_SESSION['INGRESO']['RUC_Contador'] = '';
+//         $_SESSION['INGRESO']['CI_Representante'] = '';
+//         $_SESSION['INGRESO']['Ruta_Certificado'] = '';
+//         $_SESSION['INGRESO']['Clave_Certificado'] = '';
+//         $_SESSION['INGRESO']['Ambiente'] = '';
+//         $_SESSION['INGRESO']['Dec_PVP'] = '';
+//         $_SESSION['INGRESO']['Dec_Costo'] = '';
+//         $_SESSION['INGRESO']['Cotizacion'] = '';
+//         // print_r($empresa_d);die();
+//         $_SESSION['INGRESO']['Ciudad'] = $empresa[0]['Ciudad'];;       
+//         $_SESSION['INGRESO']['accesoe']='0';
+//         $_SESSION['INGRESO']['CodigoU']='';
+//          $_SESSION['INGRESO']['Nombre_Completo']='';
+// }
 
-  function Leer_Seteos_Ctas($Det_Cta = ""){
+  function Leer_Seteos_Ctas($Det_Cta = "") // optimizado
+  {
     //conexion
-    $conn = new Conectar();
-    $cid=$conn->conexion();
+    $conn = new db();
     $RatonReloj;
     $Cta_Ret_Aux = "0";
     $SSQLSeteos = "SELECT * 
@@ -7567,15 +6199,10 @@ function crear_variables_session($empresa)
                WHERE Item = '".$_SESSION['INGRESO']['item']."'
                AND Periodo = '".$_SESSION['INGRESO']['periodo']."'
                AND Detalle = '".$Det_Cta."' ";
-    $stmt = sqlsrv_query($cid, $SSQLSeteos);
-    if( $stmt === false)  
-    {  
-      die( print_r( sqlsrv_errors(), true));
-    } else
-    {
-      $datos = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_ASSOC);
-      return $datos['Codigo'];
-    }
+
+    $datos = $conn->datos($sql);
+    return $datos['Codigo'];
+   
   }
 
   // function sp_mayorizar_cuentas()
@@ -7614,87 +6241,7 @@ function crear_variables_session($empresa)
     //    return $respuesta;   
   // }
 
-  function TextoValido1($TextB,$Numero = false, $Mayusculas = false, $NumeroDecimales = 2){
-    $TextosB = "";
-    $TextosB = $TextB;
-    if (is_null($TextosB)) $TextosB = "";
-    
-    if (empty($TextosB)) $TextosB = "";
-    $TextosB = trim($TextosB);
-    if ($Mayusculas) $TextosB = strtoupper($TextosB);
-    if ($Numero) {
-      if ($TextosB == "") $TextosB = "0";
-      if (is_numeric($TextosB)) {
-        if($NumeroDecimales) {
-          if($NumeroDecimales == 0){
-            $TextosB = number_format($TextosB, $NumeroDecimales, '.', '');
-          }elseif ($NumeroDecimales > 2) {
-            $TextosB = Format($TextosB, $NumeroDecimales, '.', '');
-          }else{
-            $TextosB = number_format($TextosB, $NumeroDecimales, '.', '');
-          }
-        }
-        $TextB = trim($TextosB);
-      } else {
-        $TextosB = "0";
-        $TextB = $TextosB;
-      }
-    }else{
-      if ($TextosB == "") $TextosB = G_NINGUNO;
-      $TextB = $TextosB;
-    }
-    return $TextB;
-  }
-
-  function Leer_Datos_Clientes($Codigo_CIRUC_Cliente = ""){
-    //Dim AdoCliDB As ADODB.Recordset
-    $TBenef = $Codigo_CIRUC_Cliente;
-    $Por_Codigo = false;
-    $Por_CIRUC = false;
-    $Por_Cliente = false;
-    $CadAux = "";
-
-    if ($TBenef != "") {
-      $FA = false;
-      $Asignar_Dr = false;
-      $Codigo = G_NINGUNO;
-      $Cliente = G_NINGUNO;
-      $Tipo_Cta = G_NINGUNO;
-      $Cta_Numero = G_NINGUNO;
-      $Descuento = false;
-      $T = "";
-      $TP = "";
-      $CI_RUC = "";
-      $TD = "";
-      $Fecha = "";
-      $Fecha_A = "";
-      $Fecha_N = "";
-      $Sexo = "";
-      $Email1 = "";
-      $Email2 = "";
-      $Direccion = "";
-      $DirNumero = "";
-      $Telefono1 = "";
-      $TelefonoT = "";
-      $Celular = "";
-      $Ciudad = "";
-      $Prov = "";
-      $Pais = "";
-      $Profesion = ""; 
-      $Representante = G_NINGUNO;
-      $RUC_CI_Rep = "";
-      $TD_Rep = "";
-      $Direccion_Rep = "SD";
-      $Grupo_No = "";
-      $Contacto = "";
-      $Calificacion = "";
-      $Plan_Afiliado = "";
-      $Cte_Ahr_Otro = "";
-      $Cta_Transf = "";
-      $Cod_Banco = 0;
-      $Salario = 0;
-    }
-    
+      
     //if (strlen($Codigo_CIRUC_Cliente) <= 0) $Codigo_CIRUC_Cliente = G_NINGUNO;
     /*
    'Por Codigo
@@ -7839,7 +6386,7 @@ function crear_variables_session($empresa)
 
 function grilla_generica_new($sql,$tabla,$id_tabla=false,$titulo=false,$botones=false,$check=false,$imagen=false,$border=1,$sombreado=1,$head_fijo=1,$tamaño_tabla=300,$num_decimales=2,$num_reg=false,$paginacion_view= false)
 {  
-  $conn = new Conectar();
+  $conn = new db();
 
   $ddl_reg = '';
   $val_pagina = '';
@@ -7854,18 +6401,12 @@ function grilla_generica_new($sql,$tabla,$id_tabla=false,$titulo=false,$botones=
   $pos = strpos($sql,'UNION');
 if ($pos === false) {
     $sql2 = " SELECT COUNT(*) as 'reg' FROM ".$tabla;
-    $stmt2 = sqlsrv_query($cid2, $sql2);
-    if( $stmt2 === false)  { echo "Error en consulta PA.\n"; return ''; die( print_r( sqlsrv_errors(), true)); }
-    $datos2 =  array();
-    while( $row = sqlsrv_fetch_array( $stmt2, SQLSRV_FETCH_ASSOC) ){$datos2[]=$row; }
+    $datos2 =  $conn->datos($sql2)
     $total_registros = $datos2[0]['reg']; 
 } else {
-     $sql2 = $sql;
-     $stmt2 = sqlsrv_query($cid2, $sql2);
-     if( $stmt2 === false)  { echo "Error en consulta PA.\n"; return ''; die( print_r( sqlsrv_errors(), true)); }
-     $datos2 =  array();
-     while( $row = sqlsrv_fetch_array( $stmt2, SQLSRV_FETCH_ASSOC) ){$datos2[]=$row; }
-      $tot_reg = count($datos2);
+    $sql2 = $sql;
+    $datos2 =  $conn->datos($sql2);
+    $tot_reg = count($datos2);
      $total_registros = $tot_reg;
 
 }
