@@ -149,11 +149,12 @@ class diario_generalC
 	{
 		$agencia = $this->modelo->llenar_agencia();
 		$usuario = $this->modelo->llenar_usuario();
-		echo json_encode($usuario);
-		print_r("entra");
+		// echo json_encode($usuario);
+		// print_r("entra");
 		$datos = array('agencia'=>$agencia,'usuario'=>$usuario);
-		echo json_encode($datos);
-		exit();
+		return $datos;
+		// echo json_encode($datos);
+		// exit();
 	}
 
 

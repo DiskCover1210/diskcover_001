@@ -84,6 +84,7 @@ require_once("panel.php");
         vista_ATS();
        
       }
+      $('#myModal_espera').modal('hide');   
     }
   });
   }

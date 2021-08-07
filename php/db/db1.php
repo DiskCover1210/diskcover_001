@@ -47,7 +47,7 @@ class db
 	    $this->puerto = $_SESSION['INGRESO']['Puerto'];
 		// print_r($_SESSION);die();
 
-		$connectionInfo = array("Database"=>$this->database, "UID" => $this->usuario,"PWD" => $this->password);
+		$connectionInfo = array("Database"=>$this->database, "UID" => $this->usuario,"PWD" => $this->password,"CharacterSet" => "UTF-8");
 		// print_r($connectionInfo);die();
 		$cid = sqlsrv_connect($this->servidor.', '.$this->puerto, $connectionInfo); //returns false
 		if( $cid === false )
@@ -64,6 +64,7 @@ class db
 	function MySQL()
 	{
 		$conn =  new mysqli($this->servidor, $this->usuario, $this->password,$this->database,$this->puerto);
+		$conn->set_charset("utf8");
 		if (!$conn) 
 		{
 			echo  mysqli_connect_error();

@@ -454,7 +454,7 @@ function paginancion($tabla,$function,$pag=false,$where=false) //optimizado
   $conn = new db();  
   // print_r($sql);die();
    $result = $conn->datos($sql);
-  $total = $result['total'];
+  $total = $result[0]['total'];
   // print_r($total);die();
   $partes = $total/25;
   $html='<div class="row text-right" id="paginacion"><ul class="pagination">

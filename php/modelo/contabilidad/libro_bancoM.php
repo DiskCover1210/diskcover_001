@@ -20,7 +20,7 @@ include(dirname(__DIR__,2).'/db/variables_globales.php');//
           AND DG = 'D'
           AND Item = '".$_SESSION['INGRESO']['item']."' 
           AND Periodo = '".$_SESSION['INGRESO']['periodo']."'
-          ORDER BY Codigo ";       
+          ORDER BY Codigo ";    
 
         $stmt = sqlsrv_query($cid, $sql);
 	    $result = array();	

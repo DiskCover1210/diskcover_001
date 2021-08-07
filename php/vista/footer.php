@@ -133,7 +133,7 @@
         		<div class="col-sm-7">
         			<input type="hidden" name="TipoSuper" id="TipoSuper"><br>
         			<input type="hidden" name="intentos" id="intentos" value="1">
-        			<input type="password" name="txt_IngClave" id="txt_IngClave" class="form-control input-sm" placeholder="Clave" onfocusout="IngresoClave()" onkeypress="enter(event)">
+        			<input type="password" name="txt_IngClave" id="txt_IngClave" class="form-control input-sm" placeholder="Clave" onfocusout="IngresoClave()" onkeypress="enter(event)"  autocomplete="new-password">
         		</div>
         		<div class="col-sm-3">
         			<div class="btn-group">

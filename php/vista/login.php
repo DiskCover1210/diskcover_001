@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 	  <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-	  <link rel="stylesheet" href="../../lib/bower_components/bootstrap/dist/css/bootstrap.min.css">
+	  <link rel="stylesheet" href="../../lib/bower_components/bootstrap/css/bootstrap.min.css">
 	  <!-- Font Awesome -->
 	  <link rel="stylesheet" href="../../lib/bower_components/font-awesome/css/font-awesome.min.css">
 	  <!-- Ionicons -->
@@ -97,7 +97,7 @@
          $('#tabla_').html(spiner);
       },*/
         success:  function (response) { 
-        	console.log(response);
+        	// console.log(response);
         if(response.respuesta == -1)
         {
         	Swal.fire('Este usuario no esta registrado O no pertenece a la entidad!','No se a encontrado al usuario.','error');

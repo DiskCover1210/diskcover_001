@@ -14,74 +14,36 @@ if(isset($_GET['mos2']))
 ?>
 <!DOCTYPE html>
 <html>
-<head>
-
-<!-- <script src="https://code.jquery.com/jquery-1.10.2.min.js"></script> -->
- 
+<head> 
   <!-- Tell the browser to be responsive to screen width -->
   <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
-  <!-- Bootstrap 3.3.7 -->
-  <link rel="stylesheet" href="../../lib/bower_components/bootstrap/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="../../lib/bower_components/bootstrap/css/bootstrap.min.css">
   <!-- Font Awesome -->
   <link rel="stylesheet" href="../../lib/bower_components/font-awesome/css/font-awesome.min.css">
   <!-- Ionicons -->
   <link rel="stylesheet" href="../../lib/bower_components/Ionicons/css/ionicons.min.css">
   <!-- Theme style -->
   <link rel="stylesheet" href="../../lib/dist/css/AdminLTE.min.css">
-  <link rel="stylesheet" href="../../lib/bower_components/jquery-ui/themes/base/jquery-ui.css">
 
-  <!-- AdminLTE Skins. Choose a skin from the css/skins
-       folder instead of downloading all of them to reduce the load. -->
+  <!-- AdminLTE Skins. Choose a skin from the css/skins -->
   <link rel="stylesheet" href="../../lib/dist/css/skins/_all-skins.min.css"> 
  
-  
-  
-  <!-- <script src="../../lib/bower_components/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js"></script> -->
   <!-- jQuery 3 -->
 <script src="../../lib/bower_components/jquery/dist/jquery.min.js"></script>
-<!-- Bootstrap 3.3.7 -->
-<script src="../../lib/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
-<!-- Select2 -->
-<script src="../../lib/bower_components/select2/dist/js/select2.full.min.js"></script>
-<!-- InputMask -->
-<script src="../../lib/plugins/input-mask/jquery.inputmask.js"></script>
-<script src="../../lib/plugins/input-mask/jquery.inputmask.date.extensions.js"></script>
-<script src="../../lib/plugins/input-mask/jquery.inputmask.extensions.js"></script>
-<!-- date-range-picker -->
-<script src="../../lib/bower_components/moment/min/moment.min.js"></script>
-<script src="../../lib/bower_components/bootstrap-daterangepicker/daterangepicker.js"></script>
-<script src="../../lib/bower_components/jquery-ui/jquery-ui.js"></script>
+<script src="../../lib/bower_components/bootstrap/js/bootstrap.min.js"></script>
 
-<!-- bootstrap datepicker -->
-<script src="../../lib/bower_components/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js"></script>
-<!-- bootstrap color picker -->
-<script src="../../lib/bower_components/bootstrap-colorpicker/dist/js/bootstrap-colorpicker.min.js"></script>
-<!-- bootstrap time picker -->
-<script src="../../lib/plugins/timepicker/bootstrap-timepicker.min.js"></script>
-<!-- SlimScroll -->
-<script src="../../lib/bower_components/jquery-slimscroll/jquery.slimscroll.min.js"></script>
-<!-- iCheck 1.0.1 -->
-<script src="../../lib/plugins/iCheck/icheck.min.js"></script>
-<!-- FastClick -->
-<script src="../../lib/bower_components/fastclick/lib/fastclick.js"></script>
 <!-- AdminLTE App -->
 <script src="../../lib/dist/js/adminlte.min.js"></script>
 <!-- AdminLTE for demo purposes -->
 <script src="../../lib/dist/js/demo.js"></script>
 
 <script src="../../lib/dist/js/jquery-ui.js"></script>
-  <link rel="stylesheet" href="../../lib/dist/css/jquery-ui.css">
-
-
+<link rel="stylesheet" href="../../lib/dist/css/jquery-ui.css">
 <script src="../../lib/dist/js/select2.min.js"></script>
-  <link rel="stylesheet" href="../../lib/dist/css/select2.min.css">
-  
- <link rel="stylesheet" href="../../lib/dist/css/sweetalert.css">
-  <script src="../../lib/dist/js/sweetalert-dev.js"></script>
-  
-  <script src="../../lib/dist/js/sweetalert2.min.js"></script>
-  <script type="text/javascript" src="../../lib/dist/js/typeahead.js"></script>
-  <link rel="stylesheet" href="../../lib/dist/css/sweetalert2.min.css">
+<link rel="stylesheet" href="../../lib/dist/css/select2.min.css">
+<link rel="stylesheet" href="../../lib/dist/css/sweetalert.css">
+<script src="../../lib/dist/js/sweetalert2.min.js"></script>
+<link rel="stylesheet" href="../../lib/dist/css/sweetalert2.min.css">
   <link rel="shortcut icon" href="../../img/jpg/logo.jpg" />
   <style>
        .ui-autocomplete {

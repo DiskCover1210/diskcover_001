@@ -2,15 +2,18 @@
 include(dirname(__DIR__).'/db/variables_globales.php');//
 include(dirname(__DIR__).'/funciones/funciones.php');
 require_once(dirname(__DIR__)."/db/db.php");
+require_once(dirname(__DIR__)."/db/db1.php");
 /**
  * 
  */
 class niveles_seguriM
 {
 	private $conn ;
+	private $db;
 	function __construct()
 	{
 	   $this->conn = cone_ajax();
+	   $this->db = new db();
 	   $this->dbs=Conectar::conexionSQL();
 	}
 
@@ -35,19 +38,26 @@ class niveles_seguriM
 
 	function entidades($valor)
 	{
-		$cid = Conectar::conexion('MYSQL');
+		// $cid = $this->db->conexion('MY SQL');
 		$sql ="SELECT Nombre_Entidad,ID_Empresa,RUC_CI_NIC FROM entidad  WHERE RUC_CI_NIC <> '.' AND Nombre_Entidad LIKE '%".$valor."%' 
 		    ORDER BY Nombre_Entidad";
-		$datos=[];
-		if($cid)
-		{
-		 	$consulta=$cid->query($sql) or die($cid->error);
-		 	while($filas=$consulta->fetch_assoc())
-			{
-				/*$datos[]=['id'=>utf8_encode($filas['ID_Empresa']),'text'=>utf8_encode($filas['Nombre_Entidad']),'RUC'=>utf8_encode($filas['RUC_CI_NIC'])];*/
-				$datos[]=['id'=>$filas['ID_Empresa'],'text'=>utf8_encode($filas['Nombre_Entidad']),'RUC'=>$filas['RUC_CI_NIC']];				
-			}
+		$enti=$this->db->datos($sql,'MY SQL');
+
+		// print_r($enti);die();
+		$datos[] = array();
+		foreach ($enti as $key => $value) {
+			$datos[]=['id'=>$value['ID_Empresa'],'text'=>$value['Nombre_Entidad'],'RUC'=>$value['RUC_CI_NIC']];				
 		}
+
+		// if($cid)
+		// {
+		//  	$consulta=$cid->query($sql) or die($cid->error);
+		//  	while($filas=$consulta->fetch_assoc())
+		// 	{
+		// 		$datos[]=['id'=>utf8_encode($filas['ID_Empresa']),'text'=>utf8_encode($filas['Nombre_Entidad']),'RUC'=>utf8_encode($filas['RUC_CI_NIC'])];
+		// 		$datos[]=['id'=>$filas['ID_Empresa'],'text'=>$filas['Nombre_Entidad'],'RUC'=>$filas['RUC_CI_NIC']];				
+		// 	}
+		// }
 	    return $datos;
 	}
 
