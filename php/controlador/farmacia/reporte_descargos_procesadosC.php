@@ -21,6 +21,13 @@ if(isset($_GET['imprimir_pdf']))
 	$parametros= $_GET;
      $controlador->imprimir_pdf($parametros);
 }
+
+if(isset($_GET['imprimir_pdf1']))
+{
+	$parametros= $_GET;
+     $controlador->imprimir_pdf($parametros);
+}
+
 if(isset($_GET['imprimir_excel']))
 {   
 	$parametros= $_GET;

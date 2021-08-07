@@ -328,6 +328,23 @@ function reporte_pdf()
 
 }
 
+function reporte_pdf1()
+{
+   var url = '../controlador/farmacia/reporte_descargos_procesadosC.php?imprimir_pdf=true&';
+   var datos =  $("#filtro_bus").serialize();
+    window.open(url+datos, '_blank');
+     $.ajax({
+         data:  {datos:datos},
+         url:   url,
+         type:  'post',
+         dataType: 'json',
+         success:  function (response) {  
+          
+          } 
+       });
+
+}
+
 function reporte_excel()
 {
    var url = '../controlador/farmacia/reporte_descargos_procesadosC.php?imprimir_excel=true&';
@@ -376,7 +393,10 @@ function reporte_excel()
           <a href="./farmacia.php?mod=Farmacia&acc=articulos&acc1=Visualizar%20articulos&b=1&po=subcu#" title="Ingresar Articulosr"  class="btn btn-default" onclick="">
             <img src="../../img/png/articulos.png" >
           </a>
-        </div>     
+        </div>
+        <div class="col-xs-2 col-md-2 col-sm-2 col-lg-1">
+          <button type="button" class="btn btn-default" title="Generar pdf" onclick="reporte_pdf1()"><img src="../../img/png/pdf.png"></button>
+        </div>    
  </div>
 </div>
 <div class="container"><br>

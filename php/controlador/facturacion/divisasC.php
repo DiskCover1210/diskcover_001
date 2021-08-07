@@ -290,13 +290,14 @@ class divisasC
       $FA['num_fac'] = $FA['Factura'];
       $FA['tc'] = $FA['TC'];
       $FA['cod_doc'] = '01';
-      if (strlen($FA['Autorizacion']) == 13) {
-        $resultado = $this->autorizar_sri->Autorizar($FA);
-      }else{
-        $resultado = array('respuesta'=>4);
-      }
-      echo json_encode($resultado);
     }
+    if (strlen($FA['Autorizacion']) == 13) {
+      $resultado = $this->autorizar_sri->Autorizar($FA);
+    }else{
+      $resultado = array('respuesta'=>4);
+    }
+    echo json_encode($resultado);
+    
   }
         
 }

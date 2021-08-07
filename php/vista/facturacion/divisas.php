@@ -144,18 +144,10 @@
       }
       console.log("entra");
       if (TextVTotal > 0 && TextCant == 0) {
-        if (producto[3]) {
-          TextCant = (TextVTotal / TextVUnit);
-        }else{
           TextCant = (TextVTotal * TextVUnit);
-        }
         $("#cantidad").val(parseFloat(TextCant).toFixed(4));
       }else if(TextCant > 0 && TextVTotal == 0){
-        if (producto[3]) {
-          TextVTotal = (TextCant / TextVUnit);
-        }else{
           TextVTotal = (TextCant * TextVUnit);
-        }
         $("#total").val(parseFloat(TextVTotal).toFixed(4));
       }
     //}
@@ -345,7 +337,7 @@
                       serie = DCLinea.split(" ");
                       //url = '../vista/appr/controlador/imprimir_ticket.php?mesa=0&tipo=FA&CI='+TextCI+'&fac='+TextFacturaNo+'&serie='+serie[1];
                       //window.open(url, '_blank');
-                      var url = '../vista/appr/controlador/imprimir_ticket.php?ticket=true&fac='+TextFacturaNo+'&serie='+serie[1]+'&CI='+TextCI;
+                      var url = '../vista/appr/controlador/formatoTicket.php?ticket=true&fac='+TextFacturaNo+'&serie='+serie[1]+'&CI='+TextCI;
                       window.open(url,'_blank');
                       location.reload();
                       //imprimir_ticket_fac(0,TextCI,TextFacturaNo,serie[1]);
@@ -369,7 +361,7 @@
                       serie = DCLinea.split(" ");
                       //url = '../vista/appr/controlador/imprimir_ticket.php?mesa=0&tipo=FA&CI='+TextCI+'&fac='+TextFacturaNo+'&serie='+serie[1];
                       //window.open(url, '_blank');
-                      var url = '../vista/appr/controlador/imprimir_ticket.php?ticket=true&fac='+TextFacturaNo+'&serie='+serie[1]+'&CI='+TextCI;
+                      var url = '../vista/appr/controlador/formatoTicket.php?ticket=true&fac='+TextFacturaNo+'&serie='+serie[1]+'&CI='+TextCI;
                       window.open(url,'_blank');
                       location.reload();
                       //imprimir_ticket_fac(0,TextCI,TextFacturaNo,serie[1]);
@@ -424,9 +416,6 @@
             <input type="hidden" name="ci" id="ci_ruc">
             <input type="hidden" name="email" id="email">
             <input type="hidden" name="fechaEmision" id="fechaEmision" value="<?php echo date('Y-m-d'); ?>">
-          </div>
-          <div class="col-sm-2">
-            <textarea class="form-control input-sm"></textarea>
           </div>
         </div>
         <div class="row">
