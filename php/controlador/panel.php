@@ -144,7 +144,10 @@ function variables_sistema($EmpresaEntidad,$NombreEmp,$ItemEmp)
 				$_SESSION['INGRESO']['smtp_UseAuntentificacion']=$empresa[0]['smtp_UseAuntentificacion'];
 				$_SESSION['INGRESO']['smtp_Puerto']=$empresa[0]['smtp_Puerto'];
 				$_SESSION['INGRESO']['smtp_Servidor']=$empresa[0]['smtp_Servidor'];
+				if(isset($empresa[0]['smtp_Secure']))
+				{
 				$_SESSION['INGRESO']['smtp_Secure']=$empresa[0]['smtp_Secure'];
+		   	}
 				$_SESSION['INGRESO']['Serie_FA'] = $empresa[0]['Serie_FA'];
 				$_SESSION['INGRESO']['modulo']=modulos_habiliatados();
 				//datos del periodo periodo

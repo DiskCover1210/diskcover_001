@@ -70,7 +70,7 @@ class usuario_model{
 			$datos = $this->db1->datos($query,$tipo='MY SQL');
 			if(count($datos)>0)
 			{
-				return array('respuesta'=>1,'entidad'=>$datos[0]['ID_Empresa'],'Nombre'=>utf8_encode($datos[0]['Nombre_Entidad']));
+				return array('respuesta'=>1,'entidad'=>$datos[0]['ID_Empresa'],'Nombre'=>$datos[0]['Nombre_Entidad']);
 			}else
 			{
 				//retorna -1 cuando no se encuentra la empresa 			

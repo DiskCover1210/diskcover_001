@@ -93,9 +93,9 @@ class facturaM
           WHERE Item = '".$_SESSION['INGRESO']['item']."' 
           AND Codigo_Cliente = '".$codigoCliente."' 
           AND CodigoU = '". $_SESSION['INGRESO']['CodigoU'] ."' ";
-    $stmt = sqlsrv_query( $this->dbs, $sql);
-    //$stmt = sqlsrv_prepare($this->dbs, $sql);
-    return $stmt;
+       $resp =  $this->db->String_Sql($sql,$tipo=false);
+   
+    return $resp;
   }
 
   public function getAsiento(){

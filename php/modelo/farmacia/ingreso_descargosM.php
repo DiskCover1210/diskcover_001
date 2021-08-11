@@ -285,7 +285,7 @@ class ingreso_descargosM
 		$datos[3]['campo']='Numero';
 		$datos[3]['dato']=1;
 
-		$resp = insert_generico('Codigo',$datos);
+		$resp = insert_generico('Codigos',$datos);
 		if($resp=='')
 		{
 			return 1;

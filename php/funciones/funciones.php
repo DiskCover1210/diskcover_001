@@ -4512,11 +4512,12 @@ function update_generico($datos,$tabla,$campoWhere) // optimizado javier farinan
    	foreach ($datos as $key => $value) {
    		foreach ($campos_db as $key => $value1) 
    		{
-   			if($value1->COLUMN_NAME==$value['campo'])
+   			if($value1['COLUMN_NAME']==$value['campo'])
    				{
-   					if($value1->CHARACTER_MAXIMUM_LENGTH != '' && $value1->CHARACTER_MAXIMUM_LENGTH != null)
+            // print_r($value1);die();
+   					if($value1['CHARACTER_MAXIMUM_LENGTH'] != '' && $value1['CHARACTER_MAXIMUM_LENGTH'] != null)
    						{
-   							$set .=$value['campo']."='".substr($value['dato'],0,$value1->CHARACTER_MAXIMUM_LENGTH)."',";
+   							$set .=$value['campo']."='".substr($value['dato'],0,$value1['CHARACTER_MAXIMUM_LENGTH'])."',";
    				    }else
    				    {
    				      $set .=$value['campo']."='".$value['dato']."',";
@@ -4558,6 +4559,7 @@ function insert_generico($tabla=null,$datos=null) // optimizado pero falta
 	$sql = "SELECT * from Information_Schema.Tables where TABLE_TYPE = 'BASE TABLE' AND TABLE_NAME='".$tabla."' ORDER BY TABLE_NAME";
 	// $stmt = sqlsrv_query( $cid, $sql);
   $datos1 = $conn->datos($sql);
+  // print_r($sql);die();
   $tabla_ = $datos1[0]['TABLE_NAME'];
 	if($tabla_!='')
 	{
@@ -4595,6 +4597,7 @@ function insert_generico($tabla=null,$datos=null) // optimizado pero falta
 			}
 		
 			//recorremos los datos
+      // print_r($datos);die();
 			$ban=0;
 			for($i=0;$i<count($datos);$i++)
 			{
