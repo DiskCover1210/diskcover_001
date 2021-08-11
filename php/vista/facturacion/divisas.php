@@ -66,8 +66,10 @@
     }
   });
   $(document).ready(function () {
+    catalogoLineas();
     autocomplete_cliente();
     numeroFactura();
+    productos();
     $("#nombreCliente").hide();
     //enviar datos del cliente
     $('#cliente').on('select2:select', function (e) {
@@ -129,25 +131,79 @@
     });
   }
 
+  function productos(){
+    DCLinea = $("#DCLinea").val();
+    $.ajax({
+      type: "POST",
+      url: '../controlador/facturacion/divisasC.php?productos=true',
+      data: {
+        'DCLinea' : DCLinea,
+      }, 
+      success: function(data)
+      {
+        if (data) {
+          datos = JSON.parse(data);
+          llenarComboList(datos,'producto')
+        }else{
+          console.log("No tiene datos");
+        }  
+      }
+    });
+  }
+
+  function catalogoLineas(){
+    fecha = $("#fecha").val();
+    $.ajax({
+      type: "POST",
+      url: '../controlador/facturacion/divisasC.php?catalogoLineas=true',
+      data: {
+        'fecha' : fecha,
+      }, 
+      success: function(data)
+      {
+        if (data) {
+          datos = JSON.parse(data);
+          llenarComboList(datos,'DCLinea')
+        }else{
+          console.log("No tiene datos");
+        }  
+      }
+    });
+  }
+
+  function llenarComboList(datos,nombre){
+    var nombreCombo = $("#"+nombre);
+    nombreCombo.find('option').remove();
+    for (var indice in datos) {
+      nombreCombo.append('<option value="' + datos[indice].codigo + '">' + datos[indice].nombre + '</option>');
+    }
+  }
+
   function calcular(){
     TextVUnit = Number.parseFloat($("#preciounitario").val());
     TextCant = Number.parseFloat($("#cantidad").val());
     TextVTotal = Number.parseFloat($("#total").val());
     producto = $("#producto").val();
     producto = producto.split("/");
-    console.log(TextVUnit);
-    console.log(TextCant);
-    console.log(TextVTotal);
+    Div = producto[3];
+    console.log(producto);
     //if (TextVUnit && TextCant && TextVTotal) {
       if (TextVUnit <= 0) {
         $("#preciounitario").val(1);
       }
-      console.log("entra");
       if (TextVTotal > 0 && TextCant == 0) {
+        if (Div == "1") {
+          TextCant = (TextVTotal / TextVUnit);
+        }else{
           TextCant = (TextVTotal * TextVUnit);
+        }
         $("#cantidad").val(parseFloat(TextCant).toFixed(4));
       }else if(TextCant > 0 && TextVTotal == 0){
+        if (Div == "1") {
+          TextVTotal = (TextCant / TextVUnit);
+        }else{
           TextVTotal = (TextCant * TextVUnit);
+        }
         $("#total").val(parseFloat(TextVTotal).toFixed(4));
       }
     //}
@@ -337,7 +393,7 @@
                       serie = DCLinea.split(" ");
                       //url = '../vista/appr/controlador/imprimir_ticket.php?mesa=0&tipo=FA&CI='+TextCI+'&fac='+TextFacturaNo+'&serie='+serie[1];
                       //window.open(url, '_blank');
-                      var url = '../vista/appr/controlador/formatoTicket.php?ticket=true&fac='+TextFacturaNo+'&serie='+serie[1]+'&CI='+TextCI;
+                      var url = '../vista/appr/controlador/formatoTicket.php?ticket=true&fac='+TextFacturaNo+'&serie='+serie[1]+'&CI='+TextCI+'&TC='+serie[0];
                       window.open(url,'_blank');
                       location.reload();
                       //imprimir_ticket_fac(0,TextCI,TextFacturaNo,serie[1]);
@@ -361,7 +417,7 @@
                       serie = DCLinea.split(" ");
                       //url = '../vista/appr/controlador/imprimir_ticket.php?mesa=0&tipo=FA&CI='+TextCI+'&fac='+TextFacturaNo+'&serie='+serie[1];
                       //window.open(url, '_blank');
-                      var url = '../vista/appr/controlador/formatoTicket.php?ticket=true&fac='+TextFacturaNo+'&serie='+serie[1]+'&CI='+TextCI;
+                      var url = '../vista/appr/controlador/formatoTicket.php?ticket=true&fac='+TextFacturaNo+'&serie='+serie[1]+'&CI='+TextCI+'&TC='+serie[0];
                       window.open(url,'_blank');
                       location.reload();
                       //imprimir_ticket_fac(0,TextCI,TextFacturaNo,serie[1]);
@@ -400,7 +456,7 @@
         <div class="row">
           <div class="col-sm-2 col-sm-offset-1">
             <label>Fecha</label>
-            <input type="date" class="form-control input-sm" name="fecha" value="<?php echo date('Y-m-d'); ?>" onkeyup="numeroFactura();">
+            <input type="date" class="form-control input-sm" name="fecha" id="fecha" value="<?php echo date('Y-m-d'); ?>" onchange="numeroFactura();catalogoLineas();">
           </div>
           <div class="col-sm-6 col-xs-12">
             <label class="text-right">Cliente</label>
@@ -423,13 +479,7 @@
             <label class="text-right">TIPO DE PROCESO</label>
           </div>
           <div class="col-sm-4">
-            <select class="form-control input-sm" name="DCLinea" id="DCLinea" onchange="numeroFactura();">
-              <?php
-                $cuentas = $divisas->getCatalogoLineas();
-                foreach ($cuentas as $cuenta) {
-                  echo "<option value='".$cuenta['id']."'>".$cuenta['text']."</option>";
-                }
-              ?>
+            <select class="form-control input-sm" name="DCLinea" id="DCLinea" onchange="numeroFactura();productos();">
             </select>
           </div>
           <div class="col-sm-2">
@@ -444,7 +494,7 @@
             <label>PRODUCTO</label>
             <select class="form-control input-sm" id="producto" onchange="setPVP();">
               <?php
-                $productos = $divisas->getProductos();
+                $productos = $divisas->getProductos('FA');
                 foreach ($productos as $producto) {
                   echo "<option value='".$producto['id']."'>".$producto['text']."</option>";
                 }

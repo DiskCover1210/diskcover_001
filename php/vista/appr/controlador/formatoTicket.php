@@ -19,26 +19,10 @@ $controlador = new MesaCon();
                 $ci = $_GET['CI'];
                 $serie = $_GET['serie'];
                 $fac = $_GET['fac'];
+                $TC = $_GET['TC'];
                 $parametros = array('tipo'=>'FA','ci'=>$ci,'serie'=>$serie,'factura'=>$fac);
-                echo $controlador->datos_fac_ticket($parametros);
+                echo $controlador->datos_fac_ticket($parametros,$TC);
             }
-        	   if(isset($_GET['mesa']))
-        	   {
-        	   	 $mesa = $_GET['mesa'];
-        	   	 if(isset($_GET['tipo']) && $_GET['tipo']=='PF')
-        	   	 {
-        	   	 	$parametros = array('tipo'=>'PF','mesa'=>$mesa);
-        	   	 	echo $controlador->datos_fac_pre($parametros);
-        	   	 }else
-        	   	 {
-        	   	 	$ci = $_GET['CI'];
-        	   	 	$serie = $_GET['serie'];
-        	   	 	$fac = $_GET['fac'];
-        	   	 	$parametros = array('tipo'=>'FA','mesa'=>$mesa,'ci'=>$ci,'serie'=>$serie,'factura'=>$fac);
-        	   	 	echo $controlador->datos_fac_pre($parametros);
-        	   	 }
-        	     
-        	   }
         	?>
         </div>
     </div>

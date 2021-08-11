@@ -20,6 +20,21 @@ if(isset($_GET['guardarFactura']))
   $controlador->guardarFactura();
 }
 
+if(isset($_GET['productos']))
+{
+  $codigoLinea = $_POST['DCLinea'];
+  $TC = explode(" ", $codigoLinea);
+  $datos = $controlador->getProductos($TC[0]);
+  echo json_encode($datos);
+}
+
+if(isset($_GET['catalogoLineas']))
+{
+  $fecha = $_POST['fecha'];
+  $datos = $controlador->getCatalogoLineas($fecha);
+  echo json_encode($datos);
+}
+
 class divisasC
 {
 	private $modelo;
@@ -32,22 +47,24 @@ class divisasC
     $this->email = new enviar_emails(); 
   }
 
-  public function getCatalogoLineas(){
-    $datos = $this->modelo->getCatalogoLineas();
+  public function getCatalogoLineas($fecha){
+    $datos = $this->modelo->getCatalogoLineas($fecha);
     $catalogo = [];
     while ($value = sqlsrv_fetch_array( $datos, SQLSRV_FETCH_ASSOC)) {
       //$catalogo[] = array('id'=>$value['Fact']." ".$value['Serie']." ".$value['Autorizacion']." ".$value['CxC'] ,'text'=>utf8_encode($value['Concepto']));
-      $catalogo[] = array('id'=>$value['Fact']." ".$value['Serie']." ".$value['Autorizacion']." ".$value['CxC'] ,'text'=>$value['Concepto']);
+      $catalogo[] = array('codigo'=>$value['Fact']." ".$value['Serie']." ".$value['Autorizacion']." ".$value['CxC']." " ,'nombre'=>$value['Concepto']);
     }
     return $catalogo;
   }
 
-  public function getProductos(){
-    $datos = $this->modelo->getProductos();
+  public function getProductos($TC){
+    $datos = $this->modelo->getProductos($TC);
     $productos = [];
+    $i= 0;
     while ($value = sqlsrv_fetch_array( $datos, SQLSRV_FETCH_ASSOC)) {
       //$productos[] = array('id'=>utf8_decode($value['Codigo_Inv'])." ".utf8_decode($value['Producto']) ,'text'=>utf8_encode($value['Producto']));
-      $productos[] = array('id'=>$value['Codigo_Inv']."/".$value['Producto']."/".$value['PVP']."/".$value['Div'] ,'text'=>$value['Producto']);
+      $productos[$i] = array('codigo'=>$value['Codigo_Inv']."/".utf8_encode($value['Producto'])."/".$value['PVP']."/".$value['Div'] ,'nombre'=> utf8_encode($value['Producto']));
+      $i++;
     }
     return $productos;
   }

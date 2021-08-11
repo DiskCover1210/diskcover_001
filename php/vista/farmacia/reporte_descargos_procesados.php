@@ -328,9 +328,9 @@ function reporte_pdf()
 
 }
 
-function reporte_pdf1()
+function formatoEgreso()
 {
-   var url = '../controlador/farmacia/reporte_descargos_procesadosC.php?imprimir_pdf=true&';
+   var url = '../controlador/farmacia/reporte_descargos_procesadosC.php?formatoEgreso=true&';
    var datos =  $("#filtro_bus").serialize();
     window.open(url+datos, '_blank');
      $.ajax({
@@ -395,7 +395,7 @@ function reporte_excel()
           </a>
         </div>
         <div class="col-xs-2 col-md-2 col-sm-2 col-lg-1">
-          <button type="button" class="btn btn-default" title="Generar pdf" onclick="reporte_pdf1()"><img src="../../img/png/pdf.png"></button>
+          <button type="button" class="btn btn-default" title="Generar pdf" onclick="formatoEgreso()"><img src="../../img/png/pdf.png"></button>
         </div>    
  </div>
 </div>

@@ -1140,70 +1140,67 @@ class MesaCon
 
 	}
 
-	function datos_fac_ticket($parametros)
+	function datos_fac_ticket($parametros,$TC)
 	{
 		date_default_timezone_set('America/Guayaquil');
 		$datos_pre  ="";
 		$datos_pre =  $this->modelo->datos_factura($parametros);
-		$cabe ='Transaccion (FA): No. '.$datos_pre['lineas'][0]['Factura'].' <br>
+		$cabe ='<font face="Courier New" size=2>Transaccion ('.$TC.'): No. '.$datos_pre['lineas'][0]['Factura'].' <br>
 				Fecha: '.date('Y-m-d').' - Hora: </b>'.date('H:m:s').' <br>
 				Cliente: <br>'.$datos_pre["cliente"]["Cliente"].'<br>
 				R.U.C/C.I.: '.$datos_pre['cliente']['CI_RUC'].'<br> 
 				Cajero: '.$_SESSION['INGRESO']['Nombre'].' <br>
 				Telefono: '.$datos_pre['cliente']['Telefono'].'<br>
 				Dirección: '.$datos_pre['cliente']['Direccion'].'<br>';
-        $lineas = "<hr><pre>";
+        $cabe .= "<hr>PRODUCTO/Cant x PVP/TOTAL";
+        $lineas = "<hr>";
         foreach ($datos_pre['lineas'] as $key => $value) {
-    		$lineas.='<tr>Cant: <td>'.$value['Cantidad'].'</td></br>';
             if($value['Total_IVA']==0)
             {
-                $lineas.= '<td>Prod:'.$value['Producto'].' </td><br>';
+                $lineas.= '<div class="row"><div class="col-sm-12">'.$value['Producto'].' </div></div>';
             }else
             {
-                $lineas.= '<td>Prod:'.$value['Producto'].'</td><br>';
+                $lineas.= '<div class="row"><div class="col-sm-12">'.$value['Producto'].'</div></div>';
             }
-            $lineas.='<td style="text-align: right;">PVP:'.number_format($value['Precio'],2).'</td><br><td style="text-align: right;">Total:'.number_format($value['Total'],2).'</td></tr>';
-        }              
-        $lineas.="</pre>";
+    		$lineas.='<div class="row"><div class="col-sm-6">'.$value['Cantidad'].' X '.number_format($value['Precio'],2).'</div><div class="col-sm-6" style="text-align: right;">'.number_format($value['Total'],2).'</div></div>';
+        }
         $totales = "<hr>
-         <table style='font-size: 10px;'>
+         <table>
            <tr>
            	 <td style='width: 200px;' colspan='3'></td>
-             <td style='text-align: right;'><b>SUBTOTAL:</b></td>
+             <td style='text-align: right;'>SUBTOTAL:</td>
              <td style='text-align: right;'>".number_format($datos_pre['tota'],2) ."</td>
            </tr>
            <tr>
            	 <td colspan='3'></td>
-             <td style='text-align: right;'><b>I.V.A 12%:</b> </td>
+             <td style='text-align: right;'>I.V.A 12%:</td>
              <td style='text-align: right;'>".number_format($datos_pre['iva'],2) ."</td>
            </tr>
            <tr>
              <td colspan='3'></td>
-             <td style='text-align: right;'><b>TOTAL FACTURA:</b></td>
+             <td style='text-align: right;'>TOTAL FACTURA:</td>
              <td style='text-align: right;'>".number_format($datos_pre['tota'],2)."</td>
            </tr>
            <tr>
              <td colspan='3'></td>
-             <td style='text-align: right;'><b>EFECTIVO:</b></td>
+             <td style='text-align: right;'>EFECTIVO:</td>
              <td style='text-align: right;'>".number_format($datos_pre['tota'],2)."</td>
            </tr>
            <tr>
              <td colspan='3'></td>
-             <td style='text-align: right;'><b>CAMBIO:</b></td>
+             <td style='text-align: right;'>CAMBIO:</td>
              <td style='text-align: right;'>0.00</td>
            </tr>
          </table>
      	";
 
-         $datos_extra = "<hr><pre>
+         $datos_extra = "<hr>
          <table style='width:100%'>
             <tr>
             <td style='text-align:center'>Fue un placer atenderle <br>Gracias por su compra<br>www.cofradiadelvino.com <br>
                 </td>
            </tr>
-         </table>
-		</pre>
-         ";
+         </table></font>";
         return $cabe.$lineas.$totales.$datos_extra;
 	}
 

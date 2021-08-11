@@ -22,7 +22,7 @@ if(isset($_GET['imprimir_pdf']))
      $controlador->imprimir_pdf($parametros);
 }
 
-if(isset($_GET['imprimir_pdf1']))
+if(isset($_GET['formatoEgreso']))
 {
 	$parametros= $_GET;
      $controlador->imprimir_pdf($parametros);

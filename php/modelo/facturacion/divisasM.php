@@ -15,26 +15,35 @@ class divisasM
     $this->dbs=Conectar::conexionSQL();
   }
 
-  public function getCatalogoLineas(){
+  public function getCatalogoLineas($FechaProceso){
     $sql="SELECT * 
           FROM Catalogo_Lineas 
           WHERE TL <> 0 
           AND Item = '".$_SESSION['INGRESO']['item']."' 
           AND Periodo = '".$_SESSION['INGRESO']['periodo']."' 
+          AND Fecha <= '".$FechaProceso."' 
+          AND Vencimiento >= '".$FechaProceso."' 
           ORDER BY Fact,Codigo";
     $stmt = sqlsrv_query( $this->dbs, $sql);
     return $stmt;
   }
 
-  public function getProductos(){
+  public function getProductos($tipoConsulta){
+    if ($tipoConsulta=='FA') {
+      $Tipo ='02.01';
+    } 
+    else {
+      $Tipo='02.02';
+    }
     $sql="SELECT Producto, Codigo_Inv, Codigo_Barra, PVP, Div
           FROM Catalogo_Productos 
           WHERE Item = '".$_SESSION['INGRESO']['item']."' 
           AND Periodo = '".$_SESSION['INGRESO']['periodo']."' 
           AND TC = 'P' 
-          AND SUBSTRING(Codigo_Inv,1,2) = '01'
+          AND SUBSTRING(Codigo_Inv,1,5) = '".$Tipo."'
           ORDER BY Producto,Codigo_Inv ";
     $stmt = sqlsrv_query( $this->dbs, $sql);
+
     return $stmt;
   }
 
