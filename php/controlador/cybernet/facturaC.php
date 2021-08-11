@@ -49,7 +49,7 @@ class facturaC
 		$datos = $this->facturacion->getClientes($query);
 		$clientes = [];
 		foreach ($datos as $key => $value) {
-			$clientes[] = array('id'=>$value['Cliente'],'text'=>utf8_encode($value['Cliente']),'data'=>array('email'=> $value['Email'],'direccion' => utf8_encode($value['Direccion']), 'telefono' => utf8_encode($value['Telefono']), 'ci_ruc' => utf8_encode($value['CI_RUC']), 'codigo' => utf8_encode($value['Codigo']), 'cliente' => utf8_encode($value['Cliente']), 'celular' => utf8_encode($value['Celular'])));
+			$clientes[] = array('id'=>$value['Cliente'],'text'=>$value['Cliente'],'data'=>array('email'=> $value['Email'],'direccion' => $value['Direccion']), 'telefono' =>$value['Telefono'], 'ci_ruc' => $value['CI_RUC'], 'codigo' => $value['Codigo'], 'cliente' => $value['Cliente'], 'celular' =>$value['Celular']);
 		}
 		echo json_encode($clientes);
 		exit();
@@ -60,7 +60,7 @@ class facturaC
 		$productos = [];
 		foreach ($datos as $key => $value) {
       //print_r($value);
-      $productos[] = array('id' => utf8_encode($value['Producto'])."/".utf8_encode($value['PVP'])."/".utf8_encode($value['IVA'])."/".utf8_encode($value['Codigo_Inv']),'text' => utf8_encode($value['Producto']), 'data' => array('pvp' =>utf8_encode($value['PVP'])));
+      $productos[] = array('id' =>$value['Producto']."/".$value['PVP']."/".($value['IVA'])."/".$value['Codigo_Inv'],'text' =>$value['Producto'], 'data' => array('pvp' =>$value['PVP']));
     }
 		echo json_encode($productos);
 		exit();

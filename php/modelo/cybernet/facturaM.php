@@ -12,7 +12,7 @@ class facturaM
     //conexion mysql
     $this->db=Conectar::conexion();
     //conexion sql server
-    $this->dbs=Conectar::conexionSQL();
+    $this->dbs= cone_ajax();
   }
 	
 	public function getClientes($query){
@@ -46,6 +46,8 @@ class facturaM
 		WHERE CP.Item = '".$_SESSION['INGRESO']['item']."'
 		AND CP.Periodo = '".$_SESSION['INGRESO']['periodo']."'";
     $sql.=" AND Producto LIKE '%".$query."%' ORDER BY Producto OFFSET 0 ROWS FETCH NEXT 10 ROWS ONLY";
+
+    // print_r($sql);die();
     $stmt = sqlsrv_query( $this->dbs, $sql);
     $result = array();
     while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_ASSOC) ) 

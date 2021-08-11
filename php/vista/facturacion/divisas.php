@@ -70,6 +70,7 @@
     autocomplete_cliente();
     numeroFactura();
     productos();
+    provincias();
     $("#nombreCliente").hide();
     //enviar datos del cliente
     $('#cliente').on('select2:select', function (e) {
@@ -448,6 +449,54 @@
     
   }
 
+
+  function provincias()
+  {
+   var option ="<option value=''>Seleccione provincia</option>"; 
+     $.ajax({
+      url: '../controlador/detalle_estudianteC.php?provincias=true',
+      type:'post',
+      dataType:'json',
+     // data:{usu:usu,pass:pass},
+      beforeSend: function () {
+                   $("#select_ciudad").html("<option value=''>Seleccione provincia</option>");
+             },
+      success: function(response){
+      response.forEach(function(data,index){
+        option+="<option value='"+data.Codigo+"'>"+data.Descripcion_Rubro+"</option>";
+      });
+       $('#select_provincias').html(option);
+      console.log(response);
+    }
+    });
+
+  }
+
+  function ciudad(idpro)
+  {
+    console.log(idpro);
+    var option ="<option value=''>Seleccione ciudad</option>"; 
+    //var idpro = $('#select_provincias').val();
+    if(idpro !='')
+    {
+     $.ajax({
+      url: '../controlador/detalle_estudianteC.php?ciudad=true',
+      type:'post',
+      dataType:'json',
+      data:{idpro:idpro},
+      success: function(response){
+      response.forEach(function(data,index){
+        option+="<option value='"+data.Codigo+"'>"+data.Descripcion_Rubro+"</option>";
+      });
+       $('#select_ciudad').html(option);
+      console.log(response);
+    }
+    });
+   } 
+
+  }
+
+
 </script>
 <div class="container" id="container1">
   <div class="row">
@@ -682,27 +731,27 @@
           </div>
           <div class="col-sm-4">
             <label>Telefono</label>
-            <input type="text" name="porcentaje" id="porcentaje" class="form-control" placeholder="Ingrese el RUC/CI del cliente">
+            <input type="text" name="porcentaje" id="porcentaje" class="form-control" placeholder="022222222">
           </div>
           <div class="col-sm-4">
             <label>Codigo Beneficiario</label>
-            <input type="text" name="porcentaje" id="porcentaje" class="form-control" placeholder="Ingrese el RUC/CI del cliente">
+            <input type="text" name="porcentaje" id="porcentaje" class="form-control" placeholder="Codigo">
           </div>
         </div>
         <label>Apellidos y Nombres</label>
         <input type="text" name="porcentaje" id="porcentaje" class="form-control" placeholder="Ingrese el nombre del cliente">
         <label>Dirección</label>
-        <input type="text" name="porcentaje" id="porcentaje" class="form-control" placeholder="Ingrese el RUC/CI del cliente">
+        <input type="text" name="porcentaje" id="porcentaje" class="form-control" placeholder="Direccion">
         <label>Email Principal</label>
-        <input type="text" name="porcentaje" id="porcentaje" class="form-control" placeholder="Ingrese la dirección del cliente">
+        <input type="text" name="porcentaje" id="porcentaje" class="form-control" placeholder="example@example.com">
         <div class="row">
           <div class="col-sm-4">
             <label>Número de vivienda</label>
-            <input type="text" name="porcentaje" id="porcentaje" class="form-control" placeholder="Ingrese el RUC/CI del cliente">
+            <input type="text" name="porcentaje" id="porcentaje" class="form-control" placeholder="Numero vivienda">
           </div>
           <div class="col-sm-2">
             <label>Grupo</label>
-            <input type="text" name="porcentaje" id="porcentaje" class="form-control" placeholder="Ingrese el RUC/CI del cliente">
+            <input type="text" name="porcentaje" id="porcentaje" class="form-control" placeholder="Grupo">
           </div>
           <div class="col-sm-6">
             <label>Nacionalidad</label>
@@ -714,13 +763,13 @@
         <div class="row">
           <div class="col-sm-6">
             <label>Provincia</label>
-            <select class="form-control input-sm">
+            <select class="form-control input-sm" id="select_provincias" onchange="ciudad(this.value)">
               <option>01 Azuay</option>
             </select>
           </div>
           <div class="col-sm-6">
             <label>Ciudad</label>
-            <select class="form-control input-sm">
+            <select class="form-control input-sm" id="select_ciudad">
               <option>Cuenca</option>
             </select>
           </div>
