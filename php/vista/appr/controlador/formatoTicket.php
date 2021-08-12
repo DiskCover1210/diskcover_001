@@ -20,8 +20,10 @@ $controlador = new MesaCon();
                 $serie = $_GET['serie'];
                 $fac = $_GET['fac'];
                 $TC = $_GET['TC'];
+                $efectivo = $_GET['efectivo'];
+                $saldo = $_GET['saldo'];
                 $parametros = array('tipo'=>'FA','ci'=>$ci,'serie'=>$serie,'factura'=>$fac);
-                echo $controlador->datos_fac_ticket($parametros,$TC);
+                echo $controlador->datos_fac_ticket($parametros,$TC,$efectivo,$saldo);
             }
         	?>
         </div>

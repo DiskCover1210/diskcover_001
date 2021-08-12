@@ -1140,7 +1140,7 @@ class MesaCon
 
 	}
 
-	function datos_fac_ticket($parametros,$TC)
+	function datos_fac_ticket($parametros,$TC,$efectivo,$saldo)
 	{
 		date_default_timezone_set('America/Guayaquil');
 		$datos_pre  ="";
@@ -1167,7 +1167,7 @@ class MesaCon
         $totales = "<hr>
          <table>
            <tr>
-           	 <td style='width: 200px;' colspan='3'></td>
+           	 <td style='width: 250px;' colspan='3'></td>
              <td style='text-align: right;'>SUBTOTAL:</td>
              <td style='text-align: right;'>".number_format($datos_pre['tota'],2) ."</td>
            </tr>
@@ -1184,12 +1184,12 @@ class MesaCon
            <tr>
              <td colspan='3'></td>
              <td style='text-align: right;'>EFECTIVO:</td>
-             <td style='text-align: right;'>".number_format($datos_pre['tota'],2)."</td>
+             <td style='text-align: right;'>".number_format($efectivo,2)."</td>
            </tr>
            <tr>
              <td colspan='3'></td>
              <td style='text-align: right;'>CAMBIO:</td>
-             <td style='text-align: right;'>0.00</td>
+             <td style='text-align: right;'>".number_format($saldo,2)."</td>
            </tr>
          </table>
      	";

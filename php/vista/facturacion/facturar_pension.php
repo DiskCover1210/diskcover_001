@@ -956,9 +956,9 @@
                 <img src="../../img/png/save.png" width="25" height="30" onclick="guardarPension();">
               </a>
             </div>
-            <div class="col-xs-2 col-md-2 col-sm-2 col-lg-1">
-              <a  href="./panel.php" title="Salir de modulo" class="btn btn-default" tabindex="23">
-                <img src="../../img/png/salire.png" width="25" height="30">
+            <div class="col-sm-2">
+              <a title="Guardar" class="btn btn-default" tabindex="22" title="Salir del panel" href="facturacion.php?mod=facturacion">
+                <img src="../../img/png/salire.png" width="25" height="30" >
               </a>
             </div>
           </div>

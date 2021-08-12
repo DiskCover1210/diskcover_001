@@ -42,13 +42,31 @@
     font-size: 14px;
     font-weight: bold;
   }
-  #customers th {
-    text-align: left;
-    background-color: #ddd;
-    color: black;
+ #customers table {
+    border-collapse: collapse;
   }
-  th, td {
-    padding: 10px;
+  #customers table, th, td {
+    /*border: solid 1px black;*/
+    padding: 2px;
+  }
+  #customers tbody tr:nth-child(even) {
+    background:#fffff;
+  }
+  #customers tbody tr:nth-child(odd) {
+    background: #e2fbff;;
+  }
+  #customers tbody tr:nth-child(even):hover {
+    background: #DDB;
+  }
+  #customers tbody tr:nth-child(odd):hover {
+    background: #DDA;
+  }
+  .sombra {
+    width: 99%;
+    box-shadow: 10px 10px 6px rgba(0, 0, 0, 0.6);
+  }
+  .sinborde{
+    border: 0;
   }
 
   @media (max-width:600px) {
@@ -68,8 +86,6 @@
   $(document).ready(function () {
     catalogoLineas();
     autocomplete_cliente();
-    numeroFactura();
-    productos();
     provincias();
     $("#nombreCliente").hide();
     //enviar datos del cliente
@@ -145,6 +161,7 @@
         if (data) {
           datos = JSON.parse(data);
           llenarComboList(datos,'producto')
+          setPVP();
         }else{
           console.log("No tiene datos");
         }  
@@ -165,6 +182,8 @@
         if (data) {
           datos = JSON.parse(data);
           llenarComboList(datos,'DCLinea')
+          numeroFactura();
+          productos();
         }else{
           console.log("No tiene datos");
         }  
@@ -198,14 +217,14 @@
         }else{
           TextCant = (TextVTotal * TextVUnit);
         }
-        $("#cantidad").val(parseFloat(TextCant).toFixed(4));
+        $("#cantidad").val(parseFloat(TextCant).toFixed(2));
       }else if(TextCant > 0 && TextVTotal == 0){
         if (Div == "1") {
           TextVTotal = (TextCant / TextVUnit);
         }else{
           TextVTotal = (TextCant * TextVUnit);
         }
-        $("#total").val(parseFloat(TextVTotal).toFixed(4));
+        $("#total").val(parseFloat(TextVTotal).toFixed(2));
       }
     //}
   }
@@ -222,12 +241,12 @@
     console.log(rowLength);
     console.log(producto);
     var tr = `<tr>
-      <td><input type="text" id="codigo`+rowLength+`" value="`+producto[0]+`" disabled class="form-control input-sm"></td>
-      <td><input type="text" id="cantidad`+rowLength+`" value="`+cantidad+`" disabled class="form-control input-sm"></td>
-      <td><input type="text" id=boni"`+rowLength+`" value="`+cantidad+`" disabled class="form-control input-sm"></td>
-      <td><input type="text" id="producto`+rowLength+`" value="`+producto[1]+`" disabled class="form-control input-sm"></td>
-      <td><input type="text" id="pvp`+rowLength+`" value="`+pvp+`" disabled class="form-control input-sm"></td>
-      <td><input type="text" id="total`+rowLength+`" value="`+total+`" disabled class="form-control input-sm"></td>
+      <td><input type="text" id="codigo`+rowLength+`" value="`+producto[0]+`" disabled class="sinborde"></td>
+      <td><input type="text" id="cantidad`+rowLength+`" value="`+cantidad+`" disabled class="sinborde"></td>
+      <td><input type="text" id=boni"`+rowLength+`" value="`+cantidad+`" disabled class="sinborde"></td>
+      <td><input type="text" id="producto`+rowLength+`" value="`+producto[1]+`" disabled class="sinborde"></td>
+      <td><input type="text" id="pvp`+rowLength+`" value="`+pvp+`" disabled class="sinborde"></td>
+      <td><input type="text" id="total`+rowLength+`" value="`+total+`" disabled class="sinborde"></td>
     </tr>`;
     $("#cuerpo").append(tr);
     calcularTotal();
@@ -276,9 +295,9 @@
       total += parseFloat($("#total"+i).val());
     }
     console.log(total);
-    $("#total0").val(parseFloat(total).toFixed(4));
-    $("#totalFac").val(parseFloat(total).toFixed(4));
-    $("#efectivo").val(parseFloat(total).toFixed(4));
+    $("#total0").val(parseFloat(total).toFixed(2));
+    $("#totalFac").val(parseFloat(total).toFixed(2));
+    $("#efectivo").val(parseFloat(total).toFixed(2));
   }
 
   function guardarFactura(){
@@ -392,9 +411,9 @@
                       text: ''
                     }).then(() => {
                       serie = DCLinea.split(" ");
-                      //url = '../vista/appr/controlador/imprimir_ticket.php?mesa=0&tipo=FA&CI='+TextCI+'&fac='+TextFacturaNo+'&serie='+serie[1];
-                      //window.open(url, '_blank');
-                      var url = '../vista/appr/controlador/formatoTicket.php?ticket=true&fac='+TextFacturaNo+'&serie='+serie[1]+'&CI='+TextCI+'&TC='+serie[0];
+                      cambio = $("#cambio").val();
+                      efectivo = $("#efectivo").val();
+                      var url = '../vista/appr/controlador/formatoTicket.php?ticket=true&fac='+TextFacturaNo+'&serie='+serie[1]+'&CI='+TextCI+'&TC='+serie[0]+'&efectivo='+efectivo+'&saldo='+saldo;
                       window.open(url,'_blank');
                       location.reload();
                       //imprimir_ticket_fac(0,TextCI,TextFacturaNo,serie[1]);
@@ -416,9 +435,9 @@
                       text: ''
                     }).then(() => {
                       serie = DCLinea.split(" ");
-                      //url = '../vista/appr/controlador/imprimir_ticket.php?mesa=0&tipo=FA&CI='+TextCI+'&fac='+TextFacturaNo+'&serie='+serie[1];
-                      //window.open(url, '_blank');
-                      var url = '../vista/appr/controlador/formatoTicket.php?ticket=true&fac='+TextFacturaNo+'&serie='+serie[1]+'&CI='+TextCI+'&TC='+serie[0];
+                      cambio = $("#cambio").val();
+                      efectivo = $("#efectivo").val();
+                      var url = '../vista/appr/controlador/formatoTicket.php?ticket=true&fac='+TextFacturaNo+'&serie='+serie[1]+'&CI='+TextCI+'&TC='+serie[0]+'&efectivo='+efectivo+'&saldo='+saldo;
                       window.open(url,'_blank');
                       location.reload();
                       //imprimir_ticket_fac(0,TextCI,TextFacturaNo,serie[1]);
@@ -449,6 +468,14 @@
     
   }
 
+  function calcularSaldo(){
+    efectivo = $("#efectivo").val();
+    console.log(efectivo);
+    total = $("#totalFac").val();
+    console.log(total);
+    saldo = efectivo - total;
+    $("#cambio").val(parseFloat(saldo).toFixed(2));
+  }
 
   function provincias()
   {
@@ -535,34 +562,28 @@
             <label id="numeroSerie" class="red">() No.</label>
           </div>
           <div class="col-sm-2">
-            <input type="text" name="factura" id="factura" value="1" class="form-control input-sm">
+            <input type="text" name="factura" id="factura" value="1" class="form-control input-sm text-right">
           </div>
         </div>
         <div class="row">
           <div class="col-sm-6 col-sm-offset-1">
             <label>PRODUCTO</label>
             <select class="form-control input-sm" id="producto" onchange="setPVP();">
-              <?php
-                $productos = $divisas->getProductos('FA');
-                foreach ($productos as $producto) {
-                  echo "<option value='".$producto['id']."'>".$producto['text']."</option>";
-                }
-              ?>
             </select>
           </div>
           <div class="col-sm-2">
             <label>Precio Unitario</label>
-            <input type="text" name="preciounitario" id="preciounitario" value="101.7900" class="form-control input-sm">
+            <input type="text" name="preciounitario" id="preciounitario" value="101.7900" class="form-control input-sm text-right">
           </div>
         </div>
         <div class="row">
           <div class="col-sm-4 col-sm-offset-1">
             <label>TOTAL EN S/.</label>
-            <input type="text" name="total" id="total" value="0.00" class="form-control input-sm">
+            <input type="text" name="total" id="total" value="0.00" class="form-control input-sm text-right">
           </div>
           <div class="col-sm-4">
             <label>Cantidad Cambio</label>
-            <input type="text" name="cantidad" id="cantidad" value="0.00" class="form-control input-sm">
+            <input type="text" name="cantidad" id="cantidad" value="0.00" class="form-control input-sm text-right">
           </div>
           <div class=" col-sm-2">
               <a title="Calcular" class="btn btn-default" tabindex="22">
@@ -574,74 +595,29 @@
           </div>
         </div>
         <div class="row">
-          <div class="col-sm-10 col-sm-offset-1" style="
-              height: 150px;
-              overflow: auto;
-              display: block;
-          ">
-            <table class="table table-responsive table-borfed thead-dark" id="customers">
-              <thead>
-                <tr>
-                  <th width="200px">Codigo</th>
-                  <th width="200px">Cantidad</th>
-                  <th width="200px">Cant Bonf</th>
-                  <th width="500px">Producto</th>
-                  <th width="200px">Precio</th>
-                  <th width="200px">Total</th>
-                  <!--
-                  <th width="200px">Total Desc2</th>
-                  <th width="200px">Total IVA</th>
-                  <th width="200px">SERVICIO</th>
-                  <th width="200px">TOTAL</th>
-                  <th width="200px">VALOR TOTAL</th>
-                  <th width="200px">COSTO</th>
-                  <th width="200px">Fecha IN</th>
-                  <th width="200px">Fecha OUT</th>
-                  <th width="200px">Cant Hab</th>
-                  <th width="200px">Tipo Hab</th>
-                  <th width="200px">Orden No</th>
-                  <th width="200px">Mes</th>
-                  <th width="200px">Cod Ejec</th>
-                  <th width="200px">Porc C</th>
-                  <th width="200px">REP</th>
-                  <th width="200px">Fecha</th>
-                  <th width="200px">CODIGO L</th>
-                  <th width="200px">HABIT</th>
-                  <th width="200px">TICKET</th>
-                  <th width="200px">Cta</th>
-                  <th width="200px">Cta SubMod</th>
-                  <th width="200px">Item</th>
-                  <th width="200px">Codigo U</th>
-                  <th width="200px">CodBod</th>
-                  <th width="200px">CodBar</th>
-                  <th width="200px">TONELAJE</th>
-                  <th width="200px">CORTE</th>
-                  <th width="200px">A_No</th>
-                  <th width="200px">Codigo_Cliente</th>
-                  <th width="200px">Numero</th>
-                  <th width="200px">Serie</th>
-                  <th width="200px">Autorizacion</th>
-                  <th width="200px">Codigo B</th>
-                  <th width="200px">PRECIO2</th>
-                  <th width="200px">COD_BAR</th>
-                  <th width="200px">Fecha_V</th>
-                  <th width="200px">Lote No</th>
-                  <th width="200px">Fecha Fab</th>
-                  <th width="200px">Fecha Exp</th>
-                  <th width="200px">Reg Sanitario</th>
-                  <th width="200px">Modelo</th>
-                  <th width="200px">Procedencia</th>
-                  <th width="200px">Serie No</th>
-                  <th width="200px">Cta Inv</th>
-                  <th width="200px">Cta Costo</th>
-                  <th width="200px">Estado</th>
-                  -->
-                </tr>
-              </thead>
-              <tbody id="cuerpo">
-                
-              </tbody>
-            </table>          
+          <div class="col-sm-12">
+            <div class="tab-content" style="background-color:#E7F5FF">
+              <div id="home" class="tab-pane fade in active">
+                <div class="table-responsive" id="tabla_" style="overflow-y: scroll; height:250px; width: auto;">
+                  <div class="sombra" style>
+                    <table border class="table table-striped table-hover" id="customers" tabindex="14" >
+                      <thead>
+                        <tr>
+                          <th style="border: #b2b2b2 1px solid;">Código</th>
+                          <th style="border: #b2b2b2 1px solid;">Cantidad</th>
+                          <th style="border: #b2b2b2 1px solid;">Cant Bonf</th>
+                          <th style="border: #b2b2b2 1px solid;">Producto</th>
+                          <th style="border: #b2b2b2 1px solid;">Precio</th>
+                          <th style="border: #b2b2b2 1px solid;">Total</th>
+                        </tr>
+                      </thead>
+                      <tbody id="cuerpo">
+                      </tbody>
+                    </table>          
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
         <br>
@@ -650,13 +626,13 @@
             <label>Total Tarifa 0%</label>
           </div>
           <div class="col-sm-2">
-            <input type="text" name="total0" id="total0" class="form-control input-sm red" value="0.00">
+            <input type="text" name="total0" id="total0" class="form-control input-sm red text-right" value="0.00" readonly>
           </div>
           <div class="col-sm-2">
             <label>Total Factura</label>
           </div>
           <div class="col-sm-2">
-            <input type="text" name="totalFac" id="totalFac" class="form-control input-sm red" value="0.00">
+            <input type="text" name="totalFac" id="totalFac" class="form-control input-sm red text-right" value="0.00" readonly>
           </div>
           <div class="col-sm-2">
             <a title="Guardar" class="btn btn-default" tabindex="22">
@@ -669,16 +645,16 @@
             <label>Total Tarifa 12%</label>
           </div>
           <div class="col-sm-2">
-            <input type="text" name="total12" id="total12" class="form-control input-sm red" value="0.00">
+            <input type="text" name="total12" id="total12" class="form-control input-sm red text-right" value="0.00" readonly>
           </div>
           <div class="col-sm-2">
             <label>Total Fact. (ME)</label>
           </div>
           <div class="col-sm-2">
-            <input type="text" name="totalFacMe" id="totalFacMe" class="form-control input-sm red" value="0.00">
+            <input type="text" name="totalFacMe" id="totalFacMe" class="form-control input-sm red text-right" value="0.00" readonly>
           </div>
           <div class="col-sm-2">
-            <a title="Guardar" class="btn btn-default" tabindex="22">
+            <a title="Guardar" class="btn btn-default" tabindex="22" title="Salir del panel" href="facturacion.php?mod=facturacion">
               <img src="../../img/png/salire.png" width="25" height="30" >
             </a>
           </div>
@@ -688,13 +664,13 @@
             <label>I.V.A. 12%</label>
           </div>
           <div class="col-sm-2">
-            <input type="text" name="iva12" id="iva12" class="form-control input-sm red" value="0.00">
+            <input type="text" name="iva12" id="iva12" class="form-control input-sm red text-right" value="0.00" readonly>
           </div>
           <div class="col-sm-2">
             <label>EFECTIVO</label>
           </div>
           <div class="col-sm-2">
-            <input type="text" name="efectivo" id="efectivo" class="form-control input-sm red" value="0.00">
+            <input type="text" name="efectivo" id="efectivo" class="form-control input-sm red text-right" value="0.00" onkeyup="calcularSaldo();">
           </div>
         </div>
         <div class="row">
@@ -702,7 +678,7 @@
             <label>Cambio</label>
           </div>
           <div class="col-sm-2">
-            <input type="text" name="cambio" id="cambio" class="form-control input-sm red" value="0.00">
+            <input type="text" name="cambio" id="cambio" class="form-control input-sm red text-right" value="0.00">
           </div>
         </div>
         </div>
