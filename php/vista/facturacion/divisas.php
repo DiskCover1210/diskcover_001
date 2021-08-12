@@ -120,6 +120,8 @@
 
   function addCliente(){
     $("#myModal").modal("show");
+    var src ="../vista/modales.php?FCliente=true";
+     $('#FCliente').attr('src',src).show();
   }
 
   function setPVP(){
@@ -700,59 +702,10 @@
         <h4 class="modal-title">Cliente Nuevo</h4>
       </div>
       <div class="modal-body">
-        <div class="row">
-          <div class="col-sm-4">
-            <label>RUC/CI</label>
-            <input type="text" name="porcentaje" id="porcentaje" class="form-control" placeholder="Ingrese el RUC/CI del cliente">
-          </div>
-          <div class="col-sm-4">
-            <label>Telefono</label>
-            <input type="text" name="porcentaje" id="porcentaje" class="form-control" placeholder="022222222">
-          </div>
-          <div class="col-sm-4">
-            <label>Codigo Beneficiario</label>
-            <input type="text" name="porcentaje" id="porcentaje" class="form-control" placeholder="Codigo">
-          </div>
-        </div>
-        <label>Apellidos y Nombres</label>
-        <input type="text" name="porcentaje" id="porcentaje" class="form-control" placeholder="Ingrese el nombre del cliente">
-        <label>Dirección</label>
-        <input type="text" name="porcentaje" id="porcentaje" class="form-control" placeholder="Direccion">
-        <label>Email Principal</label>
-        <input type="text" name="porcentaje" id="porcentaje" class="form-control" placeholder="example@example.com">
-        <div class="row">
-          <div class="col-sm-4">
-            <label>Número de vivienda</label>
-            <input type="text" name="porcentaje" id="porcentaje" class="form-control" placeholder="Numero vivienda">
-          </div>
-          <div class="col-sm-2">
-            <label>Grupo</label>
-            <input type="text" name="porcentaje" id="porcentaje" class="form-control" placeholder="Grupo">
-          </div>
-          <div class="col-sm-6">
-            <label>Nacionalidad</label>
-            <select class="form-control input-sm">
-              <option>593 Ecuador</option>
-            </select>
-          </div>
-        </div>
-        <div class="row">
-          <div class="col-sm-6">
-            <label>Provincia</label>
-            <select class="form-control input-sm" id="select_provincias" onchange="ciudad(this.value)">
-              <option>01 Azuay</option>
-            </select>
-          </div>
-          <div class="col-sm-6">
-            <label>Ciudad</label>
-            <select class="form-control input-sm" id="select_ciudad">
-              <option>Cuenca</option>
-            </select>
-          </div>
-        </div>
+          <iframe  id="FCliente" width="100%" height="400px" marginheight="0" frameborder="0"></iframe>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-default" onclick="">Guardar</button>
+        <!-- <button type="button" class="btn btn-default" onclick="">Guardar</button> -->
         <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
       </div>
     </div>
