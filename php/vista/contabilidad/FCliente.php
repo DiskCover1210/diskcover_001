@@ -181,102 +181,93 @@
 </script>			
 
 			<div class="box box-info">
-            <div class="box-header with-border">
-              <h3 class="box-title">Datos Cliente</h3>
-            </div>
             <!-- /.box-header -->
             <!-- form start -->
             <form class="form-horizontal" id="form_cliente">
               <div class="box-body">
-				<div class="form-group">
-					<label for="ruc" class="col-sm-1 control-label" id="resultado">RUC/CI*</label>
-					<div class="col-sm-3">
+				<div class="row">
+					<div class="col-xs-4">
+					  <label for="ruc" class="control-label" id="resultado">RUC/CI*</label>
 						<input type="hidden" class="form-control" id="txt_id" name="txt_id" placeholder="ruc" autocomplete="off">
-						<input type="text" class="form-control" id="ruc" name="ruc" placeholder="ruc" autocomplete="off" onblur="codigo()">
+						<input type="text" class="form-control input-sm" id="ruc" name="ruc" placeholder="RUC/CI" autocomplete="off" onblur="codigo()">
 						<div id='e_ruc' class="form-group has-error" style='display:none'>
-							<span class="help-block">debe agregar RUC/CI</span>
+							<span class="help-block">Debe ingresar RUC/CI</span>
 						</div>
 					</div>
-					<label for="telefono" class="col-sm-1 control-label">Telefono*</label>
-					<div class="col-sm-3">
-						<input type="text" class="form-control" id="telefono" name="telefono" placeholder="Telefono" autocomplete="off">
+					<div class="col-xs-4">
+					 <label for="telefono" class="col-sm-1 control-label">Telefono*</label>
+						<input type="text" class="form-control input-sm" id="telefono" name="telefono" placeholder="Telefono" autocomplete="off">
 						<div id='e_telefono' class="form-group has-error" style='display:none'>
-							<span class="help-block">debe agregar Telefono</span>
+							<span class="help-block">Debe ingresar Telefono</span>
 						</div>
 					</div>
-					<label for="codigoc" class="col-sm-1 control-label">Codigo*</label>
-					<div class="col-sm-3">
+					<div class="col-xs-4">
+					 <label for="codigoc" class="control-label">Codigo*</label>
 						<input type="hidden" id='buscar' name='buscar'  value='' />
 						<input type="hidden" id='TC' name='TC'  value='' />
-						<input type="text" class="form-control" id="codigoc" name="codigoc" placeholder="Codigo" readonly="">
+						<input type="text" class="form-control input-sm" id="codigoc" name="codigoc" placeholder="Codigo" readonly="">
 						<div id='e_codigoc' class="form-group has-error" style='display:none'>
 							<span class="help-block">debe agregar Codigo</span>
 						</div>
 					</div>
-                </div>
-                <div class="form-group">
-					<label for="nombrec" class="col-sm-1 control-label">Razon social*</label>
-
-					<div class="col-sm-11">
-						<input type="text" class="form-control" id="nombrec" name="nombrec" placeholder="Razon social" onkeyup="buscar_cliente_nom()">
-						<div id='e_nombrec' class="form-group has-error" style='display:none'>
-							<span class="help-block">debe agregar Razon social</span>
-						</div>
-					</div>
-                </div>
-				<div class="form-group">
-					<label for="email" class="col-sm-1 control-label">Email</label>
-
-					<div class="col-sm-11">
-						<input type="email" class="form-control" id="email" name="email" placeholder="Email" tabindex="0">
-					</div>
-                </div>
-				<div class="form-group">
-					<label for="direccion" class="col-sm-1 control-label">Direccion*</label>
-
-					<div class="col-sm-11">
-						<input type="text" class="form-control" id="direccion" name="direccion" placeholder="Direccion" tabindex="0">
+        </div>
+        <div class="row">
+          <div class="col-xs-12">
+            <label for="nombrec" class="control-label">Apellidos y Nombres*</label>
+            <input type="text" class="form-control input-sm" id="nombrec" name="nombrec" placeholder="Razon social" onkeyup="buscar_cliente_nom()">
+            <div id='e_nombrec' class="form-group has-error" style='display:none'>
+              <span class="help-block">Debe ingresar nombre</span>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+					<div class="col-xs-12">
+					  <label for="direccion" class="control-label">Direccion*</label>
+						<input type="text" class="form-control input-sm" id="direccion" name="direccion" placeholder="Direccion" tabindex="0">
 						<div id='e_direccion' class="form-group has-error" style='display:none'>
 							<span class="help-block">debe agregar Direccion</span>
 						</div>
 					</div>
-                </div>
-				<div class="form-group">
-				    <label for="nv" class="col-sm-1 control-label">Numero vivienda</label>
-
-				    <div class="col-sm-3">
-				    	<input type="text" class="form-control" id="nv" name="nv" placeholder="Numero vivienda"  tabindex="0">
-				    </div>
-				    <label for="grupo" class="col-sm-1 control-label">Grupo</label>
-				    <div class="col-sm-3">
-						<input type="text" class="form-control" id="grupo" name="grupo" placeholder="Grupo" 
+        </div>
+				<div class="row">
+					<div class="col-xs-12">
+					  <label for="email" class="control-label">Email Principal</label>
+						<input type="email" class="form-control input-sm" id="email" name="email" placeholder="Email" tabindex="0">
+					</div>
+        </div>
+				<div class="row">
+				  <div class="col-xs-5">
+				    <label for="nv" class="control-label">Numero vivienda</label>
+				    <input type="text" class="form-control input-sm" id="nv" name="nv" placeholder="Numero vivienda"  tabindex="0">
+				  </div>
+				  <div class="col-xs-2">
+				    <label for="grupo" class="control-label">Grupo</label>
+						<input type="text" class="form-control input-sm" id="grupo" name="grupo" placeholder="Grupo" 
 						tabindex="0">
 					</div>
-					<label for="naciona" class="col-sm-1 control-label">Nacionalidad</label>
-					<div class="col-sm-3">
+					<div class="col-xs-5">
+					  <label for="naciona" class="col-sm-1 control-label">Nacionalidad</label>
 						<input type="text" class="form-control" id="naciona" name="naciona" placeholder="Nacionalidad" 
 						tabindex="0">
 					</div>
-                </div>
-				<div class="form-group">
-				    <label for="prov" class="col-sm-1 control-label">Provincia</label>
-
-				    <div class="col-sm-5">
-				    	<!-- <input type="text" class="form-control" id="prov" name="prov" placeholder="Provincia"  tabindex="0"> -->
-				    	<select class="form-control" id="prov" name="prov">
-				    		<option>Seleccione una provincia</option>
-				    	</select>
-				    </div>
-				    <label for="ciu" class="col-sm-1 control-label">Ciudad</label>
-				    <div class="col-sm-5">
-						<input type="text" class="form-control" id="ciu" name="ciu" placeholder="Ciudad" 
+        </div>
+				<div class="row">
+				  <div class="col-xs-6">
+				    <label for="prov" class="control-label">Provincia</label>
+				    <select class="form-control input-sm" id="prov" name="prov">
+				    	<option>Seleccione una provincia</option>
+				    </select>
+				  </div>
+				  <div class="col-xs-6">
+				    <label for="ciu" class="control-label">Ciudad</label>
+						<input type="text" class="form-control input-sm" id="ciu" name="ciu" placeholder="Ciudad" 
 						tabindex="0">
 					</div>
-                </div>
+        </div>
               </div>
               <!-- /.box-body -->
               <div class="box-footer">
-              	<button type="button" onclick="guardar_cliente()" class="btn btn-primary">Procesar</button>
+              	<button type="button" onclick="guardar_cliente()" class="btn btn-primary">Guardar</button>
 				      </div>
               <!-- /.box-footer -->
             </form>

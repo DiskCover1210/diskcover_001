@@ -5,70 +5,6 @@
   $codigo = ReadSetDataNum("FA_SERIE_".$serie , True, False);
 ?>
 <style type="text/css">
-  #container1{
-    margin-top: 20px;
-  }
-  #label1{
-    font-size: 11px;
-  }
-  #saldo{
-    background-color: #C1C000;
-    border: 0;
-  }
-  .saldo_input{
-    background-color: #FFFFBE;
-    border: 0;
-  }
-  .red{
-    color: #E80A0A;
-    font-size: 14px;
-    font-weight: bold;
-  }
-  .red1{
-    background-color: #810001;
-  }
-  .black{
-    color: #010101;
-    font-size: 14px;
-    font-weight: bold;
-  }
-  .green{
-    color: #20AC1D;
-    font-size: 14px;
-    font-weight: bold;
-  }
-  .blue{
-    color: #04012C;
-    font-size: 14px;
-    font-weight: bold;
-  }
- #customers table {
-    border-collapse: collapse;
-  }
-  #customers table, th, td {
-    /*border: solid 1px black;*/
-    padding: 2px;
-  }
-  #customers tbody tr:nth-child(even) {
-    background:#fffff;
-  }
-  #customers tbody tr:nth-child(odd) {
-    background: #e2fbff;;
-  }
-  #customers tbody tr:nth-child(even):hover {
-    background: #DDB;
-  }
-  #customers tbody tr:nth-child(odd):hover {
-    background: #DDA;
-  }
-  .sombra {
-    width: 99%;
-    box-shadow: 10px 10px 6px rgba(0, 0, 0, 0.6);
-  }
-  .sinborde{
-    border: 0;
-  }
-
   @media (max-width:600px) {
     .input-width{
       width: 80px;
@@ -191,14 +127,6 @@
         }  
       }
     });
-  }
-
-  function llenarComboList(datos,nombre){
-    var nombreCombo = $("#"+nombre);
-    nombreCombo.find('option').remove();
-    for (var indice in datos) {
-      nombreCombo.append('<option value="' + datos[indice].codigo + '">' + datos[indice].nombre + '</option>');
-    }
   }
 
   function calcular(){
@@ -705,7 +633,6 @@
           <iframe  id="FCliente" width="100%" height="400px" marginheight="0" frameborder="0"></iframe>
       </div>
       <div class="modal-footer">
-        <!-- <button type="button" class="btn btn-default" onclick="">Guardar</button> -->
         <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
       </div>
     </div>

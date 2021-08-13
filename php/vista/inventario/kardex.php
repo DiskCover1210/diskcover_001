@@ -42,14 +42,6 @@
     $("#existe").val('0.00');
   }
 
-  function llenarComboList(datos,nombre){
-    var nombreCombo = $("#"+nombre);
-    nombreCombo.find('option').remove();
-    for (var indice in datos) {
-      nombreCombo.append('<option value="' + datos[indice].codigo + '">' + datos[indice].nombre + '</option>');
-    }
-  }
-
   function consulta_kardex_producto(){
     desde = $("#desde").val();
     hasta = $("#hasta").val();

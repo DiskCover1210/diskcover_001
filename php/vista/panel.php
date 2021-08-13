@@ -37,6 +37,11 @@ if(isset($_GET['mos2']))
 <!-- AdminLTE for demo purposes -->
 <script src="../../lib/dist/js/demo.js"></script>
 
+<!-- JS principal para todo el sistema -->
+<script src="../../lib/dist/js/principal.js"></script>
+<!-- CSS principal para todo el sistema -->
+<link rel="stylesheet" href="../../lib/dist/css/principal.css">
+
 <script src="../../lib/dist/js/jquery-ui.js"></script>
 <link rel="stylesheet" href="../../lib/dist/css/jquery-ui.css">
 <script src="../../lib/dist/js/select2.min.js"></script>
