@@ -28,6 +28,17 @@ if(isset($_GET['productos']))
   echo json_encode($datos);
 }
 
+if(isset($_GET['cliente']))
+{
+  $query = 'consumidor final';
+  if(isset($_GET['q']) && $_GET['q'] != ''  )
+  {
+    $query = $_GET['q']; 
+  }
+  echo json_encode($controlador->getClientes($query));
+}
+
+
 if(isset($_GET['catalogoLineas']))
 {
   $fecha = $_POST['fecha'];
@@ -50,8 +61,7 @@ class divisasC
   public function getCatalogoLineas($fecha){
     $datos = $this->modelo->getCatalogoLineas($fecha);
     $catalogo = [];
-    while ($value = sqlsrv_fetch_array( $datos, SQLSRV_FETCH_ASSOC)) {
-      //$catalogo[] = array('id'=>$value['Fact']." ".$value['Serie']." ".$value['Autorizacion']." ".$value['CxC'] ,'text'=>utf8_encode($value['Concepto']));
+    foreach ($datos as $value) {
       $catalogo[] = array('codigo'=>$value['Fact']." ".$value['Serie']." ".$value['Autorizacion']." ".$value['CxC']." " ,'nombre'=>$value['Concepto']);
     }
     return $catalogo;
@@ -60,13 +70,19 @@ class divisasC
   public function getProductos($TC){
     $datos = $this->modelo->getProductos($TC);
     $productos = [];
-    $i= 0;
-    while ($value = sqlsrv_fetch_array( $datos, SQLSRV_FETCH_ASSOC)) {
-      //$productos[] = array('id'=>utf8_decode($value['Codigo_Inv'])." ".utf8_decode($value['Producto']) ,'text'=>utf8_encode($value['Producto']));
-      $productos[$i] = array('codigo'=>$value['Codigo_Inv']."/".utf8_encode($value['Producto'])."/".$value['PVP']."/".$value['Div'] ,'nombre'=> utf8_encode($value['Producto']));
-      $i++;
+    foreach ($datos as $value) {
+      $productos[] = array('codigo'=>$value['Codigo_Inv']."/".utf8_encode($value['Producto'])."/".$value['PVP']."/".$value['Div'] ,'nombre'=> utf8_encode($value['Producto']));
     }
     return $productos;
+  }
+
+  public function getClientes($query){
+    $datos = $this->modelo->getClientes($query);
+    $clientes = [];
+    foreach ($datos as $key => $value) {
+      $clientes[] = array('id'=>$value['Cliente'],'text'=>utf8_encode($value['Cliente']),'data'=>array('email'=> $value['Email'],'direccion' => utf8_encode($value['Direccion']), 'telefono' => utf8_encode($value['Telefono']), 'ci_ruc' => utf8_encode($value['CI_RUC']), 'codigo' => utf8_encode($value['Codigo']), 'cliente' => utf8_encode($value['Cliente']), 'grupo' => utf8_encode($value['Grupo']), 'tdCliente' => utf8_encode($value['TD'])));
+    }
+    return $clientes;
   }
 
   public function guardarLineas(){
@@ -124,7 +140,6 @@ class divisasC
     $TxtEmail = $_POST['TxtEmail'];
     $TxtDirS = $_POST['TxtDirS'];
     $codigoCliente = $_POST['codigoCliente'];
-    $update = $_POST['update'];
     $CtaPagoMax = "";
     $ValPagoMax = "";
     TextoValido($TextRepresentante,"" , true);
@@ -158,12 +173,6 @@ class divisasC
     if ($Cta_Aux) {
       $Tipo_Pago = $Cta_Aux['TipoPago'];
     }
-
-    if ($update) {
-      $updateCliF = $this->modelo->updateClientesFacturacion($TxtGrupo,$codigoCliente);
-      $updateCliM = $this->modelo->updateClientesMatriculas($TextRepresentante,$TextCI,$TD_Rep,$TxtTelefono,$TxtDireccion,$TxtEmail,$TxtGrupo,$codigoCliente);
-      $updateCli = $this->modelo->updateClientes($TxtTelefono,$TxtDirS,$TxtDireccion,$TxtEmail,$TxtGrupo,$codigoCliente);
-    }
     $TC = SinEspaciosIzq($_POST['DCLinea']);
     $serie = SinEspaciosDer($_POST['DCLinea']);
     //traer secuencial de catalogo lineas
@@ -184,7 +193,7 @@ class divisasC
     $FA['Cta_CxP'] = $resultado[3];
     //Procedemos a grabar la factura
     $datos = $this->modelo->getAsiento();
-    while ($value = sqlsrv_fetch_array( $datos, SQLSRV_FETCH_ASSOC)) {
+    foreach ($datos as $value) {
       $TFA = Calculos_Totales_Factura($codigoCliente);
       $FA['Tipo_PRN'] = "FM";
       $FA['FacturaNo'] = $TextFacturaNo;
@@ -221,7 +230,7 @@ class divisasC
       $Codigo2 = $value["Mes"];
       $Codigo3 = ".";
       $Anio1 = $value["TICKET"];
-      $this->modelo->updateClientesFacturacion1($Valor,$Anio1,$Codigo1,$Codigo,$Codigo3,$Codigo2);
+      $this->modelo->updateClientesFacturacion($Valor,$Anio1,$Codigo1,$Codigo,$Codigo3,$Codigo2);
       //Grabamos el numero de factura
       Grabar_Factura($FA);
       //Seteos de Abonos Generales para todos los tipos de abonos

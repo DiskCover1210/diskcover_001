@@ -27,13 +27,13 @@
     //enviar datos del cliente
     $('#cliente').on('select2:select', function (e) {
       var data = e.params.data.data;
-      console.log(data);
       $('#email').val(data.email);
       $('#direccion').val(data.direccion);
       $('#telefono').val(data.telefono);
       $('#ci_ruc').val(data.ci_ruc);
       $('#codigoCliente').val(data.codigo);
       $('#celular').val(data.celular);
+      console.log(data);
     });
   });
 
@@ -41,7 +41,7 @@
     $('#cliente').select2({
       placeholder: 'Seleccione un cliente',
       ajax: {
-        url:   '../controlador/cybernet/facturaC.php?cliente=true',
+        url:   '../controlador/facturacion/divisasC.php?cliente=true',
         dataType: 'json',
         delay: 250,
         processResults: function (data) {
@@ -64,7 +64,6 @@
     producto0 = $("#producto").val();
     producto = producto0.split("/");
     $("#preciounitario").val(producto[2]);
-    console.log(producto);
   }
 
   function numeroFactura(){
@@ -80,7 +79,6 @@
         datos = JSON.parse(data);
         labelFac = "("+datos.autorizacion+") No. "+datos.serie;
         document.querySelector('#numeroSerie').innerText = labelFac;
-        console.log(DCLinea);
         $("#factura").val(datos.codigo);
       }
     });
@@ -136,27 +134,24 @@
     producto = $("#producto").val();
     producto = producto.split("/");
     Div = producto[3];
-    console.log(producto);
-    //if (TextVUnit && TextCant && TextVTotal) {
-      if (TextVUnit <= 0) {
-        $("#preciounitario").val(1);
+    if (TextVUnit <= 0) {
+      $("#preciounitario").val(1);
+    }
+    if (TextVTotal > 0 && TextCant == 0) {
+      if (Div == "1") {
+        TextCant = (TextVTotal / TextVUnit);
+      }else{
+        TextCant = (TextVTotal * TextVUnit);
       }
-      if (TextVTotal > 0 && TextCant == 0) {
-        if (Div == "1") {
-          TextCant = (TextVTotal / TextVUnit);
-        }else{
-          TextCant = (TextVTotal * TextVUnit);
-        }
-        $("#cantidad").val(parseFloat(TextCant).toFixed(2));
-      }else if(TextCant > 0 && TextVTotal == 0){
-        if (Div == "1") {
-          TextVTotal = (TextCant / TextVUnit);
-        }else{
-          TextVTotal = (TextCant * TextVUnit);
-        }
-        $("#total").val(parseFloat(TextVTotal).toFixed(2));
+      $("#cantidad").val(parseFloat(TextCant).toFixed(2));
+    }else if(TextCant > 0 && TextVTotal == 0){
+      if (Div == "1") {
+        TextVTotal = (TextCant / TextVUnit);
+      }else{
+        TextVTotal = (TextCant * TextVUnit);
       }
-    //}
+      $("#total").val(parseFloat(TextVTotal).toFixed(2));
+    }
   }
 
   function aceptar(){
@@ -165,11 +160,8 @@
     total = $("#total").val();
     cantidad = $("#cantidad").val();
     producto = producto.split("/");
-    console.log(producto);
     var table = document.getElementById('customers');
     var rowLength = table.rows.length;
-    console.log(rowLength);
-    console.log(producto);
     var tr = `<tr>
       <td><input type="text" id="codigo`+rowLength+`" value="`+producto[0]+`" disabled class="sinborde"></td>
       <td><input type="text" id="cantidad`+rowLength+`" value="`+cantidad+`" disabled class="sinborde"></td>
@@ -180,7 +172,6 @@
     </tr>`;
     $("#cuerpo").append(tr);
     calcularTotal();
-
     datosLineas = [];
     var year = new Date().getFullYear();
     var rowLength = table.rows.length;
@@ -219,12 +210,10 @@
   function calcularTotal(){
     var table = document.getElementById('customers');
     var rowLength = table.rows.length;
-    console.log()
     total = 0;
     for(var i=1; i<rowLength; i++){
       total += parseFloat($("#total"+i).val());
     }
-    console.log(total);
     $("#total0").val(parseFloat(total).toFixed(2));
     $("#totalFac").val(parseFloat(total).toFixed(2));
     $("#efectivo").val(parseFloat(total).toFixed(2));
@@ -232,36 +221,23 @@
 
   function guardarFactura(){
     validarDatos = $("#total").val();
-    saldoTotal = $("#saldoTotal").val();
-    if (saldoTotal > 0 ) {
+    totalFac = $("#totalFac").val();
+    codigoCliente = $("#codigoCliente").val();
+    console.log(codigoCliente);
+    if (codigoCliente == '' ) {
       Swal.fire({
         type: 'info',
-        title: 'Debe pagar la totalidad de la factura',
+        title: 'Ingrese el cliente para la factura',
         text: ''
       });
-    }else if (validarDatos <= 0 ) {
+    }else if (totalFac <= 0 ) {
       Swal.fire({
         type: 'info',
-        title: 'Ingrese los datos necesarios para guardar la factura',
+        title: 'Ingrese una o más lineas para generar la factura',
         text: ''
       });
     }else{
-      var update = false;
-      //var update = confirm("¿Desea actualizar los datos del cliente?");
-      Swal.fire({
-        title: 'Esta seguro?',
-        text: "¿Desea actualizar los datos del cliente?",
-        type: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#3085d6',
-        cancelButtonColor: '#d33',
-        confirmButtonText: 'Si!'
-      }).then((result) => {
-        if (result.value==true) {
-          update = true;
-        }else{
-          update = false;
-        }
+      
         TextRepresentante = null;
         DCLinea = $("#DCLinea").val();
         TxtDireccion = $("#direccion").val();
@@ -280,7 +256,7 @@
         DCNC = null;
         Fecha = $("#fechaEmision").val();
         Total = $("#total").val();
-        codigoCliente = $("#codigoCliente").val();
+        
         //var confirmar = confirm("Esta seguro que desea guardar \n La factura No."+TextFacturaNo);
         Swal.fire({
           title: 'Esta seguro?',
@@ -297,7 +273,6 @@
             type: "POST",
             url: '../controlador/facturacion/divisasC.php?guardarFactura=true',
             data: {
-              'update' : update,
               'DCLinea' : DCLinea,
               'Total' : Total,
               'TextRepresentante' : TextRepresentante,
@@ -343,7 +318,7 @@
                       serie = DCLinea.split(" ");
                       cambio = $("#cambio").val();
                       efectivo = $("#efectivo").val();
-                      var url = '../vista/appr/controlador/formatoTicket.php?ticket=true&fac='+TextFacturaNo+'&serie='+serie[1]+'&CI='+TextCI+'&TC='+serie[0]+'&efectivo='+efectivo+'&saldo='+saldo;
+                      var url = '../vista/appr/controlador/formatoTicket.php?ticket=true&fac='+TextFacturaNo+'&serie='+serie[1]+'&CI='+TextCI+'&TC='+serie[0]+'&efectivo='+efectivo+'&saldo='+cambio;
                       window.open(url,'_blank');
                       location.reload();
                       //imprimir_ticket_fac(0,TextCI,TextFacturaNo,serie[1]);
@@ -367,7 +342,7 @@
                       serie = DCLinea.split(" ");
                       cambio = $("#cambio").val();
                       efectivo = $("#efectivo").val();
-                      var url = '../vista/appr/controlador/formatoTicket.php?ticket=true&fac='+TextFacturaNo+'&serie='+serie[1]+'&CI='+TextCI+'&TC='+serie[0]+'&efectivo='+efectivo+'&saldo='+saldo;
+                      var url = '../vista/appr/controlador/formatoTicket.php?ticket=true&fac='+TextFacturaNo+'&serie='+serie[1]+'&CI='+TextCI+'&TC='+serie[0]+'&efectivo='+efectivo+'&saldo='+cambio;
                       window.open(url,'_blank');
                       location.reload();
                       //imprimir_ticket_fac(0,TextCI,TextFacturaNo,serie[1]);
@@ -393,16 +368,13 @@
             });
           }
         })
-      })
     }
     
   }
 
   function calcularSaldo(){
     efectivo = $("#efectivo").val();
-    console.log(efectivo);
     total = $("#totalFac").val();
-    console.log(total);
     saldo = efectivo - total;
     $("#cambio").val(parseFloat(saldo).toFixed(2));
   }
@@ -423,7 +395,6 @@
         option+="<option value='"+data.Codigo+"'>"+data.Descripcion_Rubro+"</option>";
       });
        $('#select_provincias').html(option);
-      console.log(response);
     }
     });
 
@@ -431,7 +402,6 @@
 
   function ciudad(idpro)
   {
-    console.log(idpro);
     var option ="<option value=''>Seleccione ciudad</option>"; 
     //var idpro = $('#select_provincias').val();
     if(idpro !='')
@@ -446,7 +416,6 @@
         option+="<option value='"+data.Codigo+"'>"+data.Descripcion_Rubro+"</option>";
       });
        $('#select_ciudad').html(option);
-      console.log(response);
     }
     });
    } 
