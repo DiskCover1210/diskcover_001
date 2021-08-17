@@ -223,8 +223,17 @@
     validarDatos = $("#total").val();
     totalFac = $("#totalFac").val();
     codigoCliente = $("#codigoCliente").val();
-    console.log(codigoCliente);
-    if (codigoCliente == '' ) {
+    DCLinea = $("#DCLinea").val();
+    TextCI = $("#ci_ruc").val();
+    tipoFactura = DCLinea.split(" ");
+    console.log(tipoFactura[0]);
+    if (tipoFactura[0] == 'LC' && TextCI == '9999999999999') {
+      Swal.fire({
+        type: 'info',
+        title: 'En liquidación de compras no puede elegir consumidor final',
+        text: ''
+      });
+    }else if (codigoCliente == '' ) {
       Swal.fire({
         type: 'info',
         title: 'Ingrese el cliente para la factura',
@@ -237,14 +246,11 @@
         text: ''
       });
     }else{
-      
         TextRepresentante = null;
-        DCLinea = $("#DCLinea").val();
         TxtDireccion = $("#direccion").val();
         TxtTelefono = null;
         TextFacturaNo = $("#factura").val();
         TxtGrupo = null;
-        TextCI = $("#ci_ruc").val();
         TD_Rep = $("#ci_ruc").val();
         TxtEmail = $("#email").val();
         TxtDirS = $("#direccion").val();
