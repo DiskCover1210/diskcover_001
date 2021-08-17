@@ -134,8 +134,8 @@ class ingreso_descargosC
 		// print_r($tipo);die();
 
 		$producto = array();
-		if($query!='')
-		{
+		// if($query!='')
+		// {
 			$datos = $this->modelo->buscar_producto($query,$tipo);
 		
 		foreach ($datos as $key => $value) {
@@ -165,7 +165,7 @@ class ingreso_descargosC
 			{
 				$producto[] = array('id'=>$value['Codigo_Inv'].'_'.$costo.'_'.$value['Producto'].'_'.$value['Cta_Inventario'].'_'.$value['TC'].'_'.$value['Cta_Costo_Venta'].'_'.$value['IVA'].'_'.$value['Unidad'].'_'.$exist.'_'.$value['Maximo'].'_'.$value['Minimo'],'text'=>$value['Producto']);
 			}
-		}
+		// }
 	  }
 	  // print_r($producto);die();
 		return $producto;

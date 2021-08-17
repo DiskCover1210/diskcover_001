@@ -417,12 +417,13 @@ class articulosC
 	function Ingresar_proveedor($parametros)
 	{
 
-		$codigo = digito_verificadorf($parametros['txt_ruc'],1);
-		$existe = $this->modelo->clientes_all(false,$codigo);
+		$codigo = digito_verificador_nuevo($parametros['txt_ruc'],1);
+		// print_r($codigo);die();
+		$existe = $this->modelo->clientes_all(false,$codigo['Codigo']);
 		$cli = '';
 		if(empty($existe))
 		{
-			$datos[0]['campo'] = 'FA';
+		    $datos[0]['campo'] = 'FA';
 		    $datos[0]['dato'] = '1';
 		    $datos[1]['campo'] = 'T';
 		    $datos[1]['dato'] = 'N';
@@ -443,12 +444,12 @@ class articulosC
 		    $cli = $this->modelo->guardar('Clientes',$datos);
 		}else{$cli =1;}
 
-		 $exist = $this->modelo->catalogo_Cxcxp($codigo);
+		 $exist = $this->modelo->catalogo_Cxcxp($codigo['Codigo']);
 
 		 if(empty($exist))
 		 {
 		 	$datos1[0]['campo'] = 'Codigo';
-		    $datos1[0]['dato'] = $codigo;
+		    $datos1[0]['dato'] = $codigo['Codigo'];
 		    $datos1[1]['campo'] = 'Cta';
 		    $datos1[1]['dato'] = $this->modelo->buscar_cta_proveedor();
 		    $datos1[2]['campo'] = 'Item';
@@ -872,6 +873,9 @@ class articulosC
 
 		    $datos[25]['campo'] ='Serie_No';
 		    $datos[25]['dato'] =$value['Serie_No'];
+
+		    $datos[26]['campo'] ='Factura';
+		    $datos[26]['dato'] =$value['ORDEN'];
 
 
 		    // print_r($this->ing_descargos->insertar_trans_kardex($datos));die();
