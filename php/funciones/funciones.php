@@ -6494,7 +6494,7 @@ if ($pos === false) {
 
  $tbl.="</style>";
 
-// print_r($titulo);die();
+// print_r($tbl);die();
 if($titulo)
  {
   // $num = count($columnas_uti);
@@ -6799,7 +6799,7 @@ if($titulo)
              {
               if($alineado=='text-left')
               {                
-                  $tbl.='<td style="width:'.$medida.'" class="'.$alineado.'">'.utf8_encode($value1).'</td>';  
+                  $tbl.='<td style="width:'.$medida.'" class="'.$alineado.'">'.$value1.'</td>';  
                   // $tbl.='<td style="width:'.$medida.'" class="'.$alineado.'">'.$value1.'</td>';  
               }else
               {
@@ -6843,7 +6843,7 @@ if($titulo)
 
 function datos_tabla($tabla,$campo=false)
 {
-    $conn = new Conectar();
+    $conn = new db();
     $cid=$conn->conexion();
     $sql="SELECT COLUMN_NAME,DATA_TYPE,CHARACTER_MAXIMUM_LENGTH
     FROM Information_Schema.Columns
@@ -6851,20 +6851,7 @@ function datos_tabla($tabla,$campo=false)
     if($campo){
       $sql.=" AND COLUMN_NAME = '".$campo."'";
     }
-    // print_r($sql);die();
-    $stmt = sqlsrv_query($cid, $sql);
-     $datos =  array();
-     if( $stmt === false)  
-     {  
-     echo "Error en consulta PA.\n";  
-     return '';
-     die( print_r( sqlsrv_errors(), true));  
-     }
-     while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_ASSOC) ) 
-     {
-            $datos[]=$row;
-     }
-
+    $datos = $conn->datos($sql);
      return $datos;
 }
 

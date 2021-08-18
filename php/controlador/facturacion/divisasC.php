@@ -71,7 +71,8 @@ class divisasC
     $datos = $this->modelo->getProductos($TC);
     $productos = [];
     foreach ($datos as $value) {
-      $productos[] = array('codigo'=>$value['Codigo_Inv']."/".utf8_encode($value['Producto'])."/".$value['PVP']."/".$value['Div'] ,'nombre'=> utf8_encode($value['Producto']));
+      // $productos[] = array('codigo'=>$value['Codigo_Inv']."/".utf8_encode($value['Producto'])."/".$value['PVP']."/".$value['Div'] ,'nombre'=> utf8_encode($value['Producto'])); 
+      $productos[] = array('codigo'=>$value['Codigo_Inv']."/".$value['Producto']."/".$value['PVP']."/".$value['Div'] ,'nombre'=> $value['Producto']);
     }
     return $productos;
   }

@@ -11,6 +11,12 @@ $cod = ''; $ci =''; if(isset($_GET['cod'])){$cod = $_GET['cod'];} if(isset($_GET
 
   function cargar_pedidos(f='')
   {
+     var paginacion = 
+    {
+      '0':$('#pag').val(),
+      '1':$('#ddl_reg').val(),
+      '2':'cargar_pedidos',
+    }
     $('#txt_tipo_filtro').val(f);
     var ruc = '<?php echo $ci; ?>';
     var nom = $('#txt_query').val();
@@ -28,7 +34,7 @@ $cod = ''; $ci =''; if(isset($_GET['cod'])){$cod = $_GET['cod'];} if(isset($_GET
       }    
      // console.log(parametros);
      $.ajax({
-      data:  {parametros:parametros},
+      data:  {parametros:parametros,paginacion:paginacion},
       url:   '../controlador/farmacia/reporte_descargos_procesadosC.php?cargar_pedidos=true',
       type:  'post',
       dataType: 'json',
@@ -363,6 +369,18 @@ function reporte_excel()
 }
 
 
+function Ver_Comprobante(comprobante)
+{
+    url='../controlador/farmacia/reporte_descargos_procesadosC.php?Ver_comprobante=true&comprobante='+comprobante;
+    window.open(url, '_blank');
+}
+function Ver_detalle(comprobante)
+{
+    url='../vista/farmacia.php?mod=Farmacia&acc=facturacion_insumos&acc1=Utilidad insumos&b=1&po=subcu&comprobante='+comprobante;
+    window.open(url, '_blank');
+}
+
+
 </script>
 
 <div class="container-lg">
@@ -372,13 +390,7 @@ function reporte_excel()
             <a  href="./farmacia.php?mod=Farmacia#" title="Salir de modulo" class="btn btn-default">
               <img src="../../img/png/salire.png">
             </a>
-        </div>
-        <div class="col-xs-2 col-md-2 col-sm-2 col-lg-1">
-            <button type="button" class="btn btn-default" title="Generar pdf" onclick="reporte_pdf()"><img src="../../img/png/pdf.png"></button>
-        </div>
-        <div class="col-xs-2 col-md-2 col-sm-2 col-lg-1">
-            <button type="button" class="btn btn-default" title="Generar pdf" onclick="reporte_excel()"><img src="../../img/png/table_excel.png"></button>
-        </div>
+        </div>        
         <div class="col-xs-2 col-md-2 col-sm-2 col-lg-1">
           <a href="./farmacia.php?mod=Farmacia&acc=pacientes&acc1=Visualizar%20paciente&b=1&po=subcu#" type="button" class="btn btn-default" id="imprimir_pdf" title="Pacientes">
             <img src="../../img/png/pacientes.png">
@@ -395,8 +407,11 @@ function reporte_excel()
           </a>
         </div>
         <div class="col-xs-2 col-md-2 col-sm-2 col-lg-1">
-          <button type="button" class="btn btn-default" title="Generar pdf" onclick="formatoEgreso()"><img src="../../img/png/pdf.png"></button>
-        </div>    
+            <button type="button" class="btn btn-default" title="Generar pdf" onclick="reporte_pdf()"><img src="../../img/png/pdf.png"></button>
+        </div>
+        <div class="col-xs-2 col-md-2 col-sm-2 col-lg-1">
+            <button type="button" class="btn btn-default" title="Generar pdf" onclick="reporte_excel()"><img src="../../img/png/table_excel.png"></button>
+        </div>
  </div>
 </div>
 <div class="container"><br>
@@ -441,7 +456,7 @@ function reporte_excel()
     </ul>
     <div class="tab-content">
       <div id="home" class="tab-pane fade in active">
-        <div class="row">
+        <!-- <div class="row">
            <div class="table-responsive">      
              <table class="table table-hover">
                <thead>
@@ -451,15 +466,22 @@ function reporte_excel()
                  <th>CONCEPTO</th>
                  <th>PACIENTE</th>
                  <th>Total</th>
-                <!--  <th>ESTADO</th>
-                 <th></th> -->
+                 <th>ESTADO</th>
+                 <th></th>
                </thead>
                <tbody id="tbl_body">
                 
                </tbody>
              </table>      
            </div>
-         </div> 
+         </div>  -->
+         <div class="row">
+            <div class="col-sm-12" id="tbl_body">
+           
+            </div>      
+          </div>
+
+         
       </div>
       <div id="menu1" class="tab-pane fade">
         <div class="row">

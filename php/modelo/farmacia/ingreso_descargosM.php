@@ -31,6 +31,7 @@ class ingreso_descargosM
 			{
 				$sql.=" Codigo_Inv LIKE '%".$query."%'";
 			}
+			$sql.=' ORDER BY ID OFFSET 0 ROWS FETCH NEXT 25 ROWS ONLY;';
      // print_r($sql);die();
         $stmt = sqlsrv_query($cid, $sql);
         $datos =  array();
