@@ -6197,15 +6197,14 @@ function costo_venta($codigo_inv)  // optimizado
     $conn = new db();
     $RatonReloj;
     $Cta_Ret_Aux = "0";
-    $SSQLSeteos = "SELECT * 
+    $sql = "SELECT * 
                FROM Ctas_Proceso 
                WHERE Item = '".$_SESSION['INGRESO']['item']."'
                AND Periodo = '".$_SESSION['INGRESO']['periodo']."'
                AND Detalle = '".$Det_Cta."' ";
-
     $datos = $conn->datos($sql);
-    return $datos['Codigo'];
-   
+    
+    return $datos[0]['Codigo'];
   }
 
   // function sp_mayorizar_cuentas()

@@ -17,10 +17,11 @@ if(isset($_GET['cliente']))
 		$query = $_GET['q']; 
 	}
   if (isset($_GET['total'])) {
-    echo json_encode($controlador->totalClientes());
+    $datos = $controlador->totalClientes();
   }else{
-    echo json_encode($controlador->getClientes($query));
+    $datos = $controlador->getClientes($query);
   }
+  echo json_encode($controlador->getClientes($query));
 }
 
 if(isset($_GET['numFactura']))
@@ -38,12 +39,14 @@ if(isset($_GET['numFactura']))
 
 if(isset($_GET['catalogo']))
 {
-	$controlador->getCatalogoLineas();
+	$datos = $controlador->getCatalogoLineas();
+  echo json_encode($datos);
 }
 
 if(isset($_GET['catalogoProducto']))
 {
-	$controlador->getCatalogoProductos();
+	$datos = $controlador->getCatalogoProductos();
+  echo json_encode($datos);
 }
 
 if(isset($_GET['historiaCliente']))
@@ -103,11 +106,10 @@ class facturar_pensionC
 	public function getClientes($query){
 		$datos = $this->facturacion->getClientes($query);
 		$clientes = [];
-		foreach ($datos as $key => $value) {
+		foreach ($datos as $value) {
 			$clientes[] = array('id'=>$value['Cliente'],'text'=>utf8_encode($value['Cliente']),'data'=>array('email'=> $value['Email'],'direccion' => utf8_encode($value['Direccion']), 'telefono' => utf8_encode($value['Telefono']), 'ci_ruc' => utf8_encode($value['CI_RUC']), 'codigo' => utf8_encode($value['Codigo']), 'cliente' => utf8_encode($value['Cliente']), 'grupo' => utf8_encode($value['Grupo']), 'tdCliente' => utf8_encode($value['TD'])));
 		}
-		echo json_encode($clientes);
-		exit();
+    return $clientes;
 	}
 
   public function totalClientes(){
@@ -122,22 +124,20 @@ class facturar_pensionC
 		$vencimiento = $_POST['fechaVencimiento'];
 		$datos = $this->facturacion->getCatalogoLineas($emision,$vencimiento);
 		$catalogo = [];
-		while ($value = sqlsrv_fetch_array( $datos, SQLSRV_FETCH_ASSOC)) {
+		foreach ($datos as $value) {
 			$catalogo[] = array('id'=>$value['Fact']." ".$value['Serie']." ".$value['Autorizacion']." ".$value['CxC'] ,'text'=>utf8_encode($value['Concepto']));
 		}
-		echo json_encode($catalogo);
-		exit();
+    return $catalogo;
 	}
 
 	public function getCatalogoProductos(){
 		$codigoCliente = $_POST['codigoCliente'];
 		$datos = $this->facturacion->getCatalogoProductos($codigoCliente);
 		$catalogo = [];
-		while ($value = sqlsrv_fetch_array( $datos, SQLSRV_FETCH_ASSOC)) {
+		foreach ($datos as $value) {
 			$catalogo[] = array('mes'=> utf8_encode($value['Mes']),'codigo'=> utf8_encode($value['Codigo_Inv']),'periodo'=> utf8_encode($value['Periodos']),'producto'=> utf8_encode($value['Producto']),'valor'=> utf8_encode($value['Valor']), 'descuento'=> utf8_encode($value['Descuento']),'descuento2'=> utf8_encode($value['Descuento2']),'iva'=> utf8_encode($value['IVA']),'CodigoL'=> utf8_encode($value['Codigo']),'CodigoL'=> utf8_encode($value['Codigo']));
 		}
-		echo json_encode($catalogo);
-		exit();
+    return $catalogo;
 	}
 
   public function historiaCliente(){
@@ -236,9 +236,9 @@ class facturar_pensionC
 	public function getCatalogoCuentas(){
 		$datos = $this->facturacion->getCatalogoCuentas();
 		$cuentas = [];
-    $cuentas[0] = array('codigo'=>$value['Codigo'],'nombre'=>'No existen datos.');
+    $cuentas[0] = array('codigo'=>'','nombre'=>'No existen datos.');
     $i = 0;
-		while ($value = sqlsrv_fetch_array( $datos, SQLSRV_FETCH_ASSOC)) {
+    foreach ($datos as $value) {
 			$cuentas[$i] = array('codigo'=>$value['Codigo']."/".$value['TC'],'nombre'=>utf8_encode($value['Codigo'])." - ".utf8_encode($value['NomCuenta']));
       $i++;
 		}
@@ -248,9 +248,9 @@ class facturar_pensionC
 	public function getNotasCredito(){
 		$datos = $this->facturacion->getNotasCredito();
 		$cuentas = [];
-    $cuentas[0] = array('codigo'=>$value['Codigo'],'nombre'=>'No existen datos.');
+    $cuentas[0] = array('codigo'=>'','nombre'=>'No existen datos.');
     $i = 0;
-		while ($value = sqlsrv_fetch_array( $datos, SQLSRV_FETCH_ASSOC)) {
+		foreach ($datos as $value) {
 			$cuentas[$i] = array('codigo'=>$value['Codigo'],'nombre'=>utf8_encode($value['Codigo'])." - ".utf8_encode($value['NomCuenta']));
       $i++;
 		}
@@ -261,9 +261,9 @@ class facturar_pensionC
     $codigo = Leer_Seteos_Ctas('Cta_Anticipos_Clientes');
     $datos = $this->facturacion->getAnticipos($codigo);
     $cuentas = [];
-    $cuentas[0] = array('codigo'=>$value['Codigo'],'nombre'=>'No existen datos.');
+    $cuentas[0] = array('codigo'=>'','nombre'=>'No existen datos.');
     $i = 0;
-    while ($value = sqlsrv_fetch_array( $datos, SQLSRV_FETCH_ASSOC)) {
+    foreach ($datos as $value) {
       $cuentas[$i] = array('codigo'=>$value['Codigo'],'nombre'=>utf8_encode($value['Codigo'])." - ".utf8_encode($value['NomCuenta']));
       $i++;
     }
@@ -273,6 +273,7 @@ class facturar_pensionC
 	public function getSaldoFavor(){
 		$codigoCliente = $_POST['codigoCliente'];
 		$datos = $this->facturacion->getSaldoFavor($codigoCliente);
+    print_r($datos);
 		$catalogo = sqlsrv_fetch_array( $datos, SQLSRV_FETCH_ASSOC);
 		echo json_encode($catalogo);
 		exit();
@@ -357,7 +358,7 @@ class facturar_pensionC
     $FA['Cta_CxP'] = $resultado[3];
 		//Procedemos a grabar la factura
   	$datos = $this->facturacion->getAsiento();
-    while ($value = sqlsrv_fetch_array( $datos, SQLSRV_FETCH_ASSOC)) {
+    foreach ($datos as $key => $value) {
 		  $TFA = Calculos_Totales_Factura($codigoCliente);
       $FA['Tipo_PRN'] = "FM";
       $FA['FacturaNo'] = $TextFacturaNo;
@@ -481,7 +482,11 @@ class facturar_pensionC
       $FA['num_fac'] = $FA['Factura'];
       $FA['tc'] = $FA['TC'];
       $FA['cod_doc'] = '01';
-      $resultado = $this->autorizar_sri->Autorizar($FA);
+      if (strlen($FA['Autorizacion']) == 13) {
+        $resultado = $this->autorizar_sri->Autorizar($FA);
+      }else{
+        $resultado = array('respuesta'=>4);
+      }
       echo json_encode($resultado);
       exit();
     }

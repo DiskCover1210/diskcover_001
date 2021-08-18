@@ -370,10 +370,10 @@ C.Telefono_R,Telefono_RS,Lugar_Trabajo_R,Email_R,Email_R,Matricula_No,Folio_No,C
    	$id='factura_'.$ci;
    	$cid = $this->conn;
    	$sql="SELECT * FROM Facturas WHERE Serie='".$ser."' and Factura='".$cod."'
-   	AND Item = '".$_SESSION['INGRESO']['item']."'
+   	AND Item = '".$_SESSION['INGRESO']['item']."' AND CodigoC = '".$ci."'
 		AND Periodo =  '".$_SESSION['INGRESO']['periodo']."' ";
    	$sql1="SELECT * from Detalle_Factura WHERE Factura = '".$cod."' AND Item = '".$_SESSION['INGRESO']['item']."'
-		AND Periodo =  '".$_SESSION['INGRESO']['periodo']."' ";
+		AND Periodo =  '".$_SESSION['INGRESO']['periodo']."' AND CodigoC = '".$ci."'";
        $stmt = sqlsrv_query($cid, $sql);
 	   if( $stmt === false)  
 	   {  

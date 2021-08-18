@@ -533,6 +533,21 @@
                      });
                     //descargar_archivos(response.url,response.ar);
 
+                  }else if(response.respuesta == '4')
+                  {
+                    Swal.fire({
+                      type: 'success',
+                      title: 'Factura guardada correctamente',
+                      text: ''
+                    }).then(() => {
+                      serie = DCLinea.split(" ");
+                      cambio = $("#cambio").val();
+                      efectivo = $("#efectivo").val();
+                      var url = '../controlador/detalle_estudianteC.php?ver_fac=true&codigo='+TextFacturaNo+'&ser='+serie[1]+'&ci='+TextCI;
+                      window.open(url,'_blank');
+                      location.reload();
+                      //imprimir_ticket_fac(0,TextCI,TextFacturaNo,serie[1]);
+                    });
                   }
                   else
                   {

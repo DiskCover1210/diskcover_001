@@ -43,12 +43,14 @@ if(isset($_GET['catalogo']))
 
 if(isset($_GET['serie']))
 {
-  $controlador->numeroSerie();
+   $datos = $controlador->numeroSerie();
+   echo json_encode($datos);
 }
 
 if(isset($_GET['secuencial']))
 {
-  $controlador->numeroSecuencial();
+  $datos = $controlador->numeroSecuencial();
+  echo json_encode($datos);
 }
 
 if(isset($_GET['catalogoProducto']))
@@ -114,7 +116,7 @@ class listar_facturasC
     $formatos = [];
     $formatos[0] = array('codigo'=>'','nombre'=>'No existen datos.');
     $i = 0;
-    while ($value = sqlsrv_fetch_array( $datos, SQLSRV_FETCH_ASSOC)) {
+    foreach ($datos as $value) {
       $formatos[$i] = array('TC'=>utf8_encode($value['TC']));
       $i++;
     }
@@ -558,25 +560,25 @@ class listar_facturasC
     $serie = [];
     $serie[0] = array('codigo'=>'','nombre'=>'No existen datos.');
     $i = 0;
-    while ($value = sqlsrv_fetch_array( $datos, SQLSRV_FETCH_ASSOC)) {
-      $serie[$i] = array('serie'=>utf8_encode($value['Serie']));
+    foreach ($datos as $value) {
+      $serie[$i] = array('codigo'=>$value['Serie'],'nombre'=>$value['Serie']);
       $i++;
     }
-    echo json_encode($serie);
+    return $serie;
   }
 
   public function numeroSecuencial(){
     $tc = $_POST['TC'];
     $serie = $_POST['serie'];
     $datos = $this->modelo->numeroSecuencial($tc,$serie);
-    $serie = [];
-    $serie[0] = array('codigo'=>'','nombre'=>'No existen datos.');
+    $secuencial = [];
+    $secuencial[0] = array('codigo'=>'','nombre'=>'No existen datos.');
     $i = 0;
-    while ($value = sqlsrv_fetch_array( $datos, SQLSRV_FETCH_ASSOC)) {
-      $serie[$i] = array('factura'=>utf8_encode($value['Factura']),'texto'=>utf8_encode($value['Autorizacion'])."/".utf8_encode($value['Clave_Acceso'])."/".utf8_encode($value['CodigoC'])."/".utf8_encode($value['Razon_Social']));
+    foreach ($datos as $value) {
+      $secuencial[$i] = array('nombre'=>$value['Factura'],'codigo'=>$value['Autorizacion']."/".$value['Clave_Acceso']."/".$value['CodigoC']."/".$value['Razon_Social']);
       $i++;
     }
-    echo json_encode($serie);
+    return $secuencial;
   }
 
   public function BuscarFactura(){
