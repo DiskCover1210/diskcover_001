@@ -27,10 +27,10 @@ class divisasM
 
   public function getProductos($tipoConsulta){
     if ($tipoConsulta=='FA') {
-      $Tipo ='02.01';
+      $Tipo ='03.01';
     } 
     else {
-      $Tipo='02.02';
+      $Tipo='03.02';
     }
     $sql="SELECT Producto, Codigo_Inv, Codigo_Barra, PVP, Div
           FROM Catalogo_Productos 
@@ -39,6 +39,7 @@ class divisasM
           AND TC = 'P' 
           AND SUBSTRING(Codigo_Inv,1,5) = '".$Tipo."'
           ORDER BY Producto,Codigo_Inv ";
+          // print_r($sql);die();
     $stmt = $this->db->datos($sql);
     return $stmt;
   }

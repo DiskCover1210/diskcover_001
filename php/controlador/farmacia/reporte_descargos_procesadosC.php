@@ -355,13 +355,23 @@ class reportes_descargos_procesadosC
     $pos=2;
     $total =0;
     foreach ($lineas as $key => $value) {
+    	  $uti = $value['Utilidad'];
+    	  if($value['Utilidad']=='' || $value['Utilidad']==0)
+    	  {
+    	  	$uti = number_format($value['utilidad_C']*100,2);
+				  $parametros = array('utilidad'=>$uti,'linea'=>$value['ID']);
+				  $this->guardar_utilidad($parametros);
+				  $uti = number_format($value['utilidad_C']);
+    	  }
+    	  $gra_t = ($value['Valor_Total']*$uti)+$value['Valor_Total'];
+    	  $uni = ($gra_t/$value['Salida']);
     	 	$tablaHTML[$pos]['medidas']=$tablaHTML[1]['medidas'];
 		    $tablaHTML[$pos]['alineado']= $tablaHTML[1]['alineado'];
-		    $tablaHTML[$pos]['datos']=array($value['Codigo_Inv'],$value['Producto'],$value['Salida'],$value['Valor_Unitario'],$value['Valor_Total']);
+		    $tablaHTML[$pos]['datos']=array($value['Codigo_Inv'],$value['Producto'],$value['Salida'],number_format($uni,2),number_format($gra_t,2));
 		    $tablaHTML[$pos]['borde'] =1;
 
 		    $pos+=2;
-		    $total+= $value['Valor_Total'];		    
+		    $total+=number_format($gra_t,2);
     }
 
 
@@ -392,6 +402,18 @@ class reportes_descargos_procesadosC
 		}
 
 		return array('cliente'=>$datos,'tabla'=>$tr);
+
+	}
+
+	function guardar_utilidad($parametros)
+	{
+		$tabla = 'Trans_Kardex';
+		$datos[0]['campo']='Utilidad';
+		$datos[0]['dato']=$parametros['utilidad']/100;
+
+		$campoWhere[0]['campo']='ID';
+		$campoWhere[0]['valor']=$parametros['linea'];
+		return update_generico($datos,$tabla,$campoWhere);
 
 	}
 

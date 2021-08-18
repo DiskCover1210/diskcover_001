@@ -71,6 +71,38 @@ class farmacia_internaM
 		return array('tbl'=>$tbl,'datos'=>$datos);
 	}
 
+	function pedido_paciente($nombre=false,$ci=false,$historia=false,$departamento=false,$procedimiento=false,$desde=false,$hasta =false,$busfe=false)
+	{
+		$sql = "SELECT SUM(VALOR_TOTAL) as 'importe',ORDEN,Codigo_B,Fecha_Fab,C.Cliente as 'nombre',A.SUBCTA as 'area',CS.Detalle as 'subcta',C.Matricula as 'his',A.Detalle as 'Detalle',Matricula
+			FROM Asiento_K A
+			LEFT JOIN Clientes C ON C.CI_RUC = A.Codigo_B  
+			LEFT JOIN Catalogo_SubCtas CS ON CS.Codigo = A.SUBCTA
+			WHERE DH='2' ";
+		if($historia)
+		{
+			$sql.=" AND Matricula like '".$historia."%' ";
+		}
+		if($ci!='')
+		{
+			$sql.=" AND Codigo_B LIKE '".$ci."%' ";
+		}
+		if ($nombre!='') 
+		{
+			$sql.=" AND Cliente LIKE '%".$nombre."%'";
+		}
+		if($busfe)
+		{		
+			  $sql.=" AND Fecha_Fab BETWEEN '".$desde."' and '".$hasta."'";
+		}
+
+		$sql.=" GROUP BY ORDEN ,Codigo_B,Fecha_Fab,C.Cliente,A.SUBCTA,CS.Detalle,C.Matricula,A.Detalle,Matricula ORDER BY Fecha_Fab DESC";
+		$sql.=" OFFSET 0 ROWS FETCH NEXT 50 ROWS ONLY;";
+		
+		// print_r($sql);die();
+		$datos = $this->conn->datos($sql);
+       return $datos;
+	}
+
 }
 
 ?>

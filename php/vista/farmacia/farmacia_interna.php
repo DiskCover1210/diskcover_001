@@ -1,13 +1,34 @@
 <?php  require_once("panel.php"); ?>
+<style type="text/css">
+          #datos_t tbody tr:nth-child(even) { background:#fffff;}
+          #datos_t tbody tr:nth-child(odd) { background: #e2fbff;}
+          #datos_t tbody tr:nth-child(even):hover {  background: #DDB;}
+          #datos_t thead { background: #afd6e2; }
+          #datos_t tbody tr:nth-child(odd):hover {  background: #DDA;}
+          #datos_t table {border-collapse: collapse;}
+          #datos_t table, th, td {  border: solid 1px #aba0a0;  padding: 2px;  }
+          #datos_t tbody { box-shadow: 10px 10px 6px rgba(0, 0, 0, 0.6);  }
+          #datos_t thead { background: #afd6e2;  box-shadow: 10px 0px 6px rgba(0, 0, 0, 0.6);} 
 
+          /*#datos_t tbody { display:block; height:300px;  overflow-y:auto; width:fit-content;}*/
+          /*#datos_t thead,tbody tr {    display:table;  width:100%;  table-layout:fixed; } */
+          #datos_t thead { width: calc( 100% - 1.2em ) /*scrollbar is average 1em/16px width, remove it from thead width*/ }
+
+
+       </style>      
 <script type="text/javascript">
    $( document ).ready(function() {
    	 tabla_ingresos();
    	 autocoplet_prov()
-
+// /------------------------
    	 autocoplet_desc();
    	 autocoplet_ref();
    	 tabla_catalogo('ref');
+//---------------------------
+
+//--------------------------
+    cargar_pedidos();
+
    
   });
    function autocoplet_prov(){
@@ -131,6 +152,34 @@ function Ver_detalle(comprobante)
     url='../vista/farmacia.php?mod=Farmacia&acc=utilidad_insumos&acc1=Utilidad insumos&b=1&po=subcu&comprobante='+comprobante;
     window.open(url, '_blank');
 }
+ function cargar_pedidos(f='')
+  {
+   
+      var  parametros = 
+      { 
+        'nom':$('#txt_paciente').val(),
+        'ci':$('#txt_ci').val(),
+        'historia':$('#txt_historia').val(),
+        'depar':$('#txt_departamento').val(),
+        'proce':$('#txt_procedimiento').val(),
+        'desde':$('#txt_desde').val(),
+        'hasta':$('#txt_hasta').val(),
+        'busfe':f,
+      }    
+     // console.log(parametros);
+     $.ajax({
+      data:  {parametros:parametros},
+      url:   '../controlador/farmacia/farmacia_internaC.php?cargar_pedidos=true',
+      type:  'post',
+      dataType: 'json',
+      success:  function (response) { 
+        if(response)
+        {
+          $('#tbl_descargos').html(response.tabla);
+        }
+      }
+    });
+  }
 
 
 </script>
@@ -179,7 +228,7 @@ function Ver_detalle(comprobante)
 			</select>			
 		</div>		
 	</div>
-	<div id="opcion1" >
+	<div id="opcion1" style="display:none;">
 		<div class="row">
 			<div class="col-sm-4">
 				<b>Proveedor</b>
@@ -232,5 +281,76 @@ function Ver_detalle(comprobante)
 			
 		</div>	
 	</div>
+
+  <div id="opcion3">
+    <div class="row">
+      <div class="col-sm-12">
+        
+      </div>      
+    </div>
+    <div class="row">
+      <div class="col-sm-12">
+        
+      </div>      
+    </div>
+    
+  </div>
+
+  <div id="opcion4">
+    <div class="row">
+      <div class="col-sm-3">
+        <b>Paciente</b>
+        <input type="text"  class="form-control input-sm" name="txt_paciente" id="txt_paciente" onkeyup="cargar_pedidos();">
+      </div>  
+      <div class="col-sm-2">
+        Numero de Cedula       
+        <input type="text"  class="form-control input-sm" name="txt_ci" id="txt_ci" onkeyup="cargar_pedidos();">
+      </div>  
+      <div class="col-sm-2">
+        <b>Historia Clinica</b>        
+        <input type="text"  class="form-control input-sm" name="txt_historia" id="txt_historia" onkeyup="cargar_pedidos();">
+      </div>  
+      <div class="col-sm-3">
+        Departamento       
+        <input type="text"  class="form-control input-sm" name="txt_departamento" id="txt_departamento" onkeyup="cargar_pedidos();">
+      </div>  
+      <div class="col-sm-2">
+        <b>Procedimiento</b>       
+        <input type="text"  class="form-control input-sm" name="txt_procedimiento" id="txt_procedimiento">
+      </div>  
+      <div class="col-sm-2">
+        Desde        
+        <input type="date"  class="form-control input-sm" name="txt_desde" id="txt_desde">
+      </div>  
+      <div class="col-sm-2">
+        <b>Hasta</b>        
+        <input type="date"  class="form-control input-sm" name="txt_hasta" id="txt_hasta">
+      </div>  
+    </div>
+    <div class="row">
+      <div class="col-sm-12">
+        <div class="table-responsive">
+          <table id="datos_t">
+            <thead>
+              <th>Fecha</th>
+              <th>Paciente</th>
+              <th>Numero de cedula</th>
+              <th>Historia clinica</th>
+              <th>Departamento</th>
+              <th>Costo total</th>
+              <th>Porcedimiento</th>
+            </thead>
+            <tbody id="tbl_descargos">
+              
+            </tbody>
+          </table>
+          
+        </div>
+        
+      </div>      
+    </div>
+    
+  </div>
+
 </div>
 
