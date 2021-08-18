@@ -1,19 +1,16 @@
 <?php
 
-require_once(dirname(__DIR__,2)."/db/db.php");
+require_once(dirname(__DIR__,2)."/db/db1.php");
 require_once(dirname(__DIR__,2)."/funciones/funciones.php");
 
 class listar_facturasM
 {
 	private $db;
-	private $dbs;
 
 	public function __construct(){
-        //conexion mysql
-        $this->db=Conectar::conexion();
-        //conexion sql server
-        $this->dbs=Conectar::conexionSQL();
-    }
+    //base de datos
+    $this->db = new db();
+  }
 	
 	public function getClientes($query){
         $sql="SELECT C.Email,C.T,C.Codigo,C.Cliente,C.Direccion,C.Grupo,C.Telefono,C.CI_RUC,C.TD,SUM(CF.Valor) As Deuda_Total 
@@ -247,7 +244,7 @@ class listar_facturasM
               AND Periodo = '".$_SESSION['INGRESO']['periodo']."'
               GROUP BY TC 
               ORDER BY TC";
-      $stmt = sqlsrv_query( $this->dbs, $sql);
+      $stmt = $this->db->datos($sql);
       return $stmt;
     }
 
@@ -260,7 +257,7 @@ class listar_facturasM
               AND TC = '".$TC."' 
               GROUP BY Serie 
               ORDER BY Serie";
-      $stmt = sqlsrv_query( $this->dbs, $sql);
+      $stmt = $this->db->datos($sql);
       return $stmt;
     }
 
@@ -274,7 +271,7 @@ class listar_facturasM
               AND TC = '".$TC."' 
               AND Serie = '".$serie."' 
               ORDER BY Factura";
-      $stmt = sqlsrv_query( $this->dbs, $sql);
+      $stmt = $this->db->datos($sql);
       return $stmt;
     }
 }

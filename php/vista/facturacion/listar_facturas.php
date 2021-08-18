@@ -68,7 +68,7 @@
 
   $(document).ready(function () {
     //autocomplete_cliente();
-    serie();
+    series();
     secuencial();
     envioDatos();
     $("#nombreCliente").hide();
@@ -142,7 +142,7 @@
     console.log(producto);
   }
 
-  function serie(){
+  function series(){
     TC = $("#TC").val();
     $.ajax({
       type: "POST",
@@ -155,18 +155,13 @@
         const $select = $("#serie");
         $select.empty();
         datos = JSON.parse(data);
-        for (var indice in datos) {
-          $select.append($("<option>",{
-            value: datos[indice].serie ,
-            text: datos[indice].serie ,
-          }));
-          console.log(datos[indice]);
-        }
+        llenarComboList(datos,'serie');
       }
     });
   }
 
   function secuencial(){
+    $('#myModal_espera').modal('show');
     TC = $("#TC").val();
     serie = $("#serie").val();
     $.ajax({
@@ -181,12 +176,8 @@
         const $select = $("#secuencial");
         $select.empty();
         datos = JSON.parse(data);
-        for (var indice in datos) {
-          $select.append($("<option>",{
-            value: datos[indice].texto ,
-            text: datos[indice].factura ,
-          }));
-        }
+        llenarComboList(datos,'secuencial');
+        $('#myModal_espera').modal('hide');
       }
     });
   }
@@ -533,7 +524,7 @@
             <label>Tipo Documento</label>
           </div>
           <div class="col-sm-1">
-            <select class="form-control input-sm" id="TC" onchange="serie();secuencial();" style="width: 80px;">
+            <select class="form-control input-sm" id="TC" onchange="series();secuencial();" style="width: 80px;">
               <?php
                 $cuentas = $facturar->factura_formatos();
                 foreach ($cuentas as $cuenta) {
