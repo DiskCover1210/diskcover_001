@@ -948,13 +948,14 @@ $cuen=count($_SESSION['APPR']['PED']);
 		$Result = array();
 		while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_ASSOC) ) 
 		{
+			// print_r($row);die();
 			$Result[$ii]['Codigo_Inv']=$row['Codigo_Inv'];
 			$Result[$ii]['Producto']=$row['Producto'];
 			//echo $Result[$ii]['Producto']."<br>";
 			$Result[$ii]['PVP']=$row['PVP'];
 			$Result[$ii]['PVP_2']=$row['PVP_2'];
 			$Result[$ii]['IVA']=$row['IVA'];
-			if($Result[$ii]['IVA']==true)
+			if($Result[$ii]['IVA']==1)
 			{
 				//buscar variable del iva
 				$Result[$ii]['IVA']=$Result[$ii]['PVP']*$_SESSION['INGRESO']['porc'];
@@ -968,29 +969,7 @@ $cuen=count($_SESSION['APPR']['PED']);
 			$Result[$ii]['Cta_Inventario']=$row['Cta_Inventario'];
 			$Result[$ii]['Cta_Costo_Venta']=$row['Cta_Costo_Venta'];
 		}
-		/*while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_NUMERIC) ) 
-		{
-			$Result[$ii]['Codigo_Inv']=$row[2];
-			$Result[$ii]['Producto']=$row[3];
-			//echo $Result[$ii]['Producto']."<br>";
-			$Result[$ii]['PVP']=$row[9];
-			$Result[$ii]['PVP_2']=$row[40];
-			$Result[$ii]['IVA']=$row[10];
-			if($Result[$ii]['IVA']==true)
-			{
-				//buscar variable del iva
-				$Result[$ii]['IVA']=$Result[$ii]['PVP']*$_SESSION['INGRESO']['porc'];
-				$Result[$ii]['IVA_2']=$Result[$ii]['PVP_2']*$_SESSION['INGRESO']['porc'];
-			}
-			else
-			{
-				$Result[$ii]['IVA']=0;
-				$Result[$ii]['IVA_2']=0;
-			}
-			$Result[$ii]['Cta_Inventario']=$row[11];
-			$Result[$ii]['Cta_Costo_Venta']=$row[12];
-			//$ii++;
-		}*/
+		
 		//verificamos valor
 		$A_No=0;
 		$sql=" SELECT MAX(A_No) AS Expr1 FROM  Asiento_F
@@ -1016,6 +995,7 @@ $cuen=count($_SESSION['APPR']['PED']);
 		{
 			$A_No++;
 		}
+		// print_r($Result[0]);die();
 		//echo $Result[0]['Producto']."<br>";
 		$dato[0]['campo']='CODIGO';
 		$dato[0]['dato']=trim($prod[$i]);

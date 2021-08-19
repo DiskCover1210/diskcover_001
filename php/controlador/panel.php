@@ -118,7 +118,7 @@ function variables_sistema($EmpresaEntidad,$NombreEmp,$ItemEmp)
         $_SESSION['INGRESO']['Email_Conexion_CE']=$empresa[0]['Email_Conexion_CE'];
         $_SESSION['INGRESO']['Formato_Cuentas']=$empresa[0]['Formato_Cuentas'];
         $_SESSION['INGRESO']['Formato_Inventario']=$empresa[0]['Formato_Inventario'];
-        $_SESSION['INGRESO']['porc']=$empresa[0]['Por_CxC'];////////////
+        $_SESSION['INGRESO']['porc']=$empresa[0]['porc'];
         $_SESSION['INGRESO']['Ambiente']=$empresa[0]['Ambiente'];
         $_SESSION['INGRESO']['Obligado_Conta']=$empresa[0]['Obligado_Conta'];
         $_SESSION['INGRESO']['LeyendaFA']=$empresa[0]['LeyendaFA'];
@@ -155,7 +155,7 @@ function variables_sistema($EmpresaEntidad,$NombreEmp,$ItemEmp)
 				$_SESSION['INGRESO']['Fechai']=$periodo[0]['Fecha_Inicial']->format('Y-m-d');
 				$_SESSION['INGRESO']['Fechaf']=$periodo[0]['Fecha_Final']->format('Y-m-d');
         $permiso=getAccesoEmpresas();
-
+        
 				//get usuario
 				
   }else
