@@ -221,7 +221,7 @@ class facturar_pensionM
         AND CP.Codigo_Inv = CF.Codigo_Inv 
         ORDER BY TD,Serie, Factura, Total desc, No ";
         $sql = $SQL1 . " UNION " . $SQL2 . " UNION " . $SQL3;
-        $stmt = $this->db->String_Sql($sql);
+    $stmt = $this->db->datos($sql);
     return $stmt;
   }
 }
