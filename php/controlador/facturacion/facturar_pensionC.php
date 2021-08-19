@@ -147,7 +147,7 @@ class facturar_pensionC
     }
     $datos = $this->facturacion->historiaCliente($codigoCliente);
     $historia = [];
-    while ($value = sqlsrv_fetch_array( $datos, SQLSRV_FETCH_ASSOC)) {
+    foreach ($datos as $value) {
       $historia[] = array('TD'=> utf8_encode($value['TD']),'Fecha'=> utf8_encode($value['Fecha']->format('Y-m-d')),'Serie'=> utf8_encode($value['Serie']),'Factura'=> utf8_encode($value['Factura']),'Detalle'=> utf8_encode($value['Detalle']), 'Anio'=> utf8_encode($value['Anio']),'Mes'=> utf8_encode($value['Mes']),'Total'=> utf8_encode($value['Total']),'Abonos'=> utf8_encode($value['Abonos']),'Mes_No'=> utf8_encode($value['Mes_No']),'No'=> utf8_encode($value['No']) );
     }
     echo json_encode($historia);
@@ -185,7 +185,7 @@ class facturar_pensionC
     $tablaHTML[0]['estilo'] = 'B';
 
     $count = 1;
-     while ($value = sqlsrv_fetch_array( $datos, SQLSRV_FETCH_ASSOC)) {
+    foreach ($datos as $value) {
       $tablaHTML[$count]['medidas'] = $tablaHTML[0]['medidas'];
       $tablaHTML[$count]['alineado'] = array('L','L','L','L','L','L','R','R','R','R','R');
       $tablaHTML[$count]['datos'] = array($value['TD'],$value['Fecha']->format('Y-m-d'),$value['Serie'],$value['Factura'],$value['Detalle'], $value['Anio'],$value['Mes'],$value['Total'],$value['Abonos'],$value['Mes_No'],$value['No']);
