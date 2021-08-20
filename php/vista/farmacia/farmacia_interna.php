@@ -1,33 +1,14 @@
 <?php  require_once("panel.php"); ?>
-<style type="text/css">
-          #datos_t tbody tr:nth-child(even) { background:#fffff;}
-          #datos_t tbody tr:nth-child(odd) { background: #e2fbff;}
-          #datos_t tbody tr:nth-child(even):hover {  background: #DDB;}
-          #datos_t thead { background: #afd6e2; }
-          #datos_t tbody tr:nth-child(odd):hover {  background: #DDA;}
-          #datos_t table {border-collapse: collapse;}
-          #datos_t table, th, td {  border: solid 1px #aba0a0;  padding: 2px;  }
-          #datos_t tbody { box-shadow: 10px 10px 6px rgba(0, 0, 0, 0.6);  }
-          #datos_t thead { background: #afd6e2;  box-shadow: 10px 0px 6px rgba(0, 0, 0, 0.6);} 
-
-          /*#datos_t tbody { display:block; height:300px;  overflow-y:auto; width:fit-content;}*/
-          /*#datos_t thead,tbody tr {    display:table;  width:100%;  table-layout:fixed; } */
-          #datos_t thead { width: calc( 100% - 1.2em ) /*scrollbar is average 1em/16px width, remove it from thead width*/ }
-
-
-       </style>      
 <script type="text/javascript">
    $( document ).ready(function() {
-   	 tabla_ingresos();
-   	 autocoplet_prov()
+   
 // /------------------------
-   	 autocoplet_desc();
-   	 autocoplet_ref();
-   	 tabla_catalogo('ref');
+   	
 //---------------------------
 
 //--------------------------
-    cargar_pedidos();
+//-----------------------------
+
 
    
   });
@@ -39,7 +20,7 @@
           dataType: 'json',
           delay: 250,
           processResults: function (data) {
-            console.log(data);
+            // console.log(data);
             if(data != -1)
             {
               return {
@@ -58,6 +39,7 @@
 
    function tabla_ingresos()
    {
+    $('#tbl_opcion1').html('<div class="text-center"><img src="../../img/gif/loader4.1.gif"></div>');
    	 var parametros=
     {
       'proveedor':$('#ddl_proveedor').val(),
@@ -71,7 +53,7 @@
       dataType: 'json',
       success:  function (response) { 
       	console.log(response);
-        $('#tbl_opcion1').html(response);
+        $('#tbl_opcion1').html(response);    
       }
     });
 
@@ -120,6 +102,7 @@
 
    function tabla_catalogo(tipo)
    {
+    $('#tbl_opcion2').html('<div class="text-center"><img src="../../img/gif/loader4.1.gif"></div>');
    	 var parametros=
     {
       'descripcion':$('#ddl_descripcion').val(),
@@ -155,6 +138,7 @@ function Ver_detalle(comprobante)
  function cargar_pedidos(f='')
   {
    
+    $('#tbl_descargos').html('<div class="text-center"><img src="../../img/gif/loader4.1.gif"></div>');   
       var  parametros = 
       { 
         'nom':$('#txt_paciente').val(),
@@ -164,7 +148,7 @@ function Ver_detalle(comprobante)
         'proce':$('#txt_procedimiento').val(),
         'desde':$('#txt_desde').val(),
         'hasta':$('#txt_hasta').val(),
-        'busfe':f,
+        'busfe':$('#rbl_fecha').prop('checked'),
       }    
      // console.log(parametros);
      $.ajax({
@@ -173,13 +157,123 @@ function Ver_detalle(comprobante)
       type:  'post',
       dataType: 'json',
       success:  function (response) { 
+        console.log(response)
         if(response)
         {
-          $('#tbl_descargos').html(response.tabla);
+          $('#tbl_descargos').html(response.tbl);
         }
       }
     });
   }
+
+
+
+  //----------------------------  opcion 5 ----------------
+  function cargar_medicamentos()
+  {
+     $('#tbl_medicamentos').html('<div class="text-center"><img src="../../img/gif/loader4.1.gif"></div>');
+     var paginacion = 
+    {
+      '0':$('#pag').val(),
+      '1':$('#ddl_reg').val(),
+      '2':'cargar_medicamentos',
+    }   
+      var  parametros = 
+      { 
+        'nom':$('#txt_paciente5').val(),
+        'ci':$('#txt_ci_ruc').val(),
+        'medicamento':$('#txt_medicamento').val(),
+        'depar':$('#txt_departamento').val(),
+        'desde':$('#txt_desde5').val(),
+        'hasta':$('#txt_hasta5').val(),
+        'busfe':$('#rbl_fecha5').prop('checked'),
+      }    
+     // console.log(parametros);
+     $.ajax({
+      data:  {parametros:parametros,paginacion:paginacion},
+      url:   '../controlador/farmacia/farmacia_internaC.php?descargos_medicamentos=true',
+      type:  'post',
+      dataType: 'json',
+      success:  function (response) { 
+        // console.log(response);
+        if(response)
+        {
+          $('#tbl_medicamentos').html(response.tbl);
+        }
+      }
+    });
+  }
+
+
+  function cargar_tablas()
+  {
+    var opcion = $('#ddl_opciones').val();
+
+      $('#opcion5').css('display','none')  
+      $('#opcion4').css('display','none')
+      $('#opcion2').css('display','none')
+      $('#opcion1').css('display','none')
+    if(opcion==1)
+    {
+
+         tabla_ingresos();
+         autocoplet_prov();
+         $('#opcion1').css('display','block')
+    }else if(opcion==2)
+    {
+       autocoplet_desc();
+       autocoplet_ref();
+       tabla_catalogo('ref');
+       $('#opcion2').css('display','block')
+
+    }else if(opcion==3)
+    {
+      
+    }else if(opcion==4)
+    {   
+    cargar_pedidos();
+    $('#opcion4').css('display','block')
+
+    }else if(opcion==5)
+    {
+      cargar_medicamentos(); 
+      $('#opcion5').css('display','block')       
+    }
+  }
+
+
+function reporte_pdf()
+{
+   var url = '../controlador/farmacia/farmacia_internaC.php?imprimir_pdf=true&';
+   var opcion = $('#ddl_opciones').val();
+   if(opcion=='')
+   {
+    Swal.fire('Seleccione una tipo de informe','','info');
+    return false;
+   }
+   if(opcion==1)
+   {
+    url+='opcion=1&';
+     var datos =  $("#form_1").serialize();
+   }  
+   if(opcion==2)
+   {
+    url+='opcion=2&';
+     var datos =  $("#form_2").serialize();
+   }  
+   if(opcion==4)
+   {
+    url+='opcion=4&';
+     var datos =  $("#form_4").serialize();
+   }  
+   if(opcion==5)
+   {
+    url+='opcion=5&';
+     var datos =  $("#form_5").serialize();
+   }  
+
+    window.open(url+datos, '_blank');
+}
 
 
 </script>
@@ -218,11 +312,11 @@ function Ver_detalle(comprobante)
 <div class="container"><br>
 	<div class="row">
 		<div class="col-sm-6">
-			<select class="form-control input-sm">
+			<select class="form-control input-sm" onchange="cargar_tablas()" name="ddl_opciones" id="ddl_opciones">
 				<option value="">Seleccione opcion</option>
 				<option value="1">INGRESOS</option>
 				<option value="2">LISTADO DEL CATALOGO</option>
-				<option value="3">EGRESOS O DESCARGOS DE PACIENTES</option>
+				<!-- <option value="3">EGRESOS O DESCARGOS DE PACIENTES</option> -->
 				<option value="4">DESCARGOS PARA VISUALIZAR POR PACIENTE</option>
 				<option value="5">VISUALIZACION DE DESCARGOS DE FARMACIA INTERNA</option>
 			</select>			
@@ -230,6 +324,7 @@ function Ver_detalle(comprobante)
 	</div>
 	<div id="opcion1" style="display:none;">
 		<div class="row">
+      <form id="form_1">
 			<div class="col-sm-4">
 				<b>Proveedor</b>
 				<div class="input-group"> 
@@ -246,7 +341,8 @@ function Ver_detalle(comprobante)
 			<div class="col-sm-4">
 				No. Comprobante
 				<input type="text" class="form-control input-sm" name="txt_comprobante" id="txt_comprobante" onkeyup="tabla_ingresos()" placeholder="Numero de Comprobante">
-			</div>			
+			</div>
+      </form>			
 		</div>
 		<div class="row"><br>
 			<div id="tbl_opcion1">
@@ -257,6 +353,7 @@ function Ver_detalle(comprobante)
 	</div>
 	<div id="opcion2" style="display:none">
 		<div class="row">
+      <form id="form_2">
 			<div class="col-sm-4">
 				<b>Codigo</b>
 				<div class="input-group"> 
@@ -274,9 +371,9 @@ function Ver_detalle(comprobante)
                   </select>             
                    <span class="input-group-addon" onclick="$('#ddl_descripcion').empty();tabla_catalogo('ref')" title="Borrar seleccion"><i class="fa fa-close"></i></span>
               </div>
-			</div>	
-					
-		</div>
+			</div>
+      </form>					
+		</div><br>
 		<div id="tbl_opcion2">
 			
 		</div>	
@@ -296,8 +393,9 @@ function Ver_detalle(comprobante)
     
   </div>
 
-  <div id="opcion4">
+  <div id="opcion4" style="display:none">
     <div class="row">
+      <form id="form_4">
       <div class="col-sm-3">
         <b>Paciente</b>
         <input type="text"  class="form-control input-sm" name="txt_paciente" id="txt_paciente" onkeyup="cargar_pedidos();">
@@ -316,34 +414,24 @@ function Ver_detalle(comprobante)
       </div>  
       <div class="col-sm-2">
         <b>Procedimiento</b>       
-        <input type="text"  class="form-control input-sm" name="txt_procedimiento" id="txt_procedimiento">
+        <input type="text"  class="form-control input-sm" name="txt_procedimiento" id="txt_procedimiento" onkeyup="cargar_pedidos();">
       </div>  
       <div class="col-sm-2">
-        Desde        
-        <input type="date"  class="form-control input-sm" name="txt_desde" id="txt_desde">
+        <b>Desde</b>        
+        <input type="date"  class="form-control input-sm" name="txt_desde" value="<?php echo date('Y-m-d'); ?>" id="txt_desde" onblur="cargar_pedidos();">
       </div>  
       <div class="col-sm-2">
         <b>Hasta</b>        
-        <input type="date"  class="form-control input-sm" name="txt_hasta" id="txt_hasta">
-      </div>  
+        <input type="date"  class="form-control input-sm" name="txt_hasta" value="<?php echo date('Y-m-d'); ?>" id="txt_hasta" onblur="cargar_pedidos();">
+      </div> 
+      <div class="col-sm-2"><br>
+          <label onclick="cargar_pedidos()"><input type="checkbox" name="rbl_fecha" id="rbl_fecha">Por Fecha</label>
+      </div>
+      </form> 
     </div>
-    <div class="row">
+    <div class="row"><br>
       <div class="col-sm-12">
-        <div class="table-responsive">
-          <table id="datos_t">
-            <thead>
-              <th>Fecha</th>
-              <th>Paciente</th>
-              <th>Numero de cedula</th>
-              <th>Historia clinica</th>
-              <th>Departamento</th>
-              <th>Costo total</th>
-              <th>Porcedimiento</th>
-            </thead>
-            <tbody id="tbl_descargos">
-              
-            </tbody>
-          </table>
+        <div id="tbl_descargos">
           
         </div>
         
@@ -351,6 +439,50 @@ function Ver_detalle(comprobante)
     </div>
     
   </div>
+
+  <div id="opcion5" style="display:none">
+    <div class="row">
+      <form id="form_5"> 
+      <div class="col-sm-2">
+        <b>Desde</b>
+        <input type="date" name="txt_desde5" class="form-control input-sm" id="txt_desde5" value="<?php echo date('Y-m-d');?>" onblur="cargar_medicamentos()">        
+      </div> 
+      <div class="col-sm-2">
+        <b>Hasta</b>
+        <input type="date" name="txt_hasta5" class="form-control input-sm" id="txt_hasta5" value="<?php echo date('Y-m-d');?>" onblur="cargar_medicamentos()">        
+      </div> 
+      <div class="col-sm-2">
+        <b>Medicamento o insumo</b>
+        <input type="text" name="txt_medicamento" id="txt_medicamento" class="form-control input-sm" onkeyup="cargar_medicamentos()">        
+      </div> 
+      <div class="col-sm-2">
+        <b>Paciente</b>
+        <input type="text" name="txt_paciente5" id="txt_paciente5" class="form-control input-sm" onkeyup="cargar_medicamentos()">        
+      </div> 
+       <div class="col-sm-2">
+        <b>Numero de cedula</b>
+        <input type="text" name="txt_ci_ruc" id="txt_ci_ruc" class="form-control input-sm" onkeyup="cargar_medicamentos()">        
+      </div> 
+       <div class="col-sm-2">
+        <b>Departamento</b>
+        <input type="text" name="txt_departamento5" id="txt_departamento5" class="form-control input-sm" onkeyup="cargar_medicamentos()">       
+      </div> 
+    </form>
+    </div>
+    <div class="row">      
+        <label onclick="cargar_medicamentos()"><input type="checkbox" name="rbl_fecha5" id="rbl_fecha5">Por Fecha</label>
+    </div>
+    <div class="row"><br>
+      <div class="col-sm-12">
+        <div id="tbl_medicamentos">
+          
+        </div>
+        
+      </div>      
+    </div>
+    
+  </div>
+
 
 </div>
 

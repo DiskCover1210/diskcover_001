@@ -41,8 +41,11 @@ class farmacia_internaM
 		}
 		$sql.="GROUP BY Numero,Codigo_P,Factura,Fecha_DUI,Cliente
 		ORDER BY Fecha_DUI DESC";
+		// $sql.=' OFFSET 0 ROWS FETCH NEXT 100 ROWS ONLY;';
+
+		$reg = array(0,100);
 		// print_r($sql);die();
-		$tbl = grilla_generica_new($sql,'Trans_Kardex T ',$id_tabla='tbl_ingresos',null,$botones=false,null,false,null,null,null,null,null,null);
+		$tbl = grilla_generica_new($sql,'Trans_Kardex T ',$id_tabla='tbl_ingresos',null,$botones=false,false,false,1,1,1,500,2,false);
 		// print_r($tbl);die();
 		$datos = $this->conn->datos($sql);
 		return array('tbl'=>$tbl,'datos'=>$datos);
@@ -51,6 +54,8 @@ class farmacia_internaM
 
 	function tabla_catalogo($query,$tipo)
 	{
+		// print_r($query);
+		// print_r($tipo);die();
 		$sql = "SELECT Codigo_Inv as 'Codigo',Producto,Valor_Total,Stock_Actual as 'Cantidad' 
 		FROM Catalogo_Productos 
 		WHERE INV = 1 
@@ -64,8 +69,11 @@ class farmacia_internaM
 		{
 			$sql.=" Codigo_Inv LIKE '%".$query."%'";
 		}
-		$sql.=' ORDER BY ID OFFSET 0 ROWS FETCH NEXT 100 ROWS ONLY;';
-        $tbl = grilla_generica_new($sql,'Catalogo_Productos',$id_tabla='tbl_ingresos',null,$botones=false,null,false,null,null,null,null,null,null);
+		// $sql.=' ORDER BY ID OFFSET 0 ROWS FETCH NEXT 100 ROWS ONLY;';
+
+		// print_r($sql);die();
+
+        $tbl = grilla_generica_new($sql,'Catalogo_Productos',$id_tabla='tbl_pro',false,$botones=false,false,false,1,1,1,500,null,null);
 		// print_r($tbl);die();
 		$datos = $this->conn->datos($sql);
 		return array('tbl'=>$tbl,'datos'=>$datos);
@@ -73,7 +81,7 @@ class farmacia_internaM
 
 	function pedido_paciente($nombre=false,$ci=false,$historia=false,$departamento=false,$procedimiento=false,$desde=false,$hasta =false,$busfe=false)
 	{
-		$sql = "SELECT SUM(VALOR_TOTAL) as 'importe',ORDEN,Codigo_B,Fecha_Fab,C.Cliente as 'nombre',A.SUBCTA as 'area',CS.Detalle as 'subcta',C.Matricula as 'his',A.Detalle as 'Detalle',Matricula
+		$sql = "SELECT Fecha_Fab as 'Fecha',C.Cliente as 'Paciente',CI_RUC AS 'Cedula',C.Matricula as 'Historia',CS.Detalle as 'Departamento',SUM(VALOR_TOTAL) as 'importe',A.Detalle as 'Procedimiento'
 			FROM Asiento_K A
 			LEFT JOIN Clientes C ON C.CI_RUC = A.Codigo_B  
 			LEFT JOIN Catalogo_SubCtas CS ON CS.Codigo = A.SUBCTA
@@ -90,17 +98,71 @@ class farmacia_internaM
 		{
 			$sql.=" AND Cliente LIKE '%".$nombre."%'";
 		}
-		if($busfe)
+
+		if($departamento)
+		{		
+		  $sql.=" AND CS.Detalle like '".$departamento."%'";
+		}
+		if($procedimiento)
+		{		
+		  $sql.=" AND A.Detalle like '%".$procedimiento."%'";
+		}
+		
+		if($busfe=='true')
 		{		
 			  $sql.=" AND Fecha_Fab BETWEEN '".$desde."' and '".$hasta."'";
 		}
 
-		$sql.=" GROUP BY ORDEN ,Codigo_B,Fecha_Fab,C.Cliente,A.SUBCTA,CS.Detalle,C.Matricula,A.Detalle,Matricula ORDER BY Fecha_Fab DESC";
-		$sql.=" OFFSET 0 ROWS FETCH NEXT 50 ROWS ONLY;";
+		$sql.=" GROUP BY ORDEN ,CI_RUC,Fecha_Fab,C.Cliente,A.SUBCTA,CS.Detalle,C.Matricula,A.Detalle,Matricula ORDER BY Fecha_Fab DESC";
+		// $sql.=" OFFSET 0 ROWS FETCH NEXT 50 ROWS ONLY;";
 		
 		// print_r($sql);die();
+		$botones[0] = array();
+		$tbl = grilla_generica_new($sql,' Asiento_K A','tbl_pedi',false,$botones=false,$check=false,$imagen=false,$border=1,$sombreado=1,$head_fijo=1,500);
 		$datos = $this->conn->datos($sql);
-       return $datos;
+       return array('tbl'=>$tbl,'datos'=>$datos) ;
+	}
+
+
+
+
+	function descargos_medicamentos($query=false,$paciente=false,$ci=false,$departamento=false,$desde=false,$hasta=false,$tipo=false)
+	{
+		$sql = "SELECT T.Fecha,CP.Producto,Cliente,CI_RUC as 'Cedula',C.Matricula,Centro_Costo as 'Departamento'
+		FROM Trans_Kardex T
+		INNER JOIN Catalogo_Productos CP ON T.Codigo_Inv = CP.Codigo_Inv
+		INNER JOIN Clientes C ON T.Codigo_P = C.Codigo  
+		WHERE T.Item = '016' AND T.Periodo  ='.' AND Entrada = 0 AND Matricula <>0 AND Centro_Costo <> '.'";
+		if($query)
+		{
+			$sql.=" AND CP.Producto like '%".$query."%'";
+		}
+		if($paciente)
+		{
+			$sql.=" AND Cliente like '%".$paciente."%'";
+		}
+
+		if($ci)
+		{
+			$sql.=" AND CI_RUC like '".$ci."%'";
+		}
+		if($departamento)
+		{
+			$sql.=" AND Centro_Costo like '%".$departamento."%'";
+		}
+		if($tipo=='true')
+		{
+			$sql.=" AND T.Fecha BETWEEN '".$desde."' AND '".$hasta."'";
+		}
+
+		$sql.="GROUP BY T.Fecha,CP.Producto,Cliente,CI_RUC,C.Matricula,Centro_Costo,Numero
+		ORDER BY T.Fecha DESC ";
+		 $sql.=" OFFSET 0 ROWS FETCH NEXT 100 ROWS ONLY;";
+		 // print_r($sql);die();
+		$tbl = grilla_generica_new($sql,' Trans_Kardex T','tbl_medi',false,$botones=false,$check=false,$imagen=false,$border=1,$sombreado=1,$head_fijo=1,500);
+		$datos = $this->conn->datos($sql);
+		 // print_r($datos);die();
+       return array('tbl'=>$tbl,'datos'=>$datos) ;
 	}
 
 }

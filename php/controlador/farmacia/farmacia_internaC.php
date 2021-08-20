@@ -20,6 +20,20 @@ if(isset($_GET['cargar_pedidos']))
 	$parametros = $_POST['parametros'];
 	echo json_encode($controlador->cargar_pedidos($parametros));
 }
+
+if(isset($_GET['descargos_medicamentos']))
+{	
+	$parametros = $_POST['parametros'];
+	$paginacion = $_POST['paginacion'];
+	echo json_encode($controlador->descargos_medicamentos($parametros,$paginacion));
+}
+
+if(isset($_GET['imprimir_pdf']))
+{	
+	$parametros = $_GET;
+	echo json_encode($controlador->reporte_pdf($parametros));
+}
+
 class farmacia_internaC 
 {
 	private $modelo;
@@ -53,7 +67,7 @@ class farmacia_internaC
 		}
 		if($parametros['referencia']!='')
 		{
-			$q = explode('_',$parametros['descripcion']);
+			$q = explode('_',$parametros['referencia']);
 			$query = $q[0];
 		}
 		// print_r($parametros);die();
@@ -66,44 +80,131 @@ class farmacia_internaC
 		
 		// print_r($parametros);die();
 		$datos = $this->modelo->pedido_paciente($parametros['nom'],$parametros['ci'],$parametros['historia'],$parametros['depar'],$parametros['proce'],$parametros['desde'],$parametros['hasta'],$parametros['busfe']);
-		$tr='';
-		// print_r($nega);die();		
-		foreach ($datos as $key => $value) {			
-			$bur = '';
-			// print_r($nega)die();
-			
-			$item = $key+1;
-			$d =  dimenciones_tabl(strlen($value['Fecha_Fab']->format('Y-m-d')));
-			$d2 = dimenciones_tabl(strlen($value['nombre']));
-			$d3 = dimenciones_tabl(strlen($value['Codigo_B']));
-			$d4 = dimenciones_tabl(strlen($value['Matricula']));
-			$d5 = dimenciones_tabl(strlen($value['subcta'])); 
-			$d6 = dimenciones_tabl(strlen($value['importe']));
-			$d7 =  dimenciones_tabl(strlen($value['Detalle']));
-			$tr.='<tr>
-  					<td width="'.$d.'">'.$value['Fecha_Fab']->format('Y-m-d').'</td>
-  					<td width="'.$d2.'">'.$value['nombre'].'</td>
-  					<td width="'.$d3.'">'.$value['Codigo_B'].'</td>
-  					<td width="'.$d4.'">'.$value['Matricula'].'</td>
-  					<td width="'.$d5.'">'.$value['subcta'].'</td>
-  					<td width="'.$d6.'">'.$value['importe'].'</td>
-  					<td width="'.$d7.'">'.$value['Detalle'].'</td>
-  					<td width="90px">
-  						<a href="../vista/farmacia.php?mod=Farmacia&acc=ingresar_descargos&acc1=Ingresar%20Descargos&b=1&po=subcu&num_ped='.$value['ORDEN'].'&area='.$value['area'].'-'.$value['Detalle'].'&cod='.$value['his'].'#" class="btn btn-sm btn-primary" title="Editar pedido"><span class="glyphicon glyphicon-pencil"></span></a>
-  						<button class="btn btn-sm btn-danger" onclick="eliminar_pedido(\''.$value['ORDEN'].'\',\''.$value['area'].'\')"><span class="glyphicon glyphicon-trash"></span></button>
-  					</td>
-  				</tr>';
-		}
-		if(count($datos)>0)
-		{
-			$tabla = array('num_lin'=>0,'tabla'=>$tr);
-			return $tabla;
-		}else
-		{
-			$tabla = array('num_lin'=>0,'tabla'=>'<tr><td colspan="7" class="text-center"><b><i>Sin registros...<i></b></td></tr>');
-			return $tabla;		
-		}
+		return $datos;
 
 	}
+
+    function descargos_medicamentos($parametros,$paginacion)
+    {
+    	// print_r($parametros);die();
+    	$resp = $this->modelo->descargos_medicamentos($parametros['medicamento'],$parametros['nom'],$parametros['ci'],$parametros['depar'],$parametros['desde'],$parametros['hasta'],$parametros['busfe']);
+    	return $resp;
+    }
+    function reporte_pdf($parametros)
+    {
+    	// print_r($parametros);die();
+    	switch ($parametros['opcion']) {
+    		case 1:
+	    		$pro[2] = '';
+				if($parametros['ddl_proveedor']!='')
+				{
+				$pro = explode('-',$parametros['ddl_proveedor']);
+			    }
+			    $titulo = 'R E P O R T E   D E   I N G R E S O S';
+			    $Fechaini = ''; $Fechafin='';
+	    		$datos = $this->modelo->tabla_ingresos($pro[2],$parametros['txt_comprobante'],$parametros['txt_factura']);
+	    			 $tablaHTML[0]['medidas']=array(25,100,30,25);
+		             $tablaHTML[0]['alineado']=array('L','L','L','L');
+		             $tablaHTML[0]['datos']=array('<b>Fecha','<b>Cliente','<b>Comprobante','<b>Factura');
+		             $tablaHTML[0]['borde'] =1;
+		             $pos = 1;
+	    		foreach ($datos['datos'] as $key => $value) {
+	    			 $tablaHTML[$pos]['medidas']=$tablaHTML[0]['medidas'];
+		             $tablaHTML[$pos]['alineado']=$tablaHTML[0]['alineado'];
+		             $tablaHTML[$pos]['datos']=array($value['Fecha']->format('Y-m-d'),$value['Cliente'],$value['Comprobante'],$value['Factura']);
+		             $tablaHTML[$pos]['borde'] =1;
+		             $pos+=1;
+	    		}
+	    		$this->pdf->cabecera_reporte_MC($titulo,$tablaHTML,$contenido=false,$image=false,$Fechaini,$Fechafin,false,true,25,'P');
+    			break;
+    		case 2:
+    			$query ='';
+				if(isset($parametros['ddl_descripcion']) && $parametros['ddl_descripcion']!='')
+				{
+					$q = explode('_',$parametros['ddl_descripcion']);
+					$query = $q[0];
+				}
+				if(isset($parametros['ddl_referencia']) && $parametros['ddl_referencia']!='')
+				{
+					$q = explode('_',$parametros['ddl_referencia']);
+					$query = $q[0];
+				}
+			    $titulo = 'L I S T A D O   D E L   C A T A L O G O';
+			    $Fechaini = ''; $Fechafin='';
+	    		$datos = $this->modelo->tabla_catalogo($query,'ref');
+	    			 $tablaHTML[0]['medidas']=array(25,100,30,25);
+		             $tablaHTML[0]['alineado']=array('L','L','L','L');
+		             $tablaHTML[0]['datos']=array('<b>Codigo','<b>Producto','<b>Valor Total','<b>Cantidad');
+		             $tablaHTML[0]['borde'] =1;
+		             $pos = 1;
+	    		foreach ($datos['datos'] as $key => $value) {
+	    			 $tablaHTML[$pos]['medidas']=$tablaHTML[0]['medidas'];
+		             $tablaHTML[$pos]['alineado']=$tablaHTML[0]['alineado'];
+		             $tablaHTML[$pos]['datos']=array($value['Codigo'],$value['Producto'],$value['Valor_Total'],$value['Cantidad']);
+		             $tablaHTML[$pos]['borde'] =1;
+		             $pos+=1;
+	    		}
+	    		$this->pdf->cabecera_reporte_MC($titulo,$tablaHTML,$contenido=false,$image=false,$Fechaini,$Fechafin,false,true,25,'P');
+    			break;
+    		case 4:
+    			$f = '';
+    			if(isset($parametros['rbl_fecha'])){$f=1;}
+
+    			$datos = $this->modelo->pedido_paciente($parametros['txt_paciente'],$parametros['txt_ci'],$parametros['txt_historia'],$parametros['txt_departamento'],$parametros['txt_procedimiento'],$parametros['txt_desde'],$parametros['txt_hasta'],$f);
+    			// print_r($datos);die();
+    		 	$titulo = 'DESCARGOS PARA VISUALIZAR POR PACIENTE';
+    		 	$Fechaini =''; $Fechafin='';
+    		 	if($parametros['txt_desde'] != $parametros['txt_hasta'])
+    		 	{
+			    $Fechaini =$parametros['txt_desde'] ; $Fechafin=$parametros['txt_hasta'];
+			    }
+			    $tablaHTML = array();
+	    			 $tablaHTML[0]['medidas']=array(25,85,25,20,50,20,48);
+		             $tablaHTML[0]['alineado']=array('L','L','L','L','L','R','L');
+		             $tablaHTML[0]['datos']=array('<b>Fecha','<b>Paciente','<b>Cedula','<b>Historia','<b>Departamento','<b>Importe','<b>	Procedimiento');
+		             $tablaHTML[0]['borde'] =1;
+		             $pos = 1;
+	    		foreach ($datos['datos'] as $key => $value) {
+	    			 $tablaHTML[$pos]['medidas']=$tablaHTML[0]['medidas'];
+		             $tablaHTML[$pos]['alineado']=$tablaHTML[0]['alineado'];
+		             $tablaHTML[$pos]['datos']=array($value['Fecha']->format('Y-m-d'),$value['Paciente'],$value['Cedula'],$value['Historia'],$value['Departamento'],$value['importe'],$value['Procedimiento']);
+		             $tablaHTML[$pos]['borde'] =1;
+		             $pos+=1;
+	    		}
+	    		// print_r($tablaHTML);die();
+	    		$this->pdf->cabecera_reporte_MC($titulo,$tablaHTML,$contenido=false,$image=false,$Fechaini,$Fechafin,false,true,25,'L');
+    			break;
+    		case 5:
+    		    $f = '';
+    			if(isset($parametros['rbl_fecha5'])){$f=1;}
+    			$Fechaini =''; $Fechafin='';
+    		 	if($parametros['txt_desde5'] != $parametros['txt_hasta5'])
+    		 	{
+			    $Fechaini =$parametros['txt_desde5'] ; $Fechafin=$parametros['txt_hasta5'];
+			    }
+    			$titulo = 'VISUALIZACION DE DESCARGOS DE FARMACIA INTERNA';
+			    $Fechaini = ''; $Fechafin='';
+	    		$datos = $this->modelo->descargos_medicamentos($parametros['txt_medicamento'],$parametros['txt_paciente5'],$parametros['txt_ci_ruc'],$parametros['txt_departamento5'],$parametros['txt_desde5'],$parametros['txt_hasta5'],$f);
+	    			 $tablaHTML[0]['medidas']=array(25,80,85,25,23,45);
+		             $tablaHTML[0]['alineado']=array('L','L','L','L','L','L');
+		             $tablaHTML[0]['datos']=array('<b>Fecha','<b>Producto','<b>Cliente','<b>Cedula','<b>Matricula','<b>Departamento');
+		             $tablaHTML[0]['borde'] =1;
+		             $pos = 1;
+	    		foreach ($datos['datos'] as $key => $value) {
+	    			 $tablaHTML[$pos]['medidas']=$tablaHTML[0]['medidas'];
+		             $tablaHTML[$pos]['alineado']=$tablaHTML[0]['alineado'];
+		             $tablaHTML[$pos]['datos']=array($value['Fecha']->format('Y-m-d'),$value['Producto'],$value['Cliente'],$value['Cedula'],$value['Matricula'],$value['Departamento']);
+		             $tablaHTML[$pos]['borde'] =1;
+		             $pos+=1;
+	    		}
+	    		$this->pdf->cabecera_reporte_MC($titulo,$tablaHTML,$contenido=false,$image=false,$Fechaini,$Fechafin,false,true,25,'L');
+    			break;    			
+    		
+    		default:
+    			// code...
+    			break;
+    	}
+
+    }
 
 }
