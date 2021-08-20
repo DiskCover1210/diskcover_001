@@ -7,6 +7,7 @@
   {
     cambiarProducto();
     productoFinal();
+    funcionInicio();
   });
 
   function cambiarProducto(){
@@ -24,6 +25,17 @@
         }else{
           console.log("No tiene datos");
         }        
+      }
+    });
+  }
+
+  function funcionInicio(){
+    $.ajax({
+      type: "POST",                 
+      url: '../controlador/inventario/kardexC.php?funcion=true',
+      success: function(data)             
+      {
+        datos = JSON.parse(data);
       }
     });
   }

@@ -40,6 +40,11 @@ if(isset($_GET['generarExcel']))
   $controlador->generarExcel();
 }
 
+if(isset($_GET['funcion']))
+{
+  $controlador->funcionInicio();
+}
+
 class kardexC
 {
 	private $modelo;
@@ -100,6 +105,10 @@ class kardexC
 		$bodega = $_POST['bodega'];
 		$tabla = $this->modelo->kardex_total($desde,$hasta,$codigo,$cbBodega,$bodega);
 		return $tabla;
+	}
+
+	public function funcionInicio(){
+		$this->modelo->funcionInicio();
 	}
 
 	public function generarPDF(){

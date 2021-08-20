@@ -7636,4 +7636,24 @@ function datos_tabla($tabla,$campo=false)
         </script>";
     }
   }
+
+  function CodigoCuentaSup($CodigoCta){
+    $LongCta =0;
+    $Bandera = true;
+    $CadAux = "";
+    $CadAux = $CodigoCta;
+    $LongCta = strlen($CadAux);
+    while($LongCta >= 0 && $Bandera){
+      if (substr($CadAux, $LongCta-1,1) == ".") {
+        $Bandera = false;
+      }
+      $LongCta--;
+    }
+    if ($LongCta < 1){
+      $CadAux = "0";
+    }else{
+      $CadAux = substr($CadAux,0,$LongCta);
+    }
+    return $CadAux;
+  }
 ?>

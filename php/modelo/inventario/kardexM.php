@@ -20,6 +20,9 @@ class kardexM
             WHERE Item = '".$_SESSION['INGRESO']['item']."'
             AND Periodo = '".$_SESSION['INGRESO']['periodo']."'
             AND TC = '".$tipo."'";
+    if ($tipo == "I") {
+      $sql .= "AND X = 'M' ";
+    }
     if ($codigoProducto != '') {
       $sql .= " AND Codigo_Inv LIKE '".$codigoProducto."%'";
     }
@@ -50,6 +53,54 @@ class kardexM
     $stmt = sqlsrv_query( $this->dbs, $sql);
     $tabla = grilla_generica_new($sql,'Trans_Kardex','myTable','',false,false,false,1,1,1,100);
     return $tabla;
+  }
+
+  public function funcionInicio(){
+    $sql = "UPDATE Catalogo_Productos 
+            SET X = '.' 
+            WHERE Item = '".$_SESSION['INGRESO']['item']."' 
+            AND Periodo = '".$_SESSION['INGRESO']['periodo']."'"; 
+    $stmt = sqlsrv_query( $this->dbs, $sql);
+
+    $sql = "UPDATE Catalogo_Productos 
+            SET X = 'M' 
+            FROM Catalogo_Productos As CP, Trans_Kardex As TK 
+            WHERE CP.Item = '".$_SESSION['INGRESO']['item']."' 
+            AND CP.Periodo = '".$_SESSION['INGRESO']['periodo']."'
+            AND CP.Item = TK.Item 
+            AND CP.Periodo = TK.Periodo 
+            AND CP.Codigo_Inv = TK.Codigo_Inv" ;
+    $stmt = sqlsrv_query( $this->dbs, $sql);
+
+    $sql = "SELECT Codigo_Inv 
+            FROM Catalogo_Productos 
+            WHERE Item = '".$_SESSION['INGRESO']['item']."' 
+            AND Periodo = '".$_SESSION['INGRESO']['periodo']."'
+            AND TC = 'P' 
+            AND X = 'M' 
+            GROUP BY Codigo_Inv 
+            ORDER BY Codigo_Inv";
+    $datos = sqlsrv_query( $this->dbs, $sql);
+    $primeravez = true;
+
+    while ($value = sqlsrv_fetch_array( $datos, SQLSRV_FETCH_ASSOC)) {
+        $Codigo1 =CodigoCuentaSup($value['Codigo_Inv']);
+        $Codigo = CodigoCuentaSup($value['Codigo_Inv']);
+        $Codigo = CodigoCuentaSup($Codigo);
+        if ($Codigo != $Codigo1) {
+          while (strlen($Codigo) > 1) {
+            $sSQL = "UPDATE Catalogo_Productos 
+                      SET X = 'M' 
+                      WHERE Item = '".$_SESSION['INGRESO']['item']."' 
+                      AND Periodo = '".$_SESSION['INGRESO']['periodo']."'
+                      AND X <> 'M' 
+                      AND Codigo_Inv = '".$Codigo."'";     
+            $stmt = sqlsrv_query( $this->dbs, $sSQL);
+            $Codigo = CodigoCuentaSup($Codigo);
+          }
+        }
+    }
+
   }
 
   public function consulta_kardex($desde,$hasta,$codigo,$cbBodega,$bodega){
