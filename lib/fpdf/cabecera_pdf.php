@@ -26,6 +26,7 @@ class cabecera_pdf
 
 	function __construct()
 	{
+		$this->fpdf = new FPDF();
 		$this->pdf = new PDFv();
 		$this->pdftable = new PDF_MC();
 		$this->fechafin='';
@@ -203,6 +204,74 @@ class cabecera_pdf
 			$this->pdftable->Output('F',dirname(__DIR__,2).'/php/vista/TEMP/'.$titulo.'.pdf');
 		}
 		
+	}
+
+	function formatoPDFMatricial($HTML,$parametros,$datos_pre)
+	{	
+		$pdf = new FPDF();
+		$pdf->setMargins(2,15, 11.7);
+		$pdf->SetFont('Courier','',8);
+		$pdf->AddPage('P');
+		$pdf->Cell(0,0,'Transaccion ('.$parametros['TC'].'): No.'.$datos_pre['lineas'][0]['Factura']);
+		$pdf->Ln(5);
+		$pdf->Cell(0,0,'Fecha: '.date('Y-m-d').' - Hora: '.date('H:m:s'));
+		$pdf->Ln(5);
+		$pdf->Cell(0,0,'Cliente: <br>'.$datos_pre['cliente']['Cliente']);
+		$pdf->Ln(5);
+		$pdf->Cell(0,0,'R.U.C/C.I.: '.$datos_pre['cliente']['CI_RUC']);
+		$pdf->Ln(5);
+		$pdf->Cell(0,0,'Cajero: '.$_SESSION['INGRESO']['Nombre']);
+		$pdf->Ln(5);
+		$pdf->Cell(0,0,'Telefono: '.$datos_pre['cliente']['Telefono']);
+		$pdf->Ln(5);
+		$pdf->Cell(0,0,'Dirección: '.$datos_pre['cliente']['Direccion']);
+		$pdf->Ln(5);
+		$pdf->Cell(0,0,'Producto/Cant x PVP/Total '.$datos_pre['cliente']['Direccion']);
+		$pdf->Ln(5);
+		$pdf->Cell(0,0,'--------------------------------------------');
+		$pdf->Ln(5);
+		foreach ($datos_pre['lineas'] as $key => $value) {
+			$pdf->Cell(0,0,$value['Producto']);
+			$pdf->Ln(2);
+			$pdf->Cell(40,6,$value['Cantidad'].' X '.number_format($value['Precio'],2),'',0);
+			$pdf->Cell(35,6,number_format($value['Total'],2),'',0,'R');
+			$pdf->Ln(5);
+    	}
+    	$pdf->Ln(5);
+		$pdf->Cell(0,0,'--------------------------------------------');
+		$pdf->Ln(4);
+    	$pdf->Cell(55,6,'SUBTOTAL:','',0,'R');
+		$pdf->Cell(20,6,number_format($datos_pre['tota'],2),'',0,'R');
+		$pdf->Ln(4);
+    	$pdf->Cell(55,6,'I.V.A 12%:','',0,'R');
+		$pdf->Cell(20,6,number_format($datos_pre['iva'],2),'',0,'R');
+		$pdf->Ln(4);
+    	$pdf->Cell(55,6,'TOTAL FACTURA:','',0,'R');
+		$pdf->Cell(20,6,number_format($datos_pre['tota'],2),'',0,'R');
+		$pdf->Ln(4);
+    	$pdf->Cell(55,6,'EFECTIVO:','',0,'R');
+		$pdf->Cell(20,6,number_format($parametros['efectivo'],2),'',0,'R');
+		$pdf->Ln(4);
+    	$pdf->Cell(55,6,'CAMBIO:','',0,'R');
+		$pdf->Cell(20,6,number_format($parametros['saldo'],2),'',0,'R');
+		$pdf->Ln(4);
+    	$pdf->Cell(0,6,'ORIGINAL: CLIENTE','');
+    	$pdf->Ln(4);
+    	$pdf->Cell(0,6,'COPIA:    EMISOR','');
+		$pdf->Ln(5);
+		$pdf->Cell(0,0,'--------------------------------------------');
+		$pdf->Ln(5);
+		$pdf->Cell(75,0,'Fue un placer atenderle','',0,'C');
+		$pdf->Ln(5);
+		$pdf->Cell(75,0,'Gracias por su compra','',0,'C');
+		
+		$pdf->Output();
+		// $this->FPDF->AddPage('P');
+ 	//  	$this->pdftable->SetFont('Arial','',18);
+ 	//  	$this->pdftable->Cell(0,3,'Prueba',0,0,'C');
+ 	//  	$this->pdftable->Ln(5);
+		// //$this->pdftable->WriteHTML($HTML);
+		// $this->pdftable->Output();
 	}
 
 

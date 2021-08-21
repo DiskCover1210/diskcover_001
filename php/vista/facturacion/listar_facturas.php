@@ -69,7 +69,7 @@
   $(document).ready(function () {
     //autocomplete_cliente();
     series();
-    secuencial();
+    secuenciales();
     envioDatos();
     $("#nombreCliente").hide();
     //enviar datos del cliente
@@ -160,7 +160,7 @@
     });
   }
 
-  function secuencial(){
+  function secuenciales(){
     $('#myModal_espera').modal('show');
     TC = $("#TC").val();
     serie = $("#serie").val();
@@ -173,11 +173,29 @@
       }, 
       success: function(data)
       {
-        const $select = $("#secuencial");
-        $select.empty();
         datos = JSON.parse(data);
         llenarComboList(datos,'secuencial');
         $('#myModal_espera').modal('hide');
+        minmaxSecuencial();
+      }
+    });
+  }
+
+  function minmaxSecuencial(){
+    TC = $("#TC").val();
+    serie = $("#serie").val();
+    $.ajax({
+      type: "POST",
+      url: '../controlador/facturacion/listar_facturasC.php?minmaxsecuencial=true',
+      data: {
+        'TC' : TC,
+        'serie' : serie,
+      }, 
+      success: function(data)
+      {
+        datos = JSON.parse(data);
+        $("#desde").val(datos[0].desde);
+        $("#hasta").val(datos[0].hasta);
       }
     });
   }
@@ -524,7 +542,7 @@
             <label>Tipo Documento</label>
           </div>
           <div class="col-sm-1">
-            <select class="form-control input-sm" id="TC" onchange="series();secuencial();" style="width: 80px;">
+            <select class="form-control input-sm" id="TC" onchange="series();secuenciales();" style="width: 80px;">
               <?php
                 $cuentas = $facturar->factura_formatos();
                 foreach ($cuentas as $cuenta) {
@@ -537,7 +555,7 @@
             <label>Serie</label>
           </div>
           <div class="col-sm-1">
-            <select class="form-control input-sm" id="serie" onchange="secuencial();" style="width: 80px;">
+            <select class="form-control input-sm" id="serie" onchange="secuenciales();" style="width: 80px;">
               <option>001001</option>
             </select>
           </div>
@@ -546,7 +564,6 @@
           </div>
           <div class="col-sm-1">
             <select class="form-control input-sm" id="secuencial" onchange="envioDatos();" style="width: 80px;">
-              <option>0000000</option>
             </select>
           </div>
           <div class="col-sm-2">
@@ -586,13 +603,13 @@
             <label>Desde:</label>
           </div>
           <div class="col-sm-1">
-            <input type="text" name="" value="000000000" class="form-control input-sm">
+            <input type="text" name="" value="0" id="desde" class="form-control input-sm">
           </div>
           <div class="col-sm-1">
             <label>Hasta:</label>
           </div>
           <div class="col-sm-1">
-            <input type="text" name="" value="000000000" class="form-control input-sm">
+            <input type="text" name="" value="0" id="hasta" class="form-control input-sm">
           </div>
           <div class="col-sm-1">
             <label>A</label>

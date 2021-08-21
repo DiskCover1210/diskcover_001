@@ -20,6 +20,11 @@ if(isset($_GET['guardarFactura']))
   $controlador->guardarFactura();
 }
 
+if(isset($_GET['ticketPDF']))
+{
+  $controlador->ticketPDF();
+}
+
 if(isset($_GET['productos']))
 {
   $codigoLinea = $_POST['DCLinea'];
@@ -325,6 +330,76 @@ class divisasC
     }
     echo json_encode($resultado);
     
+  }
+
+  public function ticketPDF(){
+    date_default_timezone_set('America/Guayaquil');
+    $ci = $_GET['CI'];
+    $serie = $_GET['serie'];
+    $fac = $_GET['fac'];
+    $TC = $_GET['TC'];
+    $efectivo = $_GET['efectivo'];
+    $saldo = $_GET['saldo'];
+    $parametros = array('tipo'=>'FA','ci'=>$ci,'serie'=>$serie,'factura'=>$fac,'TC' => $TC,'efectivo' => $efectivo,
+      'saldo' => $saldo);
+    $datos_pre  ="";
+    $datos_pre =  $this->modelo->datos_factura($parametros);
+    $cabe ='<font face="Courier New" size=2>Transaccion ('.$TC.'): No. '.$datos_pre['lineas'][0]['Factura'].' <br>
+        Fecha: '.date('Y-m-d').' - Hora: </b>'.date('H:m:s').' <br>
+        Cliente: <br>'.$datos_pre['cliente']['Cliente'].'<br>
+        R.U.C/C.I.: '.$datos_pre['cliente']['CI_RUC'].'<br> 
+        Cajero: '.$_SESSION['INGRESO']['Nombre'].' <br>
+        Telefono: '.$datos_pre['cliente']['Telefono'].'<br>
+        Dirección: '.$datos_pre['cliente']['Direccion'].'<br>';
+    $cabe .= "<hr>PRODUCTO/Cant x PVP/TOTAL";
+    $lineas = "<hr>";
+    foreach ($datos_pre['lineas'] as $key => $value) {
+      if($value['Total_IVA']==0)
+      {
+        $lineas.= '<div class="row"><div class="col-sm-12">'.$value['Producto'].' </div></div>';
+      }else
+      {
+        $lineas.= '<div class="row"><div class="col-sm-12">'.$value['Producto'].'</div></div>';
+      }
+      $lineas.='<div class="row"><div class="col-sm-6">'.$value['Cantidad'].' X '.number_format($value['Precio'],2).'</div><div class="col-sm-6" style="text-align: right;">'.number_format($value['Total'],2).'</div></div>';
+    }
+    $totales = "<hr>
+     <table>
+       <tr>
+         <td style='width: 250px;' colspan='3'></td>
+         <td style='text-align: right;'>SUBTOTAL:</td>
+         <td style='text-align: right;'>".number_format($datos_pre['tota'],2) ."</td>
+       </tr>
+       <tr>
+         <td colspan='3'></td>
+         <td style='text-align: right;'>I.V.A 12%:</td>
+         <td style='text-align: right;'>".number_format($datos_pre['iva'],2) ."</td>
+       </tr>
+       <tr>
+         <td colspan='3'></td>
+         <td style='text-align: right;'>TOTAL FACTURA:</td>
+         <td style='text-align: right;'>".number_format($datos_pre['tota'],2)."</td>
+       </tr>
+       <tr>
+         <td colspan='3'></td>
+         <td style='text-align: right;'>EFECTIVO:</td>
+         <td style='text-align: right;'>".number_format($efectivo,2)."</td>
+       </tr>
+       <tr>
+         <td colspan='3'></td>
+         <td style='text-align: right;'>CAMBIO:</td>
+         <td style='text-align: right;'>".number_format($saldo,2)."</td>
+       </tr>
+     </table>";
+
+    $datos_extra = "<hr>
+    <table style='width:100%'>
+      <tr>
+        <td style='text-align:center'>Fue un placer atenderle <br>Gracias por su compra<br>www.cofradiadelvino.com <br></td>
+      </tr>
+    </table></font>";
+    $html =  $cabe.$lineas.$totales.$datos_extra;
+    $this->pdf->formatoPDFMatricial($html,$parametros,$datos_pre);
   }
         
 }

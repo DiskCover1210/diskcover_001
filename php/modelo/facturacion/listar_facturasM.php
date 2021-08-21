@@ -274,6 +274,23 @@ class listar_facturasM
       $stmt = $this->db->datos($sql);
       return $stmt;
     }
+
+    public function minmaxSecuencial($tc,$serie){
+      $TC = $tc;
+      $serie = $serie;
+      $sql = "SELECT
+                MIN(Factura) as desde,
+                MAX(Factura) as hasta
+              FROM
+                Facturas 
+              WHERE
+                Item = '".$_SESSION['INGRESO']['item']."'
+                AND Periodo = '".$_SESSION['INGRESO']['periodo']."'
+                AND TC = '".$TC."' 
+                AND Serie = '".$serie."'";
+      $stmt = $this->db->datos($sql);
+      return $stmt; 
+    }
 }
 
 ?>

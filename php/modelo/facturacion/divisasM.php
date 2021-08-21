@@ -86,6 +86,33 @@ class divisasM
     $stmt = $this->db->datos($sql);
     return $stmt;
   }
+
+  function datos_factura($parametros)
+  {
+    //datos cliente
+    $sql="  SELECT * 
+            FROM  Clientes  
+            WHERE  (CI_RUC = '".$parametros['ci']."')";
+    $datos_cli = $this->db->datos($sql);
+    //detalle factura
+    $sql="SELECT  *
+          FROM     Detalle_Factura
+          WHERE    (Item = '".$_SESSION['INGRESO']['item']."') AND (Serie = '".$parametros['serie']."') 
+          AND (Periodo = '".$_SESSION['INGRESO']['periodo']."') AND (Factura = '".$parametros['factura']."')";
+    $stmt = $this->db->datos($sql);
+    $lineas=array();
+    $preciot=0;
+    $iva=0;
+    $tota=0;
+    foreach ($stmt as $row) {
+      $lineas[]=$row;
+      $preciot+=($row['Precio']*$row['Cantidad']);
+      $iva+=$row['Total_IVA'];
+      $tota+=$row['Total']+$row['Total_IVA']; 
+    }
+    $factura = array('cliente'=>$datos_cli[0],'lineas'=>$lineas,'preciot'=>$preciot,'iva'=>$iva,'tota'=>$tota);
+    return $factura;
+  }
 }
 
 ?>
