@@ -216,7 +216,9 @@ class cabecera_pdf
 		$pdf->Ln(5);
 		$pdf->Cell(0,0,'Fecha: '.date('Y-m-d').' - Hora: '.date('H:m:s'));
 		$pdf->Ln(5);
-		$pdf->Cell(0,0,'Cliente: <br>'.$datos_pre['cliente']['Cliente']);
+		$pdf->Cell(0,0,'Cliente: '.$datos_pre['cliente']['Cliente']);
+		$pdf->Ln(5);
+		$pdf->Cell(0,0,'Autorizaion: ');
 		$pdf->Ln(5);
 		$pdf->Cell(0,0,'R.U.C/C.I.: '.$datos_pre['cliente']['CI_RUC']);
 		$pdf->Ln(5);

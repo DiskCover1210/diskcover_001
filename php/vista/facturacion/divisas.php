@@ -428,6 +428,19 @@
 
   }
 
+  function limpiar_grid()
+  {   
+     $.ajax({
+      url:'../controlador/facturacion/divisasC.php?limpiar_grid=true',
+      type:'post',
+      dataType:'json',
+      // data:{idpro:idpro},
+      success: function(response){
+     
+    }
+    });
+  }
+
 
 </script>
 <div class="container" id="container1">
@@ -460,7 +473,7 @@
             <label class="text-right">TIPO DE PROCESO</label>
           </div>
           <div class="col-sm-4">
-            <select class="form-control input-sm" name="DCLinea" id="DCLinea" onchange="numeroFactura();productos();">
+            <select class="form-control input-sm" name="DCLinea" id="DCLinea" onchange="numeroFactura();productos();limpiar_grid()">
             </select>
           </div>
           <div class="col-sm-2">
