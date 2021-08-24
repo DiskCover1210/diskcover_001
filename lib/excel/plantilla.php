@@ -120,36 +120,45 @@ function excel_generico($titulo,$datos=false)
     $sheet->getColumnDimension('A')->setWidth(100);  
    //--------------------fin inserta imagen 1----------------
 
-
+    //------------------imagen 2----------------------
+    $drawing = new Drawing();
+	$drawing->setName('Logo1');
+	$drawing->setDescription('Logo1');
+	$drawing->setPath(__DIR__ . '/logosMod.gif');
+	$drawing->setHeight(32);
+	$drawing->setOffsetX(90);
+	$drawing->setOffsetY(5);
+	$drawing->setWorksheet($spreadsheet->getActiveSheet());
+	//-------------------fin imagen 2--------------------
 
         $richText1 = new RichText();
 		
 		$redf=$richText1->createTextRun("Hora: ");
 		$redf->getFont()->setColor(new Color(Color::COLOR_WHITE));
-		$redf->getFont()->setSize(8);
+		$redf->getFont()->setSize(7);
 		$redf->getFont()->setBold(true);
 		
 		$redf=$richText1->createTextRun(date("H:i")."\n");
 		$redf->getFont()->setColor(new Color(Color::COLOR_WHITE));
-		$redf->getFont()->setSize(8);
+		$redf->getFont()->setSize(7);
 		
 		$redf=$richText1->createTextRun("Fecha: ");
 		$redf->getFont()->setColor(new Color(Color::COLOR_WHITE));
-		$redf->getFont()->setSize(8);
+		$redf->getFont()->setSize(7);
 		$redf->getFont()->setBold(true);
 		
 		$redf=$richText1->createTextRun(date("d-m-Y") ."\n");
 		$redf->getFont()->setColor(new Color(Color::COLOR_WHITE));
-		$redf->getFont()->setSize(8);
+		$redf->getFont()->setSize(7);
 		
 		$redf=$richText1->createTextRun("Usuario: ");
 		$redf->getFont()->setColor(new Color(Color::COLOR_WHITE));
-		$redf->getFont()->setSize(8);
+		$redf->getFont()->setSize(7);
 		$redf->getFont()->setBold(true);
 		
 		$red = $richText1->createTextRun($_SESSION['INGRESO']['Nombre']);
 		$red->getFont()->setColor(new Color(Color::COLOR_WHITE));
-		$red->getFont()->setSize(8);
+		$red->getFont()->setSize(7);
 
 		//---------------------nombre de la empresa central---------------
 	    $sheet->getStyle('B1')->getAlignment()->setWrapText(true);	
@@ -183,9 +192,11 @@ function excel_generico($titulo,$datos=false)
 			$sheet->getStyle($let.''.$num)->applyFromArray($estilo_cabecera);			
 			$sheet->getStyle($let.'1:'.$le.'1')->applyFromArray($linea1);
 
-			$sheet->getStyle($le.'1')->getAlignment()->setVertical(Alignment::VERTICAL_TOP);	
+			$sheet->getStyle($le.'1')->applyFromArray($izquierda);
+			$sheet->getColumnDimension($le.'1')->setWidth(100); 
 			$sheet->getStyle($le.'1')->getAlignment()->setWrapText(true);		
 			$sheet->setCellValue($le.'1',$richText1);
+			$drawing->setCoordinates($le.'1');
 
 			$sheet->mergeCells('B1:'.$ti.'1');
 			$spreadsheet->getActiveSheet()->getStyle($let.'1:'.$le.'1')->getFill()->getStartColor()->setARGB('0086c7');

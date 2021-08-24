@@ -104,9 +104,22 @@ class reportes_descargos_procesadosM
 		AND C.Periodo ='".$_SESSION['INGRESO']['periodo']."' 
 		AND Entrada = 0 
 		AND Numero = '".$numero."' ";
+		// print_r($sql);die();
 		$datos = $this->conn->datos($sql);
         return $datos;
+	}
 
+	function familias($numero)
+	{
+		$sql ="SELECT DISTINCT SUBSTRING(Codigo_Inv,0,6) as 'familia'
+		      FROM Trans_Kardex 
+		      WHERE 1=1 
+		      AND Item = '".$_SESSION['INGRESO']['item']."' 
+		      AND Periodo ='".$_SESSION['INGRESO']['periodo']."' 
+		      AND Entrada = 0 
+		      AND Numero = '".$numero."' ";
+		      $datos = $this->conn->datos($sql);
+        return $datos;
 	}
 }
 
