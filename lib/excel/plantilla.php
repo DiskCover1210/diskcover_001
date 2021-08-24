@@ -48,6 +48,204 @@ function download_file($archivo, $downloadfilename = null)
 
 }
 
+function logo_ruta()
+{
+	$src = dirname(__DIR__,2).'/img/logotipos/DEFAULT.jpg';
+	if(isset($_SESSION['INGRESO']['Logo_Tipo']))
+	   {
+	   	$logo=$_SESSION['INGRESO']['Logo_Tipo'];
+	   	//si es jpg
+	   	$src = dirname(__DIR__,2).'/img/logotipos/'.$logo.'.jpg'; 
+	   	if(!file_exists($src))
+	   	{
+	   		$src = dirname(__DIR__,2).'/img/logotipos/'.$logo.'.gif'; 
+	   		if(!file_exists($src))
+	   		{
+	   			$src = dirname(__DIR__,2).'/img/logotipos/'.$logo.'.png'; 
+	   			if(!file_exists($src))
+	   			{
+	   				$logo="diskcover_web";
+	                $src= dirname(__DIR__,2).'/img/logotipos/'.$logo.'.gif';
+
+	   			}
+
+	   		}
+
+	   	}
+	  }
+	  return $src;
+}
+
+function excel_generico($titulo,$datos=false)
+{
+	$spreadsheet = new Spreadsheet();
+	$sheet = $spreadsheet->getActiveSheet();
+
+	$estilo_cabecera = array('font' => ['bold' => true,],
+							 'alignment' => ['horizontal' => Alignment::HORIZONTAL_CENTER,],
+							 'borders' => [	'top' => ['borderStyle' => Border::BORDER_THIN,	],],
+							 'fill' => ['fillType' => Fill::FILL_GRADIENT_LINEAR,'rotation' => 90,'startColor' => ['argb' => '0086c7',],
+							 'endColor' => ['argb' => 'FFFFFFFF',],],
+							 );
+	$linea1 = array('font' => ['bold' => true,],
+								'alignment' => ['horizontal' => Alignment::HORIZONTAL_CENTER,],
+								'borders' => ['top' => ['borderStyle' => Border::BORDER_THIN,],],
+								'fill' => ['fillType' => Fill::FILL_GRADIENT_LINEAR,'rotation' => 90,'startColor' => ['argb' => '0086c7',],
+								'endColor' => ['argb' => '0086c7',],],
+								);
+	$estilo_subcabecera = array('font' => ['bold' => true,],
+								'alignment' => ['horizontal' => Alignment::HORIZONTAL_LEFT,],
+								'borders' => ['top' => ['borderStyle' => Border::BORDER_THIN,],],
+								'fill' => ['fillType' => Fill::FILL_GRADIENT_LINEAR,'rotation' => 90,'startColor' => ['argb' => '0086c7',],
+								'endColor' => ['argb' => 'FFFFFFFF',],],
+								);
+	 $centrar = array( 'alignment' => array('horizontal' => Alignment::HORIZONTAL_CENTER,) );
+	 $derecha = array( 'alignment' => array('horizontal' => Alignment::HORIZONTAL_RIGHT,) );
+	 $izquierda = array( 'alignment' => array('horizontal' => Alignment::HORIZONTAL_LEFT,) );
+
+	//---------------------inserta imagen 1------------------
+	$objDrawing = new Drawing();
+	$objDrawing->setName('test_img');
+	$objDrawing->setDescription('test_img');
+	$objDrawing->setPath(logo_ruta());
+	$objDrawing->setCoordinates('A1');                  
+	//setOffsetX works properly
+	$objDrawing->setOffsetX(5); 
+	$objDrawing->setOffsetY(5);                
+	//set width, height
+	$objDrawing->setWidth(100); 
+	$objDrawing->setHeight(35); 
+	$objDrawing->setWorksheet($spreadsheet->getActiveSheet());
+	$sheet->getRowDimension('1')->setRowHeight(45);
+    $sheet->getColumnDimension('A')->setWidth(100);  
+   //--------------------fin inserta imagen 1----------------
+
+
+
+        $richText1 = new RichText();
+		
+		$redf=$richText1->createTextRun("Hora: ");
+		$redf->getFont()->setColor(new Color(Color::COLOR_WHITE));
+		$redf->getFont()->setSize(8);
+		$redf->getFont()->setBold(true);
+		
+		$redf=$richText1->createTextRun(date("H:i")."\n");
+		$redf->getFont()->setColor(new Color(Color::COLOR_WHITE));
+		$redf->getFont()->setSize(8);
+		
+		$redf=$richText1->createTextRun("Fecha: ");
+		$redf->getFont()->setColor(new Color(Color::COLOR_WHITE));
+		$redf->getFont()->setSize(8);
+		$redf->getFont()->setBold(true);
+		
+		$redf=$richText1->createTextRun(date("d-m-Y") ."\n");
+		$redf->getFont()->setColor(new Color(Color::COLOR_WHITE));
+		$redf->getFont()->setSize(8);
+		
+		$redf=$richText1->createTextRun("Usuario: ");
+		$redf->getFont()->setColor(new Color(Color::COLOR_WHITE));
+		$redf->getFont()->setSize(8);
+		$redf->getFont()->setBold(true);
+		
+		$red = $richText1->createTextRun($_SESSION['INGRESO']['Nombre']);
+		$red->getFont()->setColor(new Color(Color::COLOR_WHITE));
+		$red->getFont()->setSize(8);
+
+		//---------------------nombre de la empresa central---------------
+	    $sheet->getStyle('B1')->getAlignment()->setWrapText(true);	
+		$sheet->getStyle('B1')->getFont()->getColor()->setARGB(Color::COLOR_WHITE);
+	    if($_SESSION['INGRESO']['Razon_Social']!=$_SESSION['INGRESO']['noempr'])
+		{
+			$spreadsheet->getActiveSheet()->setCellValue('B1', $_SESSION['INGRESO']['Razon_Social'].'');
+		}
+		else
+		{
+			$spreadsheet->getActiveSheet()->setCellValue('B1', $_SESSION['INGRESO']['noempr'].'');
+		}
+
+		//-------------------------fin de nombre central de empresa----------------
+
+	    $num=2;
+		$let='A';
+		if($titulo!='')
+		{
+			// print_r($datos[0]['datos']);die();
+			$col = count($datos[0]['datos']);
+			// print_r($col);
+			$le = $let;
+			$ti =$let;
+			for ($i=1; $i <$col ; $i++) { $le++;}
+			for ($i=1; $i <$col-1 ; $i++) { $ti++;}
+			
+			// print_r($le);die();
+			$sheet->mergeCells($let.''.$num.':'.$le.''.$num);
+			$sheet->setCellValue($let.''.$num, $titulo);
+			$sheet->getStyle($let.''.$num)->applyFromArray($estilo_cabecera);			
+			$sheet->getStyle($let.'1:'.$le.'1')->applyFromArray($linea1);
+
+			$sheet->getStyle($le.'1')->getAlignment()->setVertical(Alignment::VERTICAL_TOP);	
+			$sheet->getStyle($le.'1')->getAlignment()->setWrapText(true);		
+			$sheet->setCellValue($le.'1',$richText1);
+
+			$sheet->mergeCells('B1:'.$ti.'1');
+			$spreadsheet->getActiveSheet()->getStyle($let.'1:'.$le.'1')->getFill()->getStartColor()->setARGB('0086c7');
+
+
+			$num+=1;
+		}
+
+		foreach ($datos as $key => $value) {
+			$tipo = $value['tipo'];
+			foreach ($value['datos'] as $key1 => $value1) {
+				// $style = $izquierda;
+				// $ali = $value['alineado'][$key1];
+				// if($ali=='C'){$style = $centrar;}else if ($ali=='R') {$style = $derecha;}
+				$sheet->getColumnDimension($let)->setWidth($value['medidas'][$key1]);
+				$sheet->setCellValue($let.''.$num, $value1);
+				if($tipo=='C')
+				{
+					$sheet->getStyle($let.''.$num)->applyFromArray($estilo_cabecera);
+				}
+				$let++;
+			}
+			$let='A';
+			$num+=1;
+		// print_r($value);die();		
+			// $sheet->setCellValue('B1', 'Clinica Santa Barbara CENTRO MEDICO MATERNAL PAEZ ALMEIDA NARANJO SOCIEDAD COLECTIVA CIVIL');
+		}
+
+	    $write = new Xlsx($spreadsheet);
+	    if($titulo!='')
+	    {
+
+	    	$write->save(dirname(__DIR__,2).'/php/vista/TEMP/'.$titulo.'.xlsx');
+	        download_file(dirname(__DIR__,2).'/php/vista/TEMP/'.$titulo.".xlsx");
+
+	 		 //$write->save($titulo.'.xlsx');
+			// echo "<meta http-equiv='refresh' content='0;url=".$titulo.".xlsx'/>";
+			// exit;
+		}else
+		{
+			$write->save(dirname(__DIR__,2).'/php/vista/TEMP/reporte_sin_nombre.xlsx');
+	        download_file(dirname(__DIR__,2).'/php/vista/TEMP/reporte_sin_nombre.xlsx');
+			// $write->save('reporte_sin_nombre.xlsx');
+			// echo "<meta http-equiv='refresh' content='0;url=reporte_sin_nombre.xlsx'/>";
+			// exit;
+		}
+
+		
+	      // NOMBRE DEL ARCHIVO Y CHARSET
+	      //header("Content-type: application/vnd.ms-excel");
+         // header("Content-Disposition: attachment; filename=INVENTARIO.xls");
+         // header("Pragma: no-cache");
+          //header("Expires: 0");
+
+
+          // $salida=fopen('php://output', 'w');
+
+ 
+}
+
 function excel_file($stmt,$ti=null,$camne=null,$b=null,$base=null) 
 {
 	//require_once __DIR__ . '/vendor/phpoffice/phpspreadsheet/src/Bootstrap.php';
@@ -2611,58 +2809,7 @@ function excel_file_mayor_auxi($re,$sub,$ti=null,$camne=null,$b=null,$base=null)
 		$je1=$je2;
 		$je3=$je2;
 		$je3++;
-		$estilo_cabecera = array(
-			
-					'font' => [
-						'bold' => true,
-					],
-					'alignment' => [
-						'horizontal' => Alignment::HORIZONTAL_CENTER,
-					],
-					'borders' => [
-						'top' => [
-							'borderStyle' => Border::BORDER_THIN,
-						],
-					],
-					'fill' => [
-						'fillType' => Fill::FILL_GRADIENT_LINEAR,
-						'rotation' => 90,
-						'startColor' => [
-							/*'argb' => 'FFA0A0A0',*/
-							'argb' => '0086c7',
-						],
-						'endColor' => [
-							'argb' => 'FFFFFFFF',
-						],
-					],
-				
-		);
-		$estilo_subcabecera = array(
-			
-					'font' => [
-						'bold' => true,
-					],
-					'alignment' => [
-						'horizontal' => Alignment::HORIZONTAL_LEFT,
-					],
-					'borders' => [
-						'top' => [
-							'borderStyle' => Border::BORDER_THIN,
-						],
-					],
-					'fill' => [
-						'fillType' => Fill::FILL_GRADIENT_LINEAR,
-						'rotation' => 90,
-						'startColor' => [
-							/*'argb' => 'FFA0A0A0',*/
-							'argb' => '0086c7',
-						],
-						'endColor' => [
-							'argb' => 'FFFFFFFF',
-						],
-					],
-				
-		);
+		
 		$spreadsheet->getActiveSheet()->getStyle('A2:'.$je3.'2')->applyFromArray($estilo_cabecera);
 		//redimencionar
 		//$spreadsheet->getActiveSheet()->getColumnDimension($je.''.$ie.':'.$je1.''.$ie)->setAutoSize(true);
