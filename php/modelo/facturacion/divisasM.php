@@ -21,6 +21,7 @@ class divisasM
           AND Fecha <= '".$FechaProceso."' 
           AND Vencimiento >= '".$FechaProceso."' 
           ORDER BY Fact,Codigo";
+          // print_r($sql);die();
     $stmt = $this->db->datos($sql);
     return $stmt;
   }
@@ -99,6 +100,7 @@ class divisasM
           FROM     Detalle_Factura
           WHERE    (Item = '".$_SESSION['INGRESO']['item']."') AND (Serie = '".$parametros['serie']."') 
           AND (Periodo = '".$_SESSION['INGRESO']['periodo']."') AND (Factura = '".$parametros['factura']."')";
+          // print_r($sql);die();
     $stmt = $this->db->datos($sql);
     $lineas=array();
     $preciot=0;
@@ -112,6 +114,14 @@ class divisasM
     }
     $factura = array('cliente'=>$datos_cli[0],'lineas'=>$lineas,'preciot'=>$preciot,'iva'=>$iva,'tota'=>$tota);
     return $factura;
+  }
+  public function limpiarGrid(){
+    $sql = "DELETE
+          FROM Asiento_F
+          WHERE Item = '".$_SESSION['INGRESO']['item']."' 
+          AND CodigoU = '". $_SESSION['INGRESO']['CodigoU'] ."' ";
+    $stmt = $this->db->String_Sql($sql);
+    return $stmt;
   }
 }
 

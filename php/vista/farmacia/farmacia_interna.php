@@ -275,6 +275,39 @@ function reporte_pdf()
     window.open(url+datos, '_blank');
 }
 
+function reporte_excel()
+{
+   var url = '../controlador/farmacia/farmacia_internaC.php?imprimir_excel=true&';
+   var opcion = $('#ddl_opciones').val();
+   if(opcion=='')
+   {
+    Swal.fire('Seleccione una tipo de informe','','info');
+    return false;
+   }
+   if(opcion==1)
+   {
+    url+='opcion=1&';
+     var datos =  $("#form_1").serialize();
+   }  
+   if(opcion==2)
+   {
+    url+='opcion=2&';
+     var datos =  $("#form_2").serialize();
+   }  
+   if(opcion==4)
+   {
+    url+='opcion=4&';
+     var datos =  $("#form_4").serialize();
+   }  
+   if(opcion==5)
+   {
+    url+='opcion=5&';
+     var datos =  $("#form_5").serialize();
+   }  
+
+    window.open(url+datos, '_blank');
+}
+
 
 </script>
 

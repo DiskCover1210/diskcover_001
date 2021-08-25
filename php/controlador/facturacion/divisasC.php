@@ -51,6 +51,13 @@ if(isset($_GET['catalogoLineas']))
   echo json_encode($datos);
 }
 
+if(isset($_GET['limpiar_grid']))
+{
+  // print_r('e');die();
+  $datos = $controlador->limpiar_grid();
+  echo json_encode($datos);
+}
+
 class divisasC
 {
 	private $modelo;
@@ -95,6 +102,8 @@ class divisasC
     $this->modelo->deleteAsiento($_POST['codigoCliente']);
     $datos = array();
     $Contador = 0;
+
+    // print_r($_POST['datos']);die();
     foreach ($_POST['datos'] as $key => $producto) {
       $dato[0]['campo']='CODIGO';
       $dato[0]['dato']= $producto['Codigo'];
@@ -188,6 +197,8 @@ class divisasC
 
 
   public function Grabar_FA($FA,$TextFacturaNo){
+
+    // print_r($FA);die();
     $codigoCliente = $FA['codigoCliente'];
     //Seteamos los encabezados para las facturas
     $Estudiante['cedula'] = $FA['TextCI'];
@@ -347,6 +358,7 @@ class divisasC
     $cabe ='<font face="Courier New" size=2>Transaccion ('.$TC.'): No. '.$datos_pre['lineas'][0]['Factura'].' <br>
         Fecha: '.date('Y-m-d').' - Hora: </b>'.date('H:m:s').' <br>
         Cliente: <br>'.$datos_pre['cliente']['Cliente'].'<br>
+        Autorizacion: <br><br>
         R.U.C/C.I.: '.$datos_pre['cliente']['CI_RUC'].'<br> 
         Cajero: '.$_SESSION['INGRESO']['Nombre'].' <br>
         Telefono: '.$datos_pre['cliente']['Telefono'].'<br>
@@ -400,6 +412,11 @@ class divisasC
     </table></font>";
     $html =  $cabe.$lineas.$totales.$datos_extra;
     $this->pdf->formatoPDFMatricial($html,$parametros,$datos_pre);
+  }
+
+  function limpiar_grid()
+  {
+    return $this->modelo->limpiarGrid();
   }
         
 }

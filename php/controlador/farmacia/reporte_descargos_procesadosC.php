@@ -347,38 +347,71 @@ class reportes_descargos_procesadosC
     $tablaHTML[0]['datos']=array('<b>Paciente:',$datos[0]['Cliente'],'<b>Detalle:',$datos[0]['Concepto'],'<b>No.Comp:',$datos[0]['Numero']);
     $tablaHTML[0]['borde'] ='1';
 
-    $tablaHTML[1]['medidas']=array(39,85,16,25,25);
+    $tablaHTML[1]['medidas']=array(39,83,18,25,25);
     $tablaHTML[1]['alineado']=array('L','L','R','R','R');
     $tablaHTML[1]['datos']=array('<b>CODIGO','<b>PRODUCTO','<b>CANTIDAD','<b>PRECIO UNI','<b>PRECIO TOTAL');
     $tablaHTML[1]['borde'] =1;
 
     $pos=2;
     $total =0;
-    foreach ($lineas as $key => $value) {
-    	  $uti = $value['Utilidad'];
-    	  if($value['Utilidad']=='' || $value['Utilidad']==0)
-    	  {
-    	  	$uti = number_format($value['utilidad_C']*100,2);
-				  $parametros = array('utilidad'=>$uti,'linea'=>$value['ID']);
-				  $this->guardar_utilidad($parametros);
-				  $uti = number_format($value['utilidad_C']);
-    	  }
-    	  $gra_t = ($value['Valor_Total']*$uti)+$value['Valor_Total'];
-    	  $uni = ($gra_t/$value['Salida']);
-    	 	$tablaHTML[$pos]['medidas']=$tablaHTML[1]['medidas'];
-		    $tablaHTML[$pos]['alineado']= $tablaHTML[1]['alineado'];
-		    $tablaHTML[$pos]['datos']=array($value['Codigo_Inv'],$value['Producto'],$value['Salida'],number_format($uni,2),number_format($gra_t,2));
-		    $tablaHTML[$pos]['borde'] =1;
+    $familias = $this->modelo->familias($comprobante);
+    $reg = count($familias);
 
-		    $pos+=2;
-		    $total+=number_format($gra_t,2);
+    foreach ($familias as $key1 => $value1) {
+	    foreach ($lineas as $key => $value) {
+	    	if($value1['familia']==substr($value['Codigo_Inv'],0,5))
+	    	{
+
+	    		// print_r($value1['familia']);print_r(substr($value['Codigo_Inv'],0,5));die();
+	    	  $uti = $value['Utilidad'];
+	    	  if($value['Utilidad']=='' || $value['Utilidad']==0)
+	    	  {
+	    	  	$uti = number_format($value['utilidad_C']*100,2);
+					  $parametros = array('utilidad'=>$uti,'linea'=>$value['ID']);
+					  $this->guardar_utilidad($parametros);
+					  $uti = number_format($value['utilidad_C']);
+	    	  }
+	    	  $gra_t = ($value['Valor_Total']*$uti)+$value['Valor_Total'];
+	    	  $uni = ($gra_t/$value['Salida']);
+	    	 	$tablaHTML[$pos]['medidas']=$tablaHTML[1]['medidas'];
+			    $tablaHTML[$pos]['alineado']= $tablaHTML[1]['alineado'];
+			    $tablaHTML[$pos]['datos']=array($value['Codigo_Inv'],$value['Producto'],$value['Salida'],number_format($uni,2),number_format($gra_t,2));
+			    $tablaHTML[$pos]['borde'] =1;
+
+			    $pos+=2;
+			    $total+=number_format($gra_t,2);
+			  }
+	    }
+	     $pos+=1;
+	     $tablaHTML[$pos]['medidas']=array(140,25,25);
+       $tablaHTML[$pos]['alineado']=array('L','L','R');
+       $tablaHTML[$pos]['datos']=array('','<b>Total','<b>'.$total);
+       $tablaHTML[$pos]['borde'] =1;
+       $pos+=1;
+       if(($key1+1)!=$reg)
+       {
+       	 $tablaHTML[$pos]['medidas']=array(190);
+	       $tablaHTML[$pos]['alineado']=array('L');
+	       $tablaHTML[$pos]['datos']=array('');
+
+	        $pos+=1;
+		     $tablaHTML[$pos]['medidas']=array(39,83,18,25,25);
+	       $tablaHTML[$pos]['alineado']=array('L','L','R','R','R');
+	       $tablaHTML[$pos]['datos']=array('<b>CODIGO','<b>PRODUCTO','<b>CANTIDAD','<b>PRECIO UNI','<b>PRECIO TOTAL');
+	       $tablaHTML[$pos]['borde'] =1;
+	       $pos+=1;
+       }
+
     }
 
 
-    $tablaHTML[$pos]['medidas']=array(140,25,25);
-    $tablaHTML[$pos]['alineado']=array('L','L','R');
-    $tablaHTML[$pos]['datos']=array('','<b>Total','<b>'.$total);
-    $tablaHTML[$pos]['borde'] =1;
+    
+
+
+    // $tablaHTML[$pos]['medidas']=array(140,25,25);
+    // $tablaHTML[$pos]['alineado']=array('L','L','R');
+    // $tablaHTML[$pos]['datos']=array('','<b>Total','<b>'.$total);
+    // $tablaHTML[$pos]['borde'] =1;
 
   	$this->pdf->cabecera_reporte_MC($titulo,$tablaHTML,$contenido=false,$image=false,false,false,$sizetable,$mostrar,25,'P');
 	}

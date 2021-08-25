@@ -4603,10 +4603,10 @@ function insert_generico($tabla=null,$datos=null) // optimizado pero falta
 			{
 				if($obj->COLUMN_NAME==$datos[$i]['campo'])
 				{
-					if($obj->CHARACTER_MAXIMUM_LENGTH != '' && $obj->CHARACTER_MAXIMUM_LENGTH != null)
+					if($obj->CHARACTER_MAXIMUM_LENGTH != '' && $obj->CHARACTER_MAXIMUM_LENGTH != null && $obj->CHARACTER_MAXIMUM_LENGTH != -1)
 					{
 						$datos[$i]['dato'] =substr($datos[$i]['dato'],0,$obj->CHARACTER_MAXIMUM_LENGTH);
-			        }
+			    }
 			       
 					if($obj->DATA_TYPE=='int identity')
 					{
@@ -4728,6 +4728,7 @@ function insert_generico($tabla=null,$datos=null) // optimizado pero falta
 		$longitud_cad = strlen($sql_v); 
 		$v2 = substr_replace($sql_v,")",$longitud_cad-1,1);
 
+    // print_r($cam2.$v2);die();
      $res = $conn->String_Sql($cam2.$v2);
      if($res==1)
      {
@@ -7325,6 +7326,9 @@ function datos_tabla($tabla,$campo=false)
           $dato[20]['dato']=$datos1['Autorizacion'];
           $this->insert_generico("Trans_Abonos",$dato);
         }
+
+        
+    // print_r($datos1);die();
         $query="INSERT INTO Facturas
              (C,T ,TC,ME,Factura,CodigoC ,Fecha,Fecha_C ,Fecha_V,SubTotal,Con_IVA ,Sin_IVA,IVA,Total_MN
              ,Cta_CxP,Cta_Venta,Item ,CodigoU,Periodo,Cod_CxC,Com_Pag
@@ -7452,6 +7456,8 @@ function datos_tabla($tabla,$campo=false)
         $dato[37]['dato']=$propina_a; 
         $dato[38]['campo']='Autorizacion';
         $dato[38]['dato']=$datos1['Autorizacion'];
+
+        // print_r($datos);die();
         insert_generico("Facturas",$dato);
         $n_fac++;
         //incrementar contador de facturas
