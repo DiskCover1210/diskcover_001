@@ -335,7 +335,15 @@
                        type: 'info',
                        title: 'XML devuelto',
                        text: ''
-                     });
+                     }).then(() => {
+                      serie = DCLinea.split(" ");
+                      cambio = $("#cambio").val();
+                      efectivo = $("#efectivo").val();
+                      var url = '../controlador/facturacion/divisasC.php?ticketPDF=true&fac='+TextFacturaNo+'&serie='+serie[1]+'&CI='+TextCI+'&TC='+serie[0]+'&efectivo='+efectivo+'&saldo='+cambio;
+                      window.open(url,'_blank');
+                      location.reload();
+                      //imprimir_ticket_fac(0,TextCI,TextFacturaNo,serie[1]);
+                    });
                     //descargar_archivos(response.url,response.ar);
 
                   }else if(response.respuesta == '4')

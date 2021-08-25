@@ -219,7 +219,8 @@ class divisasC
       $FA['TC'] = SinEspaciosIzq($FA['DCLinea']);
       $FA['Serie'] = SinEspaciosDer($FA['DCLinea']);
       if (Existe_Factura($FA)) {
-        
+        $resultado = array('respuesta'=>5);
+        exit();
       }
       $SaldoPendiente = 0;
       $DiarioCaja = ReadSetDataNum("Recibo_No", True, True);
@@ -248,8 +249,7 @@ class divisasC
       $Codigo3 = ".";
       $Anio1 = $value["TICKET"];
       $this->modelo->updateClientesFacturacion($Valor,$Anio1,$Codigo1,$Codigo,$Codigo3,$Codigo2);
-      //Grabamos el numero de factura
-      Grabar_Factura($FA);
+      
       //Seteos de Abonos Generales para todos los tipos de abonos
       $TA['T'] = $FA['T'];
       $TA['TP'] = $FA['TC'];
@@ -320,20 +320,17 @@ class divisasC
 
       $TxtEfectivo = "0.00";
       if (strlen($FA['Autorizacion']) >= 13) {
-        /*if (!$No_Autorizar) {
-        }*/
-        //print_r("expression");
-        //generar_xml();
         $FA['Desde'] = $FA['Factura'];
         $FA['Hasta'] = $FA['Factura'];
-        //Imprimir_Facturas_CxC(FacturasPension, FA, True, False, True, True);
-        //SRI_Generar_PDF_FA(FA, True);
       }
       $FA['serie'] = $FA['Serie'];
       $FA['num_fac'] = $FA['Factura'];
       $FA['tc'] = $FA['TC'];
       $FA['cod_doc'] = '01';
     }
+
+    //Grabamos el numero de factura
+    Grabar_Factura($FA);
     if (strlen($FA['Autorizacion']) == 13) {
       $resultado = $this->autorizar_sri->Autorizar($FA);
     }else{

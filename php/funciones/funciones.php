@@ -7127,7 +7127,7 @@ function datos_tabla($tabla,$campo=false)
       $sql="SELECT   Codigo, CxC
       FROM   Catalogo_Lineas
       WHERE   (Periodo = '".$_SESSION['INGRESO']['periodo']."') AND 
-      (Item = '".$_SESSION['INGRESO']['item']."') AND (Serie = '".$ser."') AND (Fact = 'FA')";
+      (Item = '".$_SESSION['INGRESO']['item']."') AND (Serie = '".$ser."') AND (Fact = '".$datos1['TC']."')";
       $stmt = sqlsrv_query($cid, $sql);
       if( $stmt === false)  
       {  
@@ -7140,16 +7140,11 @@ function datos_tabla($tabla,$campo=false)
         $cod_linea=$row[0];
       }
       //verificamos que no exista la factura
-      $sql="SELECT        TOP (1) Periodo, T, TC, CodigoC, Factura, Fecha, Codigo, CodigoL, Producto, Cantidad, Precio, Total, Total_IVA, Ruta, Ticket, Item, Corte, Reposicion, Total_Desc, No_Hab, Cod_Ejec, Porc_C, Com_Pag, Cta_Venta, CodigoU, 
-                 CodBodega, Tonelaje, Costo, Comision, Mes, X, Producto_Aux, Puntos, Autorizacion, Serie, CodMarca, Gramaje, Orden_No, Mes_No, C, CodigoB, Precio2, Total_Desc2, SubTotal_NC, Total_IVA_NC, Fecha_IN, Fecha_OUT, 
-                 Cant_Hab, Tipo_Hab, Codigo_Barra, Serie_NC, Autorizacion_NC, Fecha_NC, Secuencial_NC, Fecha_V, Cant_Bonif, Lote_No, Fecha_Fab, Fecha_Exp, Modelo, Procedencia, Serie_No, Porc_IVA, Cantidad_NC, Total_Desc_NC, 
-                 ID
-          FROM            Detalle_Factura
-          WHERE        (Factura = '".$n_fac."') AND (Serie = '".$ser."') AND (Item = '".$_SESSION['INGRESO']['item']."') AND (Periodo = '".$_SESSION['INGRESO']['periodo']."')
+      $sql="SELECT TOP (1) Factura
+            FROM Detalle_Factura
+            WHERE (Factura = '".$n_fac."') AND (Serie = '".$ser."') AND (Item = '".$_SESSION['INGRESO']['item']."') AND (Periodo = '".$_SESSION['INGRESO']['periodo']."')
          ";
               
-      //echo $sql;
-      //die();
       $stmt =sqlsrv_query( $cid, $sql);
       if( $stmt === false)  
       {  
@@ -7164,14 +7159,12 @@ function datos_tabla($tabla,$campo=false)
       if($ii==0)
       {
         //agregamos detalle factura
-        $sql="select * ". 
+        $sql="SELECT * ". 
             "FROM Asiento_F
              WHERE  (Item = '".$_SESSION['INGRESO']['item']."')
-             AND  HABIT='".$me."' 
+             AND CodigoU = '". $_SESSION['INGRESO']['CodigoU'] ."' 
              ORDER BY CODIGO";
                 
-        //echo $sql;
-        //die();
         $total_coniva=0;
         $total_siniva=0;
         $stmt =sqlsrv_query( $cid, $sql);
@@ -7230,7 +7223,11 @@ function datos_tabla($tabla,$campo=false)
           {
             $total_coniva=$row[9]+$total_coniva;
           }
+
         }
+        
+
+
         //agregamos abono
         $sql="SELECT * FROM Asiento_Abonos WHERE  (HABIT= '".$me."') AND 
         (Periodo = '".$_SESSION['INGRESO']['periodo']."') AND (Item = '".$_SESSION['INGRESO']['item']."')";
@@ -7313,7 +7310,7 @@ function datos_tabla($tabla,$campo=false)
           $dato[14]['campo']='Periodo';
           $dato[14]['dato']=$_SESSION['INGRESO']['periodo'];  
           $dato[15]['campo']='Serie';
-          $dato[15]['dato']=$ser1[2]; 
+          $dato[15]['dato']=$ser; 
           $dato[16]['campo']='Fecha_Aut';
           $dato[16]['dato']=$fecha_actual;
           $dato[17]['campo']='C';
@@ -7327,56 +7324,8 @@ function datos_tabla($tabla,$campo=false)
           $this->insert_generico("Trans_Abonos",$dato);
         }
 
-        
-    // print_r($datos1);die();
-        $query="INSERT INTO Facturas
-             (C,T ,TC,ME,Factura,CodigoC ,Fecha,Fecha_C ,Fecha_V,SubTotal,Con_IVA ,Sin_IVA,IVA,Total_MN
-             ,Cta_CxP,Cta_Venta,Item ,CodigoU,Periodo,Cod_CxC,Com_Pag
-             ,Hora ,X,Serie,Vencimiento,P,Fecha_Aut,RUC_CI,TB,Razon_Social,Total_Efectivo,Total_Banco,Otros_Abonos,Total_Abonos,
-             Abonos_MN,Tipo_Pago,Porc_IVA,Autorizacion)
-         VALUES
-           (1
-           ,'C'
-           ,'FA'
-           ,0
-           ,".$n_fac."
-           ,'".$codigo."'
-           ,'".$fecha_actual."'
-           ,'".$fecha_actual."'
-           ,'".$fecha_actual."'
-           ,".$total_total_."
-           ,0
-           ,".$total_total_."
-           ,".$total_iva."
-           ,".$total_total_."
-           ,'".$cxc."'
-           ,'0'
-           ,'".$_SESSION['INGRESO']['item']."'
-           ,'".$_SESSION['INGRESO']['CodigoU']."'
-           ,'".$_SESSION['INGRESO']['periodo']."'
-           ,'".$cod_linea."'
-           ,0
-           ,'".$hora."'
-           ,'X'
-           ,'".$ser."'
-           ,'".$fecha_actual."'
-           ,0
-           ,'".$fecha_actual."'
-           ,'".$ruc."'
-           ,'R'
-           ,'".$nombrec."'
-           ,".$total_abono."
-           ,0
-           ,0
-           ,".$total_abono."
-           ,".$total_abono."
-           ,'20'
-           ,".$_SESSION['INGRESO']['porc']."
-           ,".$datos1['Autorizacion']."
-          )";
-        //echo $query;
+        $dato = [];
         //exit();
-        $stmt = sqlsrv_query($cid, $query);
         $propina_a = 0;
         $dato[0]['campo']='C';
         $dato[0]['dato']=1;
@@ -7457,8 +7406,8 @@ function datos_tabla($tabla,$campo=false)
         $dato[38]['campo']='Autorizacion';
         $dato[38]['dato']=$datos1['Autorizacion'];
 
-        // print_r($datos);die();
         insert_generico("Facturas",$dato);
+
         $n_fac++;
         //incrementar contador de facturas
         $sql="UPDATE Codigos set Numero='".$n_fac."'
@@ -7501,6 +7450,7 @@ function datos_tabla($tabla,$campo=false)
            die( print_r( sqlsrv_errors(), true));  
         }
         cerrarSQLSERVERFUN($cid);
+        
           //campo que informar imprimir pdf automatico
           return 2;
       }

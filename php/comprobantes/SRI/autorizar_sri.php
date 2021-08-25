@@ -233,7 +233,7 @@ class autorizacion_sri
 	{
 		$con = $this->conn->conexion();
 		$sql = "SELECT * From Facturas WHERE Item = '".$_SESSION['INGRESO']['item']."' AND Periodo = '".$_SESSION['INGRESO']['periodo']."' AND TC = 'FA' AND Serie = '".$serie."' AND Factura = ".$fact." AND LEN(Autorizacion) = 13 AND T <> 'A' ";
-		 //print_r($sql);die();
+		//print_r($sql);die();
 		$stmt = sqlsrv_query($con, $sql);
 	   if( $stmt === false)  
 	   {  
@@ -778,7 +778,7 @@ class autorizacion_sri
     9 Dígito Verificador (módulo 11 )       Numérico       1*/
  function generar_xml($cabecera,$detalle)
  {
-   	    $entidad='001';
+   	    $entidad=$cabecera['item'];
 	    $empresa=$cabecera['item'];
 	    $fecha = str_replace('/','',$cabecera['fechaem']);
 	    $ruc=$cabecera['ruc_principal'];

@@ -530,8 +530,15 @@
                        type: 'info',
                        title: 'XML devuelto',
                        text: ''
-                     });
-                    //descargar_archivos(response.url,response.ar);
+                     }).then(() => {
+                      serie = DCLinea.split(" ");
+                      cambio = $("#cambio").val();
+                      efectivo = $("#efectivo").val();
+                      var url = '../controlador/detalle_estudianteC.php?ver_fac=true&codigo='+TextFacturaNo+'&ser='+serie[1]+'&ci='+TextCI;
+                      window.open(url,'_blank');
+                      location.reload();
+                      //imprimir_ticket_fac(0,TextCI,TextFacturaNo,serie[1]);
+                    });
 
                   }else if(response.respuesta == '4')
                   {
