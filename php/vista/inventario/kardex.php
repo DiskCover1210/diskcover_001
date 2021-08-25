@@ -30,12 +30,14 @@
   }
 
   function funcionInicio(){
+    $("#myModal").modal("show");
     $.ajax({
       type: "POST",                 
       url: '../controlador/inventario/kardexC.php?funcion=true',
       success: function(data)             
       {
         datos = JSON.parse(data);
+        $("#myModal").modal("hide");
       }
     });
   }

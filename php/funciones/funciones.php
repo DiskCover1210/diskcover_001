@@ -7656,4 +7656,25 @@ function datos_tabla($tabla,$campo=false)
     }
     return $CadAux;
   }
+
+  function SetearCtasCierre($CtaFields){
+    /*
+    $IE = 0;
+    $ContCtas = 0;
+    ContCtas = UBound(CtasProc)
+    $Si_No = true;
+  For IE = 0 To ContCtas - 1
+      If CtaFields = CtasProc(IE).Cta Then Si_No = False
+  Next IE
+  If Si_No Then
+     IE = 0
+     While IE < ContCtas
+        If CtasProc(IE).Cta = "0" Then
+           CtasProc(IE).Cta = CtaFields
+           IE = ContCtas + 1
+        End If
+        IE = IE + 1
+     Wend
+  End If*/
+  }
 ?>

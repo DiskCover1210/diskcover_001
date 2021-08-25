@@ -291,6 +291,64 @@ class listar_facturasM
       $stmt = $this->db->datos($sql);
       return $stmt; 
     }
+
+    public function factura($TC,$Serie,$Autorizacion,$Factura){
+      $sql = "SELECT F.Cta_CxP As Cta_Cobrar, TA.Cta_CxP, TA.Cta 
+          FROM Facturas As F, Trans_Abonos As TA 
+          WHERE F.Item = '".$_SESSION['INGRESO']['item']."'
+          AND F.Periodo = '".$_SESSION['INGRESO']['periodo']."'
+          AND F.TC = '".$TC."' 
+          AND F.Serie = '".$Serie."' 
+          AND F.Autorizacion = '".$Autorizacion."' 
+          AND F.Factura = ".$Factura." 
+          AND F.Item = TA.Item 
+          AND F.Periodo = TA.Periodo 
+          AND F.TC = TA.TP 
+          AND F.Serie = TA.Serie 
+          AND F.Autorizacion = TA.Autorizacion 
+          AND F.Factura = TA.Factura 
+          GROUP BY TA.Cta, TA.Cta_CxP, F.Cta_CxP ";
+      $stmt = $this->db->datos($sql);
+      return $stmt; 
+    } 
+
+    public function facturasAuxiliares($TC,$Serie,$Autorizacion,$Factura){
+      $sql = " SELECT Serie_GR, Remision, Clave_Acceso_GR, Autorizacion_GR, Fecha, CodigoC, Comercial, CIRUC_Comercial, 
+              Entrega, CIRUC_Entrega, CiudadGRI, CiudadGRF, Placa_Vehiculo, FechaGRE, FechaGRI, FechaGRF, Pedido, Zona, 
+              Hora_Aut_GR, Estado_SRI_GR, Error_FA_SRI, Fecha_Aut_GR, TC, Serie, Factura, Autorizacion, Lugar_Entrega,
+              Periodo, Item 
+              FROM Facturas_Auxiliares
+              WHERE Item = '".$_SESSION['INGRESO']['item']."'
+              AND Periodo = '".$_SESSION['INGRESO']['periodo']."'
+              AND Remision > 0 
+              AND TC = '".$TC."' 
+              AND Serie = '".$Serie."' 
+              AND Factura = ".$Factura." 
+              AND Autorizacion = '".$Autorizacion."'";
+      $stmt = $this->db->datos($sql);
+      return $stmt; 
+    }
+
+    public function detalleFactura($TC,$Serie,$Autorizacion,$Factura){
+      $sql = "SELECT DF.Codigo,DF.Producto,DF.Cantidad,DF.Precio,DF.Total,DF.Total_Desc,DF.Total_Desc2,DF.Total_IVA," _
+              ROUND(((DF.Total-(DF.Total_Desc+DF.Total_Desc2))+DF.Total_IVA),2,0) As Valor_Total,DF.Mes,DF.Ticket," _
+              DF.Serie,DF.Factura,DF.Autorizacion,CP.Detalle,CP.Cta_Ventas,CP.Reg_Sanitario,CP.Marca,Lote_No, DF.Modelo,
+              DF.Procedencia, DF.Serie_No, DF.CodigoC, Cantidad_NC, SubTotal_NC,DF.CodMarca,DF.CodBodega,
+              DF.Tonelaje,Total_Desc_NC,Total_IVA_NC,DF.Periodo,DF.Codigo_Barra,DF.ID 
+              FROM Detalle_Factura As DF,Catalogo_Productos As CP 
+              WHERE DF.Item = '".$_SESSION['INGRESO']['item']."'
+              AND DF.Periodo = '".$_SESSION['INGRESO']['periodo']."'
+              AND DF.TC = '".$TC."' 
+              AND DF.Serie = '".$Serie."' 
+              AND DF.Autorizacion = '".$Autorizacion."'
+              AND DF.Factura = ".$Factura." 
+              AND DF.Periodo = CP.Periodo 
+              AND DF.Item = CP.Item 
+              AND DF.Codigo = CP.Codigo_Inv 
+              ORDER BY CP.Cta_Ventas,DF.Codigo,DF.ID";
+      $stmt = $this->db->datos($sql);
+      return $stmt; 
+    }
 }
 
 ?>
