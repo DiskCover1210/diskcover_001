@@ -69,7 +69,7 @@ class autorizacion_sri
 	    if($parametros['cod_doc']=='01')
 	    {
 	    	//datos de factura
-	    	$datos_fac = $this->datos_factura($parametros['serie'],$parametros['num_fac']);
+	    	$datos_fac = $this->datos_factura($parametros['serie'],$parametros['num_fac'],$parametros['tc']);
 	    	// print_r($datos_fac);die();
 	    	    $cabecera['RUC_CI']=$datos_fac[0]['RUC_CI'];
 				$cabecera['Fecha']=$datos_fac[0]['Fecha']->format('Y-m-d');
@@ -229,10 +229,10 @@ class autorizacion_sri
 	    }
 	}
 
-	function datos_factura($serie,$fact)
+	function datos_factura($serie,$fact,$tc)
 	{
 		$con = $this->conn->conexion();
-		$sql = "SELECT * From Facturas WHERE Item = '".$_SESSION['INGRESO']['item']."' AND Periodo = '".$_SESSION['INGRESO']['periodo']."' AND TC = 'FA' AND Serie = '".$serie."' AND Factura = ".$fact." AND LEN(Autorizacion) = 13 AND T <> 'A' ";
+		$sql = "SELECT * From Facturas WHERE Item = '".$_SESSION['INGRESO']['item']."' AND Periodo = '".$_SESSION['INGRESO']['periodo']."' AND TC = '".$tc."' AND Serie = '".$serie."' AND Factura = ".$fact." AND LEN(Autorizacion) = 13 AND T <> 'A' ";
 		//print_r($sql);die();
 		$stmt = sqlsrv_query($con, $sql);
 	   if( $stmt === false)  

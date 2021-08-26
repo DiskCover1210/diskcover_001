@@ -405,6 +405,7 @@ function ReadSetDataNum($sqls,$ParaEmpresa =false,$Incrementar = false) // optim
             WHERE Concepto = '".$sqls. "' 
             AND Periodo = '".$_SESSION['INGRESO']['periodo']. "'
             AND Item = '".$_SESSION['INGRESO']['item']."'" ;
+    
 		$result = $conn->datos($sql);
 	  if(count($result)>0)
 	  {
@@ -428,6 +429,7 @@ function ReadSetDataNum($sqls,$ParaEmpresa =false,$Incrementar = false) // optim
 	    	$Strgs = "INSERT INTO Codigos (Periodo,Item,Concepto,Numero)
                 VALUES ('".$_SESSION['INGRESO']['periodo']."','".$_SESSION['INGRESO']['item']."','".$sqls."',".$NumCodigo.") ";
                 //faltra ejecutar
+                 $conn->String_Sql($Strgs);
 	    }
 	    if($Incrementar)
 	    {
@@ -436,6 +438,7 @@ function ReadSetDataNum($sqls,$ParaEmpresa =false,$Incrementar = false) // optim
                 WHERE Concepto = '".$sqls."'
                 AND Periodo = '" .$_SESSION['INGRESO']['periodo']."' 
                 AND Item = '".$_SESSION['INGRESO']['item']. "' ";
+        $conn->String_Sql($Strgs);
 	    }
 	  }
   }
@@ -7142,7 +7145,7 @@ function datos_tabla($tabla,$campo=false)
       //verificamos que no exista la factura
       $sql="SELECT TOP (1) Factura
             FROM Detalle_Factura
-            WHERE (Factura = '".$n_fac."') AND (Serie = '".$ser."') AND (Item = '".$_SESSION['INGRESO']['item']."') AND (Periodo = '".$_SESSION['INGRESO']['periodo']."')
+            WHERE (Factura = '".$n_fac."') AND (Serie = '".$ser."') AND (Item = '".$_SESSION['INGRESO']['item']."') AND (Periodo = '".$_SESSION['INGRESO']['periodo']."') AND (TC = '".$datos1['TC']."')
          ";
               
       $stmt =sqlsrv_query( $cid, $sql);
@@ -7163,8 +7166,8 @@ function datos_tabla($tabla,$campo=false)
             "FROM Asiento_F
              WHERE  (Item = '".$_SESSION['INGRESO']['item']."')
              AND CodigoU = '". $_SESSION['INGRESO']['CodigoU'] ."' 
+             AND Codigo_Cliente = '". $datos1['codigoCliente'] ."' 
              ORDER BY CODIGO";
-                
         $total_coniva=0;
         $total_siniva=0;
         $stmt =sqlsrv_query( $cid, $sql);
@@ -7178,7 +7181,7 @@ function datos_tabla($tabla,$campo=false)
           $dato[0]['campo']='T';
           $dato[0]['dato']='C';
           $dato[1]['campo']='TC';
-          $dato[1]['dato']='FA';
+          $dato[1]['dato'] = $datos1['TC'];
           $dato[2]['campo']='CodigoC';
           $dato[2]['dato']=$codigo;
           $dato[3]['campo']='Factura';
@@ -7226,7 +7229,7 @@ function datos_tabla($tabla,$campo=false)
 
         }
         
-
+        $total_total_ = $total_siniva;
 
         //agregamos abono
         $sql="SELECT * FROM Asiento_Abonos WHERE  (HABIT= '".$me."') AND 
@@ -7278,7 +7281,7 @@ function datos_tabla($tabla,$campo=false)
           $dato[0]['campo']='T';
           $dato[0]['dato']='C';
           $dato[1]['campo']='TP';
-          $dato[1]['dato']='FA';
+          $dato[1]['dato']=$datos1['TC'];
           $dato[2]['campo']='CodigoC';
           $dato[2]['dato']=$codigo;
           $dato[3]['campo']='Factura';
@@ -7332,7 +7335,7 @@ function datos_tabla($tabla,$campo=false)
         $dato[1]['campo']='T';
         $dato[1]['dato']='C';
         $dato[2]['campo']='TC';
-        $dato[2]['dato']='FA';
+        $dato[2]['dato'] = $datos1['TC'];
         $dato[3]['campo']='ME';
         $dato[3]['dato']=0;
         $dato[4]['campo']='Factura';

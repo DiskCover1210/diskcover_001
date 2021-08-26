@@ -1,8 +1,6 @@
 <?php
   include "../controlador/facturacion/divisasC.php";
   $divisas = new divisasC();
-  $serie = $_SESSION['INGRESO']['Serie_FA'];
-  $codigo = ReadSetDataNum("FA_SERIE_".$serie , True, False);
 ?>
 <style type="text/css">
   @media (max-width:600px) {
@@ -189,6 +187,7 @@
         'Total' : $("#total"+i).val(),
         'MiMes' : '',
         'Periodo' : year,
+        'Cantidad' : $("#cantidad"+i).val(),
       };
       key++;
     }
@@ -246,7 +245,7 @@
         text: ''
       });
     }else{
-        TextRepresentante = null;
+        TextRepresentante = $("#cliente").val();;
         TxtDireccion = $("#direccion").val();
         TxtTelefono = null;
         TextFacturaNo = $("#factura").val();

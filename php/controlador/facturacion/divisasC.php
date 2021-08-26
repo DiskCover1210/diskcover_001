@@ -112,7 +112,7 @@ class divisasC
       $dato[2]['campo']='PRODUCTO';
       $dato[2]['dato']= $producto['Producto'] ;
       $dato[3]['campo']='CANT';
-      $dato[3]['dato']= 1;
+      $dato[3]['dato']= $producto['Cantidad'] ;
       $dato[4]['campo']='PRECIO';
       $dato[4]['dato']= $producto['Precio'] ;
       $dato[5]['campo']='Total_Desc';
@@ -200,11 +200,7 @@ class divisasC
 
     // print_r($FA);die();
     $codigoCliente = $FA['codigoCliente'];
-    //Seteamos los encabezados para las facturas
-    $Estudiante['cedula'] = $FA['TextCI'];
-    $Estudiante['fonopaga'] = $FA['TxtTelefono'];
-    $Estudiante['pagador'] = $FA['TextRepresentante'];
-    $Estudiante['direcpaga'] = $FA['TxtDireccion'];
+
     $resultado = explode(" ", $FA['DCLinea']);
     $FA['Autorizacion'] = $resultado[2];
     $FA['Cta_CxP'] = $resultado[3];
