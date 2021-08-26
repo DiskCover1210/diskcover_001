@@ -98,9 +98,10 @@ function Ver_Comprobante(comprobante)
     url='../controlador/farmacia/reporte_descargos_procesadosC.php?Ver_comprobante=true&comprobante='+comprobante;
     window.open(url, '_blank');
 }
-function Ver_detalle(comprobante)
+
+function reporte_excel(comprobante)
 {
-    url='../vista/farmacia.php?mod=Farmacia&acc=utilidad_insumos&acc1=Utilidad insumos&b=1&po=subcu&comprobante='+comprobante;
+    url='../controlador/farmacia/facturacion_insumosC.php?reporte_excel=true&comprobante='+comprobante;
     window.open(url, '_blank');
 }
 
@@ -130,34 +131,6 @@ function guardar_uti(linea,pos)
 
 }
 
-function facturar(linea,pos)
-{
-  alert('funcion para facturar');
-  // var parametros = 
-  // {
-  //   'linea':linea,
-  //   'utilidad':$('#txt_porcentaje_'+pos).val(),
-  // } 
-  //     // console.log(parametros);
-  //    $.ajax({
-  //     data:  {parametros:parametros},
-  //     url:   '../controlador/farmacia/facturacion_insumosC.php?guardar_utilidad=true',
-  //     type:  'post',
-  //     dataType: 'json',
-  //     success:  function (response) { 
-  //       console.log(response);
-  //       if(response==1)
-  //       {
-  //         Swal.fire('Linea editada','','success')
-  //         cargar_pedidos();
-          
-  //       }
-  //     }
-  //   });
-
-}
-
-
 </script>
 
 <div class="container-lg">
@@ -184,10 +157,10 @@ function facturar(linea,pos)
           </a>
         </div>
         <div class="col-xs-2 col-md-2 col-sm-2 col-lg-1">
-            <button type="button" class="btn btn-default" title="Generar pdf" onclick="reporte_pdf()"><img src="../../img/png/pdf.png"></button>
+            <button type="button" class="btn btn-default" title="Generar pdf" onclick="Ver_Comprobante('<?php echo $cod; ?>')"><img src="../../img/png/pdf.png"></button>
         </div>
         <div class="col-xs-2 col-md-2 col-sm-2 col-lg-1">
-            <button type="button" class="btn btn-default" title="Generar pdf" onclick="reporte_excel()"><img src="../../img/png/table_excel.png"></button>
+            <button type="button" class="btn btn-default" title="Generar pdf" onclick="reporte_excel('<?php echo $cod; ?>')"><img src="../../img/png/table_excel.png"></button>
         </div>
  	</div>
  </div>

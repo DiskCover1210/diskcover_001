@@ -102,6 +102,9 @@ function excel_generico($titulo,$datos=false)
 	 $centrar = array( 'alignment' => array('horizontal' => Alignment::HORIZONTAL_CENTER,) );
 	 $derecha = array( 'alignment' => array('horizontal' => Alignment::HORIZONTAL_RIGHT,) );
 	 $izquierda = array( 'alignment' => array('horizontal' => Alignment::HORIZONTAL_LEFT,) );
+	 $negrita = array('font' => ['bold' => true,],'alignment' => ['horizontal' => Alignment::HORIZONTAL_LEFT,]);
+	 $negritaC = array('font' => ['bold' => true,],'alignment' => ['horizontal' => Alignment::HORIZONTAL_CENTER,]);
+	 $negritaR = array('font' => ['bold' => true,],'alignment' => ['horizontal' => Alignment::HORIZONTAL_RIGHT,]);
 
 	//---------------------inserta imagen 1------------------
 	$objDrawing = new Drawing();
@@ -217,6 +220,24 @@ function excel_generico($titulo,$datos=false)
 				{
 					$sheet->getStyle($let.''.$num)->applyFromArray($estilo_cabecera);
 				}
+				if($tipo=='SUB')
+				{
+					$sheet->getStyle($let.''.$num)->applyFromArray($estilo_subcabecera);
+				}
+				if($tipo=='B')
+				{
+					$sheet->getStyle($let.''.$num)->applyFromArray($negrita);
+				}
+				if($tipo=='BC')
+				{
+					$sheet->getStyle($let.''.$num)->applyFromArray($negritaC);
+				}
+				if($tipo=='BR')
+				{
+					$sheet->getStyle($let.''.$num)->applyFromArray($negritaR);
+				}
+
+
 				$let++;
 			}
 			$let='A';

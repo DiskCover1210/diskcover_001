@@ -1,5 +1,6 @@
 <?php 
 require_once(dirname(__DIR__,2)."/db/db.php");
+require_once(dirname(__DIR__,2)."/db/db1.php");
 require_once(dirname(__DIR__,2)."/funciones/funciones.php");
 
 date_default_timezone_set('America/Guayaquil');
@@ -23,6 +24,7 @@ class autorizacion_sri
 	private $method;
 	private $iv;
 	private $conn;
+	private $db;
 	// Puedes generar una diferente usando la funcion $getIV()
 	
 	function __construct()
@@ -31,6 +33,7 @@ class autorizacion_sri
 		$this->method = 'aes-256-cbc';
 		$this->iv = base64_decode("C9fBxl1EWtYTL1/M8jfstw==");
 		$this->conn = new Conectar();
+		$this->db = new db();
 	}
 	function encriptar($dato)
 	{
@@ -48,7 +51,7 @@ class autorizacion_sri
 			1 Este documento electronico autorizado
 			2 XML devuelto
 			3 Este documento electronico ya esta autorizado
-		*/
+		*/		
 		$cabecera['ambiente']=$_SESSION['INGRESO']['Ambiente'];
 	    $cabecera['ruta_ce']=$_SESSION['INGRESO']['Ruta_Certificado'];
 	    $cabecera['clave_ce']=$_SESSION['INGRESO']['Clave_Certificado'];
@@ -59,11 +62,15 @@ class autorizacion_sri
 	    $cabecera['serie']=$parametros['serie'];
 	    $cabecera['factura']=$parametros['num_fac'];
 	    $cabecera['esta']=substr($parametros['serie'],0,3); 
-	    $cabecera['pto_e']=substr($parametros['serie'],3,5); 
-	    $cabecera['cod_doc']=$parametros['cod_doc'];
+	    $cabecera['pto_e']=substr($parametros['serie'],3,5); 	    
 	    $cabecera['item']=$_SESSION['INGRESO']['item'];
 	    $cabecera['tc']=$parametros['tc'];
 	    $cabecera['periodo']=$_SESSION['INGRESO']['periodo'];
+	    $cabecera['cod_doc']=$parametros['cod_doc'];
+		if($parametros['tc']=='LC')
+		{
+			$cabecera['cod_doc']='03';
+		}
 
 
 	    if($parametros['cod_doc']=='01')
@@ -233,7 +240,7 @@ class autorizacion_sri
 	{
 		$con = $this->conn->conexion();
 		$sql = "SELECT * From Facturas WHERE Item = '".$_SESSION['INGRESO']['item']."' AND Periodo = '".$_SESSION['INGRESO']['periodo']."' AND TC = '".$tc."' AND Serie = '".$serie."' AND Factura = ".$fact." AND LEN(Autorizacion) = 13 AND T <> 'A' ";
-		//print_r($sql);die();
+		// print_r($sql);
 		$stmt = sqlsrv_query($con, $sql);
 	   if( $stmt === false)  
 	   {  
@@ -776,8 +783,8 @@ class autorizacion_sri
     7 Código Numérico                       Numérico       8 
     8 Tipo de Emisión                       Tabla 2        1 
     9 Dígito Verificador (módulo 11 )       Numérico       1*/
- function generar_xml($cabecera,$detalle)
- {
+function generar_xml($cabecera,$detalle)
+{
    	    $entidad=$cabecera['item'];
 	    $empresa=$cabecera['item'];
 	    $fecha = str_replace('/','',$cabecera['fechaem']);
@@ -801,368 +808,387 @@ class autorizacion_sri
         $carpeta_generados = "";
         $carpeta_firmados = "";
         $carpeta_no_autori = "";
-	if(file_exists($carpeta_entidad))
-	{
-		$carpeta_comprobantes = $carpeta_entidad.'/CE'.$empresa;
-		if(file_exists($carpeta_comprobantes))
+		if(file_exists($carpeta_entidad))
 		{
-		  $carpeta_autorizados = $carpeta_comprobantes."/Autorizados";		  
-		  $carpeta_generados = $carpeta_comprobantes."/Generados";
-		  $carpeta_firmados = $carpeta_comprobantes."/Firmados";
-		  $carpeta_no_autori = $carpeta_comprobantes."/No_autorizados";
+			$carpeta_comprobantes = $carpeta_entidad.'/CE'.$empresa;
+			if(file_exists($carpeta_comprobantes))
+			{
+			  $carpeta_autorizados = $carpeta_comprobantes."/Autorizados";		  
+			  $carpeta_generados = $carpeta_comprobantes."/Generados";
+			  $carpeta_firmados = $carpeta_comprobantes."/Firmados";
+			  $carpeta_no_autori = $carpeta_comprobantes."/No_autorizados";
 
-			if(!file_exists($carpeta_autorizados))
+				if(!file_exists($carpeta_autorizados))
+				{
+					mkdir($carpeta_entidad."/CE".$empresa."/Autorizados", 0777);
+				}
+				if(!file_exists($carpeta_generados))
+				{
+					 mkdir($carpeta_entidad.'/CE'.$empresa.'/Generados', 0777);
+				}
+				if(!file_exists($carpeta_firmados))
+				{
+					 mkdir($carpeta_entidad.'/CE'.$empresa.'/Firmados', 0777);
+				}
+				if(!file_exists($carpeta_no_autori))
+				{
+					 mkdir($carpeta_entidad.'/CE'.$empresa.'/No_autorizados', 0777);
+				}
+			}else
 			{
+				mkdir($carpeta_entidad.'/CE'.$empresa, 0777);
 				mkdir($carpeta_entidad."/CE".$empresa."/Autorizados", 0777);
-			}
-			if(!file_exists($carpeta_generados))
-			{
-				 mkdir($carpeta_entidad.'/CE'.$empresa.'/Generados', 0777);
-			}
-			if(!file_exists($carpeta_firmados))
-			{
-				 mkdir($carpeta_entidad.'/CE'.$empresa.'/Firmados', 0777);
-			}
-			if(!file_exists($carpeta_no_autori))
-			{
-				 mkdir($carpeta_entidad.'/CE'.$empresa.'/No_autorizados', 0777);
+			    mkdir($carpeta_entidad.'/CE'.$empresa.'/Generados', 0777);
+			    mkdir($carpeta_entidad.'/CE'.$empresa.'/Firmados', 0777);
+			    mkdir($carpeta_entidad.'/CE'.$empresa.'/No_autorizados', 0777);
 			}
 		}else
 		{
-			mkdir($carpeta_entidad.'/CE'.$empresa, 0777);
-			mkdir($carpeta_entidad."/CE".$empresa."/Autorizados", 0777);
-		    mkdir($carpeta_entidad.'/CE'.$empresa.'/Generados', 0777);
-		    mkdir($carpeta_entidad.'/CE'.$empresa.'/Firmados', 0777);
-		    mkdir($carpeta_entidad.'/CE'.$empresa.'/No_autorizados', 0777);
+			   mkdir($carpeta_entidad, 0777);
+			   mkdir($carpeta_entidad.'/CE'.$empresa, 0777);
+			   mkdir($carpeta_entidad."/CE".$empresa."/Autorizados", 0777);
+			   mkdir($carpeta_entidad.'/CE'.$empresa.'/Generados', 0777);
+			   mkdir($carpeta_entidad.'/CE'.$empresa.'/Firmados', 0777);
+			   mkdir($carpeta_entidad.'/CE'.$empresa.'/No_autorizados', 0777);	    
 		}
-	}else
-	{
-		   mkdir($carpeta_entidad, 0777);
-		   mkdir($carpeta_entidad.'/CE'.$empresa, 0777);
-		   mkdir($carpeta_entidad."/CE".$empresa."/Autorizados", 0777);
-		   mkdir($carpeta_entidad.'/CE'.$empresa.'/Generados', 0777);
-		   mkdir($carpeta_entidad.'/CE'.$empresa.'/Firmados', 0777);
-		   mkdir($carpeta_entidad.'/CE'.$empresa.'/No_autorizados', 0777);	    
-	}
 		
 
-	if(file_exists($carpeta_autorizados.'/'.$compro.'.xml'))
-	{
-		$respuesta = array('1'=>'Autorizado');
-		return $respuesta;
-	}
+		if(file_exists($carpeta_autorizados.'/'.$compro.'.xml'))
+		{
+			$respuesta = array('1'=>'Autorizado');
+			return $respuesta;
+		}
 	
-	// "Create" the document.
-	$xml = new DOMDocument( "1.0", "UTF-8" );
-	$xml->formatOutput = true;
-	$xml->preserveWhiteSpace = false; 
+		// "Create" the document.
+		$xml = new DOMDocument( "1.0", "UTF-8" );
+		$xml->formatOutput = true;
+		$xml->preserveWhiteSpace = false; 
 
-	// Create some elements.
-	switch ($codDoc) {
-		case '01':
-			$xml_factura = $xml->createElement( "factura" );
-			break;
-		case '07':
-			$xml_factura = $xml->createElement( "comprobanteRetencion" );
-			break;
-		case '03':
-			$xml_factura = $xml->createElement( "factura" );
-			break;
-		case '04':
-			$xml_factura = $xml->createElement( "notaCredito" );
-			break;
-		case '05':
-			$xml_factura = $xml->createElement( "notaDebito" );
-			break;
-		case '06':
-			$xml_factura = $xml->createElement( "guiaRemision" );
-			break;
+		// Create some elements.
+		switch ($codDoc) {
+			case '01':
+				$xml_factura = $xml->createElement( "factura" );
+				break;
+			case '07':
+				$xml_factura = $xml->createElement( "comprobanteRetencion" );
+				break;
+			case '03':
+				$xml_factura = $xml->createElement( "liquidacionCompra" );
+				break;
+			case '04':
+				$xml_factura = $xml->createElement( "notaCredito" );
+				break;
+			case '05':
+				$xml_factura = $xml->createElement( "notaDebito" );
+				break;
+			case '06':
+				$xml_factura = $xml->createElement( "guiaRemision" );
+				break;
+			
+			
+		}
 		
-		
-	}
-	
-	$xml_factura->setAttribute( "id", "comprobante" );
-	$xml_factura->setAttribute( "version", "1.1.0" );
-	$xml_infoTributaria = $xml->createElement( "infoTributaria" );
-	$xml_ambiente = $xml->createElement( "ambiente",$ambiente );
-	$xml_tipoEmision = $xml->createElement( "tipoEmision",'1' );
-	$xml_razonSocial = $xml->createElement( "razonSocial",$cabecera['razon_social_principal']);
-	$xml_nombreComercial = $xml->createElement( "nombreComercial",$cabecera['nom_comercial_principal'] );
-	$xml_ruc = $xml->createElement( "ruc",$cabecera['ruc_principal'] );
-	$xml_claveAcceso = $xml->createElement( "claveAcceso",$compro);
-	$xml_codDoc = $xml->createElement( "codDoc",$codDoc );
-	$xml_estab = $xml->createElement( "estab",$cabecera['esta'] );
-	$xml_ptoEmi = $xml->createElement( "ptoEmi",$cabecera['pto_e'] );
-	$xml_secuencial = $xml->createElement( "secuencial",$numero );
-	$xml_dirMatriz = $xml->createElement( "dirMatriz",$cabecera['direccion_principal'] );
+		$xml_factura->setAttribute( "id", "comprobante" );
+		$xml_factura->setAttribute( "version", "1.0.0" );
+		$xml_infoTributaria = $xml->createElement( "infoTributaria" );
+		$xml_ambiente = $xml->createElement( "ambiente",$ambiente );
+		$xml_tipoEmision = $xml->createElement( "tipoEmision",'1' );
+		$xml_razonSocial = $xml->createElement( "razonSocial",$cabecera['razon_social_principal']);
+		$xml_nombreComercial = $xml->createElement( "nombreComercial",$cabecera['nom_comercial_principal'] );
+		$xml_ruc = $xml->createElement( "ruc",$cabecera['ruc_principal'] );
+		$xml_claveAcceso = $xml->createElement( "claveAcceso",$compro);
+		$xml_codDoc = $xml->createElement( "codDoc",$codDoc );
+		$xml_estab = $xml->createElement( "estab",$cabecera['esta'] );
+		$xml_ptoEmi = $xml->createElement( "ptoEmi",$cabecera['pto_e'] );
+		$xml_secuencial = $xml->createElement( "secuencial",$numero );
+		$xml_dirMatriz = $xml->createElement( "dirMatriz",$cabecera['direccion_principal'] );
 
-	$xml_infoTributaria->appendChild( $xml_ambiente );
-	$xml_infoTributaria->appendChild( $xml_tipoEmision );
-	$xml_infoTributaria->appendChild( $xml_razonSocial );
-	$xml_infoTributaria->appendChild( $xml_nombreComercial );
-	$xml_infoTributaria->appendChild( $xml_ruc );
-	$xml_infoTributaria->appendChild( $xml_claveAcceso );
-	$xml_infoTributaria->appendChild( $xml_codDoc );
-	$xml_infoTributaria->appendChild( $xml_estab );
-	$xml_infoTributaria->appendChild( $xml_ptoEmi );
-	$xml_infoTributaria->appendChild( $xml_secuencial );
-	$xml_infoTributaria->appendChild( $xml_dirMatriz );
+		$xml_infoTributaria->appendChild( $xml_ambiente );
+		$xml_infoTributaria->appendChild( $xml_tipoEmision );
+		$xml_infoTributaria->appendChild( $xml_razonSocial );
+		$xml_infoTributaria->appendChild( $xml_nombreComercial );
+		$xml_infoTributaria->appendChild( $xml_ruc );
+		$xml_infoTributaria->appendChild( $xml_claveAcceso );
+		$xml_infoTributaria->appendChild( $xml_codDoc );
+		$xml_infoTributaria->appendChild( $xml_estab );
+		$xml_infoTributaria->appendChild( $xml_ptoEmi );
+		$xml_infoTributaria->appendChild( $xml_secuencial );
+		$xml_infoTributaria->appendChild( $xml_dirMatriz );
 
-	$xml_infoFactura = $xml->createElement( "infoFactura" );
+		$xml_infoFactura = $xml->createElement( "infoFactura" );
+		if($codDoc=='03')
+		{
+			$xml_infoFactura = $xml->createElement( "infoLiquidacionCompra" );
+	    }
 
-	$xml_fechaEmision = $xml->createElement( "fechaEmision",$cabecera['fechaem'] );
-	if($cabecera['Direccion_RS']=='.')
-	{
-		$xml_dirEstablecimiento = $xml->createElement( "dirEstablecimiento",$cabecera['direccion_principal']);
-	}
-	else
-	{
-		$xml_dirEstablecimiento = $xml->createElement( "dirEstablecimiento",$cabecera['Direccion_RS'] );
-	}
-	$xml_obligadoContabilidad = $xml->createElement( "obligadoContabilidad",'SI' );
-	$xml_tipoIdentificacionComprador = $xml->createElement( "tipoIdentificacionComprador",$cabecera['tipoIden'] );
-	$xml_razonSocialComprador = $xml->createElement( "razonSocialComprador",$cabecera['Razon_Social'] );
-	$xml_identificacionComprador = $xml->createElement( "identificacionComprador",$cabecera['RUC_CI'] );
-	$xml_totalSinImpuestos = $xml->createElement( "totalSinImpuestos",round($cabecera['totalSinImpuestos'],2) );
-	$xml_totalDescuento = $xml->createElement( "totalDescuento",round($cabecera['Descuento'],2) );
+		$xml_fechaEmision = $xml->createElement( "fechaEmision",$cabecera['fechaem'] );
+		if($cabecera['Direccion_RS']=='.')
+		{
+			$xml_dirEstablecimiento = $xml->createElement( "dirEstablecimiento",$cabecera['direccion_principal']);
+		}
+		else
+		{
+			$xml_dirEstablecimiento = $xml->createElement( "dirEstablecimiento",$cabecera['Direccion_RS'] );
+		}
+		$xml_obligadoContabilidad = $xml->createElement( "obligadoContabilidad",'SI' );
 
-	$xml_infoFactura->appendChild( $xml_fechaEmision );
-	$xml_infoFactura->appendChild( $xml_dirEstablecimiento );
-	$xml_infoFactura->appendChild( $xml_obligadoContabilidad );
-	$xml_infoFactura->appendChild( $xml_tipoIdentificacionComprador );
-	$xml_infoFactura->appendChild( $xml_razonSocialComprador );
-	$xml_infoFactura->appendChild( $xml_identificacionComprador );
-	$xml_infoFactura->appendChild( $xml_totalSinImpuestos );
-	$xml_infoFactura->appendChild( $xml_totalDescuento );
 
-	$xml_totalConImpuestos = $xml->createElement( "totalConImpuestos" );
-	//sin iva
-	$xml_totalImpuesto = $xml->createElement( "totalImpuesto" );
-	$xml_codigo = $xml->createElement( "codigo",'2' );
-	$xml_codigoPorcentaje = $xml->createElement( "codigoPorcentaje",'0'  );
-	$xml_descuentoAdicional = $xml->createElement( "descuentoAdicional",round($cabecera['descuentoAdicional'],2) );
-	$xml_baseImponible = $xml->createElement( "baseImponible",round($cabecera['baseImponibleSinIva'],2) );
-	//$xml_tarifa = $xml->createElement( "tarifa",'0.00' );
-	$xml_valor = $xml->createElement( "valor",'0.00' );
-	
-	$xml_totalImpuesto->appendChild( $xml_codigo );
-	$xml_totalImpuesto->appendChild( $xml_codigoPorcentaje );
-	$xml_totalImpuesto->appendChild( $xml_descuentoAdicional );
-	$xml_totalImpuesto->appendChild( $xml_baseImponible );
-	//$xml_totalImpuesto->appendChild( $xml_tarifa );
-	$xml_totalImpuesto->appendChild( $xml_valor );
-	$xml_totalConImpuestos->appendChild( $xml_totalImpuesto );
-	if(($cabecera['Con_IVA']) > 0)
-	{
+		$xml_tipoIdentificacionComprador = $xml->createElement( "tipoIdentificacionComprador",$cabecera['tipoIden'] );
+		$xml_razonSocialComprador = $xml->createElement( "razonSocialComprador",$cabecera['Razon_Social'] );
+		$xml_identificacionComprador = $xml->createElement( "identificacionComprador",$cabecera['RUC_CI'] );
+		$xml_totalSinImpuestos = $xml->createElement( "totalSinImpuestos",round($cabecera['totalSinImpuestos'],2) );
+		$xml_totalDescuento = $xml->createElement( "totalDescuento",round($cabecera['Descuento'],2) );
+
+		if($codDoc=='03')
+		{
+			$xml_tipoIdentificacionComprador = $xml->createElement( "tipoIdentificacionProveedor",$cabecera['tipoIden'] );
+			$xml_razonSocialComprador = $xml->createElement( "razonSocialProveedor",$cabecera['Razon_Social'] );
+			$xml_identificacionComprador = $xml->createElement( "identificacionProveedor",$cabecera['RUC_CI'] );		
+			
+		}
+
+		$xml_infoFactura->appendChild( $xml_fechaEmision );
+		$xml_infoFactura->appendChild( $xml_dirEstablecimiento );
+		$xml_infoFactura->appendChild( $xml_obligadoContabilidad );
+		$xml_infoFactura->appendChild( $xml_tipoIdentificacionComprador );
+		$xml_infoFactura->appendChild( $xml_razonSocialComprador );
+		$xml_infoFactura->appendChild( $xml_identificacionComprador );
+		$xml_infoFactura->appendChild( $xml_totalSinImpuestos );
+		$xml_infoFactura->appendChild( $xml_totalDescuento );
+
+		$xml_totalConImpuestos = $xml->createElement( "totalConImpuestos" );
+		//sin iva
 		$xml_totalImpuesto = $xml->createElement( "totalImpuesto" );
 		$xml_codigo = $xml->createElement( "codigo",'2' );
-		$xml_codigoPorcentaje = $xml->createElement( "codigoPorcentaje",$cabecera['codigoPorcentaje'] );
+		$xml_codigoPorcentaje = $xml->createElement( "codigoPorcentaje",'0'  );
 		$xml_descuentoAdicional = $xml->createElement( "descuentoAdicional",round($cabecera['descuentoAdicional'],2) );
-		$xml_baseImponible = $xml->createElement( "baseImponible",round($cabecera['baseImponibleConIva'],2) );
-		$xml_tarifa = $xml->createElement( "tarifa",round(($cabecera['Porc_IVA']*100),2) );
-		$xml_valor = $xml->createElement( "valor",round($cabecera['IVA'],2) );
+		$xml_baseImponible = $xml->createElement( "baseImponible",round($cabecera['baseImponibleSinIva'],2) );
+		//$xml_tarifa = $xml->createElement( "tarifa",'0.00' );
+		$xml_valor = $xml->createElement( "valor",'0.00' );
 		
 		$xml_totalImpuesto->appendChild( $xml_codigo );
 		$xml_totalImpuesto->appendChild( $xml_codigoPorcentaje );
 		$xml_totalImpuesto->appendChild( $xml_descuentoAdicional );
 		$xml_totalImpuesto->appendChild( $xml_baseImponible );
-		$xml_totalImpuesto->appendChild( $xml_tarifa );
+		//$xml_totalImpuesto->appendChild( $xml_tarifa );
 		$xml_totalImpuesto->appendChild( $xml_valor );
-		
 		$xml_totalConImpuestos->appendChild( $xml_totalImpuesto );
-	}
-	$xml_infoFactura->appendChild( $xml_totalConImpuestos );
-
-	$xml_propina = $xml->createElement( "propina",round($cabecera['Propina'],2) );
-	$xml_importeTotal = $xml->createElement( "importeTotal",round($cabecera['Total_MN'],2) );
-	$xml_moneda = $xml->createElement( "moneda",$cabecera['moneda'] );
-
-	$xml_infoFactura->appendChild( $xml_propina );
-	$xml_infoFactura->appendChild( $xml_importeTotal );
-	$xml_infoFactura->appendChild( $xml_moneda );
-
-	$xml_detalles = $xml->createElement( "detalles");
-	foreach ($detalle as $key => $value) {
-		if($value['Cod_Bar'] !='' or $value['Codigo']!='')
+		if(($cabecera['Con_IVA']) > 0)
 		{
-			$xml_detalle = $xml->createElement( "detalle" );
-			if($cabecera['SP']==true)
-			{
-				if(strlen($value['Cod_Bar'])>1)
-				{
-					$xml_codigoPrincipal = $xml->createElement( "codigoPrincipal",$value['Cod_Bar'] );
-				}
-				$xml_detalle->appendChild( $xml_codigoPrincipal );
-				if(strlen($detalle[$i]['Cod_Aux'])>1)
-				{
-					$xml_codigoAuxiliar = $xml->createElement( "codigoAuxiliar",$value['Cod_Aux'] );
-				}
-				else
-				{
-					$xml_codigoAuxiliar = $xml->createElement( "codigoAuxiliar",$value['Codigo'] );
-				}
-				$xml_detalle->appendChild( $xml_codigoAuxiliar );
-
-			}else
-			{
-
-				$cod_au = str_replace('.','', $value['Codigo']);
-				$cod =explode('.', $value['Codigo']);
-					$num_partes = count($cod);
-					$val_cod = '';
-					for ($i=0; $i <$num_partes-1 ; $i++) { 
-						$val_cod.= $cod[$i].'.';
-						$val_cod = substr($val_cod,0,-1);
-					}
-
-				if(strlen($value['Cod_Aux'])>1)
-				{
-					$xml_codigoPrincipal = $xml->createElement( "codigoPrincipal",$value['Cod_Aux'] );
-				}
-				else
-				{					
-					$xml_codigoPrincipal = $xml->createElement( "codigoPrincipal",$value['Codigo']);
-				}
-				$xml_detalle->appendChild( $xml_codigoPrincipal );
-				// if(strlen($value['Cod_Bar'])>1)
-				// {
-					// $xml_codigoAuxiliar = $xml->createElement( "codigoAuxiliar",$val_cod);
-					// $xml_detalle->appendChild( $xml_codigoAuxiliar );
-				// }
-			}
-
-			$xml_descripcion = $xml->createElement( "descripcion",$value['Producto'] );
-			$xml_unidadMedida = $xml->createElement( "unidadMedida",$cabecera['moneda'] );
-			$xml_cantidad = $xml->createElement( "cantidad",$value['Cantidad'] );
-			$xml_precioUnitario = $xml->createElement( "precioUnitario",round($value['Precio'],2) );
-			$xml_descuento = $xml->createElement( "descuento",round($value['descuento'],2) );
-			$xml_precioTotalSinImpuesto = $xml->createElement( "precioTotalSinImpuesto",round($value['SubTotal'],2) );
-			
-			$xml_detalle->appendChild( $xml_codigoPrincipal );
-			
-			$xml_detalle->appendChild( $xml_descripcion );
-			$xml_detalle->appendChild( $xml_unidadMedida );
-			$xml_detalle->appendChild( $xml_cantidad );
-			$xml_detalle->appendChild( $xml_precioUnitario );
-			$xml_detalle->appendChild( $xml_descuento );
-			$xml_detalle->appendChild( $xml_precioTotalSinImpuesto );
-			if(strlen($value['Serie_No'])>1)
-			{
-				$detallesAdicionales = $xml->createElement( "detallesAdicionales" );
-				$detAdicional = $xml->createElement( "detAdicional" );
-				$detAdicional->setAttribute( "nombre", "Serie_No" );
-				$detAdicional->setAttribute( "valor", $value['Serie_No'] );
-				$detallesAdicionales->appendChild( $detAdicional );
-				$xml_detalle->appendChild( $detallesAdicionales );
-			}
-			$xml_impuestos = $xml->createElement( "impuestos" );
-			$xml_impuesto = $xml->createElement( "impuesto" );
+			$xml_totalImpuesto = $xml->createElement( "totalImpuesto" );
 			$xml_codigo = $xml->createElement( "codigo",'2' );
+			$xml_codigoPorcentaje = $xml->createElement( "codigoPorcentaje",$cabecera['codigoPorcentaje'] );
+			$xml_descuentoAdicional = $xml->createElement( "descuentoAdicional",round($cabecera['descuentoAdicional'],2) );
+			$xml_baseImponible = $xml->createElement( "baseImponible",round($cabecera['baseImponibleConIva'],2) );
+			$xml_tarifa = $xml->createElement( "tarifa",round(($cabecera['Porc_IVA']*100),2) );
+			$xml_valor = $xml->createElement( "valor",round($cabecera['IVA'],2) );
+			
+			$xml_totalImpuesto->appendChild( $xml_codigo );
+			$xml_totalImpuesto->appendChild( $xml_codigoPorcentaje );
+			$xml_totalImpuesto->appendChild( $xml_descuentoAdicional );
+			$xml_totalImpuesto->appendChild( $xml_baseImponible );
+			$xml_totalImpuesto->appendChild( $xml_tarifa );
+			$xml_totalImpuesto->appendChild( $xml_valor );
+			
+			$xml_totalConImpuestos->appendChild( $xml_totalImpuesto );
+		}
+		$xml_infoFactura->appendChild( $xml_totalConImpuestos );
+		if($codDoc=='01')
+		{
+			$xml_propina = $xml->createElement( "propina",round($cabecera['Propina'],2) );		
+			$xml_infoFactura->appendChild( $xml_propina );
+		}
 
-			if($value['Total_IVA'] == 0)
+		$xml_importeTotal = $xml->createElement( "importeTotal",round($cabecera['Total_MN'],2) );
+		$xml_moneda = $xml->createElement( "moneda",$cabecera['moneda'] );
+
+		$xml_infoFactura->appendChild( $xml_importeTotal );
+		$xml_infoFactura->appendChild( $xml_moneda );
+
+		$xml_detalles = $xml->createElement( "detalles");
+		foreach ($detalle as $key => $value) {
+			if($value['Cod_Bar'] !='' or $value['Codigo']!='')
 			{
-				$xml_codigoPorcentaje = $xml->createElement( "codigoPorcentaje",'0' );
-				$xml_tarifa = $xml->createElement( "tarifa",'0' );
-			}
-			else
-			{
-				if(($value['Porc_IVA']*100) > 12)
+				$xml_detalle = $xml->createElement( "detalle" );
+				if($cabecera['SP']==true)
 				{
-					$xml_codigoPorcentaje = $xml->createElement( "codigoPorcentaje",'3' );
+					if(strlen($value['Cod_Bar'])>1)
+					{
+						$xml_codigoPrincipal = $xml->createElement( "codigoPrincipal",$value['Cod_Bar'] );
+					}
+					$xml_detalle->appendChild( $xml_codigoPrincipal );
+					if(strlen($detalle[$i]['Cod_Aux'])>1)
+					{
+						$xml_codigoAuxiliar = $xml->createElement( "codigoAuxiliar",$value['Cod_Aux'] );
+					}
+					else
+					{
+						$xml_codigoAuxiliar = $xml->createElement( "codigoAuxiliar",$value['Codigo'] );
+					}
+					$xml_detalle->appendChild( $xml_codigoAuxiliar );
+
+				}else
+				{
+
+					$cod_au = str_replace('.','', $value['Codigo']);
+					$cod =explode('.', $value['Codigo']);
+						$num_partes = count($cod);
+						$val_cod = '';
+						for ($i=0; $i <$num_partes-1 ; $i++) { 
+							$val_cod.= $cod[$i].'.';
+							$val_cod = substr($val_cod,0,-1);
+						}
+
+					if(strlen($value['Cod_Aux'])>1)
+					{
+						$xml_codigoPrincipal = $xml->createElement( "codigoPrincipal",$value['Cod_Aux'] );
+					}
+					else
+					{					
+						$xml_codigoPrincipal = $xml->createElement( "codigoPrincipal",$value['Codigo']);
+					}
+					$xml_detalle->appendChild( $xml_codigoPrincipal );
+					// if(strlen($value['Cod_Bar'])>1)
+					// {
+						// $xml_codigoAuxiliar = $xml->createElement( "codigoAuxiliar",$val_cod);
+						// $xml_detalle->appendChild( $xml_codigoAuxiliar );
+					// }
+				}
+
+				$xml_descripcion = $xml->createElement( "descripcion",$value['Producto'] );
+				$xml_unidadMedida = $xml->createElement( "unidadMedida",$cabecera['moneda'] );
+				$xml_cantidad = $xml->createElement( "cantidad",$value['Cantidad'] );
+				$xml_precioUnitario = $xml->createElement( "precioUnitario",round($value['Precio'],2) );
+				$xml_descuento = $xml->createElement( "descuento",round($value['descuento'],2) );
+				$xml_precioTotalSinImpuesto = $xml->createElement( "precioTotalSinImpuesto",round($value['SubTotal'],2) );
+				
+				$xml_detalle->appendChild( $xml_codigoPrincipal );
+				
+				$xml_detalle->appendChild( $xml_descripcion );
+				$xml_detalle->appendChild( $xml_unidadMedida );
+				$xml_detalle->appendChild( $xml_cantidad );
+				$xml_detalle->appendChild( $xml_precioUnitario );
+				$xml_detalle->appendChild( $xml_descuento );
+				$xml_detalle->appendChild( $xml_precioTotalSinImpuesto );
+				if(strlen($value['Serie_No'])>1)
+				{
+					$detallesAdicionales = $xml->createElement( "detallesAdicionales" );
+					$detAdicional = $xml->createElement( "detAdicional" );
+					$detAdicional->setAttribute( "nombre", "Serie_No" );
+					$detAdicional->setAttribute( "valor", $value['Serie_No'] );
+					$detallesAdicionales->appendChild( $detAdicional );
+					$xml_detalle->appendChild( $detallesAdicionales );
+				}
+				$xml_impuestos = $xml->createElement( "impuestos" );
+				$xml_impuesto = $xml->createElement( "impuesto" );
+				$xml_codigo = $xml->createElement( "codigo",'2' );
+
+				if($value['Total_IVA'] == 0)
+				{
+					$xml_codigoPorcentaje = $xml->createElement( "codigoPorcentaje",'0' );
+					$xml_tarifa = $xml->createElement( "tarifa",'0' );
 				}
 				else
 				{
-					$xml_codigoPorcentaje = $xml->createElement( "codigoPorcentaje",'2' );
+					if(($value['Porc_IVA']*100) > 12)
+					{
+						$xml_codigoPorcentaje = $xml->createElement( "codigoPorcentaje",'3' );
+					}
+					else
+					{
+						$xml_codigoPorcentaje = $xml->createElement( "codigoPorcentaje",'2' );
+					}
+					$xml_tarifa = $xml->createElement( "tarifa",round(($value['Porc_IVA']*100),2) );
+					
 				}
-				$xml_tarifa = $xml->createElement( "tarifa",round(($value['Porc_IVA']*100),2) );
-				
+				$xml_baseImponible = $xml->createElement( "baseImponible",round($value['SubTotal'],2) );
+				$xml_valor = $xml->createElement( "valor",round($value['Total_IVA'],2)  );
+				$xml_impuesto->appendChild( $xml_codigo );
+				$xml_impuesto->appendChild( $xml_codigoPorcentaje );
+				$xml_impuesto->appendChild( $xml_tarifa );
+				$xml_impuesto->appendChild( $xml_baseImponible );
+				$xml_impuesto->appendChild( $xml_valor );
+			
+				$xml_impuestos->appendChild( $xml_impuesto );
+				$xml_detalle->appendChild( $xml_impuestos );
+				$xml_detalles->appendChild( $xml_detalle );
 			}
-			$xml_baseImponible = $xml->createElement( "baseImponible",round($value['SubTotal'],2) );
-			$xml_valor = $xml->createElement( "valor",round($value['Total_IVA'],2)  );
-			$xml_impuesto->appendChild( $xml_codigo );
-			$xml_impuesto->appendChild( $xml_codigoPorcentaje );
-			$xml_impuesto->appendChild( $xml_tarifa );
-			$xml_impuesto->appendChild( $xml_baseImponible );
-			$xml_impuesto->appendChild( $xml_valor );
-		
-			$xml_impuestos->appendChild( $xml_impuesto );
-			$xml_detalle->appendChild( $xml_impuestos );
-			$xml_detalles->appendChild( $xml_detalle );
 		}
-	}
-	$xml_infoAdicional = $xml->createElement( "infoAdicional");
-	//agregar informacion por default
-		// $xml_campoAdicional = $xml->createElement( "campoAdicional",'.' );
-		// $xml_campoAdicional->setAttribute( "nombre", "adi" );
-		// $xml_infoAdicional->appendChild( $xml_campoAdicional );
-	if($cabecera['Cliente']<>'.' AND ($cabecera['Cliente']!=$cabecera['Razon_Social']))
-	{
-		if(strlen($cabecera['Cliente'])>1)
+		$xml_infoAdicional = $xml->createElement( "infoAdicional");
+		//agregar informacion por default
+			// $xml_campoAdicional = $xml->createElement( "campoAdicional",'.' );
+			// $xml_campoAdicional->setAttribute( "nombre", "adi" );
+			// $xml_infoAdicional->appendChild( $xml_campoAdicional );
+		if($cabecera['Cliente']<>'.' AND ($cabecera['Cliente']!=$cabecera['Razon_Social']))
 		{
-			$xml_campoAdicional = $xml->createElement( "campoAdicional",$cabecera['Cliente'] );
-			$xml_campoAdicional->setAttribute( "nombre", "Beneficiario" );
-			$xml_campoAdicional = $xml->createElement( "campoAdicional",$cabecera['Grupo'] );
-			$xml_campoAdicional->setAttribute( "nombre", "Ubicacion" );
+			if(strlen($cabecera['Cliente'])>1)
+			{
+				$xml_campoAdicional = $xml->createElement( "campoAdicional",$cabecera['Cliente'] );
+				$xml_campoAdicional->setAttribute( "nombre", "Beneficiario" );
+				$xml_campoAdicional = $xml->createElement( "campoAdicional",$cabecera['Grupo'] );
+				$xml_campoAdicional->setAttribute( "nombre", "Ubicacion" );
+				$xml_infoAdicional->appendChild( $xml_campoAdicional );
+			}
+		}
+		if(strlen($cabecera['DireccionC'])>1)
+		{
+			$xml_campoAdicional = $xml->createElement( "campoAdicional",$cabecera['DireccionC'] );
+			$xml_campoAdicional->setAttribute( "nombre", "Direccion" );
 			$xml_infoAdicional->appendChild( $xml_campoAdicional );
 		}
-	}
-	if(strlen($cabecera['DireccionC'])>1)
-	{
-		$xml_campoAdicional = $xml->createElement( "campoAdicional",$cabecera['DireccionC'] );
-		$xml_campoAdicional->setAttribute( "nombre", "Direccion" );
-		$xml_infoAdicional->appendChild( $xml_campoAdicional );
-	}
-	if(strlen($cabecera['TelefonoC'])>1)
-	{
-		$xml_campoAdicional = $xml->createElement( "campoAdicional",$cabecera['TelefonoC'] );
-		$xml_campoAdicional->setAttribute( "nombre", "Telefono" );
-		$xml_infoAdicional->appendChild( $xml_campoAdicional );
-	}
-	if(strlen($cabecera['EmailC'])>1)
-	{
-		$xml_campoAdicional = $xml->createElement( "campoAdicional",$cabecera['EmailC'] );
-		$xml_campoAdicional->setAttribute( "nombre", "Email" );
-		$xml_infoAdicional->appendChild( $xml_campoAdicional );
-	}
-	if(strlen($cabecera['EmailR'])>1)
-	{
-		$xml_campoAdicional = $xml->createElement( "campoAdicional",$cabecera['EmailR'] );
-		$xml_campoAdicional->setAttribute( "nombre", "Email2" );
-		$xml_infoAdicional->appendChild( $xml_campoAdicional );
-	}
-	if(strlen($cabecera['Contacto'])>1)
-	{
-		$xml_campoAdicional = $xml->createElement( "campoAdicional",$cabecera['Contacto'] );
-		$xml_campoAdicional->setAttribute( "nombre", "Referencia" );
-		$xml_infoAdicional->appendChild( $xml_campoAdicional );
-	}
-	if(strlen($cabecera['Orden_Compra'])>1)
-	{
-		$xml_campoAdicional = $xml->createElement( "campoAdicional",$cabecera['Orden_Compra'] );
-		$xml_campoAdicional->setAttribute( "nombre", "ordenCompra" );
-		$xml_infoAdicional->appendChild( $xml_campoAdicional );
-	}
-	
-	$xml_factura->appendChild( $xml_infoTributaria );
-	$xml_factura->appendChild( $xml_infoFactura );
-	$xml_factura->appendChild( $xml_detalles );
-	$xml_factura->appendChild( $xml_infoAdicional );
+		if(strlen($cabecera['TelefonoC'])>1)
+		{
+			$xml_campoAdicional = $xml->createElement( "campoAdicional",$cabecera['TelefonoC'] );
+			$xml_campoAdicional->setAttribute( "nombre", "Telefono" );
+			$xml_infoAdicional->appendChild( $xml_campoAdicional );
+		}
+		if(strlen($cabecera['EmailC'])>1)
+		{
+			$xml_campoAdicional = $xml->createElement( "campoAdicional",$cabecera['EmailC'] );
+			$xml_campoAdicional->setAttribute( "nombre", "Email" );
+			$xml_infoAdicional->appendChild( $xml_campoAdicional );
+		}
+		if(strlen($cabecera['EmailR'])>1)
+		{
+			$xml_campoAdicional = $xml->createElement( "campoAdicional",$cabecera['EmailR'] );
+			$xml_campoAdicional->setAttribute( "nombre", "Email2" );
+			$xml_infoAdicional->appendChild( $xml_campoAdicional );
+		}
+		if(strlen($cabecera['Contacto'])>1)
+		{
+			$xml_campoAdicional = $xml->createElement( "campoAdicional",$cabecera['Contacto'] );
+			$xml_campoAdicional->setAttribute( "nombre", "Referencia" );
+			$xml_infoAdicional->appendChild( $xml_campoAdicional );
+		}
+		if(strlen($cabecera['Orden_Compra'])>1)
+		{
+			$xml_campoAdicional = $xml->createElement( "campoAdicional",$cabecera['Orden_Compra'] );
+			$xml_campoAdicional->setAttribute( "nombre", "ordenCompra" );
+			$xml_infoAdicional->appendChild( $xml_campoAdicional );
+		}
+		
+		$xml_factura->appendChild( $xml_infoTributaria );
+		$xml_factura->appendChild( $xml_infoFactura );
+		$xml_factura->appendChild( $xml_detalles );
+		$xml_factura->appendChild( $xml_infoAdicional );
 
 
-	$xml->appendChild($xml_factura);
+		$xml->appendChild($xml_factura);
 
-	$ruta_G = dirname(__DIR__).'/entidades/entidad_'.$entidad."/CE".$entidad.'/Generados';
-	if($archivo = fopen($ruta_G.'/'.$compro.'.xml',"w+b"))
-	  {
-	  	fwrite($archivo,$xml->saveXML());
-	  	 $respuesta =  $this->firmar_documento($compro,$entidad,$cabecera['clave_ce'],$cabecera['ruta_ce']);
-	     return $respuesta;
-	  }else
-	  {
-	  	// print_r($ruta_G);die();
-	  	// return 's';
-	  }	
+		$ruta_G = dirname(__DIR__).'/entidades/entidad_'.$entidad."/CE".$entidad.'/Generados';
+		if($archivo = fopen($ruta_G.'/'.$compro.'.xml',"w+b"))
+		  {
+		  	fwrite($archivo,$xml->saveXML());
+		  	 $respuesta =  $this->firmar_documento($compro,$entidad,$cabecera['clave_ce'],$cabecera['ruta_ce']);
+		     return $respuesta;
+		  }else
+		  {
+		  	// print_r($ruta_G);die();
+		  	// return 's';
+		  }	
 }
+
+
 
 function generar_xml_retencion($cabecera,$detalle=false)
 {
@@ -1505,34 +1531,6 @@ function generar_xml_retencion($cabecera,$detalle=false)
 
         	$xml_inicio->appendChild($xml_infoAdicional);
         	$xml->appendChild($xml_inicio);
-
- /*       	
-                
-                If AgenteRetencion <> Ninguno Then Insertar_Campo_XML "<campoAdicional nombre=""Agente de Retención"">" & AgenteRetencion & "</campoAdicional>"
-                If MicroEmpresa <> Ninguno Then Insertar_Campo_XML "<campoAdicional nombre=""Contribuyente Régimen Microempresas""> </campoAdicional>"
-
-        $xml->appendChild($xml_infoAdicional);
-
-
-
-/*
-
-           'FIN DE XML DE RETENCION
-            'MsgBox AgenteRetencion & vbCrLf & MicroEmpresa
-             Insertar_Campo_XML CerrarXML("impuestos")
-             Insertar_Campo_XML AbrirXML("infoAdicional")
-                If Len(TFA.DireccionC) > 1 Then Insertar_Campo_XML "<campoAdicional nombre=""Direccion"">" & TFA.DireccionC & "</campoAdicional>"
-                If Len(TFA.TelefonoC) > 1 Then Insertar_Campo_XML "<campoAdicional nombre=""Telefono"">" & TFA.TelefonoC & "</campoAdicional>"
-                If Len(TFA.EmailC) > 1 Then Insertar_Campo_XML "<campoAdicional nombre=""Email"">" & TFA.EmailC & "</campoAdicional>"
-                Insertar_Campo_XML "<campoAdicional nombre=""Comprobante No"">" & TFA.TP & "-" & Format$(TFA.Numero, "0000000000") & "</campoAdicional>"
-                If AgenteRetencion <> Ninguno Then Insertar_Campo_XML "<campoAdicional nombre=""Agente de Retención"">" & AgenteRetencion & "</campoAdicional>"
-                If MicroEmpresa <> Ninguno Then Insertar_Campo_XML "<campoAdicional nombre=""Contribuyente Régimen Microempresas""> </campoAdicional>"
-             Insertar_Campo_XML CerrarXML("infoAdicional")
-             Insertar_Campo_XML CerrarXML("comprobanteRetencion")
-
-
-*/
-
 
      $ruta_G = dirname(__DIR__).'/entidades/entidad_'.$entidad."/CE".$entidad.'/Generados';
      // print_r($ruta_G);die();

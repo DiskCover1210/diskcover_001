@@ -326,9 +326,10 @@ class divisasC
     }
 
     //Grabamos el numero de factura
+    // print_r($FA);die();
     Grabar_Factura($FA);
-    if (strlen($FA['Autorizacion']) == 13) {
-      $resultado = $this->autorizar_sri->Autorizar($FA);
+    if (strlen($FA['Autorizacion']) == 13) {      
+       $resultado = $this->autorizar_sri->Autorizar($FA);
     }else{
       $resultado = array('respuesta'=>4);
     }

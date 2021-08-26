@@ -17,6 +17,13 @@ if(isset($_GET['guardar_utilidad']))
 	echo json_encode($controlador->guardar_utilidad($parametros));	
 }
 
+if(isset($_GET['reporte_excel']))
+{   
+	$comprobante= $_GET['comprobante'];
+	// print_r($comprobante);die();
+	echo json_encode($controlador->reporte_excel($comprobante));	
+}
+
 
 
 class facturacion_insumosC 
@@ -77,6 +84,75 @@ class facturacion_insumosC
 		$campoWhere[0]['valor']=$parametros['linea'];
 		return update_generico($datos,$tabla,$campoWhere);
 
+	}
+
+	function reporte_excel($comprobante)
+	{		          				
+
+	    $datos = $this->descargos_procesados->cargar_comprobantes_datos($query=false,$desde='',$hasta='',$tipo='',$comprobante);
+		$lineas = $this->descargos_procesados->lineas_trans_kardex($comprobante);
+		$titulo = 'CARGO DE INSUMOS Y MEDICAMENTOS DE PACIENTE PRIVADO';
+		
+		$tablaHTML = array();
+
+		$tablaHTML[0]['medidas']= array(17,44,17,70,17);
+	    $tablaHTML[0]['datos']=array('Paciente:',$datos[0]['Cliente'],'Detalle:',$datos[0]['Concepto'],'No.Comp:'.$datos[0]['Numero']);
+	    $tablaHTML[0]['tipo'] ='SUB';
+
+	    $tablaHTML[1]['medidas']=array(17,44,18,25,25);
+	    $tablaHTML[1]['datos']=array('CODIGO','PRODUCTO','CANTIDAD','PRECIO UNI','PRECIO TOTAL');
+	    $tablaHTML[1]['tipo'] ='SUB';
+
+	    $pos=2;
+	    $total =0;
+	    $familias = $this->descargos_procesados->familias($comprobante);
+	    $reg = count($familias);
+
+	    foreach ($familias as $key1 => $value1) {
+		    foreach ($lineas as $key => $value) {
+		    	if($value1['familia']==substr($value['Codigo_Inv'],0,5))
+		    	{
+
+		    		// print_r($value1['familia']);print_r(substr($value['Codigo_Inv'],0,5));die();
+		    	  $uti = $value['Utilidad'];
+		    	  if($value['Utilidad']=='' || $value['Utilidad']==0)
+		    	  {
+		    	  	$uti = number_format($value['utilidad_C']*100,2);
+						  $parametros = array('utilidad'=>$uti,'linea'=>$value['ID']);
+						  $this->guardar_utilidad($parametros);
+						  $uti = number_format($value['utilidad_C']);
+		    	  }
+		    	  $gra_t = ($value['Valor_Total']*$uti)+$value['Valor_Total'];
+		    	  $uni = ($gra_t/$value['Salida']);
+		    	 	$tablaHTML[$pos]['medidas']=$tablaHTML[1]['medidas'];
+				    $tablaHTML[$pos]['datos']=array($value['Codigo_Inv'],$value['Producto'],$value['Salida'],number_format($uni,2),number_format($gra_t,2));
+				    $tablaHTML[$pos]['tipo'] ='N';
+
+				    $pos+=2;
+				    $total+=number_format($gra_t,2);
+				  }
+		    }
+		     $pos+=1;
+		     $tablaHTML[$pos]['medidas']=array(17,44,17,70,17);
+	       $tablaHTML[$pos]['datos']=array('','','','Total',''.$total);
+	       $tablaHTML[$pos]['tipo'] ='BR';
+	       $pos+=1;
+	       if(($key1+1)!=$reg)
+	       {
+	       	 $tablaHTML[$pos]['medidas']=array(190);
+		       $tablaHTML[$pos]['datos']=array('');
+		        $pos+=1;
+			     $tablaHTML[$pos]['medidas']=array(39,83,18,25,25);
+		       $tablaHTML[$pos]['datos']=array('CODIGO','PRODUCTO','CANTIDAD','PRECIO UNI','PRECIO TOTAL');
+		       $tablaHTML[$pos]['tipo'] ='SUB';
+		       $pos+=1;
+	       }
+
+	    }
+
+
+
+		excel_generico($titulo,$tablaHTML);
 	}
 
 
