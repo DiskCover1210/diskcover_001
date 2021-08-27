@@ -103,8 +103,8 @@ class divisasC
     $datos = array();
     $Contador = 0;
 
-    // print_r($_POST['datos']);die();
     foreach ($_POST['datos'] as $key => $producto) {
+      $precio_nuevo = ($producto['Total'] / $producto['Cantidad']);
       $dato[0]['campo']='CODIGO';
       $dato[0]['dato']= $producto['Codigo'];
       $dato[1]['campo']='CODIGO_L';
@@ -114,7 +114,7 @@ class divisasC
       $dato[3]['campo']='CANT';
       $dato[3]['dato']= $producto['Cantidad'] ;
       $dato[4]['campo']='PRECIO';
-      $dato[4]['dato']= $producto['Precio'] ;
+      $dato[4]['dato']= $precio_nuevo;
       $dato[5]['campo']='Total_Desc';
       $dato[5]['dato']= $producto['Total_Desc'] ;
       $dato[6]['campo']='Total_Desc2';
@@ -139,6 +139,8 @@ class divisasC
       $dato[15]['dato']= $_SESSION['INGRESO']['CodigoU'];
       $dato[16]['campo']='A_No';
       $dato[16]['dato']= $Contador;
+      $dato[17]['campo']='PRECIO2';
+      $dato[17]['dato']= $producto['Precio'];
       $Contador++;
       insert_generico("Asiento_F",$dato);
     }
@@ -326,7 +328,7 @@ class divisasC
     }
 
     //Grabamos el numero de factura
-    // print_r($FA);die();
+    //print_r($FA);die();
     Grabar_Factura($FA);
     if (strlen($FA['Autorizacion']) == 13) {      
        $resultado = $this->autorizar_sri->Autorizar($FA);
@@ -349,6 +351,7 @@ class divisasC
       'saldo' => $saldo);
     $datos_pre  ="";
     $datos_pre =  $this->modelo->datos_factura($parametros);
+    $datos_empre =  $this->modelo->datos_empresa();
     $cabe ='<font face="Courier New" size=2>Transaccion ('.$TC.'): No. '.$datos_pre['lineas'][0]['Factura'].' <br>
         Fecha: '.date('Y-m-d').' - Hora: </b>'.date('H:m:s').' <br>
         Cliente: <br>'.$datos_pre['cliente']['Cliente'].'<br>
@@ -405,7 +408,7 @@ class divisasC
       </tr>
     </table></font>";
     $html =  $cabe.$lineas.$totales.$datos_extra;
-    $this->pdf->formatoPDFMatricial($html,$parametros,$datos_pre);
+    $this->pdf->formatoPDFMatricial($html,$parametros,$datos_pre,$datos_empre);
   }
 
   function limpiar_grid()

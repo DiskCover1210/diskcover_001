@@ -115,6 +115,29 @@ class divisasM
     return $factura;
   }
 
+  function datos_empresa(){
+    require_once("../../db/db.php");
+    $cid = Conectar::conexion('MYSQL');
+    $sql=" SELECT * 
+            FROM  micro_empresa  
+            WHERE  (RUC = '".$_SESSION['INGRESO']['RUC']."')";
+    $stmt = $cid->query($sql);
+    $micro_empresa = [];
+    foreach ($stmt as  $value) {
+      $micro_empresa = $value;
+    }
+    $sql=" SELECT * 
+            FROM  agente_retencion  
+            WHERE  (RUC = '".$_SESSION['INGRESO']['RUC']."')";
+    $stmt = $cid->query($sql);
+    $agente_retencion = [];
+    foreach ($stmt as  $value) {
+      $agente_retencion = $value;
+    }
+    $datos_empresa = array('micro_empresa' =>$micro_empresa ,'agente_retencion' => $agente_retencion);
+    return $datos_empresa;
+  }
+
   public function limpiarGrid(){
     $sql = "DELETE
           FROM Asiento_F

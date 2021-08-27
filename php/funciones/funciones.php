@@ -7216,6 +7216,8 @@ function datos_tabla($tabla,$campo=false)
           $dato[17]['dato']=$_SESSION['INGRESO']['porc']; 
           $dato[18]['campo']='Autorizacion';
           $dato[18]['dato']=$datos1['Autorizacion'];
+          $dato[19]['campo']='Precio2';
+          $dato[19]['dato']=$row[40];
           $total_iva=$total_iva+$row[7];
           insert_generico("Detalle_Factura",$dato);
           if($row[7]==0)

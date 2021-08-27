@@ -206,7 +206,7 @@ class cabecera_pdf
 		
 	}
 
-	function formatoPDFMatricial($HTML,$parametros,$datos_pre)
+	function formatoPDFMatricial($HTML,$parametros,$datos_pre,$datos_empresa)
 	{	
 		$pdf = new FPDF();
 		$pdf->setMargins(2,15, 11.7);
@@ -219,6 +219,16 @@ class cabecera_pdf
 		$pdf->Cell(0,0,'Cliente: '.$datos_pre['cliente']['Cliente']);
 		$pdf->Ln(5);
 		$pdf->Cell(0,0,'Autorizaion: ');
+		$pdf->Ln(5);
+		$pdf->Cell(0,0,$datos_pre['lineas'][0]['Autorizacion']);
+		if (count($datos_empresa['micro_empresa']) && $datos_empresa['micro_empresa']['A2021'] == 'X') {
+			$pdf->Ln(5);
+			$pdf->Cell(0,0,'MICROEMPRESA');
+		}
+		if (count($datos_empresa['agente_retencion'])) {
+			$pdf->Ln(5);
+			$pdf->Cell(0,0,'Agente Retención: '.$datos_empresa['agente_retencion']['RESOLUCION'] );
+		}		
 		$pdf->Ln(5);
 		$pdf->Cell(0,0,'R.U.C/C.I.: '.$datos_pre['cliente']['CI_RUC']);
 		$pdf->Ln(5);
@@ -235,7 +245,7 @@ class cabecera_pdf
 		foreach ($datos_pre['lineas'] as $key => $value) {
 			$pdf->Cell(0,0,$value['Producto']);
 			$pdf->Ln(2);
-			$pdf->Cell(40,6,$value['Cantidad'].' X '.number_format($value['Precio'],2),'',0);
+			$pdf->Cell(40,6,$value['Cantidad'].' X '.number_format($value['Precio2'],2),'',0);
 			$pdf->Cell(35,6,number_format($value['Total'],2),'',0,'R');
 			$pdf->Ln(5);
     	}
