@@ -18,6 +18,7 @@
     }
   });
   $(document).ready(function () {
+    cargar_grilla();
     catalogoLineas();
     autocomplete_cliente();
     provincias();
@@ -141,56 +142,110 @@
       }else{
         TextCant = (TextVTotal * TextVUnit);
       }
-      $("#cantidad").val(parseFloat(TextCant).toFixed(2));
+      $("#cantidad").val(parseFloat(TextCant).toFixed(4));
     }else if(TextCant > 0 && TextVTotal == 0){
       if (Div == "1") {
         TextVTotal = (TextCant / TextVUnit);
       }else{
         TextVTotal = (TextCant * TextVUnit);
       }
-      $("#total").val(parseFloat(TextVTotal).toFixed(2));
+      $("#total").val(parseFloat(TextVTotal).toFixed(4));
     }
   }
 
-  function aceptar(){
+  // function aceptar1(){
+  //   producto = $("#producto").val();
+  //   pvp = $("#preciounitario").val();
+  //   total = $("#total").val();
+  //   cantidad = $("#cantidad").val();
+  //   producto = producto.split("/");
+  //   console.log(producto);
+  //   console.log(total);
+  //   var table = document.getElementById('customers');
+  //   var rowLength = table.rows.length;    
+  //   var tr = `<tr>
+  //     <td><input type="text" id="codigo`+rowLength+`" value="`+producto[0]+`" disabled class="sinborde"></td>
+  //     <td><input type="text" id="cantidad`+rowLength+`" value="`+cantidad+`" disabled class="sinborde"></td>
+  //     <td><input type="text" id=boni"`+rowLength+`" value="`+cantidad+`" disabled class="sinborde"></td>
+  //     <td><input type="text" id="producto`+rowLength+`" value="`+producto[1]+`" disabled class="sinborde"></td>
+  //     <td><input type="text" id="pvp`+rowLength+`" value="`+pvp+`" disabled class="sinborde"></td>
+  //     <td><input type="text" id="total`+rowLength+`" value="`+total+`" disabled class="sinborde"></td>
+  //   </tr>`;
+  //   $("#cuerpo").append(tr);
+  //   calcularTotal();
+  //   datosLineas = [];
+  //   var year = new Date().getFullYear();
+  //   var rowLength = table.rows.length;
+  //   total = 0;
+  //   key = 0;
+  //   for(var i=1; i<rowLength; i+=1){
+  //     datosLineas[key] = {
+  //       'Codigo' : $("#codigo"+i).val(),
+  //       'CodigoL' : $("#codigo"+i).val(),
+  //       'Producto' : $("#producto"+i).val(),
+  //       'Precio' : $("#pvp"+i).val(),
+  //       'Total_Desc' : 0,
+  //       'Total_Desc2' : 0,
+  //       'Iva' : 0,
+  //       'Total' : $("#total"+i).val(),
+  //       'MiMes' : '',
+  //       'Periodo' : year,
+  //       'Cantidad' : $("#cantidad"+i).val(),
+  //     };
+  //     key++;
+  //   }
+  //   // var datosLineas = 
+  //   // {
+  //   //     'Codigo' : producto[0],
+  //   //     'CodigoL' : producto[0],
+  //   //     'Producto' : producto[1],
+  //   //     'Precio' :pvp,
+  //   //     'Total_Desc' : 0,
+  //   //     'Total_Desc2' : 0,
+  //   //     'Iva' : 0,
+  //   //     'Total':total,
+  //   //     'MiMes': '',
+  //   //     'Periodo' :year,
+  //   //     'Cantidad' :cantidad,
+  //   // }
+  //   console.log(datosLineas);
+  //   codigoCliente = $("#codigoCliente").val();
+  //   $.ajax({
+  //     type: "POST",
+  //     url: '../controlador/facturacion/divisasC.php?guardarLineas=true',
+  //     data: {
+  //       'codigoCliente' : codigoCliente,
+  //       'datos' : datosLineas,
+  //     }, 
+  //     success: function(data)
+  //     {
+  //       // cargar_grilla();        
+  //     }
+  //   });
+  // }
+
+function aceptar(){
     producto = $("#producto").val();
     pvp = $("#preciounitario").val();
     total = $("#total").val();
     cantidad = $("#cantidad").val();
     producto = producto.split("/");
-    var table = document.getElementById('customers');
-    var rowLength = table.rows.length;
-    var tr = `<tr>
-      <td><input type="text" id="codigo`+rowLength+`" value="`+producto[0]+`" disabled class="sinborde"></td>
-      <td><input type="text" id="cantidad`+rowLength+`" value="`+cantidad+`" disabled class="sinborde"></td>
-      <td><input type="text" id=boni"`+rowLength+`" value="`+cantidad+`" disabled class="sinborde"></td>
-      <td><input type="text" id="producto`+rowLength+`" value="`+producto[1]+`" disabled class="sinborde"></td>
-      <td><input type="text" id="pvp`+rowLength+`" value="`+pvp+`" disabled class="sinborde"></td>
-      <td><input type="text" id="total`+rowLength+`" value="`+total+`" disabled class="sinborde"></td>
-    </tr>`;
-    $("#cuerpo").append(tr);
-    calcularTotal();
-    datosLineas = [];
     var year = new Date().getFullYear();
-    var rowLength = table.rows.length;
-    total = 0;
-    key = 0;
-    for(var i=1; i<rowLength; i+=1){
-      datosLineas[key] = {
-        'Codigo' : $("#codigo"+i).val(),
-        'CodigoL' : $("#codigo"+i).val(),
-        'Producto' : $("#producto"+i).val(),
-        'Precio' : $("#pvp"+i).val(),
+    var datosLineas = 
+    {
+        'Codigo' : producto[0],
+        'CodigoL' : producto[0],
+        'Producto' : producto[1],
+        'Precio' :pvp,
         'Total_Desc' : 0,
         'Total_Desc2' : 0,
         'Iva' : 0,
-        'Total' : $("#total"+i).val(),
-        'MiMes' : '',
-        'Periodo' : year,
-        'Cantidad' : $("#cantidad"+i).val(),
-      };
-      key++;
+        'Total':total,
+        'MiMes': '',
+        'Periodo' :year,
+        'Cantidad' :cantidad,
     }
+    console.log(datosLineas);
     codigoCliente = $("#codigoCliente").val();
     $.ajax({
       type: "POST",
@@ -201,7 +256,24 @@
       }, 
       success: function(data)
       {
-        
+        cargar_grilla();        
+      }
+    });
+  }
+
+
+  function cargar_grilla()
+  {
+    $.ajax({
+      type: "POST",
+      url: '../controlador/facturacion/divisasC.php?cargarLineas=true',
+      dataType: 'json',
+      success: function(data)
+      {
+        $('#tbl_divisas').html(data.tbl);   
+        $("#total0").val(parseFloat(data.total).toFixed(2));
+        $("#totalFac").val(parseFloat(data.total).toFixed(2));
+        $("#efectivo").val(parseFloat(data.total).toFixed(2));     
       }
     });
   }
@@ -302,6 +374,7 @@
             {
               
               $('#myModal_espera').modal('hide');
+              cargar_grilla();
               if (response) {
 
                 response = JSON.parse(response);
@@ -315,6 +388,7 @@
 
                   }else if(response.respuesta == '1')
                   {
+                    limpiar_grid();
                     Swal.fire({
                       type: 'success',
                       title: 'Este documento electronico fue autorizado',
@@ -443,8 +517,22 @@
       dataType:'json',
       // data:{idpro:idpro},
       success: function(response){
+        cargar_grilla(); 
      
     }
+    });
+  }
+
+  function Eliminar(cod)
+  {
+     $.ajax({
+      url:'../controlador/facturacion/divisasC.php?Eliminar=true',
+      type:'post',
+      dataType:'json',
+      data:{cod:cod},
+      success: function(response){
+        cargar_grilla()  
+       }
     });
   }
 
@@ -480,7 +568,7 @@
             <label class="text-right">TIPO DE PROCESO</label>
           </div>
           <div class="col-sm-4">
-            <select class="form-control input-sm" name="DCLinea" id="DCLinea" onchange="numeroFactura();productos();limpiar_grid()">
+            <select class="form-control input-sm" name="DCLinea" id="DCLinea" onchange="numeroFactura();productos();limpiar_grid(); cargar_grilla();">
             </select>
           </div>
           <div class="col-sm-2">
@@ -504,23 +592,23 @@
         <div class="row">
           <div class="col-sm-4 col-sm-offset-1">
             <label>TOTAL EN S/.</label>
-            <input type="text" name="total" id="total" value="0.00" class="form-control input-sm text-right">
+            <input type="text" name="total" id="total" value="0.00" class="form-control input-sm text-right" onblur="$('#cantidad').val(0)">
           </div>
           <div class="col-sm-4">
             <label>Cantidad Cambio</label>
-            <input type="text" name="cantidad" id="cantidad" value="0.00" class="form-control input-sm text-right">
+            <input type="text" name="cantidad" id="cantidad" value="0.00" class="form-control input-sm text-right" onblur="$('#total').val(0)">
           </div>
           <div class=" col-sm-2">
               <a title="Calcular" class="btn btn-default" tabindex="22">
                 <img src="../../img/png/calculadora.png" width="25" height="30" onclick="calcular();">
               </a>
-              <a title="Aprobar" class="btn btn-default" tabindex="23" onclick="aceptar();">
+              <a title="Aprobar" class="btn btn-default" tabindex="23" onclick="calcular();aceptar();">
                 <img src="../../img/png/aprobar.png" width="25" height="30">
               </a>
           </div>
         </div>
-        <div class="row">
-          <div class="col-sm-12">
+        <div class="row"><br>
+          <!-- <div class="col-sm-12">
             <div class="tab-content" style="background-color:#E7F5FF">
               <div id="home" class="tab-pane fade in active">
                 <div class="table-responsive" id="tabla_" style="overflow-y: scroll; height:250px; width: auto;">
@@ -543,6 +631,9 @@
                 </div>
               </div>
             </div>
+          </div> -->
+          <div class="col-sm-12" id="tbl_divisas" style="height:300px">
+           
           </div>
         </div>
         <br>

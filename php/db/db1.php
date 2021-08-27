@@ -24,7 +24,7 @@ class db
 
 	function conexion($tipo='')
 	{
-		if($tipo=='MYSQL')
+		if($tipo=='MYSQL' || $tipo=='My SQL')
 		{
 		  return $this->MySQL();
 		  // $this->MySQL2();
@@ -63,6 +63,11 @@ class db
 
 	function MySQL()
 	{
+		$this->usuario = 'diskcover';
+	    $this->password =  'disk2017Cover';  // en mi caso tengo contraseña pero en casa caso introducidla aquí.
+	    $this->servidor ='mysql.diskcoversystem.com';
+	    $this->database = 'diskcover_empresas';
+	    $this->puerto = 13306;
 		$conn =  new mysqli($this->servidor, $this->usuario, $this->password,$this->database,$this->puerto);
 		$conn->set_charset("utf8");
 		if (!$conn) 

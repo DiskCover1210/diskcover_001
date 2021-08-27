@@ -6597,7 +6597,7 @@ if($titulo)
     {
       $medida = '300px';
     }else{
-      if(($value['CHARACTER_MAXIMUM_LENGTH']<=11 && strlen($value['COLUMN_NAME'])>2 && $value['COLUMN_NAME']!='Codigo' && $value['COLUMN_NAME']!='CodigoU'))
+      if(($value['CHARACTER_MAXIMUM_LENGTH']<=11 && strlen($value['COLUMN_NAME'])>2 && $value['COLUMN_NAME']!='Codigo' && $value['COLUMN_NAME']!='CodigoU' && $value['CHARACTER_MAXIMUM_LENGTH']!=-1))
       {        
         $medida = dimenciones_tabl(strlen($value['COLUMN_NAME']));       
       }else if($value['COLUMN_NAME']=='Codigo' || $value['COLUMN_NAME']=='CodigoU'){
@@ -6607,6 +6607,8 @@ if($titulo)
       // print_r($medida);die();      
       }else
       {
+        if($value['CHARACTER_MAXIMUM_LENGTH']!=-1)
+        {
         $med_nom = str_replace('px','', dimenciones_tabl(strlen($value['COLUMN_NAME'])));
         $medida = str_replace('px','',dimenciones_tabl($value['CHARACTER_MAXIMUM_LENGTH']));
         if($medida<$med_nom)
@@ -6617,6 +6619,10 @@ if($titulo)
            $medida = dimenciones_tabl($value['CHARACTER_MAXIMUM_LENGTH']);
            // print_r($medida);die();
         }
+      }else
+      {
+         $medida ='250px';
+      }
       }
     }
    }else

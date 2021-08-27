@@ -82,12 +82,12 @@ class autorizacion_sri
 				$cabecera['Fecha']=$datos_fac[0]['Fecha']->format('Y-m-d');
 				$cabecera['Razon_Social']=$this->quitar_carac($datos_fac[0]['Razon_Social']);
 				$cabecera['Direccion_RS']=$this->quitar_carac($datos_fac[0]['Direccion_RS']);
-				$cabecera['Sin_IVA']= number_format($datos_fac[0]['Sin_IVA'],2);
-				$cabecera['Descuento']=number_format($datos_fac[0]['Descuento']+$datos_fac[0]['Descuento2'],2);
-				$cabecera['baseImponible']=number_format($datos_fac[0]['Sin_IVA']+$cabecera['Descuento'],2);
-				$cabecera['Porc_IVA']=number_format($datos_fac[0]['Porc_IVA'],2);
-				$cabecera['Con_IVA']=number_format($datos_fac[0]['Con_IVA'],2);
-				$cabecera['Total_MN']=number_format($datos_fac[0]['Total_MN']);
+				$cabecera['Sin_IVA']= number_format($datos_fac[0]['Sin_IVA'],2,',','');
+				$cabecera['Descuento']=number_format($datos_fac[0]['Descuento']+$datos_fac[0]['Descuento2'],2,',','');
+				$cabecera['baseImponible']=number_format(floatval($datos_fac[0]['Sin_IVA'])+floatval($cabecera['Descuento']),2,',','');
+				$cabecera['Porc_IVA']=number_format($datos_fac[0]['Porc_IVA'],2,',','');
+				$cabecera['Con_IVA']=number_format($datos_fac[0]['Con_IVA'],2,',','');
+				$cabecera['Total_MN']=number_format($datos_fac[0]['Total_MN'],2,',','');
 				if($datos_fac[0]['Forma_Pago'] == '.')
 				{
 					$cabecera['formaPago']='01';
@@ -102,14 +102,16 @@ class autorizacion_sri
 				$cabecera['CodigoC']=$datos_fac[0]['CodigoC'];
 				$cabecera['TelefonoC']=$datos_fac[0]['Telefono_RS'];
 				$cabecera['Orden_Compra']=$datos_fac[0]['Orden_Compra'];
-				$cabecera['baseImponibleSinIva']=$cabecera['Sin_IVA']-$datos_fac[0]['Desc_0'];
-				$cabecera['baseImponibleConIva']=$cabecera['Con_IVA']-$datos_fac[0]['Desc_X'];
-				$cabecera['totalSinImpuestos']=$cabecera['Sin_IVA']+$cabecera['Con_IVA'] - $cabecera['Descuento'];
+				$cabecera['baseImponibleSinIva']=number_format(floatval($cabecera['Sin_IVA'])-floatval($datos_fac[0]['Desc_0']),2,',','');
+				$cabecera['baseImponibleConIva']=number_format(floatval($cabecera['Con_IVA'])-floatval($datos_fac[0]['Desc_X']),2,',','');
+				$cabecera['totalSinImpuestos']=number_format(floatval($cabecera['Sin_IVA'])+floatval($cabecera['Con_IVA']) - floatval($cabecera['Descuento']),2,',','');
 				$cabecera['IVA']=number_format($datos_fac[0]['IVA'],2);
-				$cabecera['Total_MN']=number_format($datos_fac[0]['Total_MN'],2);
+				$cabecera['Total_MN']=number_format($datos_fac[0]['Total_MN'],2,',','');
 				$cabecera['descuentoAdicional']=0;
 				$cabecera['moneda']="DOLAR";
 				$cabecera['tipoIden']='';
+
+				// print_r($cabecera);die();
 
 			//datos de cliente
 	    	$datos_cliente = $this->datos_cliente($datos_fac[0]['CodigoC']);
@@ -142,7 +144,7 @@ class autorizacion_sri
 			      	}
 			      }
 			    $cabecera['codigoPorcentaje']=0;
-			    if(($cabecera['Porc_IVA']*100)>12)
+			    if((floatval($cabecera['Porc_IVA'])*100)>12)
 			    {
 			       $cabecera['codigoPorcentaje']=3;
 			    }else
@@ -184,6 +186,8 @@ class autorizacion_sri
 			    // print_r($cabecera);print_r($detalle);die();
 	            
 	           $respuesta = $this->generar_xml($cabecera,$detalle);
+
+	           // print_r($respuesta);
 	           $num_res = count($respuesta);
 	           if($num_res>=2)
 	           {
@@ -191,26 +195,36 @@ class autorizacion_sri
 	           	if($num_res!=2)
 	           	{
 	           	 $estado = explode(' ', $respuesta[2]);
-	           	 if($estado[1].' '.$estado[2]=='FACTURA AUTORIZADO')
-	           	 {
-	           	 	$respuesta = $this->actualizar_datos_CE(trim($estado[0]),$cabecera['tc'],$cabecera['serie'],$cabecera['factura'],$cabecera['item'],$cabecera['Autorizacion']);
-	           	 	if($respuesta==1)
-	           	 	{
-	           	 	  return array('respuesta'=>1);
-	           	 	}
-	           	 }else
-	           	 {
+		           	 if($estado[1].' '.$estado[2]=='FACTURA AUTORIZADO')
+		           	 {
+		           	 	$respuesta = $this->actualizar_datos_CE(trim($estado[0]),$cabecera['tc'],$cabecera['serie'],$cabecera['factura'],$cabecera['item'],$cabecera['Autorizacion']);
+		           	 	if($respuesta==1)
+		           	 	{
+		           	 	  return array('respuesta'=>1);
+		           	 	}
+		           	 }else
+		           	 {
 
-	           	   $compro = explode('FACTURA', $respuesta[2]);
-	           	   $entidad= '001';
-	           	   $url_No_autorizados ='../../comprobantes/entidades/entidad_'.$entidad."/CE".$entidad.'/No_autorizados/';
-	           	   $resp = array('respuesta'=>2,'ar'=>trim($compro[0]).'.xml','url'=>$url_No_autorizados);
-	           	 	return $resp;
-	           	 }
+		           	   $compro = explode('FACTURA', $respuesta[2]);
+			           $entidad= $_SESSION['INGRESO']['item'];
+		           	   if(count($compro)>1)
+		           	   {
+			           	   $url_No_autorizados ='../../comprobantes/entidades/entidad_'.$entidad."/CE".$entidad.'/No_autorizados/';
+			           	   $resp = array('respuesta'=>2,'ar'=>trim($compro[0]).'.xml','url'=>$url_No_autorizados);
+			           	 	return $resp;
+		           	  	}else
+		           	  	{
+		           	  		$compro = explode('null', $respuesta[2]);
+		           	  		$url_No_autorizados ='../../comprobantes/entidades/entidad_'.$entidad."/CE".$entidad.'/No_autorizados/';
+		           	    	$resp = array('respuesta'=>2,'ar'=>trim($compro[0]).'.xml','url'=>$url_No_autorizados);
+		           	 		return $resp;	
+
+		           	  	}
+		           	 }
 	           	}else
 	           	{
 	           	 $estado = explode(' ', $respuesta[1]);
-	           	 if($estado[1].' '.$estado[2]=='FACTURA AUTORIZADO')
+	           	 if($estado[1].' '.$estado[2]=='FACTURA AUTORIZADO' || $estado[2]=='AUTORIZADO')
 	           	 {
 	           	 	$respuesta = $this->actualizar_datos_CE(trim($estado[0]),$cabecera['tc'],$cabecera['serie'],$cabecera['factura'],$cabecera['item'],$cabecera['Autorizacion']);
 	           	 	if($respuesta==1)
@@ -932,11 +946,10 @@ function generar_xml($cabecera,$detalle)
 		}
 		$xml_obligadoContabilidad = $xml->createElement( "obligadoContabilidad",'SI' );
 
-
 		$xml_tipoIdentificacionComprador = $xml->createElement( "tipoIdentificacionComprador",$cabecera['tipoIden'] );
 		$xml_razonSocialComprador = $xml->createElement( "razonSocialComprador",$cabecera['Razon_Social'] );
 		$xml_identificacionComprador = $xml->createElement( "identificacionComprador",$cabecera['RUC_CI'] );
-		$xml_totalSinImpuestos = $xml->createElement( "totalSinImpuestos",round($cabecera['totalSinImpuestos'],2) );
+		$xml_totalSinImpuestos = $xml->createElement( "totalSinImpuestos",number_format(floatval($cabecera['totalSinImpuestos']),2,'.','') );
 		$xml_totalDescuento = $xml->createElement( "totalDescuento",round($cabecera['Descuento'],2) );
 
 		if($codDoc=='03')

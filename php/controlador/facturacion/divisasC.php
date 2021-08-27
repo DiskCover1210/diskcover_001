@@ -57,6 +57,19 @@ if(isset($_GET['limpiar_grid']))
   $datos = $controlador->limpiar_grid();
   echo json_encode($datos);
 }
+if(isset($_GET['cargarLineas']))
+{
+  // print_r('e');die();
+  $datos = $controlador->cargaLineas();
+  echo json_encode($datos);
+}
+if(isset($_GET['Eliminar']))
+{
+  // print_r('e');die();
+  $datos = $controlador->Eliminar($_POST['cod']);
+  echo json_encode($datos);
+}
+
 
 class divisasC
 {
@@ -98,13 +111,69 @@ class divisasC
     return $clientes;
   }
 
-  public function guardarLineas(){
-    $this->modelo->deleteAsiento($_POST['codigoCliente']);
-    $datos = array();
-    $Contador = 0;
+  //  public function guardarLineas1(){
+  //   $this->modelo->deleteAsiento($_POST['codigoCliente']);
+  //   $datos = array();
+  //   $Contador = 0;
 
-    foreach ($_POST['datos'] as $key => $producto) {
-      $precio_nuevo = ($producto['Total'] / $producto['Cantidad']);
+  //   // $producto = $_POST['datos'];
+
+  //   // print_r($producto);die();
+  //   foreach ($_POST['datos'] as $key => $producto) {
+  //         $precio_nuevo = number_format(($producto['Total'] / $producto['Cantidad']),4);
+  //     $dato[0]['campo']='CODIGO';
+  //     $dato[0]['dato']= $producto['Codigo'];
+  //     $dato[1]['campo']='CODIGO_L';
+  //     $dato[1]['dato']= $producto['CodigoL'];
+  //     $dato[2]['campo']='PRODUCTO';
+  //     $dato[2]['dato']= $producto['Producto'] ;
+  //     $dato[3]['campo']='CANT';
+  //     $dato[3]['dato']= $producto['Cantidad'] ;
+  //     $dato[4]['campo']='PRECIO';
+  //     $dato[4]['dato']= $precio_nuevo;
+  //     $dato[5]['campo']='Total_Desc';
+  //     $dato[5]['dato']= $producto['Total_Desc'] ;
+  //     $dato[6]['campo']='Total_Desc2';
+  //     $dato[6]['dato']= $producto['Total_Desc2'] ;
+  //     $dato[7]['campo']='TOTAL';
+  //     $dato[7]['dato']= number_format($producto['Total'],2);
+  //     $dato[8]['campo']='Total_IVA';
+  //     $dato[8]['dato']= $producto['Total'] * ($producto['Iva'] / 100);
+  //     $dato[9]['campo']='Cta';
+  //     $dato[9]['dato']= 'Cuenta' ;
+  //     $dato[10]['campo']='Item';
+  //     $dato[10]['dato']= $_SESSION['INGRESO']['item'];
+  //     $dato[11]['campo']='Codigo_Cliente';
+  //     $dato[11]['dato']= $_POST['codigoCliente'];
+  //     $dato[12]['campo']='HABIT';
+  //     $dato[12]['dato']= G_PENDIENTE;
+  //     $dato[13]['campo']='Mes';
+  //     $dato[13]['dato']= $producto['MiMes'] ;
+  //     $dato[14]['campo']='TICKET';
+  //     $dato[14]['dato']= $producto['Periodo'] ;
+  //     $dato[15]['campo']='CodigoU';
+  //     $dato[15]['dato']= $_SESSION['INGRESO']['CodigoU'];
+  //     $dato[16]['campo']='A_No';
+  //     $dato[16]['dato']= $Contador;
+  //     $dato[17]['campo']='PRECIO2';
+  //     $dato[17]['dato']= $producto['Precio'];
+  //     $dato[18]['campo']='PRECIO2';
+  //     $dato[18]['dato']= $producto['Precio'];
+  //     $Contador++;
+
+  //   // print_r($dato);die();
+  //     insert_generico("Asiento_F",$dato);
+  //   }
+  // }
+
+  public function guardarLineas(){
+    // $this->modelo->deleteAsiento($_POST['codigoCliente']);
+    $num = count($this->modelo->getAsiento());
+    $datos = array();
+    $producto = $_POST['datos'];
+
+    // print_r($producto);die();
+      $precio_nuevo = number_format(($producto['Total'] / $producto['Cantidad']),4,'.','');
       $dato[0]['campo']='CODIGO';
       $dato[0]['dato']= $producto['Codigo'];
       $dato[1]['campo']='CODIGO_L';
@@ -112,7 +181,7 @@ class divisasC
       $dato[2]['campo']='PRODUCTO';
       $dato[2]['dato']= $producto['Producto'] ;
       $dato[3]['campo']='CANT';
-      $dato[3]['dato']= $producto['Cantidad'] ;
+      $dato[3]['dato']= number_format($producto['Cantidad'],4,'.','');
       $dato[4]['campo']='PRECIO';
       $dato[4]['dato']= $precio_nuevo;
       $dato[5]['campo']='Total_Desc';
@@ -120,7 +189,7 @@ class divisasC
       $dato[6]['campo']='Total_Desc2';
       $dato[6]['dato']= $producto['Total_Desc2'] ;
       $dato[7]['campo']='TOTAL';
-      $dato[7]['dato']= $producto['Total'];
+      $dato[7]['dato']= number_format($producto['Total'],4,'.','');
       $dato[8]['campo']='Total_IVA';
       $dato[8]['dato']= $producto['Total'] * ($producto['Iva'] / 100);
       $dato[9]['campo']='Cta';
@@ -138,12 +207,12 @@ class divisasC
       $dato[15]['campo']='CodigoU';
       $dato[15]['dato']= $_SESSION['INGRESO']['CodigoU'];
       $dato[16]['campo']='A_No';
-      $dato[16]['dato']= $Contador;
+      $dato[16]['dato']= $num+1;
       $dato[17]['campo']='PRECIO2';
       $dato[17]['dato']= $producto['Precio'];
-      $Contador++;
-      insert_generico("Asiento_F",$dato);
-    }
+      $dato[18]['campo']='CANT_BONIF';
+      $dato[18]['dato']= number_format($producto['Cantidad'],4,'.',''); ;
+      return insert_generico("Asiento_F",$dato);
   }
 
   public function guardarFactura(){
@@ -414,6 +483,21 @@ class divisasC
   function limpiar_grid()
   {
     return $this->modelo->limpiarGrid();
+  }
+
+  function cargaLineas()
+  {
+    $reg = $this->modelo->cargarLineas();
+    $total = 0;
+    foreach ($reg['datos'] as $key => $value) {
+      $total+=$value['TOTAL'];     
+    }
+    return array('tbl'=>$reg['tbl'],'total'=>$total);
+  }
+
+  function Eliminar($codigo)
+  {
+     return $this->modelo->limpiarGrid($codigo);
   }
         
 }

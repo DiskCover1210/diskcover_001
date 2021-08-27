@@ -116,12 +116,12 @@ class divisasM
   }
 
   function datos_empresa(){
-    require_once("../../db/db.php");
-    $cid = Conectar::conexion('MYSQL');
+    // require_once("../../db/db.php");
+    // $cid = Conectar::conexion('MYSQL');
     $sql=" SELECT * 
             FROM  micro_empresa  
             WHERE  (RUC = '".$_SESSION['INGRESO']['RUC']."')";
-    $stmt = $cid->query($sql);
+    $stmt = $this->db->datos($sql ,'MY SQL');
     $micro_empresa = [];
     foreach ($stmt as  $value) {
       $micro_empresa = $value;
@@ -129,7 +129,7 @@ class divisasM
     $sql=" SELECT * 
             FROM  agente_retencion  
             WHERE  (RUC = '".$_SESSION['INGRESO']['RUC']."')";
-    $stmt = $cid->query($sql);
+    $stmt = $this->db->datos($sql ,'MY SQL');
     $agente_retencion = [];
     foreach ($stmt as  $value) {
       $agente_retencion = $value;
@@ -138,13 +138,29 @@ class divisasM
     return $datos_empresa;
   }
 
-  public function limpiarGrid(){
+  public function limpiarGrid($cod=false){
     $sql = "DELETE
           FROM Asiento_F
           WHERE Item = '".$_SESSION['INGRESO']['item']."' 
           AND CodigoU = '". $_SESSION['INGRESO']['CodigoU'] ."' ";
+          if($cod)
+          {
+            $sql.=" AND CODIGO = '".$cod."'";
+          }
     $stmt = $this->db->String_Sql($sql);
     return $stmt;
+  }
+
+    public function cargarLineas(){
+    $sql = "SELECT CODIGO,CANT AS 'CANTIDAD',CANT_BONIF AS 'CANTIDAD BONIF',PRODUCTO,PRECIO2 AS 'PRECIO',TOTAL 
+            FROM Asiento_F
+            WHERE Item = '".$_SESSION['INGRESO']['item']."' 
+            AND CodigoU = '".$_SESSION['INGRESO']['CodigoU']."'
+            ORDER BY A_No ";
+            $botones[0] = array('boton'=>'Eliminar', 'icono'=>'<i class="fa fa-trash"></i>', 'tipo'=>'danger', 'id'=>'CODIGO' );
+           $datos = $this->db->datos($sql);
+           $stmt =  grilla_generica_new($sql,'Asiento_F','tbl_lineas',false,$botones,false,false,1,1,0,$tamaño_tabla=250,4);
+     return array('tbl'=>$stmt,'datos'=>$datos);
   }
 }
 
