@@ -191,7 +191,7 @@ class divisasC
       $dato[7]['campo']='TOTAL';
       $dato[7]['dato']= number_format($producto['Total'],4,'.','');
       $dato[8]['campo']='Total_IVA';
-      $dato[8]['dato']= $producto['Total'] * ($producto['Iva'] / 100);
+      $dato[8]['dato']= number_format($producto['Total'] * ($producto['Iva'] / 100),4,'.','');
       $dato[9]['campo']='Cta';
       $dato[9]['dato']= 'Cuenta' ;
       $dato[10]['campo']='Item';
@@ -262,7 +262,6 @@ class divisasC
     $TC = SinEspaciosIzq($_POST['DCLinea']);
     $serie = SinEspaciosDer($_POST['DCLinea']);
     //traer secuencial de catalogo lineas
-    $TextFacturaNo = ReadSetDataNum($TC."_SERIE_".$serie, True, False);
     $this->Grabar_FA($_POST,$TextFacturaNo);
   }
 
@@ -291,9 +290,7 @@ class divisasC
       }
       $SaldoPendiente = 0;
       $DiarioCaja = ReadSetDataNum("Recibo_No", True, True);
-      if ($FA['Nuevo_Doc']) {
-        $FA['Factura'] = ReadSetDataNum($FA['TC']."_SERIE_".$FA['Serie'], True, True);
-      }
+      
       $SubTotal_NC = $FA['DCNC'];
       $Total_Bancos = $FA['TextCheque'];
       $TotalCajaMN = $FA['Total'] ;
@@ -394,11 +391,11 @@ class divisasC
       $FA['num_fac'] = $FA['Factura'];
       $FA['tc'] = $FA['TC'];
       $FA['cod_doc'] = '01';
+      Grabar_Factura($FA);
     }
 
     //Grabamos el numero de factura
     //print_r($FA);die();
-    Grabar_Factura($FA);
     if (strlen($FA['Autorizacion']) == 13) {      
        $resultado = $this->autorizar_sri->Autorizar($FA);
     }else{

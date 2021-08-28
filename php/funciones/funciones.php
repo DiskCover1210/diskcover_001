@@ -4731,7 +4731,7 @@ function insert_generico($tabla=null,$datos=null) // optimizado pero falta
 		$longitud_cad = strlen($sql_v); 
 		$v2 = substr_replace($sql_v,")",$longitud_cad-1,1);
 
-    // print_r($cam2.$v2);die();
+    //print_r($cam2.$v2);die();
      $res = $conn->String_Sql($cam2.$v2);
      if($res==1)
      {
@@ -7084,6 +7084,7 @@ function datos_tabla($tabla,$campo=false)
             AND Serie = '".$TFA['Serie']."' 
             AND Item = '".$_SESSION['INGRESO']['item']."' 
             AND Periodo = '".$_SESSION['INGRESO']['periodo']."'";
+    //print_r($sql);exit();
     $stmt = sqlsrv_query( $cid, $sql);
     $rows_affected = sqlsrv_rows_affected( $stmt);
     if ($rows_affected > 0) {
@@ -7422,7 +7423,7 @@ function datos_tabla($tabla,$campo=false)
         $n_fac++;
         //incrementar contador de facturas
         $sql="UPDATE Codigos set Numero='".$n_fac."'
-        WHERE  (Concepto = 'FA_SERIE_".$ser."') AND (Item = '".$_SESSION['INGRESO']['item']."') 
+        WHERE  (Concepto = '".$datos1['TC']."_SERIE_".$ser."') AND (Item = '".$_SESSION['INGRESO']['item']."') 
         AND (Periodo = '".$_SESSION['INGRESO']['periodo']."')";
         //echo $sql;
         $stmt1 =sqlsrv_query( $cid, $sql);

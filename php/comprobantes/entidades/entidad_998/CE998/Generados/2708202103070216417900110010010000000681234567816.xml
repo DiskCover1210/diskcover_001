@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<liquidacionCompra id="comprobante" version="1.0.0">
+  <infoTributaria>
+    <ambiente>1</ambiente>
+    <tipoEmision>1</tipoEmision>
+    <razonSocial>VACA PRIETO WALTER JALIL</razonSocial>
+    <nombreComercial>DISKCOVER SYSTEM</nombreComercial>
+    <ruc>0702164179001</ruc>
+    <claveAcceso>2708202103070216417900110010010000000681234567816</claveAcceso>
+    <codDoc>03</codDoc>
+    <estab>001</estab>
+    <ptoEmi>001</ptoEmi>
+    <secuencial>000000068</secuencial>
+    <dirMatriz>Desarrollo para programacion de DiskCover System</dirMatriz>
+  </infoTributaria>
+  <infoLiquidacionCompra>
+    <fechaEmision>27/08/2021</fechaEmision>
+    <dirEstablecimiento>Desarrollo para programacion de DiskCover System</dirEstablecimiento>
+    <obligadoContabilidad>SI</obligadoContabilidad>
+    <tipoIdentificacionProveedor>06</tipoIdentificacionProveedor>
+    <razonSocialProveedor>Jonathan Avalos</razonSocialProveedor>
+    <identificacionProveedor>1234567890</identificacionProveedor>
+    <totalSinImpuestos>95.00</totalSinImpuestos>
+    <totalDescuento>0</totalDescuento>
+    <totalConImpuestos>
+      <totalImpuesto>
+        <codigo>2</codigo>
+        <codigoPorcentaje>0</codigoPorcentaje>
+        <descuentoAdicional>0</descuentoAdicional>
+        <baseImponible>95</baseImponible>
+        <valor>0.00</valor>
+      </totalImpuesto>
+    </totalConImpuestos>
+    <importeTotal>95</importeTotal>
+    <moneda>DOLAR</moneda>
+  </infoLiquidacionCompra>
+  <detalles>
+    <detalle>
+      <codigoPrincipal>03.02.01</codigoPrincipal>
+      <descripcion>Compra Euro</descripcion>
+      <unidadMedida>DOLAR</unidadMedida>
+      <cantidad>20.0000</cantidad>
+      <precioUnitario>1.15</precioUnitario>
+      <descuento>0</descuento>
+      <precioTotalSinImpuesto>23</precioTotalSinImpuesto>
+      <impuestos>
+        <impuesto>
+          <codigo>2</codigo>
+          <codigoPorcentaje>0</codigoPorcentaje>
+          <tarifa>0</tarifa>
+          <baseImponible>23</baseImponible>
+          <valor>0</valor>
+        </impuesto>
+      </impuestos>
+    </detalle>
+    <detalle>
+      <codigoPrincipal>03.02.03</codigoPrincipal>
+      <descripcion>Compra Francos Suizos</descripcion>
+      <unidadMedida>DOLAR</unidadMedida>
+      <cantidad>90.0000</cantidad>
+      <precioUnitario>0.8</precioUnitario>
+      <descuento>0</descuento>
+      <precioTotalSinImpuesto>72</precioTotalSinImpuesto>
+      <impuestos>
+        <impuesto>
+          <codigo>2</codigo>
+          <codigoPorcentaje>0</codigoPorcentaje>
+          <tarifa>0</tarifa>
+          <baseImponible>72</baseImponible>
+          <valor>0</valor>
+        </impuesto>
+      </impuestos>
+    </detalle>
+  </detalles>
+  <infoAdicional>
+    <campoAdicional nombre="Direccion">Quito</campoAdicional>
+    <campoAdicional nombre="Telefono">2222222</campoAdicional>
+    <campoAdicional nombre="Email">admin@admin.com</campoAdicional>
+  </infoAdicional>
+</liquidacionCompra>

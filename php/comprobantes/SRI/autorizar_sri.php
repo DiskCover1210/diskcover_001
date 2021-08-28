@@ -254,7 +254,7 @@ class autorizacion_sri
 	{
 		$con = $this->conn->conexion();
 		$sql = "SELECT * From Facturas WHERE Item = '".$_SESSION['INGRESO']['item']."' AND Periodo = '".$_SESSION['INGRESO']['periodo']."' AND TC = '".$tc."' AND Serie = '".$serie."' AND Factura = ".$fact." AND LEN(Autorizacion) = 13 AND T <> 'A' ";
-		// print_r($sql);
+		//print_r($sql);exit();
 		$stmt = sqlsrv_query($con, $sql);
 	   if( $stmt === false)  
 	   {  

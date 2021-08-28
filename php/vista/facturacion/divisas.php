@@ -63,6 +63,8 @@
     producto0 = $("#producto").val();
     producto = producto0.split("/");
     $("#preciounitario").val(producto[2]);
+    $("#total").val(0);
+    $("#cantidad").val(0);
   }
 
   function numeroFactura(){
@@ -225,6 +227,7 @@
   // }
 
 function aceptar(){
+  $('#myModal_espera').modal('show');
     producto = $("#producto").val();
     pvp = $("#preciounitario").val();
     total = $("#total").val();
@@ -245,7 +248,6 @@ function aceptar(){
         'Periodo' :year,
         'Cantidad' :cantidad,
     }
-    console.log(datosLineas);
     codigoCliente = $("#codigoCliente").val();
     $.ajax({
       type: "POST",
@@ -256,7 +258,7 @@ function aceptar(){
       }, 
       success: function(data)
       {
-        cargar_grilla();        
+        cargar_grilla();
       }
     });
   }
@@ -271,9 +273,10 @@ function aceptar(){
       success: function(data)
       {
         $('#tbl_divisas').html(data.tbl);   
-        $("#total0").val(parseFloat(data.total).toFixed(2));
-        $("#totalFac").val(parseFloat(data.total).toFixed(2));
-        $("#efectivo").val(parseFloat(data.total).toFixed(2));     
+        $("#total0").val(parseFloat(data.total).toFixed(4));
+        $("#totalFac").val(parseFloat(data.total).toFixed(4));
+        $("#efectivo").val(parseFloat(data.total).toFixed(4));
+        $('#myModal_espera').modal('hide');
       }
     });
   }
@@ -285,9 +288,9 @@ function aceptar(){
     for(var i=1; i<rowLength; i++){
       total += parseFloat($("#total"+i).val());
     }
-    $("#total0").val(parseFloat(total).toFixed(2));
-    $("#totalFac").val(parseFloat(total).toFixed(2));
-    $("#efectivo").val(parseFloat(total).toFixed(2));
+    $("#total0").val(parseFloat(total).toFixed(4));
+    $("#totalFac").val(parseFloat(total).toFixed(4));
+    $("#efectivo").val(parseFloat(total).toFixed(4));
   }
 
   function guardarFactura(){
@@ -463,7 +466,7 @@ function aceptar(){
     efectivo = $("#efectivo").val();
     total = $("#totalFac").val();
     saldo = efectivo - total;
-    $("#cambio").val(parseFloat(saldo).toFixed(2));
+    $("#cambio").val(parseFloat(saldo).toFixed(4));
   }
 
   function provincias()

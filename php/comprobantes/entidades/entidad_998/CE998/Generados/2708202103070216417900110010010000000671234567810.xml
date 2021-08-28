@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<liquidacionCompra id="comprobante" version="1.0.0">
+  <infoTributaria>
+    <ambiente>1</ambiente>
+    <tipoEmision>1</tipoEmision>
+    <razonSocial>VACA PRIETO WALTER JALIL</razonSocial>
+    <nombreComercial>DISKCOVER SYSTEM</nombreComercial>
+    <ruc>0702164179001</ruc>
+    <claveAcceso>2708202103070216417900110010010000000671234567810</claveAcceso>
+    <codDoc>03</codDoc>
+    <estab>001</estab>
+    <ptoEmi>001</ptoEmi>
+    <secuencial>000000067</secuencial>
+    <dirMatriz>Desarrollo para programacion de DiskCover System</dirMatriz>
+  </infoTributaria>
+  <infoLiquidacionCompra>
+    <fechaEmision>27/08/2021</fechaEmision>
+    <dirEstablecimiento>Desarrollo para programacion de DiskCover System</dirEstablecimiento>
+    <obligadoContabilidad>SI</obligadoContabilidad>
+    <tipoIdentificacionProveedor>06</tipoIdentificacionProveedor>
+    <razonSocialProveedor>Jonathan Avalos</razonSocialProveedor>
+    <identificacionProveedor>1234567890</identificacionProveedor>
+    <totalSinImpuestos>50.00</totalSinImpuestos>
+    <totalDescuento>0</totalDescuento>
+    <totalConImpuestos>
+      <totalImpuesto>
+        <codigo>2</codigo>
+        <codigoPorcentaje>0</codigoPorcentaje>
+        <descuentoAdicional>0</descuentoAdicional>
+        <baseImponible>50</baseImponible>
+        <valor>0.00</valor>
+      </totalImpuesto>
+    </totalConImpuestos>
+    <importeTotal>50</importeTotal>
+    <moneda>DOLAR</moneda>
+  </infoLiquidacionCompra>
+  <detalles>
+    <detalle>
+      <codigoPrincipal>03.02.01</codigoPrincipal>
+      <descripcion>Compra Euro</descripcion>
+      <unidadMedida>DOLAR</unidadMedida>
+      <cantidad>10.0000</cantidad>
+      <precioUnitario>1.15</precioUnitario>
+      <descuento>0</descuento>
+      <precioTotalSinImpuesto>11.5</precioTotalSinImpuesto>
+      <impuestos>
+        <impuesto>
+          <codigo>2</codigo>
+          <codigoPorcentaje>0</codigoPorcentaje>
+          <tarifa>0</tarifa>
+          <baseImponible>11.5</baseImponible>
+          <valor>0</valor>
+        </impuesto>
+      </impuestos>
+    </detalle>
+    <detalle>
+      <codigoPrincipal>03.02.11</codigoPrincipal>
+      <descripcion>Compra Dolar Australiano</descripcion>
+      <unidadMedida>DOLAR</unidadMedida>
+      <cantidad>60.0000</cantidad>
+      <precioUnitario>0.65</precioUnitario>
+      <descuento>0</descuento>
+      <precioTotalSinImpuesto>39</precioTotalSinImpuesto>
+      <impuestos>
+        <impuesto>
+          <codigo>2</codigo>
+          <codigoPorcentaje>0</codigoPorcentaje>
+          <tarifa>0</tarifa>
+          <baseImponible>39</baseImponible>
+          <valor>0</valor>
+        </impuesto>
+      </impuestos>
+    </detalle>
+  </detalles>
+  <infoAdicional>
+    <campoAdicional nombre="Direccion">Quito</campoAdicional>
+    <campoAdicional nombre="Telefono">2222222</campoAdicional>
+    <campoAdicional nombre="Email">admin@admin.com</campoAdicional>
+  </infoAdicional>
+</liquidacionCompra>
