@@ -7152,9 +7152,7 @@ function datos_tabla($tabla,$campo=false)
       //verificamos que no exista la factura
       $sql="SELECT TOP (1) Factura
             FROM Detalle_Factura
-            WHERE (Factura = '".$n_fac."') AND (Serie = '".$ser."') AND (Item = '".$_SESSION['INGRESO']['item']."') AND (Periodo = '".$_SESSION['INGRESO']['periodo']."') AND (TC = '".$datos1['TC']."')
-         ";
-              
+            WHERE (Factura = '".$n_fac."') AND (Serie = '".$ser."') AND (Item = '".$_SESSION['INGRESO']['item']."') AND (Periodo = '".$_SESSION['INGRESO']['periodo']."') AND (TC = '".$datos1['TC']."')";
       $stmt =sqlsrv_query( $cid, $sql);
       if( $stmt === false)  
       {  
@@ -7319,20 +7317,20 @@ function datos_tabla($tabla,$campo=false)
           $dato[13]['dato']=$_SESSION['INGRESO']['item']; 
           $dato[14]['campo']='CodigoU';
           $dato[14]['dato']=$_SESSION['INGRESO']['CodigoU'];  
-          $dato[14]['campo']='Periodo';
-          $dato[14]['dato']=$_SESSION['INGRESO']['periodo'];  
-          $dato[15]['campo']='Serie';
-          $dato[15]['dato']=$ser; 
-          $dato[16]['campo']='Fecha_Aut';
-          $dato[16]['dato']=$fecha_actual;
-          $dato[17]['campo']='C';
-          $dato[17]['dato']=0;
-          $dato[18]['campo']='Tipo_Cta';
-          $dato[18]['dato']=$TC;
-          $dato[19]['campo']='Banco';
-          $dato[19]['dato']=$cuenta;
-          $dato[20]['campo']='Autorizacion';
-          $dato[20]['dato']=$datos1['Autorizacion'];
+          $dato[15]['campo']='Periodo';
+          $dato[15]['dato']=$_SESSION['INGRESO']['periodo'];  
+          $dato[16]['campo']='Serie';
+          $dato[16]['dato']=$ser; 
+          $dato[17]['campo']='Fecha_Aut';
+          $dato[17]['dato']=$fecha_actual;
+          $dato[18]['campo']='C';
+          $dato[18]['dato']=0;
+          $dato[19]['campo']='Tipo_Cta';
+          $dato[19]['dato']=$TC;
+          $dato[20]['campo']='Banco';
+          $dato[20]['dato']=$cuenta;
+          $dato[21]['campo']='Autorizacion';
+          $dato[21]['dato']=$datos1['Autorizacion'];
           $this->insert_generico("Trans_Abonos",$dato);
         }
 

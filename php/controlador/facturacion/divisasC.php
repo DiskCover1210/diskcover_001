@@ -173,7 +173,8 @@ class divisasC
     $producto = $_POST['datos'];
 
     // print_r($producto);die();
-      $precio_nuevo = number_format(($producto['Total'] / $producto['Cantidad']),4,'.','');
+      $precio_nuevo = number_format(($producto['Total'] / $producto['Cantidad']),2,'.','');
+      $totalNuevo = number_format(($producto['Cantidad'] * $precio_nuevo),2,'.','');
       $dato[0]['campo']='CODIGO';
       $dato[0]['dato']= $producto['Codigo'];
       $dato[1]['campo']='CODIGO_L';
@@ -181,7 +182,7 @@ class divisasC
       $dato[2]['campo']='PRODUCTO';
       $dato[2]['dato']= $producto['Producto'] ;
       $dato[3]['campo']='CANT';
-      $dato[3]['dato']= number_format($producto['Cantidad'],4,'.','');
+      $dato[3]['dato']= number_format($producto['Cantidad'],2,'.','');
       $dato[4]['campo']='PRECIO';
       $dato[4]['dato']= $precio_nuevo;
       $dato[5]['campo']='Total_Desc';
@@ -189,9 +190,9 @@ class divisasC
       $dato[6]['campo']='Total_Desc2';
       $dato[6]['dato']= $producto['Total_Desc2'] ;
       $dato[7]['campo']='TOTAL';
-      $dato[7]['dato']= number_format($producto['Total'],4,'.','');
+      $dato[7]['dato']= $totalNuevo;
       $dato[8]['campo']='Total_IVA';
-      $dato[8]['dato']= number_format($producto['Total'] * ($producto['Iva'] / 100),4,'.','');
+      $dato[8]['dato']= number_format($producto['Total'] * ($producto['Iva'] / 100),2,'.','');
       $dato[9]['campo']='Cta';
       $dato[9]['dato']= 'Cuenta' ;
       $dato[10]['campo']='Item';
@@ -306,13 +307,7 @@ class divisasC
       $TA['Recibi_de'] = $FA['Cliente'];
       $Cta = SinEspaciosIzq($FA['DCBanco']);
       $Cta1 = SinEspaciosIzq($FA['DCNC']);
-      $Valor = $value["TOTAL"];
-      $Codigo = $value["Codigo_Cliente"];
-      $Codigo1 = $value["CODIGO"];
-      $Codigo2 = $value["Mes"];
-      $Codigo3 = ".";
-      $Anio1 = $value["TICKET"];
-      $this->modelo->updateClientesFacturacion($Valor,$Anio1,$Codigo1,$Codigo,$Codigo3,$Codigo2);
+      Grabar_Factura($FA);
       
       //Seteos de Abonos Generales para todos los tipos de abonos
       $TA['T'] = $FA['T'];
@@ -391,11 +386,9 @@ class divisasC
       $FA['num_fac'] = $FA['Factura'];
       $FA['tc'] = $FA['TC'];
       $FA['cod_doc'] = '01';
-      Grabar_Factura($FA);
+      
     }
 
-    //Grabamos el numero de factura
-    //print_r($FA);die();
     if (strlen($FA['Autorizacion']) == 13) {      
        $resultado = $this->autorizar_sri->Autorizar($FA);
     }else{

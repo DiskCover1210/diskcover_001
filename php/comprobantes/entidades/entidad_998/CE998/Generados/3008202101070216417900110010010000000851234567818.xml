@@ -6,50 +6,50 @@
     <razonSocial>VACA PRIETO WALTER JALIL</razonSocial>
     <nombreComercial>DISKCOVER SYSTEM</nombreComercial>
     <ruc>0702164179001</ruc>
-    <claveAcceso>2708202101070216417900110010010000000711234567811</claveAcceso>
+    <claveAcceso>3008202101070216417900110010010000000851234567818</claveAcceso>
     <codDoc>01</codDoc>
     <estab>001</estab>
     <ptoEmi>001</ptoEmi>
-    <secuencial>000000071</secuencial>
+    <secuencial>000000085</secuencial>
     <dirMatriz>Desarrollo para programacion de DiskCover System</dirMatriz>
   </infoTributaria>
   <infoFactura>
-    <fechaEmision>27/08/2021</fechaEmision>
+    <fechaEmision>30/08/2021</fechaEmision>
     <dirEstablecimiento>Desarrollo para programacion de DiskCover System</dirEstablecimiento>
     <obligadoContabilidad>SI</obligadoContabilidad>
     <tipoIdentificacionComprador>07</tipoIdentificacionComprador>
     <razonSocialComprador>CONSUMIDOR FINAL</razonSocialComprador>
     <identificacionComprador>9999999999999</identificacionComprador>
-    <totalSinImpuestos>20.00</totalSinImpuestos>
+    <totalSinImpuestos>261.13</totalSinImpuestos>
     <totalDescuento>0</totalDescuento>
     <totalConImpuestos>
       <totalImpuesto>
         <codigo>2</codigo>
         <codigoPorcentaje>0</codigoPorcentaje>
         <descuentoAdicional>0</descuentoAdicional>
-        <baseImponible>20</baseImponible>
+        <baseImponible>261.13</baseImponible>
         <valor>0.00</valor>
       </totalImpuesto>
     </totalConImpuestos>
     <propina>0</propina>
-    <importeTotal>20</importeTotal>
+    <importeTotal>261.13</importeTotal>
     <moneda>DOLAR</moneda>
   </infoFactura>
   <detalles>
     <detalle>
-      <codigoPrincipal>03.01.03</codigoPrincipal>
-      <descripcion>Venta Francos Suizos</descripcion>
+      <codigoPrincipal>03.01.05</codigoPrincipal>
+      <descripcion>Venta Libra Esterlina</descripcion>
       <unidadMedida>DOLAR</unidadMedida>
-      <cantidad>10.0000</cantidad>
-      <precioUnitario>0.89</precioUnitario>
+      <cantidad>203.0000</cantidad>
+      <precioUnitario>0.71</precioUnitario>
       <descuento>0</descuento>
-      <precioTotalSinImpuesto>8.85</precioTotalSinImpuesto>
+      <precioTotalSinImpuesto>144.13</precioTotalSinImpuesto>
       <impuestos>
         <impuesto>
           <codigo>2</codigo>
           <codigoPorcentaje>0</codigoPorcentaje>
           <tarifa>0</tarifa>
-          <baseImponible>8.85</baseImponible>
+          <baseImponible>144.13</baseImponible>
           <valor>0</valor>
         </impuesto>
       </impuestos>
@@ -58,16 +58,16 @@
       <codigoPrincipal>03.01.11</codigoPrincipal>
       <descripcion>Venta Dolar Australiano</descripcion>
       <unidadMedida>DOLAR</unidadMedida>
-      <cantidad>10.0000</cantidad>
+      <cantidad>100.0000</cantidad>
       <precioUnitario>1.17</precioUnitario>
       <descuento>0</descuento>
-      <precioTotalSinImpuesto>11.7</precioTotalSinImpuesto>
+      <precioTotalSinImpuesto>117</precioTotalSinImpuesto>
       <impuestos>
         <impuesto>
           <codigo>2</codigo>
           <codigoPorcentaje>0</codigoPorcentaje>
           <tarifa>0</tarifa>
-          <baseImponible>11.7</baseImponible>
+          <baseImponible>117</baseImponible>
           <valor>0</valor>
         </impuesto>
       </impuestos>

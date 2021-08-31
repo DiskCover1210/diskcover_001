@@ -82,12 +82,12 @@ class autorizacion_sri
 				$cabecera['Fecha']=$datos_fac[0]['Fecha']->format('Y-m-d');
 				$cabecera['Razon_Social']=$this->quitar_carac($datos_fac[0]['Razon_Social']);
 				$cabecera['Direccion_RS']=$this->quitar_carac($datos_fac[0]['Direccion_RS']);
-				$cabecera['Sin_IVA']= number_format($datos_fac[0]['Sin_IVA'],2,',','');
-				$cabecera['Descuento']=number_format($datos_fac[0]['Descuento']+$datos_fac[0]['Descuento2'],2,',','');
-				$cabecera['baseImponible']=number_format(floatval($datos_fac[0]['Sin_IVA'])+floatval($cabecera['Descuento']),2,',','');
-				$cabecera['Porc_IVA']=number_format($datos_fac[0]['Porc_IVA'],2,',','');
-				$cabecera['Con_IVA']=number_format($datos_fac[0]['Con_IVA'],2,',','');
-				$cabecera['Total_MN']=number_format($datos_fac[0]['Total_MN'],2,',','');
+				$cabecera['Sin_IVA']= $datos_fac[0]['Sin_IVA'];
+				$cabecera['Descuento'] = $datos_fac[0]['Descuento']+$datos_fac[0]['Descuento2'];
+				$cabecera['baseImponible'] = $datos_fac[0]['Sin_IVA']+$cabecera['Descuento'];
+				$cabecera['Porc_IVA'] = $datos_fac[0]['Porc_IVA'];
+				$cabecera['Con_IVA'] = $datos_fac[0]['Con_IVA'];
+				$cabecera['Total_MN'] = $datos_fac[0]['Total_MN'];
 				if($datos_fac[0]['Forma_Pago'] == '.')
 				{
 					$cabecera['formaPago']='01';
@@ -102,11 +102,10 @@ class autorizacion_sri
 				$cabecera['CodigoC']=$datos_fac[0]['CodigoC'];
 				$cabecera['TelefonoC']=$datos_fac[0]['Telefono_RS'];
 				$cabecera['Orden_Compra']=$datos_fac[0]['Orden_Compra'];
-				$cabecera['baseImponibleSinIva']=number_format(floatval($cabecera['Sin_IVA'])-floatval($datos_fac[0]['Desc_0']),2,',','');
-				$cabecera['baseImponibleConIva']=number_format(floatval($cabecera['Con_IVA'])-floatval($datos_fac[0]['Desc_X']),2,',','');
-				$cabecera['totalSinImpuestos']=number_format(floatval($cabecera['Sin_IVA'])+floatval($cabecera['Con_IVA']) - floatval($cabecera['Descuento']),2,',','');
-				$cabecera['IVA']=number_format($datos_fac[0]['IVA'],2);
-				$cabecera['Total_MN']=number_format($datos_fac[0]['Total_MN'],2,',','');
+				$cabecera['baseImponibleSinIva'] = $cabecera['Sin_IVA']-$datos_fac[0]['Desc_0'];
+				$cabecera['baseImponibleConIva'] = $cabecera['Con_IVA']-$datos_fac[0]['Desc_X'];
+				$cabecera['totalSinImpuestos'] = $cabecera['Sin_IVA']+$cabecera['Con_IVA'] - $cabecera['Descuento'];
+				$cabecera['IVA'] = $datos_fac[0]['IVA'];
 				$cabecera['descuentoAdicional']=0;
 				$cabecera['moneda']="DOLAR";
 				$cabecera['tipoIden']='';
@@ -187,7 +186,6 @@ class autorizacion_sri
 	            
 	           $respuesta = $this->generar_xml($cabecera,$detalle);
 
-	           // print_r($respuesta);
 	           $num_res = count($respuesta);
 	           if($num_res>=2)
 	           {
@@ -237,6 +235,9 @@ class autorizacion_sri
 
 	           }else
 	           {
+	           	if ($respuesta) {
+	           		# code...
+	           	}
 	           	if($respuesta[1]=='Autorizado')
 	           	{
 	           		return array('respuesta'=>3);

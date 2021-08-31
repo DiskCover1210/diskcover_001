@@ -1,109 +1,112 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?><liquidacionCompra id="comprobante" version="1.0.0">
+<?xml version="1.0" encoding="UTF-8"?><autorizacion>
+  <estado>NO AUTORIZADO</estado>
+  <fechaAutorizacion class="fechaAutorizacion">30/08/2021 23:41:12.000</fechaAutorizacion>
+  <comprobante><![CDATA[<?xml version="1.0" encoding="UTF-8" standalone="no"?><factura id="comprobante" version="1.0.0">
   <infoTributaria>
     <ambiente>1</ambiente>
     <tipoEmision>1</tipoEmision>
     <razonSocial>VACA PRIETO WALTER JALIL</razonSocial>
     <nombreComercial>DISKCOVER SYSTEM</nombreComercial>
     <ruc>0702164179001</ruc>
-    <claveAcceso>2708202103070216417900110010010000000671234567810</claveAcceso>
-    <codDoc>03</codDoc>
+    <claveAcceso>3008202101070216417900110010010000000851234567818</claveAcceso>
+    <codDoc>01</codDoc>
     <estab>001</estab>
     <ptoEmi>001</ptoEmi>
-    <secuencial>000000067</secuencial>
+    <secuencial>000000085</secuencial>
     <dirMatriz>Desarrollo para programacion de DiskCover System</dirMatriz>
   </infoTributaria>
-  <infoLiquidacionCompra>
-    <fechaEmision>27/08/2021</fechaEmision>
+  <infoFactura>
+    <fechaEmision>30/08/2021</fechaEmision>
     <dirEstablecimiento>Desarrollo para programacion de DiskCover System</dirEstablecimiento>
     <obligadoContabilidad>SI</obligadoContabilidad>
-    <tipoIdentificacionProveedor>06</tipoIdentificacionProveedor>
-    <razonSocialProveedor>Jonathan Avalos</razonSocialProveedor>
-    <identificacionProveedor>1234567890</identificacionProveedor>
-    <totalSinImpuestos>50.00</totalSinImpuestos>
+    <tipoIdentificacionComprador>07</tipoIdentificacionComprador>
+    <razonSocialComprador>CONSUMIDOR FINAL</razonSocialComprador>
+    <identificacionComprador>9999999999999</identificacionComprador>
+    <totalSinImpuestos>261.13</totalSinImpuestos>
     <totalDescuento>0</totalDescuento>
     <totalConImpuestos>
       <totalImpuesto>
         <codigo>2</codigo>
         <codigoPorcentaje>0</codigoPorcentaje>
         <descuentoAdicional>0</descuentoAdicional>
-        <baseImponible>50</baseImponible>
+        <baseImponible>261.13</baseImponible>
         <valor>0.00</valor>
       </totalImpuesto>
     </totalConImpuestos>
-    <importeTotal>50</importeTotal>
+    <propina>0</propina>
+    <importeTotal>261.13</importeTotal>
     <moneda>DOLAR</moneda>
-  </infoLiquidacionCompra>
+  </infoFactura>
   <detalles>
     <detalle>
-      <codigoPrincipal>03.02.01</codigoPrincipal>
-      <descripcion>Compra Euro</descripcion>
+      <codigoPrincipal>03.01.05</codigoPrincipal>
+      <descripcion>Venta Libra Esterlina</descripcion>
       <unidadMedida>DOLAR</unidadMedida>
-      <cantidad>10.0000</cantidad>
-      <precioUnitario>1.15</precioUnitario>
+      <cantidad>203.0000</cantidad>
+      <precioUnitario>0.71</precioUnitario>
       <descuento>0</descuento>
-      <precioTotalSinImpuesto>11.5</precioTotalSinImpuesto>
+      <precioTotalSinImpuesto>144.13</precioTotalSinImpuesto>
       <impuestos>
         <impuesto>
           <codigo>2</codigo>
           <codigoPorcentaje>0</codigoPorcentaje>
           <tarifa>0</tarifa>
-          <baseImponible>11.5</baseImponible>
+          <baseImponible>144.13</baseImponible>
           <valor>0</valor>
         </impuesto>
       </impuestos>
     </detalle>
     <detalle>
-      <codigoPrincipal>03.02.11</codigoPrincipal>
-      <descripcion>Compra Dolar Australiano</descripcion>
+      <codigoPrincipal>03.01.11</codigoPrincipal>
+      <descripcion>Venta Dolar Australiano</descripcion>
       <unidadMedida>DOLAR</unidadMedida>
-      <cantidad>60.0000</cantidad>
-      <precioUnitario>0.65</precioUnitario>
+      <cantidad>100.0000</cantidad>
+      <precioUnitario>1.17</precioUnitario>
       <descuento>0</descuento>
-      <precioTotalSinImpuesto>39</precioTotalSinImpuesto>
+      <precioTotalSinImpuesto>117</precioTotalSinImpuesto>
       <impuestos>
         <impuesto>
           <codigo>2</codigo>
           <codigoPorcentaje>0</codigoPorcentaje>
           <tarifa>0</tarifa>
-          <baseImponible>39</baseImponible>
+          <baseImponible>117</baseImponible>
           <valor>0</valor>
         </impuesto>
       </impuestos>
     </detalle>
   </detalles>
   <infoAdicional>
-    <campoAdicional nombre="Direccion">Quito</campoAdicional>
-    <campoAdicional nombre="Telefono">2222222</campoAdicional>
-    <campoAdicional nombre="Email">admin@admin.com</campoAdicional>
+    <campoAdicional nombre="Direccion">SD</campoAdicional>
+    <campoAdicional nombre="Telefono">022920133</campoAdicional>
   </infoAdicional>
-<ds:Signature xmlns:ds="http://www.w3.org/2000/09/xmldsig#" xmlns:etsi="http://uri.etsi.org/01903/v1.3.2#" Id="Signature41195">
-<ds:SignedInfo Id="Signature-SignedInfo26736">
+<ds:Signature xmlns:ds="http://www.w3.org/2000/09/xmldsig#" xmlns:etsi="http://uri.etsi.org/01903/v1.3.2#" Id="Signature575111">
+<ds:SignedInfo Id="Signature-SignedInfo697401">
 <ds:CanonicalizationMethod Algorithm="http://www.w3.org/TR/2001/REC-xml-c14n-20010315"/>
 <ds:SignatureMethod Algorithm="http://www.w3.org/2000/09/xmldsig#rsa-sha1"/>
-<ds:Reference Id="SignedPropertiesID923068" Type="http://uri.etsi.org/01903#SignedProperties" URI="#Signature41195-SignedProperties1016233">
+<ds:Reference Id="SignedPropertiesID50814" Type="http://uri.etsi.org/01903#SignedProperties" URI="#Signature575111-SignedProperties589273">
 <ds:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1"/>
-<ds:DigestValue>v4oTMGpTwDn36CqmUSsDjIBOJ7s=</ds:DigestValue>
+<ds:DigestValue>xUqF1RRueFkUtYA4t+6sdlVSLJY=</ds:DigestValue>
 </ds:Reference>
-<ds:Reference URI="#Certificate1136745">
+<ds:Reference URI="#Certificate1625508">
 <ds:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1"/>
-<ds:DigestValue>Z1OZ0F+9yf32KcChR0PmXOTGk2k=</ds:DigestValue>
+<ds:DigestValue>c+UxGfw95tundK1DDZO99h4Trd0=</ds:DigestValue>
 </ds:Reference>
-<ds:Reference Id="Reference-ID-753021" URI="#comprobante">
+<ds:Reference Id="Reference-ID-208860" URI="#comprobante">
 <ds:Transforms>
 <ds:Transform Algorithm="http://www.w3.org/2000/09/xmldsig#enveloped-signature"/>
 </ds:Transforms>
 <ds:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1"/>
-<ds:DigestValue>VQoSBUeO5Yp1UuHJTME0JX5Fk8o=</ds:DigestValue>
+<ds:DigestValue>az58OtmRwmG2fo7/Po7qsFCava8=</ds:DigestValue>
 </ds:Reference>
 </ds:SignedInfo>
-<ds:SignatureValue Id="SignatureValue542283">
-hNM1YvF5jrlMBWEPQgFLhpF5YrdFYNcVcCjlb/5ml9ZagsAaDhYqCcLcwO2vUwZFck1WqMP6PGol
-vuwU9Qy9yWDSUQhlWQ2FuJByBBX9rQJ6b2geGBjp9iCQcxva/qMO5JMwRCr1nPIP0KCHLHLcPH0G
-/lhNfXSJdUR1lDLU/KaaAQIv0yKbIgaTZmSd2WsLchG28OjnDN2BvhmRV4Ze40UGKAvoXLwgs7gH
-aMEKpfZ7IgOTLOcn+TLC9Ax1RooRobbyZon2GUnzMg3Sxq12DnAYJrcoOsyms4P5X2K8snECt+0H
-NOuKD1ADpYC6gtGjcEn6gHs/9yuqPlMrJ18X6w==
+<ds:SignatureValue Id="SignatureValue1042387">
+RaJSDi6X4cYOP67FvTdksF8KH36sBHT5wIen5s9PMr/MK8VtMY6j2e6byj98tRU+HFKiJp6GjKa5
+BawLRwene+jKaeF1fvfqQFDnq1YWeyGfAzF+G6p1YBDr+MmA52wSbMsTIK1o40I06nZ2br4yG5Yp
+P/lDdFqnKhgo0F7E1hmlaLY/e7jphjsLyizVTKNC0eNgoIBrok0BG/Q0bApq70AYtZ3WxBucwF9Q
+q8D+krtKkXv4fiyWnsQ6ik7Hq4X9hCCx3ty+5h5yWB/727XWf0A9FxiYQA4ykCvb32XCPqY84K2C
+Xr8Ebyf30Gq587l0tBNLUADblhZl6lAO3uBEAw==
 </ds:SignatureValue>
-<ds:KeyInfo Id="Certificate1136745">
+<ds:KeyInfo Id="Certificate1625508">
 <ds:X509Data>
 <ds:X509Certificate>
 MIILkjCCCXqgAwIBAgIEXDrIAjANBgkqhkiG9w0BAQsFADCBmTELMAkGA1UEBhMCRUMxHTAbBgNV
@@ -174,4 +177,15 @@ LRuAVSyi58qyAD0Eu1zLMc3KhEUXoxF7aA8P0w==
 </ds:RSAKeyValue>
 </ds:KeyValue>
 </ds:KeyInfo>
-<ds:Object Id="Signature41195-Object506425"><etsi:QualifyingProperties Target="#Signature41195"><etsi:SignedProperties Id="Signature41195-SignedProperties1016233"><etsi:SignedSignatureProperties><etsi:SigningTime>2021-08-27T23:50:36-05:00</etsi:SigningTime><etsi:SigningCertificate><etsi:Cert><etsi:CertDigest><ds:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1"/><ds:DigestValue>m8okW/lbE8bTuXKKJc3pO5HpQGc=</ds:DigestValue></etsi:CertDigest><etsi:IssuerSerial><ds:X509IssuerName>CN=AUTORIDAD DE CERTIFICACION SUBCA-1 SECURITY DATA,OU=ENTIDAD DE CERTIFICACION DE INFORMACION,O=SECURITY DATA S.A. 1,C=EC</ds:X509IssuerName><ds:X509SerialNumber>1547356162</ds:X509SerialNumber></etsi:IssuerSerial></etsi:Cert></etsi:SigningCertificate></etsi:SignedSignatureProperties><etsi:SignedDataObjectProperties><etsi:DataObjectFormat ObjectReference="#Reference-ID-753021"><etsi:Description>contenido comprobante</etsi:Description><etsi:MimeType>text/xml</etsi:MimeType></etsi:DataObjectFormat></etsi:SignedDataObjectProperties></etsi:SignedProperties></etsi:QualifyingProperties></ds:Object></ds:Signature></liquidacionCompra>
+<ds:Object Id="Signature575111-Object582447"><etsi:QualifyingProperties Target="#Signature575111"><etsi:SignedProperties Id="Signature575111-SignedProperties589273"><etsi:SignedSignatureProperties><etsi:SigningTime>2021-08-30T23:41:01-05:00</etsi:SigningTime><etsi:SigningCertificate><etsi:Cert><etsi:CertDigest><ds:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1"/><ds:DigestValue>m8okW/lbE8bTuXKKJc3pO5HpQGc=</ds:DigestValue></etsi:CertDigest><etsi:IssuerSerial><ds:X509IssuerName>CN=AUTORIDAD DE CERTIFICACION SUBCA-1 SECURITY DATA,OU=ENTIDAD DE CERTIFICACION DE INFORMACION,O=SECURITY DATA S.A. 1,C=EC</ds:X509IssuerName><ds:X509SerialNumber>1547356162</ds:X509SerialNumber></etsi:IssuerSerial></etsi:Cert></etsi:SigningCertificate></etsi:SignedSignatureProperties><etsi:SignedDataObjectProperties><etsi:DataObjectFormat ObjectReference="#Reference-ID-208860"><etsi:Description>contenido comprobante</etsi:Description><etsi:MimeType>text/xml</etsi:MimeType></etsi:DataObjectFormat></etsi:SignedDataObjectProperties></etsi:SignedProperties></etsi:QualifyingProperties></ds:Object></ds:Signature></factura>]]></comprobante>
+  <mensajes>
+    <mensaje>
+      <mensaje>
+        <identificador>69</identificador>
+        <mensaje>ERROR EN LA IDENTIFICACION DEL RECEPTOR</mensaje>
+        <informacionAdicional>La factura supera los 200 USD de importe total por cuanto no puede ser emitida a nombre del CONSUMIDOR FINAL</informacionAdicional>
+        <tipo>ERROR</tipo>
+      </mensaje>
+    </mensaje>
+  </mensajes>
+</autorizacion>
