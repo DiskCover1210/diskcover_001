@@ -102,7 +102,7 @@
 
    function tabla_catalogo(tipo)
    {
-    $('#tbl_opcion2').html('<div class="text-center"><img src="../../img/gif/loader4.1.gif"></div>');
+    $('#tbl_op2').html('<div class="text-center"><img src="../../img/gif/loader4.1.gif"></div>');
    	 var parametros=
     {
       'descripcion':$('#ddl_descripcion').val(),
@@ -116,7 +116,7 @@
       dataType: 'json',
       success:  function (response) { 
       	console.log(response);
-        $('#tbl_opcion2').html(response);
+        $('#tbl_op2').html(response);
       }
     });
 
@@ -408,6 +408,33 @@ function reporte_excel()
       </form>					
 		</div><br>
 		<div id="tbl_opcion2">
+      <style type="text/css">
+  #tbl_lista tbody tr:nth-child(even) { background:#fffff;}
+  #tbl_lista tbody tr:nth-child(odd) { background: #e2fbff;}
+  #tbl_lista tbody tr:nth-child(even):hover {  background: #DDB;}
+  #tbl_lista thead { background: #afd6e2; }
+  #tbl_lista tbody tr:nth-child(odd):hover {  background: #DDA;}
+  #tbl_lista table {border-collapse: collapse;}
+  #tbl_lista table, th, td {  border: solid 1px #aba0a0;  padding: 2px;  }#tbl_lista tbody { box-shadow: 10px 10px 6px rgba(0, 0, 0, 0.6);  }
+   #tbl_lista thead { background: #afd6e2;  box-shadow: 10px 0px 6px rgba(0, 0, 0, 0.6);} #tbl_lista tbody { display:block; height:500px;  overflow-y:auto; width:fit-content;}
+  #tbl_lista thead,tbody tr {    display:table;  width:100%;  table-layout:fixed; } 
+  #tbl_lista thead { width: calc( 100% - 1.2em )/* scrollbar is average 1em/16px width, remove it from thead width */}
+  /*thead tr {    display:table;  width:98.5%;  table-layout:fixed;  }*/ </style>
+
+      <div class="table-responsive">
+        <table class="" id="tbl_lista">
+          <thead>
+            <th>Codigo</th>
+            <th>Producto</th>
+            <th>Valor total</th>
+            <th>Cantidad</th>
+          </thead>
+          <tbody id="tbl_op2">
+            
+          </tbody>
+          
+        </table>
+      </div>
 			
 		</div>	
 	</div>

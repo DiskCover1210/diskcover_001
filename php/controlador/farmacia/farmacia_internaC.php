@@ -75,9 +75,22 @@ class farmacia_internaC
 			$q = explode('_',$parametros['referencia']);
 			$query = $q[0];
 		}
-		// print_r($parametros);die();
 		$datos = $this->modelo->tabla_catalogo($query,$parametros['tipo']);
-		return $datos['tbl'];
+		$tr='';
+		foreach ($datos['datos'] as $key => $value) {
+			// print_r($value);die();
+			$tra = $this->modelo->costo_producto($value['Codigo']);
+			if(count($tra)>0)
+			{
+			$tr.='<tr>
+			<td>'.$value['Codigo'].'</td>
+			<td>'.$value['Producto'].'</td>
+			<td>'.$tra[0]['Existencia'].'</td>
+			<td>'.$tra[0]['Total'].'</td>
+			</tr>';			
+		   }
+		}
+		return $tr;
 	}
 
 	function cargar_pedidos($parametros)
@@ -137,15 +150,23 @@ class farmacia_internaC
 			    $titulo = 'L I S T A D O   D E L   C A T A L O G O';
 			    $Fechaini = ''; $Fechafin='';
 	    		$datos = $this->modelo->tabla_catalogo($query,'ref');
+	    		$listado= array();
+	    		foreach ($datos['datos'] as $key => $value) {
+	    			$tra = $this->modelo->costo_producto($value['Codigo']);
+	    			if(count($tra)>0)
+	    			{
+	    			$listado[] = array('Codigo'=>$value['Codigo'],'Producto'=>$value['Producto'],'Cantidad'=>$tra[0]['Existencia'],'Valor_Total'=>$tra[0]['Total']);
+	    		    }
+	    		}
 	    			 $tablaHTML[0]['medidas']=array(25,100,30,25);
 		             $tablaHTML[0]['alineado']=array('L','L','L','L');
-		             $tablaHTML[0]['datos']=array('<b>Codigo','<b>Producto','<b>Valor Total','<b>Cantidad');
+		             $tablaHTML[0]['datos']=array('<b>Codigo','<b>Producto','<b>Cantidad','<b>Valor Total');
 		             $tablaHTML[0]['borde'] =1;
 		             $pos = 1;
-	    		foreach ($datos['datos'] as $key => $value) {
+	    		foreach ($listado as $key => $value) {
 	    			 $tablaHTML[$pos]['medidas']=$tablaHTML[0]['medidas'];
 		             $tablaHTML[$pos]['alineado']=$tablaHTML[0]['alineado'];
-		             $tablaHTML[$pos]['datos']=array($value['Codigo'],$value['Producto'],$value['Valor_Total'],$value['Cantidad']);
+		             $tablaHTML[$pos]['datos']=array($value['Codigo'],$value['Producto'],$value['Cantidad'],$value['Valor_Total']);
 		             $tablaHTML[$pos]['borde'] =1;
 		             $pos+=1;
 	    		}
@@ -252,13 +273,20 @@ class farmacia_internaC
 			    $titulo = 'L I S T A D O   D E L   C A T A L O G O';
 			    $Fechaini = ''; $Fechafin='';
 	    		$datos = $this->modelo->tabla_catalogo($query,'ref');
+	    		foreach ($datos['datos'] as $key => $value) {
+	    			$tra = $this->modelo->costo_producto($value['Codigo']);
+	    			if(count($tra)>0)
+	    			{
+	    			$listado[] = array('Codigo'=>$value['Codigo'],'Producto'=>$value['Producto'],'Cantidad'=>$tra[0]['Existencia'],'Valor_Total'=>$tra[0]['Total']);
+	    		    }
+	    		}
 	    			 $tablaHTML[0]['medidas']=array(15,50,30,25);
-		             $tablaHTML[0]['datos']=array('Codigo','Producto','Valor Total','Cantidad');
+		             $tablaHTML[0]['datos']=array('Codigo','Producto','Cantidad','Valor Total');
 		             $tablaHTML[0]['tipo'] ='C';
 		             $pos = 1;
-	    		foreach ($datos['datos'] as $key => $value) {
+	    		foreach ($listado as $key => $value) {
 	    			 $tablaHTML[$pos]['medidas']=$tablaHTML[0]['medidas'];
-		             $tablaHTML[$pos]['datos']=array($value['Codigo'],$value['Producto'],$value['Valor_Total'],$value['Cantidad']);
+		             $tablaHTML[$pos]['datos']=array($value['Codigo'],$value['Producto'],$value['Cantidad'],$value['Valor_Total']);
 		             $tablaHTML[$pos]['tipo'] ='N';
 		             $pos+=1;
 	    		}

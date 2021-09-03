@@ -167,6 +167,24 @@ class farmacia_internaM
        return array('tbl'=>$tbl,'datos'=>$datos) ;
 	}
 
+	function costo_producto($Codigo_Inv)
+	{
+
+		$cid = $this->conn;
+		$sql = "SELECT TOP 1 Codigo_Inv,Costo,Valor_Unitario,Existencia,Total,T 
+               FROM Trans_Kardex 
+               WHERE Item = '".$_SESSION['INGRESO']['item']. "' 
+               AND Periodo = '".$_SESSION['INGRESO']['periodo']."' 
+               AND Fecha <= '".date('Y-m-d')."' 
+               AND Codigo_Inv = '".$Codigo_Inv."' 
+               AND T <> 'A' 
+               ORDER BY Fecha DESC,TP DESC, Numero DESC,ID DESC ";
+               // print_r($sql);die();
+       		$datos = $this->conn->datos($sql);
+       return $datos;
+
+	}
+
 }
 
 ?>
