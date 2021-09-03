@@ -188,7 +188,6 @@ class autorizacion_sri
 	            
 	           $respuesta = $this->generar_xml($cabecera,$detalle);
 
-
 	           $num_res = count($respuesta);
 	           if($num_res>=2)
 	           {
@@ -196,7 +195,7 @@ class autorizacion_sri
 	           	if($num_res!=2)
 	           	{
 	           	 $estado = explode(' ', $respuesta[2]);
-		           	 if($estado[1].' '.$estado[2]=='FACTURA AUTORIZADO')
+		           	 if($estado[1].' '.$estado[2]=='FACTURA AUTORIZADO' || $estado[2]=='AUTORIZADO')
 		           	 {
 		           	 	$respuesta = $this->actualizar_datos_CE(trim($estado[0]),$cabecera['tc'],$cabecera['serie'],$cabecera['factura'],$cabecera['item'],$cabecera['Autorizacion']);
 		           	 	if($respuesta==1)
@@ -1579,21 +1578,29 @@ function generar_xml_retencion($cabecera,$detalle=false)
  				return $respuesta;
  	   }
 
- 		$quijoteCliente =  dirname(__DIR__).'/SRI/firmar/QuijoteLuiClient-1.2.jar';
+ 		$quijoteCliente =  dirname(__DIR__).'/SRI/firmar/QuijoteLuiClient-1.2.1.jar';
  	    $url_No_autorizados =dirname(__DIR__).'/entidades/entidad_'.$entidad."/CE".$entidad.'/No_autorizados/';
  	    $url_autorizado =dirname(__DIR__).'/entidades/entidad_'.$entidad."/CE".$entidad.'/Autorizados';
+
+ 	    $linkSriAutorizacion = $_SESSION['INGRESO']['Web_SRI_Autorizado'];
+ 	    $linkSriRecepcion = $_SESSION['INGRESO']['Web_SRI_Recepcion'];
  	   
  		if(count($f)<6)
  		{
- 			exec("java -jar ".$quijoteCliente." ".$nom_doc.".xml".
-			" ".$url_firmados." ".$url_No_autorizados.
-			" ".$url_autorizado." ".$nom_doc."", $o);
-			sleep(4);
-			// $respuesta = $compro.'-'.$url_autorizado;
-			// print_r("java -jar ".$quijoteCliente." ".$nom_doc.".xml".
-			// " ".$url_firmados." ".$url_No_autorizados.
-			// " ".$url_autorizado." ".$nom_doc."");
+ 		// Nombrexml,RutaxmlFirmado,RutaCarpetaNoAutorizado,RutaCarpetaAutorizado,linkSriAutorizacion,linkSriRecepcion
+ 			
+			// print_r("java -jar ".$quijoteCliente." ".$nom_doc." ".$url_firmados." ".$url_No_autorizados.
+			// " ".$url_autorizado." ".$linkSriAutorizacion." ".$linkSriRecepcion);
 			// die();
+
+			exec("java -jar ".$quijoteCliente." ".$nom_doc." ".$url_firmados." ".$url_No_autorizados.
+			" ".$url_autorizado." ".$linkSriAutorizacion." ".$linkSriRecepcion, $o);
+
+ 		// 	exec("java -jar ".$quijoteCliente." ".$nom_doc.".xml".
+			// " ".$url_firmados." ".$url_No_autorizados.
+			// " ".$url_autorizado." ".$nom_doc."", $o);
+			sleep(4);
+			
 	       return $o;
  		}else
  		{

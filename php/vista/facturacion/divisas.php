@@ -1,6 +1,8 @@
 <?php
   include "../controlador/facturacion/divisasC.php";
   $divisas = new divisasC();
+
+  // print_r($_SESSION);die();
 ?>
 <style type="text/css">
   @media (max-width:600px) {
@@ -354,6 +356,8 @@ function aceptar(){
           confirmButtonText: 'Si!'
         }).then((result) => {
           if (result.value==true) {
+
+            guardar_datoscliente();
             $('#myModal_espera').modal('show');
             $.ajax({
             type: "POST",
@@ -468,6 +472,33 @@ function aceptar(){
     
   }
 
+
+  function guardar_datoscliente()
+  {
+    var tel = $('#telefono').val();
+    var ema = $('#email').val();
+    var cod = $('#codigoCliente').val();
+    var parametros = 
+    {
+      'tel':tel,
+      'ema':ema,
+      'cod':cod,
+    }
+    $.ajax({
+      url: '../controlador/facturacion/divisasC.php?guardar_datoC=true',
+      type:'post',
+      dataType:'json',
+      data:{parametros:parametros},     
+      success: function(response){
+      response.forEach(function(data,index){
+        option+="<option value='"+data.Codigo+"'>"+data.Descripcion_Rubro+"</option>";
+      });
+       $('#select_provincias').html(option);
+    }
+    });
+
+  }
+
   function calcularSaldo(){
     efectivo = $("#efectivo").val();
     total = $("#totalFac").val();
@@ -552,11 +583,11 @@ function aceptar(){
     <div class="panel panel-primary">
       <div class="panel-body">
         <div class="row">
-          <div class="col-sm-2 col-sm-offset-1">
+          <div class="col-sm-2">
             <label>Fecha</label>
             <input type="date" class="form-control input-sm" name="fecha" id="fecha" value="<?php echo date('Y-m-d'); ?>" onchange="numeroFactura();catalogoLineas();">
           </div>
-          <div class="col-sm-6 col-xs-12">
+          <div class="col-sm-5 col-xs-12">
             <label class="text-right">Cliente</label>
             <a title="Agregar nuevo cliente" style="padding-left: 20px" onclick="addCliente();">
               <img src="../../img/png/mostrar.png" width="20" height="20">
@@ -568,10 +599,17 @@ function aceptar(){
             <input type="text" class="form-control input-sm" placeholder="Ingrese nombre del nuevo cliente" name="nombreCliente" id="nombreCliente" autocomplete="off">
             <input type="hidden" name="direccion" id="direccion">
             <input type="hidden" name="ci" id="ci_ruc">
-            <input type="hidden" name="email" id="email">
             <input type="hidden" name="fechaEmision" id="fechaEmision" value="<?php echo date('Y-m-d'); ?>">
           </div>
-        </div>
+          <div class="col-sm-3">
+            <b>Email:</b>
+            <input type="text" class="form-control input-sm" placeholder="Email" name="email" id="email">            
+          </div>
+           <div class="col-sm-2">
+            <b>Telefono:</b>
+            <input type="text" class="form-control input-sm" placeholder="Telefono" name="telefono" id="telefono">            
+          </div>
+        </div><br>
         <div class="row">
           <div class="col-sm-2 col-sm-offset-1">
             <label class="text-right">TIPO DE PROCESO</label>
@@ -580,7 +618,7 @@ function aceptar(){
             <select class="form-control input-sm" name="DCLinea" id="DCLinea" onchange="numeroFactura();productos();limpiar_grid(); cargar_grilla();">
             </select>
           </div>
-          <div class="col-sm-2">
+          <div class="col-sm-3">
             <label id="numeroSerie" class="red">() No.</label>
           </div>
           <div class="col-sm-2">

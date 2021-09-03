@@ -51,6 +51,13 @@ if(isset($_GET['catalogoLineas']))
   echo json_encode($datos);
 }
 
+if(isset($_GET['guardar_datoC']))
+{
+  $parametros = $_POST['parametros'];
+  $datos = $controlador->guardar_datosC($parametros);
+  echo json_encode($datos);
+}
+
 if(isset($_GET['limpiar_grid']))
 {
   // print_r('e');die();
@@ -414,7 +421,9 @@ class divisasC
     $datos_pre  ="";
     $datos_pre =  $this->modelo->datos_factura($parametros);
     $datos_empre =  $this->modelo->datos_empresa();
-    $cabe ='<font face="Courier New" size=2>Transaccion ('.$TC.'): No. '.$datos_pre['lineas'][0]['Factura'].' <br>
+    $datos_pre['lineas'][0]['Factura'] = generaCeros($datos_pre['lineas'][0]['Factura'],9);
+    $cabe ='<font face="Courier New" size=2>Transaccion ('.$TC.'): No. '.$datos_pre['lineas'][0]['Serie'].'-'.$datos_pre['lineas'][0]['Factura'].' <br>
+        Autorizacion:<br>'.$datos_pre['lineas'][0]['Autorizacion'].'<br>
         Fecha: '.date('Y-m-d').' - Hora: </b>'.date('H:m:s').' <br>
         Cliente: <br>'.$datos_pre['cliente']['Cliente'].'<br>
         Autorizacion: <br><br>
@@ -465,12 +474,17 @@ class divisasC
 
     $datos_extra = "<hr>
     <table style='width:100%'>
+      <tr><td>Email: ".$datos_pre['cliente']['Email']."</td></tr>
       <tr>
-        <td style='text-align:center'>Fue un placer atenderle <br>Gracias por su compra<br>www.cofradiadelvino.com <br></td>
+        <td style='text-align:center'>Fue un placer atenderle <br>Gracias por su compra<br><br></td>
       </tr>
     </table></font>";
     $html =  $cabe.$lineas.$totales.$datos_extra;
     $this->pdf->formatoPDFMatricial($html,$parametros,$datos_pre,$datos_empre);
+    //crea pdf para enviar por corre
+    $this->pdf->formatoPDFMatricial($html,$parametros,$datos_pre,$datos_empre,true);
+    // $archivos =array($datos_pre['lineas'][0]['Autorizacion'].'pdf');
+    // $this->email->enviar_email($archivos,$datos_pre['cliente']['Email'],'Comprobante',$titulo_correo,$correo_apooyo,$nombre,$EMAIL_CONEXION,$EMAIL_CONTRASEÑA,$HTML=false,$gmial=0)
   }
 
   function limpiar_grid()
@@ -491,6 +505,19 @@ class divisasC
   function Eliminar($codigo)
   {
      return $this->modelo->limpiarGrid($codigo);
+  }
+
+  function guardar_datosC($parametros)
+  {
+    $datos[0]['campo'] = 'Email';
+    $datos[0]['dato'] = $parametros['ema'];
+    $datos[1]['campo'] = 'Telefono';
+    $datos[1]['dato'] = $parametros['tel'];
+
+    $where[0]['campo'] = 'Codigo';
+    $where[0]['valor'] = $parametros['cod'];
+    $where[0]['tipo'] = 'string';
+    return update_generico($datos,'Clientes',$where);
   }
         
 }

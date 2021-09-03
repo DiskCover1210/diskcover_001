@@ -4548,8 +4548,9 @@ function update_generico($datos,$tabla,$campoWhere) // optimizado javier farinan
    	    }
    	}
    	$wherelist = substr($wherelist,0,-5);
-   	$where = "WHERE ".$wherelist;   
+   	$where = " WHERE ".$wherelist;   
    	$sql = $sql.$set.$where;
+    // print_r($sql);die();
    	return $conn->String_Sql($sql);
 }
 

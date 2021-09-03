@@ -206,28 +206,31 @@ class cabecera_pdf
 		
 	}
 
-	function formatoPDFMatricial($HTML,$parametros,$datos_pre,$datos_empresa)
+	function formatoPDFMatricial($HTML,$parametros,$datos_pre,$datos_empresa,$descagar=false)
 	{	
 		$pdf = new FPDF();
 		$pdf->setMargins(2,15, 11.7);
 		$pdf->SetFont('Courier','',8);
 		$pdf->AddPage('P');
-		$pdf->Cell(0,0,'Transaccion ('.$parametros['TC'].'): No.'.$datos_pre['lineas'][0]['Factura']);
+		$pdf->Cell(0,0,'Transaccion ('.$parametros['TC'].'): No. '.$datos_pre['lineas'][0]['Serie'].'-'.$datos_pre['lineas'][0]['Factura']);
+		$pdf->Ln(5);
+		$pdf->Cell(0,0,'Autorizaion: ');
+		$pdf->Ln(5);
+		$pdf->SetFont('Courier','',7);
+		$pdf->Cell(0,0,$datos_pre['lineas'][0]['Autorizacion']);
+		$pdf->SetFont('Courier','',8);
 		$pdf->Ln(5);
 		$pdf->Cell(0,0,'Fecha: '.date('Y-m-d').' - Hora: '.date('H:m:s'));
 		$pdf->Ln(5);
 		$pdf->Cell(0,0,'Cliente: '.$datos_pre['cliente']['Cliente']);
-		$pdf->Ln(5);
-		$pdf->Cell(0,0,'Autorizaion: ');
-		$pdf->Ln(5);
-		$pdf->Cell(0,0,$datos_pre['lineas'][0]['Autorizacion']);
 		if (count($datos_empresa['micro_empresa']) && $datos_empresa['micro_empresa']['A2021'] == 'X') {
 			$pdf->Ln(5);
 			$pdf->Cell(0,0,'MICROEMPRESA');
 		}
-		if (count($datos_empresa['agente_retencion'])) {
+		if (count($datos_empresa['agente_retencion'])) 
+			{
 			$pdf->Ln(5);
-			$pdf->Cell(0,0,'Agente Retención: '.$datos_empresa['agente_retencion']['RESOLUCION'] );
+			$pdf->Cell(0,0,utf8_encode('Agente Retención: '.$datos_empresa['agente_retencion']['RESOLUCION']) );
 		}		
 		$pdf->Ln(5);
 		$pdf->Cell(0,0,'R.U.C/C.I.: '.$datos_pre['cliente']['CI_RUC']);
@@ -236,7 +239,7 @@ class cabecera_pdf
 		$pdf->Ln(5);
 		$pdf->Cell(0,0,'Telefono: '.$datos_pre['cliente']['Telefono']);
 		$pdf->Ln(5);
-		$pdf->Cell(0,0,'Dirección: '.$datos_pre['cliente']['Direccion']);
+		$pdf->Cell(0,0,utf8_decode('Dirección: '.$datos_pre['cliente']['Direccion']));
 		$pdf->Ln(5);
 		$pdf->Cell(0,0,'Producto/Cant x PVP/Total '.$datos_pre['cliente']['Direccion']);
 		$pdf->Ln(5);
@@ -273,11 +276,20 @@ class cabecera_pdf
 		$pdf->Ln(5);
 		$pdf->Cell(0,0,'--------------------------------------------');
 		$pdf->Ln(5);
+		$pdf->Cell(75,0,'Email:'.$datos_pre['cliente']['Email'],'',0,'L');
+		$pdf->Ln(5);
 		$pdf->Cell(75,0,'Fue un placer atenderle','',0,'C');
 		$pdf->Ln(5);
 		$pdf->Cell(75,0,'Gracias por su compra','',0,'C');
+
+		if($descagar)
+		{
+			$pdf->Output('F',dirname(__DIR__,2).'/php/vista/TEMP/'.$datos_pre['lineas'][0]['Autorizacion'].'.pdf');
+		}else
+		{
+     		$pdf->Output();
+		}
 		
-		$pdf->Output();
 		// $this->FPDF->AddPage('P');
  	//  	$this->pdftable->SetFont('Arial','',18);
  	//  	$this->pdftable->Cell(0,3,'Prueba',0,0,'C');

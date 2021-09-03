@@ -101,6 +101,8 @@ function variables_sistema($EmpresaEntidad,$NombreEmp,$ItemEmp)
 
   	
 
+        $_SESSION['INGRESO']['Web_SRI_Autorizado']=$empresa[0]['Web_SRI_Autorizado'];
+        $_SESSION['INGRESO']['Web_SRI_Recepcion']=$empresa[0]['Web_SRI_Recepcion'];
         $_SESSION['INGRESO']['Direccion']=$empresa[0]['Direccion'];
         $_SESSION['INGRESO']['Telefono1']=$empresa[0]['Telefono1'];
         $_SESSION['INGRESO']['FAX']=$empresa[0]['FAX'];
