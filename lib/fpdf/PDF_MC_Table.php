@@ -170,9 +170,16 @@ class PDF_MC_Table extends FPDF
 			{
 				$estilo = explode('<',$data[$i]);
 				$estilo1 = explode('>',$estilo[1]);
-				//print_r($estilo1);
+				if($estilo1[0]=='B' || $estilo1[0]=='I' || $estilo1[0]=='U'  || $estilo1[0]=='BI' || $estilo1[0]=='IU' || $estilo1[0]=='UB' )
+				{
 				$this->SetFont('',$estilo1[0]);		
 			    $this->MultiCell($w,$h1,str_replace('<'.$estilo1[0].'>','', $data[$i]),$b1,$a);
+			    }else
+			    {
+			    	$this->SetFont('Arial','');
+					//str_replace('<b>','', $data[$i]);
+				    $this->MultiCell($w,$h1,$data[$i],$b1,$a);
+			    }
 			}
 			//$this->MultiCell($w,$h1,$data[$i],$b1,$a);
 			//Put the position to the right of the cell

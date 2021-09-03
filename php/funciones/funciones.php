@@ -6643,6 +6643,7 @@ if($titulo)
    }
    //fin de dimenciones
    //alinea dependiendo el tipo de dato que sea
+   $alineado = 'text-left'; 
      switch ($value['DATA_TYPE']) 
      {
         case 'nvarchar':

@@ -10,7 +10,7 @@ class catalogoCtaM
     private $conn ;
 	function __construct()
 	{
-	   $this->conn = cone_ajax();
+	   $this->conn = new db();
 	}
 
 
@@ -42,27 +42,26 @@ class catalogoCtaM
        }
        $sql.='ORDER BY Codigo';
 
-       $stmt = sqlsrv_query($cid, $sql);
-	   if( $stmt === false)  
-	   {  
-		 echo "Error en consulta PA.\n";  
-		 return '';
-		 die( print_r( sqlsrv_errors(), true));  
-	   }
-
-	   $result = array();	
-	   while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_ASSOC) ) 
-	   {
-		$result[] = $row;
-		//echo $row[0];
-	   }
+       $result = $this->conn->datos($sql);
 	   if($reporte_Excel==false)
 	   {
 	   	  return $result;
 	   }else
 	   {
-	   	 $stmt1 = sqlsrv_query($this->conn, $sql);
-	     exportar_excel_generico($stmt1,null,null,$b);
+	   	$tablaHTML =array();
+	   	 $tablaHTML[0]['medidas']=array(9,9,9,9,20,50,18,18);
+         $tablaHTML[0]['datos']=array('Clave','TC','ME','DG','Codigo','Cuenta','Presupuesto','Codigo_Ext');
+         $tablaHTML[0]['tipo'] ='C';
+         $pos = 1;
+		foreach ($result as $key => $value) {
+			 $tablaHTML[$pos]['medidas']=$tablaHTML[0]['medidas'];
+	         $tablaHTML[$pos]['datos']=array($value['Clave'],$value['TC'],$value['ME'],$value['DG'],$value['Codigo'],$value['Cuenta'],$value['Presupuesto'],$value['Codigo_Ext']);
+	         $tablaHTML[$pos]['tipo'] ='N';
+	         $pos+=1;
+		}
+	    excel_generico($titulo='PLAN DE CUENTAS',$tablaHTML);
+	   	 // $stmt1 = sqlsrv_query($this->conn, $sql);
+	     // exportar_excel_generico($stmt1,null,null,$b);
 
 	   }
 
@@ -83,7 +82,7 @@ class catalogoCtaM
 
 		$sql ="SELECT Clave,TC,ME,DG,Codigo,Cuenta,Presupuesto,Codigo_Ext 
        FROM Catalogo_Cuentas 
-       WHERE Cuenta <> 'Ninguno' 
+       WHERE Cuenta <> '".G_NINGUNO."' 
        AND Codigo BETWEEN '".$txt_CtaI."' and '".$txt_CtaF."' 
        AND Item = '".$_SESSION['INGRESO']['item']."'
        AND Periodo =  '".$_SESSION['INGRESO']['periodo']."'"; 
@@ -96,20 +95,10 @@ class catalogoCtaM
        	 $sql.=" AND DG='D'";
        }
        $sql.='ORDER BY Codigo';
+      
+	   $tbl = grilla_generica_new($sql,'Catalogo_Cuentas','tbl_medi',false,$botones=false,$check=false,$imagen=false,$border=1,$sombreado=1,$head_fijo=1,500);
 
-       //echo $sql;
-       $stmt = sqlsrv_query($cid, $sql);
-	   if( $stmt === false)  
-	   {  
-		 echo "Error en consulta PA.\n";  
-		 return '';
-		 die( print_r( sqlsrv_errors(), true));  
-	   }
-
-	  
-        $tabla = grilla_generica($stmt,null,NULL,'1',null,null,null,true);
-
-       return $tabla;
+       return $tbl;
 
 	}
 
@@ -125,22 +114,7 @@ class catalogoCtaM
 		{
 			$sql.=" and Item ='".$_SESSION['INGRESO']['item']."'";
 		}
-
-		
-		   $stmt = sqlsrv_query($cid, $sql);
-	   if( $stmt === false)  
-	   {  
-		 echo "Error en consulta PA.\n";  
-		 return '';
-		 die( print_r( sqlsrv_errors(), true));  
-	   }
-	  // print_r($sql);
-	    while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_ASSOC) ) 
-	   {
-		$datos[] = $row;
-		//echo $row[0];
-	   }
-	   
+		$dato = $this->conn->datos($sql);
 	  return $datos;
 
 	}
