@@ -173,8 +173,9 @@ class divisasC
     $producto = $_POST['datos'];
 
     // print_r($producto);die();
-      $precio_nuevo = number_format(($producto['Total'] / $producto['Cantidad']),2,'.','');
-      $totalNuevo = number_format(($producto['Cantidad'] * $precio_nuevo),2,'.','');
+      $precio_nuevo = number_format(($producto['Total'] / $producto['Cantidad']),6,'.','');
+      // $totalNuevo = number_format(($producto['Cantidad'] * $precio_nuevo),4,'.','');
+      $totalNuevo = number_format($producto['Total'],2,'.','');
       $dato[0]['campo']='CODIGO';
       $dato[0]['dato']= $producto['Codigo'];
       $dato[1]['campo']='CODIGO_L';
@@ -389,7 +390,9 @@ class divisasC
       
     }
 
-    if (strlen($FA['Autorizacion']) == 13) {      
+
+    if (strlen($FA['Autorizacion']) == 13) {    
+
        $resultado = $this->autorizar_sri->Autorizar($FA);
     }else{
       $resultado = array('respuesta'=>4);

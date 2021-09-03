@@ -442,7 +442,7 @@ function reporte_excel()
         <input type="text"  class="form-control input-sm" name="txt_historia" id="txt_historia" onkeyup="cargar_pedidos();">
       </div>  
       <div class="col-sm-3">
-        Departamento       
+        <b>Departamento</b>     <  
         <input type="text"  class="form-control input-sm" name="txt_departamento" id="txt_departamento" onkeyup="cargar_pedidos();">
       </div>  
       <div class="col-sm-2">
@@ -458,7 +458,7 @@ function reporte_excel()
         <input type="date"  class="form-control input-sm" name="txt_hasta" value="<?php echo date('Y-m-d'); ?>" id="txt_hasta" onblur="cargar_pedidos();">
       </div> 
       <div class="col-sm-2"><br>
-          <label onclick="cargar_pedidos()"><input type="checkbox" name="rbl_fecha" id="rbl_fecha">Por Fecha</label>
+          <label><input type="checkbox" name="rbl_fecha" id="rbl_fecha" onchange="cargar_pedidos()">Por Fecha</label>
       </div>
       </form> 
     </div>
@@ -503,7 +503,7 @@ function reporte_excel()
     </form>
     </div>
     <div class="row">      
-        <label onclick="cargar_medicamentos()"><input type="checkbox" name="rbl_fecha5" id="rbl_fecha5">Por Fecha</label>
+        <label><input type="checkbox" name="rbl_fecha5" id="rbl_fecha5" onchange="cargar_medicamentos()">Por Fecha</label>
     </div>
     <div class="row"><br>
       <div class="col-sm-12">

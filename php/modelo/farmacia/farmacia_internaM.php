@@ -69,7 +69,8 @@ class farmacia_internaM
 		{
 			$sql.=" Codigo_Inv LIKE '%".$query."%'";
 		}
-		// $sql.=' ORDER BY ID OFFSET 0 ROWS FETCH NEXT 100 ROWS ONLY;';
+		$sql.=' ORDER BY Producto';
+		// OFFSET 0 ROWS FETCH NEXT 100 ROWS ONLY;';
 
 		// print_r($sql);die();
 
@@ -128,11 +129,12 @@ class farmacia_internaM
 
 	function descargos_medicamentos($query=false,$paciente=false,$ci=false,$departamento=false,$desde=false,$hasta=false,$tipo=false)
 	{
-		$sql = "SELECT T.Fecha,CP.Producto,Cliente,CI_RUC as 'Cedula',C.Matricula,Centro_Costo as 'Departamento'
+		// print_r($tipo);die();
+		$sql = "SELECT T.Fecha,CP.Producto,Cliente,CI_RUC as 'Cedula',C.Matricula,Centro_Costo as 'Departamento',Salida as 'Cantidad'
 		FROM Trans_Kardex T
 		INNER JOIN Catalogo_Productos CP ON T.Codigo_Inv = CP.Codigo_Inv
 		INNER JOIN Clientes C ON T.Codigo_P = C.Codigo  
-		WHERE T.Item = '016' AND T.Periodo  ='.' AND Entrada = 0 AND Matricula <>0 AND Centro_Costo <> '.'";
+		WHERE T.Item = ".$_SESSION['INGRESO']['item']." AND T.Periodo  ='".$_SESSION['INGRESO']['periodo']."' AND Entrada = 0 AND Matricula <>0 AND Centro_Costo <> '.'";
 		if($query)
 		{
 			$sql.=" AND CP.Producto like '%".$query."%'";
@@ -155,7 +157,7 @@ class farmacia_internaM
 			$sql.=" AND T.Fecha BETWEEN '".$desde."' AND '".$hasta."'";
 		}
 
-		$sql.="GROUP BY T.Fecha,CP.Producto,Cliente,CI_RUC,C.Matricula,Centro_Costo,Numero
+		$sql.="GROUP BY T.Fecha,CP.Producto,Cliente,CI_RUC,C.Matricula,Centro_Costo,Numero,Salida
 		ORDER BY T.Fecha DESC ";
 		 $sql.=" OFFSET 0 ROWS FETCH NEXT 100 ROWS ONLY;";
 		 // print_r($sql);die();

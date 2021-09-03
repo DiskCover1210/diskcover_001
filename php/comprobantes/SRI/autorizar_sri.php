@@ -51,6 +51,8 @@ class autorizacion_sri
 			1 Este documento electronico autorizado
 			2 XML devuelto
 			3 Este documento electronico ya esta autorizado
+
+			en el caso de que la respuesta sea una "c" revisar el el firmado si el nombre del certidicado es
 		*/		
 		$cabecera['ambiente']=$_SESSION['INGRESO']['Ambiente'];
 	    $cabecera['ruta_ce']=$_SESSION['INGRESO']['Ruta_Certificado'];
@@ -154,7 +156,7 @@ class autorizacion_sri
 			    $detalle = array();
 			    $cuerpo_fac = $this->detalle_factura($cabecera['serie'],$cabecera['factura'],$cabecera['Autorizacion'],$cabecera['tc']);
 			    foreach ($cuerpo_fac as $key => $value) 
-			    {
+			    {			    	
 			    	$producto = $this->datos_producto($value['Codigo']);
 			    	$detalle[$key]['Codigo'] =  $value['Codigo'];
 			    	$detalle[$key]['Cod_Aux'] =  $producto[0]['Desc_Item'];
@@ -185,6 +187,7 @@ class autorizacion_sri
 			    // print_r($cabecera);print_r($detalle);die();
 	            
 	           $respuesta = $this->generar_xml($cabecera,$detalle);
+
 
 	           $num_res = count($respuesta);
 	           if($num_res>=2)
@@ -254,21 +257,14 @@ class autorizacion_sri
 	function datos_factura($serie,$fact,$tc)
 	{
 		$con = $this->conn->conexion();
-		$sql = "SELECT * From Facturas WHERE Item = '".$_SESSION['INGRESO']['item']."' AND Periodo = '".$_SESSION['INGRESO']['periodo']."' AND TC = '".$tc."' AND Serie = '".$serie."' AND Factura = ".$fact." AND LEN(Autorizacion) = 13 AND T <> 'A' ";
-		//print_r($sql);exit();
-		$stmt = sqlsrv_query($con, $sql);
-	   if( $stmt === false)  
-	   {  
-		 echo "Error en consulta PA.\n";  
-		 die( print_r( sqlsrv_errors(), true));  
-	   }
-	   $datos = array();
-	   while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_ASSOC) ) 
-			{
-				$datos[] = $row;
-	        }
-	        // print_r($datos);die();
-	        return $datos;
+		$sql = "SELECT * From Facturas WHERE Item = '".$_SESSION['INGRESO']['item']."' 
+		AND Periodo = '".$_SESSION['INGRESO']['periodo']."' 
+		AND TC = '".$tc."' 
+		AND Serie = '".$serie."' 
+		AND Factura = ".$fact." 
+		AND LEN(Autorizacion) = 13 AND T <> 'A' ";
+		$datos = $this->db->datos($sql);
+		return $datos;
 	}
 
 	function datos_cliente($codigo)
@@ -296,7 +292,9 @@ class autorizacion_sri
 	function detalle_factura($serie,$factura,$autorizacion,$tc)
 	{
 		$con = $this->conn->conexion();
-		$sql="SELECT DF.*,CP.Reg_Sanitario,CP.Marca FROM Detalle_Factura As DF, Catalogo_Productos As CP WHERE DF.Item = '".$_SESSION['INGRESO']['item']."'
+		$sql="SELECT DF.*,CP.Reg_Sanitario,CP.Marca 
+		FROM Detalle_Factura As DF, Catalogo_Productos As CP
+		 WHERE DF.Item = '".$_SESSION['INGRESO']['item']."'
 		    AND DF.Periodo = '".$_SESSION['INGRESO']['periodo']."'
 		    AND DF.TC = '".$tc."'
 		    AND DF.Serie = '".$serie."' 
@@ -308,19 +306,7 @@ class autorizacion_sri
 			AND DF.Periodo = CP.Periodo 
 			AND DF.Codigo = CP.Codigo_Inv 
 			ORDER BY DF.ID,DF.Codigo;";
-			// print_r($sql);die();
-			$stmt = sqlsrv_query($con, $sql);
-	   if( $stmt === false)  
-	   {  
-		 echo "Error en consulta PA.\n";  
-		 die( print_r( sqlsrv_errors(), true));  
-	   }
-	   $datos = array();
-	   while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_ASSOC) ) 
-			{
-				$datos[] = $row;
-	        }
-	        // print_r($datos);die();
+			$datos = $this->db->datos($sql);
 	        return $datos;
 	}
 
@@ -815,7 +801,7 @@ function generar_xml($cabecera,$detalle)
 	    $dig=$this->digito_verificadorf($ruc);
 	    $compro=$fecha.$tc.$ruc.$ambiente.$serie.$numero.$nume.$emi;
 	    $dig=$this->digito_verificador($compro);
-	    $compro=$fecha.$tc.$ruc.'1'.$serie.$numero.$nume.$emi.$dig;
+	    $compro=$fecha.$tc.$ruc.$ambiente.$serie.$numero.$nume.$emi.$dig;
 
         //verificamos si existe una carpeta de la entidad si no existe las creamos
 	    $carpeta_entidad = dirname(__DIR__)."/entidades/entidad_".$entidad;
@@ -1016,8 +1002,20 @@ function generar_xml($cabecera,$detalle)
 		$xml_importeTotal = $xml->createElement( "importeTotal",round($cabecera['Total_MN'],2) );
 		$xml_moneda = $xml->createElement( "moneda",$cabecera['moneda'] );
 
+		$xml_pagos = $xml->createElement("pagos");
+		$xml_pago = $xml->createElement("pago");
+		   $xml_formapago = $xml->createElement( "formaPago",$cabecera['formaPago']);
+		   $xml_total = $xml->createElement( "total",round($cabecera['Total_MN'],2));
+		   $xml_pago->appendChild( $xml_formapago );
+		   $xml_pago->appendChild($xml_total);
+
+		   $xml_pagos->appendChild($xml_pago);
+
+
 		$xml_infoFactura->appendChild( $xml_importeTotal );
 		$xml_infoFactura->appendChild( $xml_moneda );
+		$xml_infoFactura->appendChild( $xml_pagos );
+
 
 		$xml_detalles = $xml->createElement( "detalles");
 		foreach ($detalle as $key => $value) {
@@ -1197,8 +1195,9 @@ function generar_xml($cabecera,$detalle)
 		     return $respuesta;
 		  }else
 		  {
-		  	// print_r($ruta_G);die();
-		  	// return 's';
+
+		  	// print_r('sss')
+		  	return 's';
 		  }	
 }
 
@@ -1591,7 +1590,9 @@ function generar_xml_retencion($cabecera,$detalle=false)
 			" ".$url_autorizado." ".$nom_doc."", $o);
 			sleep(4);
 			// $respuesta = $compro.'-'.$url_autorizado;
-			// print_r($o);
+			// print_r("java -jar ".$quijoteCliente." ".$nom_doc.".xml".
+			// " ".$url_firmados." ".$url_No_autorizados.
+			// " ".$url_autorizado." ".$nom_doc."");
 			// die();
 	       return $o;
  		}else

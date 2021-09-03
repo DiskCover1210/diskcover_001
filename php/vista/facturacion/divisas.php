@@ -227,13 +227,19 @@
   // }
 
 function aceptar(){
-  $('#myModal_espera').modal('show');
     producto = $("#producto").val();
+    cliente = $("#cliente").val();
+    if(cliente=='')
+    {
+      Swal.fire('Seleccione un cliente','','info');
+      return false;
+    }
     pvp = $("#preciounitario").val();
     total = $("#total").val();
     cantidad = $("#cantidad").val();
     producto = producto.split("/");
     var year = new Date().getFullYear();
+    $('#myModal_espera').modal('show');
     var datosLineas = 
     {
         'Codigo' : producto[0],

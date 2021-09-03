@@ -121,6 +121,57 @@ class db
 	
 	}
 
+	function existe_registro($sql,$tipo=false)
+	{
+		if($tipo=='MY SQL')
+		{
+			$conn = $this->MySQL();
+			$resultado = mysqli_query($conn, $sql);
+			if(!$resultado)
+			{
+				echo "Error: " . $sql . "<br>" . mysqli_error($conn);
+				return false;
+			}
+			$datos = array();
+			while ($row = mysqli_fetch_assoc($resultado)) {
+				$datos[] = $row;
+			}
+			mysqli_close($conn);
+			if(count($datos)>0)
+	     	{
+	     		return 1;
+	     	}else
+	     	{
+	     		return 0;
+	     	}
+
+		}else
+		{
+			$conn = $this->SQLServer();	
+			$stmt = sqlsrv_query($conn,$sql);
+			// print_r($sql);die();
+			$result = array();	
+			if( $stmt === false) {
+				die( print_r( sqlsrv_errors(), true) );
+			}
+			while( $row = sqlsrv_fetch_array($stmt,SQLSRV_FETCH_ASSOC) ) 
+	     	{
+	     		$result[] = $row;
+	     	}
+	     	sqlsrv_close($conn);
+	     	if(count($result)>0)
+	     	{
+	     		return 1;
+	     	}else
+	     	{
+	     		return 0;
+	     	}
+
+		}
+	
+	}
+
+
 	function String_Sql($sql,$tipo=false)
 	{
 		if($tipo=='MY SQL')
