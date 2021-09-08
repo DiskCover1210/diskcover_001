@@ -13,7 +13,7 @@ if(isset($_GET['cuentas']))
 if(isset($_GET['consultar']))
 {	
    $controlador = new libro_bancoC();
-  echo json_decode($controlador->consultar_banco($_POST['parametros']));
+  echo json_encode($controlador->consultar_banco($_POST['parametros']));
 }
 if(isset($_GET['consultar_tot']))
 {	
@@ -71,6 +71,7 @@ class libro_bancoC
   	$desde = str_replace('-','',$parametros['desde']);
     $hasta = str_replace('-','',$parametros['hasta']);		
   	$datos = $this->modelo->consultar_banco_($desde,$hasta,$parametros['CheckAgencia'],$parametros['DCAgencia'],$parametros['CheckUsu'],$parametros['DCUsuario'],$parametros['DCCtas']);
+  	return $datos;
   }
   function imprimir_pdf($parametros)
   {

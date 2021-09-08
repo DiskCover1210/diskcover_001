@@ -14,7 +14,7 @@ if(isset($_GET['cuentas']))
 if(isset($_GET['consultar']))
 {	
  $controlador = new mayor_auxiliarC();
-  echo json_decode($controlador->consultar_cuentas($_POST['parametros']));
+  echo json_encode($controlador->consultar_cuentas($_POST['parametros']));
 }
 if(isset($_GET['consultar_tot']))
 {	
@@ -81,6 +81,9 @@ class mayor_auxiliarC
   	$desde = str_replace('-','',$parametros['desde']);
     $hasta = str_replace('-','',$parametros['hasta']);		
   	$datos = $this->modelo->consultar_cuentas_($parametros['OpcUno'],$parametros['PorConceptos'],$parametros['txt_CtaI'],$parametros['txt_CtaF'],$desde,$hasta,$parametros['DCCtas'],$parametros['CheckAgencia'],$parametros['DCAgencia'],$parametros['CheckUsu'],$parametros['DCUsuario']);
+
+  	// print_r($datos);die();
+  	return $datos;
   }
   function imprimir_pdf($parametros,$sub='false')
   {
@@ -100,6 +103,8 @@ class mayor_auxiliarC
   		//print_r($submodulo);
   		//print_r($parametros);
   		$cuenta = $this->cataCta->buscar_cuenta($parametros['DCCtas'],$parametros['DCAgencia']);
+
+  		// print_r($cuenta);die();
   		//print_r($cuenta);
 
 
@@ -112,13 +117,13 @@ class mayor_auxiliarC
 		
 		$tablaHTML[0]['medidas']=array(20,75,20,75);
 		$tablaHTML[0]['alineado']=array('L','L','L','L');
-		$tablaHTML[0]['datos']=array('<b>CUENTA',$cuenta[0]['Codigo'].' '.$cuenta[0]['Cuenta'],'<b>GRUPO','EFECTIVO Y EQUIVALENTES DE EFECTIVO');
+		$tablaHTML[0]['datos']=array('<B>CUENTA',$cuenta[0]['Codigo'].' '.$cuenta[0]['Cuenta'],'<B>GRUPO','EFECTIVO Y EQUIVALENTES DE EFECTIVO');
 		//$tablaHTML[0]['estilo']='BIU';
 		$tablaHTML[0]['borde'] =array('LT','T','T','RT');
 
 		$tablaHTML[1]['medidas']=array(90,30,70);
 		$tablaHTML[1]['alineado']=array('L','L','L');
-		$tablaHTML[1]['datos']=array('','<b>Saldo anterior $:','');
+		$tablaHTML[1]['datos']=array('','<B>Saldo anterior $:','');
 		//$tablaHTML[0]['estilo']='BIU';
 		$tablaHTML[1]['borde'] =array('LB','B','RB');
 
@@ -157,7 +162,7 @@ class mayor_auxiliarC
 				}
 				$tablaHTML[$pos]['medidas']=$tablaHTML[2]['medidas'];
 		        $tablaHTML[$pos]['alineado']=array('L','L','L','L','R','R','R','R');
-		        $tablaHTML[$pos]['datos']=array($fecha,$value['TP'],$value['Numero'],'<b>'.$value['Cliente'],'','','','');
+		        $tablaHTML[$pos]['datos']=array($fecha,$value['TP'],$value['Numero'],'<B>'.$value['Cliente'],'','','','');
 		        $tablaHTML[$pos]['borde'] =$borderow;
 		        $pos = $pos+1;
 		        $tablaHTML[$pos]['medidas']=$tablaHTML[2]['medidas'];
@@ -206,7 +211,7 @@ class mayor_auxiliarC
 				        }
 				    $tablaHTML[$pos]['medidas']=$tablaHTML[2]['medidas'];
 		            $tablaHTML[$pos]['alineado']=array('L','L','L','L','R','R','R','R');
-		            $tablaHTML[$pos]['datos']=array($fecha,$value['TP'],$value['Numero'],'<b>'.$value['Cliente'],'','','','');
+		            $tablaHTML[$pos]['datos']=array($fecha,$value['TP'],$value['Numero'],'<B>'.$value['Cliente'],'','','','');
 		            $tablaHTML[$pos]['borde'] =$borderow;
 		            $pos = $pos+1;
 		            $tablaHTML[$pos]['medidas']=$tablaHTML[2]['medidas'];
@@ -231,7 +236,7 @@ class mayor_auxiliarC
 		        		}
 		                 $tablaHTML[$pos]['medidas']=$tablaHTML[2]['medidas'];
 		                 $tablaHTML[$pos]['alineado']=array('L','L','L','L',$p,'R','R','R');
-		                 $tablaHTML[$pos]['datos']=array('','','','<i>  *'.$value1['Cliente'],$parcial,'','','');
+		                 $tablaHTML[$pos]['datos']=array('','','','<I>  *'.$value1['Cliente'],$parcial,'','','');
 		                 $tablaHTML[$pos]['borde'] =$borderow;
 		                 $pos = $pos+1;
 		        	}
@@ -271,7 +276,7 @@ class mayor_auxiliarC
 
 		          $tablaHTML[$pos]['medidas']=$tablaHTML[2]['medidas'];
 		          $tablaHTML[$pos]['alineado']=array('L','L','L','L','R','R','R','R');
-		          $tablaHTML[$pos]['datos']=array($fecha,$value['TP'],$value['Numero'],'<b>'.$value['Cliente'],'','','','');
+		          $tablaHTML[$pos]['datos']=array($fecha,$value['TP'],$value['Numero'],'<B>'.$value['Cliente'],'','','','');
 		          $tablaHTML[$pos]['borde'] ='LRT';
 		          $pos = $pos+1;
 		          $tablaHTML[$pos]['medidas']=$tablaHTML[2]['medidas'];
@@ -293,7 +298,7 @@ class mayor_auxiliarC
 		        		}
 		                 $tablaHTML[$pos]['medidas']=$tablaHTML[2]['medidas'];
 		                 $tablaHTML[$pos]['alineado']=array('L','L','L','L',$p,'R','R','R');
-		                 $tablaHTML[$pos]['datos']=array('','','','<i>  *'.$value1['Cliente'],$parcial,'','','');
+		                 $tablaHTML[$pos]['datos']=array('','','','<I>  *'.$value1['Cliente'],$parcial,'','','');
 		                 $tablaHTML[$pos]['borde'] =$borderow;
 		                 $pos = $pos+1;
 		        	}

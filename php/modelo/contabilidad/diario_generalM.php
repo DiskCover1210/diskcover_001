@@ -15,7 +15,8 @@ class diario_generalM
 	
 	function __construct()
 	{
-		$this->conn = cone_ajax();
+		$this->conn = cone_ajax();        
+        $this->db = new db();
 	}
 
   function llenar_agencia()
@@ -27,14 +28,7 @@ INNER JOIN Empresas ON Acceso_Sucursales.Sucursal = Empresas.Item
 WHERE Acceso_Sucursales.Item ='".$_SESSION['INGRESO']['item']."'
 ORDER BY Acceso_Sucursales.Item,Empresa";
 
-        $stmt = sqlsrv_query($cid, $sql);
-	    $result = array();	
-	   while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_ASSOC) ) 
-	   {
-		$result[] = $row;
-	   }
-
-  //cerrarSQLSERVERFUN($cid);
+       $result = $this->db->datos($sql);
 	   return $result;
 
   }
@@ -59,14 +53,8 @@ ORDER BY Acceso_Sucursales.Item,Empresa";
        FROM Accesos 
        WHERE Codigo <> '*' 
        ORDER BY Nombre_Completo ";*/
-    $stmt = sqlsrv_query($cid, $sql);
-	  $result = array();	
-	  while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_ASSOC) ) 
-	  {
-		  $result[] = utf8_encode($row);
-	  }
-	  return $result;
-    //cerrarSQLSERVERFUN($cid);  	
+    $result = $this->db->datos($sql);
+       return $result;
   }
 
   function cargar_consulta_libro_tabla($FechaIni,$FechaFin,$DCAgencia,$DCUsuario,$TextNumNo,$TextNumNo1,$OpcCI,$OpcCE,$OpcCD,$OpcND,$OpcNC,$OpcA,$CheckAgencia,$CheckUsuario,$CheckNum)
@@ -79,48 +67,29 @@ ORDER BY Acceso_Sucursales.Item,Empresa";
        FROM Transacciones As T,Catalogo_Cuentas As C,Comprobantes As Co,Clientes As CL,Accesos As Ac 
        WHERE T.Fecha BETWEEN '".$FechaIni."' and '".$FechaFin."' 
        AND T.Periodo = '".$_SESSION['INGRESO']['periodo']."' ";
-		/*
-		 
-  sSQL = "SELECT T.Fecha,T.TP,T.Numero,CL.Cliente As Beneficiario,Co.Concepto,T.Cta,C.Cuenta," _
-       & "T.Parcial_ME,T.Debe,T.Haber,T.Detalle,Ac.Nombre_Completo,Co.CodigoU,Co.Autorizado,T.Item,T.ID " _
-       & "FROM Transacciones As T,Catalogo_Cuentas As C,Comprobantes As Co,Clientes As CL,Accesos As Ac " _
-       & "WHERE T.Fecha BETWEEN #" & FechaIni & "# and #" & FechaFin & "# " _
-       & "AND T.Periodo = '" & Periodo_Contable & "' "
-  If OpcCI.value Then  sSQL = sSQL & "AND T.TP = '" & CompIngreso & "' "*/
   if($OpcCI=='true')
   {
      $sql.="AND T.TP = '".G_COMPINGRESO."'";
   }
- // ElseIf OpcCE.value Then
-   //  sSQL = sSQL & "AND T.TP = '" & CompEgreso & "' "
   if($OpcCE=='true')
   {
   	$sql.=  "AND T.TP = '".G_COMPEGRESO."' ";
   }
- /*  ElseIf OpcCD.value Then
-     sSQL = sSQL & "AND T.TP = '" & CompDiario & "' "*/
   if($OpcCD=='true')
   {
   	 $sql.="AND T.TP = '".G_COMPDIARIO."' "; 	
   }
- /* ElseIf OpcND.value Then
-     sSQL = sSQL & "AND T.TP = '" & CompNotaDebito & "' "*/
+
   if($OpcND=='true')
   {
   	 $sql.="AND T.TP = '".G_COMPNOTADEBITO."' ";
   }
-   /*ElseIf OpcNC.value Then
-     sSQL = sSQL & "AND T.TP = '" & CompNotaCredito & "' "
-  End If*/
+  
   if($OpcNC=='true')
   {
      $sql.="AND T.TP = '".G_COMPNOTACREDITO."' ";  	
   }
-  /*If OpcA.value Then
-     sSQL = sSQL & "AND T.T = '" & Anulado & "' "
-  Else
-     sSQL = sSQL & "AND T.T = '" & Normal & "' "
-  End If*/
+ 
   if($OpcA=='true')
   {
   	$sql.="AND T.T = '".G_ANULADO."' ";  	
@@ -129,13 +98,6 @@ ORDER BY Acceso_Sucursales.Item,Empresa";
   	 $sql.="AND T.T = '".G_NORMAL."' ";
   }
 
- /* 
-  If CheckAgencia.value = 1 Then
-     sSQL = sSQL & "AND Co.Item = '" & SinEspaciosIzq(DCAgencia.Text) & "' "
-  Else
-     If Not ConSucursal Then sSQL = sSQL & "AND Co.Item = '" & NumEmpresa & "' "
-  End If
-  */
   if($CheckAgencia=='true')
   {
   	if($DCAgencia=='')
@@ -150,17 +112,12 @@ ORDER BY Acceso_Sucursales.Item,Empresa";
   {
     $sql.="AND Co.Item = '".$_SESSION['INGRESO']['item']."' ";
   }
-  /*
-  If CheckUsuario.value = 1 Then sSQL = sSQL & "AND Co.CodigoU = '" & SinEspaciosDer(DCUsuario.Text) & "' "
-
-  */
+  
   if($CheckUsuario=='true')
   {
   	$sql.= "AND Co.CodigoU = '".$DCUsuario."' ";
   }
-  /*
-  If CheckNum.value = 1 Then sSQL = sSQL & "AND Co.Numero BETWEEN " & CLng(TextNumNo.Text) & " and " & CLng(TextNumNo1.Text) & " "
-  */
+ 
   if($CheckNum=='true')
   {  	
   	$sql.= "AND Co.Numero BETWEEN ".$TextNumNo." and ".$TextNumNo1." ";
@@ -180,57 +137,11 @@ ORDER BY Acceso_Sucursales.Item,Empresa";
        ORDER BY T.Fecha,T.TP,T.Numero,T.ID ";
 
         // print_r($sql);
-        // die();
-
-      $stmt = sqlsrv_query($cid, $sql);
-	   if( $stmt === false)  
-	   {  
-		 echo "Error en consulta PA.\n";  
-		 return '';
-		 die( print_r( sqlsrv_errors(), true));  
-	   }
-
+    
+       $tbl = grilla_generica_new($sql,' Transacciones As T,Catalogo_Cuentas As C,Comprobantes As Co,Clientes As CL,Accesos As Ac ','tbl_di',false,$botones=false,$check=false,$imagen=false,$border=1,$sombreado=1,$head_fijo=1,500);
 	  
-        $tabla = grilla_generica($stmt,null,NULL,'1',null,null,null,true);
-     //   $tabla1 = utf8_encode($tabla);
-   /*   if($tabla1 == "")
-        {
-        	 return "<table><tr><td>Sin registros</td></tr></table>";
-        }else{
-*/
- // cerrarSQLSERVERFUN($cid);
-        	return $tabla;
-       // }
-
-
-       /*
- 'MsgBox sSQL
-  SelectDataGrid DGDiario, AdoDiario, sSQL
- 
-  Debe = 0: Haber = 0
-  Debe_ME = 0: Haber_ME = 0
-  DGDiario.Visible = False
-  With AdoDiario.Recordset
-   If .RecordCount > 0 Then
-      'MsgBox .RecordCount
-       RatonReloj
-       Progreso_Barra.Valor_Maximo = Progreso_Barra.Valor_Maximo + .RecordCount
-       Do While Not .EOF
-          Debe = Debe + .Fields("Debe")
-          Haber = Haber + .Fields("Haber")
-          If .Fields("Parcial_ME") > 0 Then
-              Debe_ME = Debe_ME + .Fields("Parcial_ME")
-          Else
-              Haber_ME = Haber_ME + (-.Fields("Parcial_ME"))
-          End If
-          Progreso_Barra.Mensaje_Box = "Consultando Diario General " & .Fields("Fecha")
-          Progreso_Esperar
-         .MoveNext
-       Loop
-       RatonNormal
-      .MoveFirst
-   End If
-  End With*/
+        // $tabla = grilla_generica($stmt,null,NULL,'1',null,null,null,true);
+        	return $tbl;
 	}
 
 
@@ -244,48 +155,32 @@ ORDER BY Acceso_Sucursales.Item,Empresa";
        FROM Transacciones As T,Catalogo_Cuentas As C,Comprobantes As Co,Clientes As CL,Accesos As Ac 
        WHERE T.Fecha BETWEEN '".$FechaIni."' and '".$FechaFin."' 
        AND T.Periodo = '".$_SESSION['INGRESO']['periodo']."' ";
-    /*
-     
-  sSQL = "SELECT T.Fecha,T.TP,T.Numero,CL.Cliente As Beneficiario,Co.Concepto,T.Cta,C.Cuenta," _
-       & "T.Parcial_ME,T.Debe,T.Haber,T.Detalle,Ac.Nombre_Completo,Co.CodigoU,Co.Autorizado,T.Item,T.ID " _
-       & "FROM Transacciones As T,Catalogo_Cuentas As C,Comprobantes As Co,Clientes As CL,Accesos As Ac " _
-       & "WHERE T.Fecha BETWEEN #" & FechaIni & "# and #" & FechaFin & "# " _
-       & "AND T.Periodo = '" & Periodo_Contable & "' "
-  If OpcCI.value Then  sSQL = sSQL & "AND T.TP = '" & CompIngreso & "' "*/
+  
   if($OpcCI=='true')
   {
      $sql.="AND T.TP = '".G_COMPINGRESO."'";
   }
- // ElseIf OpcCE.value Then
-   //  sSQL = sSQL & "AND T.TP = '" & CompEgreso & "' "
+
   if($OpcCE=='true')
   {
     $sql.=  "AND T.TP = '".G_COMPEGRESO."' ";
   }
- /*  ElseIf OpcCD.value Then
-     sSQL = sSQL & "AND T.TP = '" & CompDiario & "' "*/
+
   if($OpcCD=='true')
   {
      $sql.="AND T.TP = '".G_COMPDIARIO."' ";  
   }
- /* ElseIf OpcND.value Then
-     sSQL = sSQL & "AND T.TP = '" & CompNotaDebito & "' "*/
+
   if($OpcND=='true')
   {
      $sql.="AND T.TP = '".G_COMPNOTADEBITO."' ";
   }
-   /*ElseIf OpcNC.value Then
-     sSQL = sSQL & "AND T.TP = '" & CompNotaCredito & "' "
-  End If*/
+ 
   if($OpcNC=='true')
   {
      $sql.="AND T.TP = '".G_COMPNOTACREDITO."' ";   
   }
-  /*If OpcA.value Then
-     sSQL = sSQL & "AND T.T = '" & Anulado & "' "
-  Else
-     sSQL = sSQL & "AND T.T = '" & Normal & "' "
-  End If*/
+
   if($OpcA=='true')
   {
     $sql.="AND T.T = '".G_ANULADO."' ";   
@@ -294,13 +189,7 @@ ORDER BY Acceso_Sucursales.Item,Empresa";
      $sql.="AND T.T = '".G_NORMAL."' ";
   }
 
- /* 
-  If CheckAgencia.value = 1 Then
-     sSQL = sSQL & "AND Co.Item = '" & SinEspaciosIzq(DCAgencia.Text) & "' "
-  Else
-     If Not ConSucursal Then sSQL = sSQL & "AND Co.Item = '" & NumEmpresa & "' "
-  End If
-  */
+
   if($CheckAgencia=='true')
   {
     if($DCAgencia=='')
@@ -315,17 +204,12 @@ ORDER BY Acceso_Sucursales.Item,Empresa";
   {
     $sql.="AND Co.Item = '".$_SESSION['INGRESO']['item']."' ";
   }
-  /*
-  If CheckUsuario.value = 1 Then sSQL = sSQL & "AND Co.CodigoU = '" & SinEspaciosDer(DCUsuario.Text) & "' "
-
-  */
+ 
   if($CheckUsuario=='true')
   {
     $sql.= "AND Co.CodigoU = '".$DCUsuario."' ";
   }
-  /*
-  If CheckNum.value = 1 Then sSQL = sSQL & "AND Co.Numero BETWEEN " & CLng(TextNumNo.Text) & " and " & CLng(TextNumNo1.Text) & " "
-  */
+
   if($CheckNum=='true')
   {   
     $sql.= "AND Co.Numero BETWEEN ".$TextNumNo." and ".$TextNumNo1." ";
@@ -345,23 +229,8 @@ ORDER BY Acceso_Sucursales.Item,Empresa";
        ORDER BY T.Fecha,T.TP,T.Numero,T.ID ";
 
        //print_r($sql);
-
-      $stmt = sqlsrv_query($cid, $sql);
-     if( $stmt === false)  
-     {  
-     echo "Error en consulta PA.\n";  
-     return '';
-     die( print_r( sqlsrv_errors(), true));  
-     }
-
-    $result = array();
-    while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_ASSOC) ) 
-     {
-       $result[] = $row;
-     }
-
-  //cerrarSQLSERVERFUN($cid);
-     return $result;
+        $result = $this->db->datos($sql);
+       return $result;
   }
 
   function cargar_consulta_submodulo($FechaIni,$FechaFin,$DCAgencia,$DCUsuario,$TextNumNo,$TextNumNo1,$OpcCI,$OpcCE,$OpcCD,$OpcND,$OpcNC,$OpcA,$CheckAgencia,$CheckUsuario,$CheckNum)
@@ -373,11 +242,6 @@ ORDER BY Acceso_Sucursales.Item,Empresa";
         WHERE T.Fecha BETWEEN '".$FechaIni."' and '".$FechaFin."' 
        AND T.Periodo = '".$_SESSION['INGRESO']['periodo']."' ";
 
- /* If CheckAgencia.value = 1 Then
-     sSQL = sSQL & "AND T.Item = '" & SinEspaciosIzq(DCAgencia.Text) & "' "
-  Else
-     sSQL = sSQL & "AND T.Item = '" & NumEmpresa & "' "
-  End If*/
 
    if($CheckAgencia=='true')
   {
@@ -394,18 +258,6 @@ ORDER BY Acceso_Sucursales.Item,Empresa";
     $sql.="AND T.Item = '".$_SESSION['INGRESO']['item']."' ";
   }
 
-
- /* If OpcCI.value Then
-     sSQL = sSQL & "AND T.TP = '" & CompIngreso & "' "
-  ElseIf OpcCE.value Then
-     sSQL = sSQL & "AND T.TP = '" & CompEgreso & "' "
-  ElseIf OpcCD.value Then
-     sSQL = sSQL & "AND T.TP = '" & CompDiario & "' "
-  ElseIf OpcND.value Then
-     sSQL = sSQL & "AND T.TP = '" & CompNotaDebito & "' "
-  ElseIf OpcNC.value Then
-     sSQL = sSQL & "AND T.TP = '" & CompNotaCredito & "' "
-  End If*/
    if($OpcCI=='true')
   {
      $sql.="AND T.TP = '".G_COMPINGRESO."'";
@@ -428,13 +280,6 @@ ORDER BY Acceso_Sucursales.Item,Empresa";
   }
 
 
-/*
-  If OpcA.value Then
-     sSQL = sSQL & "AND T.T = '" & Anulado & "' "
-  Else
-     sSQL = sSQL & "AND T.T = '" & Normal & "' "
-  End If
-  */
 
    if($OpcA=='true')
   {
@@ -444,8 +289,6 @@ ORDER BY Acceso_Sucursales.Item,Empresa";
      $sql.="AND T.T = '".G_NORMAL."' ";
   }
 
-/*  If CheckUsuario.value = 1 Then sSQL = sSQL & "AND T.CodigoU = '" & SinEspaciosIzq(DCUsuario.Text) & "' "
-  If CheckNum.value = 1 Then sSQL = sSQL & "AND T.Numero BETWEEN " & CLng(TextNumNo.Text) & " and " & CLng(TextNumNo1.Text) & " "*/
 
    if($CheckUsuario=='true')
   {
@@ -462,11 +305,6 @@ ORDER BY Acceso_Sucursales.Item,Empresa";
         WHERE T.Fecha BETWEEN '".$FechaIni."' and '".$FechaFin."' 
        AND T.Periodo = '".$_SESSION['INGRESO']['periodo']."' ";
 
-  /*If CheckAgencia.value = 1 Then
-     sSQL = sSQL & "AND T.Item = '" & SinEspaciosIzq(DCAgencia.Text) & "' "
-  Else
-     sSQL = sSQL & "AND T.Item = '" & NumEmpresa & "' "
-  End If*/
     if($CheckAgencia=='true')
   {
     if($DCAgencia=='')
@@ -483,18 +321,6 @@ ORDER BY Acceso_Sucursales.Item,Empresa";
   }
 
 
-/*
-  If OpcCI.value Then
-     sSQL = sSQL & "AND T.TP = '" & CompIngreso & "' "
-  ElseIf OpcCE.value Then
-     sSQL = sSQL & "AND T.TP = '" & CompEgreso & "' "
-  ElseIf OpcCD.value Then
-     sSQL = sSQL & "AND T.TP = '" & CompDiario & "' "
-  ElseIf OpcND.value Then
-     sSQL = sSQL & "AND T.TP = '" & CompNotaDebito & "' "
-  ElseIf OpcNC.value Then
-     sSQL = sSQL & "AND T.TP = '" & CompNotaCredito & "' "
-  End If*/
     if($OpcCI=='true')
   {
      $sql.="AND T.TP = '".G_COMPINGRESO."'";
@@ -515,13 +341,7 @@ ORDER BY Acceso_Sucursales.Item,Empresa";
   {
      $sql.="AND T.TP = '".G_COMPNOTACREDITO."' ";   
   }
-  /*
-  If OpcA.value Then
-     sSQL = sSQL & "AND T.T = '" & Anulado & "' "
-  Else
-     sSQL = sSQL & "AND T.T = '" & Normal & "' "
-  End If
-  */
+
   if($OpcA=='true')
   {
     $sql.="AND T.T = '".G_ANULADO."' ";   
@@ -529,10 +349,7 @@ ORDER BY Acceso_Sucursales.Item,Empresa";
   {
      $sql.="AND T.T = '".G_NORMAL."' ";
   }
-/*
-  If CheckUsuario.value = 1 Then sSQL = sSQL & "AND T.CodigoU = '" & SinEspaciosIzq(DCUsuario.Text) & "' "
-  If CheckNum.value = 1 Then sSQL = sSQL & "AND T.Numero BETWEEN " & CLng(TextNumNo.Text) & " and " & CLng(TextNumNo1.Text) & " "
-  */
+
     if($CheckUsuario=='true')
   {
     $sql.= "AND T.CodigoU = '".$DCUsuario."' ";
@@ -546,21 +363,8 @@ ORDER BY Acceso_Sucursales.Item,Empresa";
        AND T.Periodo = C.Periodo 
        AND T.Codigo = C.Codigo 
        ORDER BY T.Fecha,T.TP,T.Numero,T.Cta,T.Factura ";
-
-  $stmt = sqlsrv_query($cid, $sql);
-     if( $stmt === false)  
-     {  
-     echo "Error en consulta PA.\n";  
-     return '';
-     die( print_r( sqlsrv_errors(), true));  
-     }
-
-    
-        $tabla = grilla_generica($stmt,null,NULL,'1');
-
-  //cerrarSQLSERVERFUN($cid);
-        return $tabla;
-
+$tbl = grilla_generica_new($sql,' Trans_SubCtas As T,Clientes As C ','tbl_mo',false,$botones=false,$check=false,$imagen=false,$border=1,$sombreado=1,$head_fijo=1,500);
+return $tbl;
   }
 
   function cargar_consulta_submodulo_datos($FechaIni,$FechaFin,$DCAgencia,$DCUsuario,$TextNumNo,$TextNumNo1,$OpcCI,$OpcCE,$OpcCD,$OpcND,$OpcNC,$OpcA,$CheckAgencia,$CheckUsuario,$CheckNum)
@@ -572,12 +376,6 @@ ORDER BY Acceso_Sucursales.Item,Empresa";
         WHERE T.Fecha BETWEEN '".$FechaIni."' and '".$FechaFin."' 
        AND T.Periodo = '".$_SESSION['INGRESO']['periodo']."' ";
 
- /* If CheckAgencia.value = 1 Then
-     sSQL = sSQL & "AND T.Item = '" & SinEspaciosIzq(DCAgencia.Text) & "' "
-  Else
-     sSQL = sSQL & "AND T.Item = '" & NumEmpresa & "' "
-  End If*/
-
    if($CheckAgencia=='true')
   {
     if($DCAgencia=='')
@@ -594,17 +392,6 @@ ORDER BY Acceso_Sucursales.Item,Empresa";
   }
 
 
- /* If OpcCI.value Then
-     sSQL = sSQL & "AND T.TP = '" & CompIngreso & "' "
-  ElseIf OpcCE.value Then
-     sSQL = sSQL & "AND T.TP = '" & CompEgreso & "' "
-  ElseIf OpcCD.value Then
-     sSQL = sSQL & "AND T.TP = '" & CompDiario & "' "
-  ElseIf OpcND.value Then
-     sSQL = sSQL & "AND T.TP = '" & CompNotaDebito & "' "
-  ElseIf OpcNC.value Then
-     sSQL = sSQL & "AND T.TP = '" & CompNotaCredito & "' "
-  End If*/
    if($OpcCI=='true')
   {
      $sql.="AND T.TP = '".G_COMPINGRESO."'";
@@ -627,13 +414,6 @@ ORDER BY Acceso_Sucursales.Item,Empresa";
   }
 
 
-/*
-  If OpcA.value Then
-     sSQL = sSQL & "AND T.T = '" & Anulado & "' "
-  Else
-     sSQL = sSQL & "AND T.T = '" & Normal & "' "
-  End If
-  */
 
    if($OpcA=='true')
   {
@@ -642,9 +422,6 @@ ORDER BY Acceso_Sucursales.Item,Empresa";
   {
      $sql.="AND T.T = '".G_NORMAL."' ";
   }
-
-/*  If CheckUsuario.value = 1 Then sSQL = sSQL & "AND T.CodigoU = '" & SinEspaciosIzq(DCUsuario.Text) & "' "
-  If CheckNum.value = 1 Then sSQL = sSQL & "AND T.Numero BETWEEN " & CLng(TextNumNo.Text) & " and " & CLng(TextNumNo1.Text) & " "*/
 
    if($CheckUsuario=='true')
   {
@@ -661,11 +438,6 @@ ORDER BY Acceso_Sucursales.Item,Empresa";
         WHERE T.Fecha BETWEEN '".$FechaIni."' and '".$FechaFin."' 
        AND T.Periodo = '".$_SESSION['INGRESO']['periodo']."' ";
 
-  /*If CheckAgencia.value = 1 Then
-     sSQL = sSQL & "AND T.Item = '" & SinEspaciosIzq(DCAgencia.Text) & "' "
-  Else
-     sSQL = sSQL & "AND T.Item = '" & NumEmpresa & "' "
-  End If*/
     if($CheckAgencia=='true')
   {
     if($DCAgencia=='')
@@ -682,18 +454,6 @@ ORDER BY Acceso_Sucursales.Item,Empresa";
   }
 
 
-/*
-  If OpcCI.value Then
-     sSQL = sSQL & "AND T.TP = '" & CompIngreso & "' "
-  ElseIf OpcCE.value Then
-     sSQL = sSQL & "AND T.TP = '" & CompEgreso & "' "
-  ElseIf OpcCD.value Then
-     sSQL = sSQL & "AND T.TP = '" & CompDiario & "' "
-  ElseIf OpcND.value Then
-     sSQL = sSQL & "AND T.TP = '" & CompNotaDebito & "' "
-  ElseIf OpcNC.value Then
-     sSQL = sSQL & "AND T.TP = '" & CompNotaCredito & "' "
-  End If*/
     if($OpcCI=='true')
   {
      $sql.="AND T.TP = '".G_COMPINGRESO."'";
@@ -714,13 +474,7 @@ ORDER BY Acceso_Sucursales.Item,Empresa";
   {
      $sql.="AND T.TP = '".G_COMPNOTACREDITO."' ";   
   }
-  /*
-  If OpcA.value Then
-     sSQL = sSQL & "AND T.T = '" & Anulado & "' "
-  Else
-     sSQL = sSQL & "AND T.T = '" & Normal & "' "
-  End If
-  */
+  
   if($OpcA=='true')
   {
     $sql.="AND T.T = '".G_ANULADO."' ";   
@@ -728,10 +482,7 @@ ORDER BY Acceso_Sucursales.Item,Empresa";
   {
      $sql.="AND T.T = '".G_NORMAL."' ";
   }
-/*
-  If CheckUsuario.value = 1 Then sSQL = sSQL & "AND T.CodigoU = '" & SinEspaciosIzq(DCUsuario.Text) & "' "
-  If CheckNum.value = 1 Then sSQL = sSQL & "AND T.Numero BETWEEN " & CLng(TextNumNo.Text) & " and " & CLng(TextNumNo1.Text) & " "
-  */
+
     if($CheckUsuario=='true')
   {
     $sql.= "AND T.CodigoU = '".$DCUsuario."' ";
@@ -746,21 +497,8 @@ ORDER BY Acceso_Sucursales.Item,Empresa";
        AND T.Codigo = C.Codigo 
        ORDER BY T.Fecha,T.TP,T.Numero,T.Cta,T.Factura ";
 
-  $stmt = sqlsrv_query($cid, $sql);
-     if( $stmt === false)  
-     {  
-     echo "Error en consulta PA.\n";  
-     return '';
-     die( print_r( sqlsrv_errors(), true));  
-     }
-    $result = array();
-    while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_ASSOC) ) 
-     {
-       $result[] = $row;
-     }
-
-  //cerrarSQLSERVERFUN($cid);
-     return $result;
+        $result = $this->db->datos($sql);
+       return $result;
 
   }
 

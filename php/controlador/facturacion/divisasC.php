@@ -422,69 +422,128 @@ class divisasC
     $datos_pre =  $this->modelo->datos_factura($parametros);
     $datos_empre =  $this->modelo->datos_empresa();
     $datos_pre['lineas'][0]['Factura'] = generaCeros($datos_pre['lineas'][0]['Factura'],9);
-    $cabe ='<font face="Courier New" size=2>Transaccion ('.$TC.'): No. '.$datos_pre['lineas'][0]['Serie'].'-'.$datos_pre['lineas'][0]['Factura'].' <br>
-        Autorizacion:<br>'.$datos_pre['lineas'][0]['Autorizacion'].'<br>
-        Fecha: '.date('Y-m-d').' - Hora: </b>'.date('H:m:s').' <br>
-        Cliente: <br>'.$datos_pre['cliente']['Cliente'].'<br>
-        Autorizacion: <br><br>
-        R.U.C/C.I.: '.$datos_pre['cliente']['CI_RUC'].'<br> 
-        Cajero: '.$_SESSION['INGRESO']['Nombre'].' <br>
-        Telefono: '.$datos_pre['cliente']['Telefono'].'<br>
-        Dirección: '.$datos_pre['cliente']['Direccion'].'<br>';
-    $cabe .= "<hr>PRODUCTO/Cant x PVP/TOTAL";
-    $lineas = "<hr>";
-    foreach ($datos_pre['lineas'] as $key => $value) {
-      if($value['Total_IVA']==0)
-      {
-        $lineas.= '<div class="row"><div class="col-sm-12">'.$value['Producto'].' </div></div>';
-      }else
-      {
-        $lineas.= '<div class="row"><div class="col-sm-12">'.$value['Producto'].'</div></div>';
-      }
-      $lineas.='<div class="row"><div class="col-sm-6">'.$value['Cantidad'].' X '.number_format($value['Precio'],2).'</div><div class="col-sm-6" style="text-align: right;">'.number_format($value['Total'],2).'</div></div>';
-    }
-    $totales = "<hr>
-     <table>
-       <tr>
-         <td style='width: 250px;' colspan='3'></td>
-         <td style='text-align: right;'>SUBTOTAL:</td>
-         <td style='text-align: right;'>".number_format($datos_pre['tota'],2) ."</td>
-       </tr>
-       <tr>
-         <td colspan='3'></td>
-         <td style='text-align: right;'>I.V.A 12%:</td>
-         <td style='text-align: right;'>".number_format($datos_pre['iva'],2) ."</td>
-       </tr>
-       <tr>
-         <td colspan='3'></td>
-         <td style='text-align: right;'>TOTAL FACTURA:</td>
-         <td style='text-align: right;'>".number_format($datos_pre['tota'],2)."</td>
-       </tr>
-       <tr>
-         <td colspan='3'></td>
-         <td style='text-align: right;'>EFECTIVO:</td>
-         <td style='text-align: right;'>".number_format($efectivo,2)."</td>
-       </tr>
-       <tr>
-         <td colspan='3'></td>
-         <td style='text-align: right;'>CAMBIO:</td>
-         <td style='text-align: right;'>".number_format($saldo,2)."</td>
-       </tr>
-     </table>";
+    // $cabe ='<pre><font face="Courier New" size=2>Transaccion ('.$TC.'): No. '.$datos_pre['lineas'][0]['Serie'].'-'.$datos_pre['lineas'][0]['Factura'].'
+    //     Autorizacion:<br>'.$datos_pre['lineas'][0]['Autorizacion'].'<br>
+    //     Fecha: '.date('Y-m-d').' - Hora: </b>'.date('H:m:s').' <br>
+    //     Cliente: <br>'.$datos_pre['cliente']['Cliente'].'<br>
+    //     Autorizacion: <br><br>
+    //     R.U.C/C.I.: '.$datos_pre['cliente']['CI_RUC'].'<br> 
+    //     Cajero: '.$_SESSION['INGRESO']['Nombre'].' <br>
+    //     Telefono: '.$datos_pre['cliente']['Telefono'].'<br>
+    //     Dirección: '.$datos_pre['cliente']['Direccion'].'<br>';
+    // $cabe .= "<hr>PRODUCTO/Cant x PVP/TOTAL";
+    // $lineas = "<hr>";
+    // foreach ($datos_pre['lineas'] as $key => $value) {
+    //   if($value['Total_IVA']==0)
+    //   {
+    //     $lineas.= '<div class="row"><div class="col-sm-12">'.$value['Producto'].' </div></div>';
+    //   }else
+    //   {
+    //     $lineas.= '<div class="row"><div class="col-sm-12">'.$value['Producto'].'</div></div>';
+    //   }
+    //   $lineas.='<div class="row"><div class="col-sm-6">'.$value['Cantidad'].' X '.number_format($value['Precio'],2).'</div><div class="col-sm-6" style="text-align: right;">'.number_format($value['Total'],2).'</div></div>';
+    // }
+    // $totales = "<hr>
+    //  <table>
+    //    <tr>
+    //      <td style='width: 250px;' colspan='3'></td>
+    //      <td style='text-align: right;'>SUBTOTAL:</td>
+    //      <td style='text-align: right;'>".number_format($datos_pre['tota'],2) ."</td>
+    //    </tr>
+    //    <tr>
+    //      <td colspan='3'></td>
+    //      <td style='text-align: right;'>I.V.A 12%:</td>
+    //      <td style='text-align: right;'>".number_format($datos_pre['iva'],2) ."</td>
+    //    </tr>
+    //    <tr>
+    //      <td colspan='3'></td>
+    //      <td style='text-align: right;'>TOTAL FACTURA:</td>
+    //      <td style='text-align: right;'>".number_format($datos_pre['tota'],2)."</td>
+    //    </tr>
+    //    <tr>
+    //      <td colspan='3'></td>
+    //      <td style='text-align: right;'>EFECTIVO:</td>
+    //      <td style='text-align: right;'>".number_format($efectivo,2)."</td>
+    //    </tr>
+    //    <tr>
+    //      <td colspan='3'></td>
+    //      <td style='text-align: right;'>CAMBIO:</td>
+    //      <td style='text-align: right;'>".number_format($saldo,2)."</td>
+    //    </tr>
+    //  </table>";
 
-    $datos_extra = "<hr>
-    <table style='width:100%'>
-      <tr><td>Email: ".$datos_pre['cliente']['Email']."</td></tr>
-      <tr>
-        <td style='text-align:center'>Fue un placer atenderle <br>Gracias por su compra<br><br></td>
-      </tr>
-    </table></font>";
+    // $datos_extra = "<hr>
+    // <table style='width:100%'>
+    //   <tr><td>Email: ".$datos_pre['cliente']['Email']."</td></tr>
+    //   <tr>
+    //     <td style='text-align:center'>Fue un placer atenderle <br>Gracias por su compra<br><br></td>
+    //   </tr>
+    // </table></font></pre>";
+
+$cabe = '<pre>
+Transaccion ('.$TC.'): No. '.$datos_pre['lineas'][0]['Serie'].'-'.$datos_pre['lineas'][0]['Factura'].'
+Autorizacion:
+'.$datos_pre['lineas'][0]['Autorizacion'].'
+Fecha: '.date('Y-m-d').' - Hora: </b>'.date('H:m:s').'
+Cliente: <br>'.$datos_pre['cliente']['Cliente'].'
+R.U.C/C.I.: '.$datos_pre['cliente']['CI_RUC'].'
+Cajero: '.$_SESSION['INGRESO']['Nombre'].'
+Telefono: '.$datos_pre['cliente']['Telefono'].'
+Direccion: '.$datos_pre['cliente']['Direccion'].'
+---------------------------------------
+PRODUCTO      /    Cant x PVP   / TOTAL</pre>' ;
+$lineas = "<pre>
+---------------------------------------
+";
+  foreach ($datos_pre['lineas'] as $key => $value) {
+    if($value['Total_IVA']==0)
+    {
+      $lineas.= $value['Producto'];
+    }else
+    {
+      $lineas.= $value['Producto'];
+    }
+    $lineas.='
+'.$value['Cantidad'].' X '.number_format($value['Precio'],2).'                '.number_format($value['Total'],2).'
+';
+   }
+   $lineas.='</pre>';
+   $totales = "<pre>
+                   SUBTOTAL:  ".number_format($datos_pre['tota'],2) ."
+                  I.V.A 12%:   ".number_format($datos_pre['iva'],2) ."
+              TOTAL FACTURA:  ".number_format($datos_pre['tota'],2)."
+                   EFECTIVO:  ".number_format($efectivo,2)."</td>
+                     CAMBIO:   ".number_format($saldo,2)."</td>
+----------------------------------------</pre>";
+$datos_extra = "<pre>
+Email: ".$datos_pre['cliente']['Email']."
+         Fue un placer atenderle 
+          Gracias por su compra
+
+
+
+
+<br>
+<br>
+</pre>";
+
     $html =  $cabe.$lineas.$totales.$datos_extra;
-    $this->pdf->formatoPDFMatricial($html,$parametros,$datos_pre,$datos_empre);
+    if(isset($_GET['pdf']) && $_GET['pdf']=='no')
+    {
+      echo $html;
+    }else
+    {
+
+      $this->pdf->formatoPDFMatricial($html,$parametros,$datos_pre,$datos_empre,true);
+      $archivos =array($datos_pre['lineas'][0]['Autorizacion'].'.pdf');
+      $this->email->enviar_email($archivos,$datos_pre['cliente']['Email'],'Comprobante: '.$datos_pre['lineas'][0]['Autorizacion'],$titulo_correo='COMPROBANTE MIL CAMBIOS',$correo_apoyo='ejfc19omoshiroi@gmail.com',$nombre='mil cambios',$HTML=false);
+
+     $this->pdf->formatoPDFMatricial($html,$parametros,$datos_pre,$datos_empre);
+    }
     //crea pdf para enviar por corre
-    $this->pdf->formatoPDFMatricial($html,$parametros,$datos_pre,$datos_empre,true);
+    // $this->pdf->formatoPDFMatricial($html,$parametros,$datos_pre,$datos_empre,true);
     // $archivos =array($datos_pre['lineas'][0]['Autorizacion'].'pdf');
-    // $this->email->enviar_email($archivos,$datos_pre['cliente']['Email'],'Comprobante',$titulo_correo,$correo_apooyo,$nombre,$EMAIL_CONEXION,$EMAIL_CONTRASEÑA,$HTML=false,$gmial=0)
+    // $this->email->enviar_email($archivos,$datos_pre['cliente']['Email'],'Comprobante',$titulo_correo='aaaa',$correo_apooyo='ejfc19omoshiroi@gmail.com',$nombre='dasdas',$HTML=false);
   }
 
   function limpiar_grid()

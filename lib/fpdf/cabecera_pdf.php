@@ -208,6 +208,7 @@ class cabecera_pdf
 
 	function formatoPDFMatricial($HTML,$parametros,$datos_pre,$datos_empresa,$descagar=false)
 	{	
+		// $orientation='P',$unit='mm', array(45,350)
 		$pdf = new FPDF();
 		$pdf->setMargins(2,15, 11.7);
 		$pdf->SetFont('Courier','',8);

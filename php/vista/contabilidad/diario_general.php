@@ -104,7 +104,7 @@ require_once("panel.php");
       data:  {parametros:parametros},
       url:   '../controlador/contabilidad/diario_generalC.php?consultar_libro=true',
       type:  'post',
-      //dataType: 'json',
+      dataType: 'json',
       beforeSend: function () {   
            var spiner = '<div class="text-center"><img src="../../img/gif/proce.gif" width="100" height="100"></div>'     
          $('#tabla_').html(spiner);
@@ -147,7 +147,7 @@ require_once("panel.php");
       data:  {parametros:parametros},
       url:   '../controlador/contabilidad/diario_generalC.php?consultar_submodulo=true',
       type:  'post',
-      //dataType: 'json',
+      dataType: 'json',
       beforeSend: function () {   
            var spiner = '<div class="text-center"><img src="../../img/gif/proce.gif" width="100" height="100"></div>'     
          $('#tabla_submodulo').html(spiner);

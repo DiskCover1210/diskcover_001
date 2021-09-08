@@ -2841,6 +2841,38 @@ function excel_file_mayor_auxi($re,$sub,$ti=null,$camne=null,$b=null,$base=null)
 		$je1=$je2;
 		$je3=$je2;
 		$je3++;
+			$estilo_subcabecera = array('font' => ['bold' => true,],
+								'alignment' => ['horizontal' => Alignment::HORIZONTAL_LEFT,],
+								'borders' => ['top' => ['borderStyle' => Border::BORDER_THIN,],],
+								'fill' => ['fillType' => Fill::FILL_GRADIENT_LINEAR,'rotation' => 90,'startColor' => ['argb' => '0086c7',],
+								'endColor' => ['argb' => 'FFFFFFFF',],],
+								);
+		$estilo_cabecera = array(
+			
+					'font' => [
+						'bold' => true,
+					],
+					'alignment' => [
+						'horizontal' => Alignment::HORIZONTAL_CENTER,
+					],
+					'borders' => [
+						'top' => [
+							'borderStyle' => Border::BORDER_THIN,
+						],
+					],
+					'fill' => [
+						'fillType' => Fill::FILL_GRADIENT_LINEAR,
+						'rotation' => 90,
+						'startColor' => [
+							/*'argb' => 'FFA0A0A0',*/
+							'argb' => '0086c7',
+						],
+						'endColor' => [
+							'argb' => 'FFFFFFFF',
+						],
+					],
+				
+		);
 		
 		$spreadsheet->getActiveSheet()->getStyle('A2:'.$je3.'2')->applyFromArray($estilo_cabecera);
 		//redimencionar
@@ -3269,73 +3301,73 @@ function excel_file_mayor_auxi($re,$sub,$ti=null,$camne=null,$b=null,$base=null)
 
 		         $debe=0; $haber=0;$saldo=0;
 			  			$mes = $value['Fecha']->format('n');
-				        if($fecha == '')
-				          {
-					          $fecha = $value['Fecha']->format('Y-m-d');
-				          }else
-				          {
-					         if($fecha == $value['Fecha']->format('Y-m-d'))
-					         {
-						         $fecha ='';
-					         }else
-					         {
-						         $fecha = $value['Fecha']->format('Y-m-d');
-				
-					         }
-				          }
+		        if($fecha == '')
+		          {
+			          $fecha = $value['Fecha']->format('Y-m-d');
+		          }else
+		          {
+			         if($fecha == $value['Fecha']->format('Y-m-d'))
+			         {
+				         $fecha ='';
+			         }else
+			         {
+				         $fecha = $value['Fecha']->format('Y-m-d');
+		
+			         }
+		          }
 
-			    $spreadsheet->getActiveSheet()->setCellValue('A'.$ie, $fecha)->getColumnDimension('A')->setWidth(11);
-			    $spreadsheet->getActiveSheet()->setCellValue('B'.$ie, $value['TP'])->getColumnDimension('B')->setWidth(4);
-			    $spreadsheet->getActiveSheet()->setCellValue('C'.$ie, strval($value['Numero']))->getColumnDimension('C')->setWidth(11);
-			    $spreadsheet->getActiveSheet()->setCellValue('D'.$ie, utf8_decode($value['Cliente']))->getColumnDimension('D')->setWidth(44);
-			    $spreadsheet->getActiveSheet()->getStyle('D')->getAlignment()->setWrapText(true);
-			    $spreadsheet->getActiveSheet()->setCellValue('E'.$ie,'')->getColumnDimension('E')->setWidth(23);
-			    $spreadsheet->getActiveSheet()->setCellValue('F'.$ie,'')->getColumnDimension('F')->setWidth(23);			
-			    $spreadsheet->getActiveSheet()->setCellValue('G'.$ie,'')->getColumnDimension('G')->setWidth(23);
-			    $spreadsheet->getActiveSheet()->setCellValue('H'.$ie,'')->getColumnDimension('H')->setWidth(23);			    
-			    $spreadsheet->getActiveSheet()->getStyle('A'.$ie.':H'.$ie)->applyFromArray($border);
-			     $ie = $ie+1;				
+				    $spreadsheet->getActiveSheet()->setCellValue('A'.$ie, $fecha)->getColumnDimension('A')->setWidth(11);
+				    $spreadsheet->getActiveSheet()->setCellValue('B'.$ie, $value['TP'])->getColumnDimension('B')->setWidth(4);
+				    $spreadsheet->getActiveSheet()->setCellValue('C'.$ie, strval($value['Numero']))->getColumnDimension('C')->setWidth(11);
+				    $spreadsheet->getActiveSheet()->setCellValue('D'.$ie, utf8_decode($value['Cliente']))->getColumnDimension('D')->setWidth(44);
+				    $spreadsheet->getActiveSheet()->getStyle('D')->getAlignment()->setWrapText(true);
+				    $spreadsheet->getActiveSheet()->setCellValue('E'.$ie,'')->getColumnDimension('E')->setWidth(23);
+				    $spreadsheet->getActiveSheet()->setCellValue('F'.$ie,'')->getColumnDimension('F')->setWidth(23);			
+				    $spreadsheet->getActiveSheet()->setCellValue('G'.$ie,'')->getColumnDimension('G')->setWidth(23);
+				    $spreadsheet->getActiveSheet()->setCellValue('H'.$ie,'')->getColumnDimension('H')->setWidth(23);			    
+				    $spreadsheet->getActiveSheet()->getStyle('A'.$ie.':H'.$ie)->applyFromArray($border);
+				     $ie = $ie+1;				
 
-			    $spreadsheet->getActiveSheet()->setCellValue('A'.$ie, '')->getColumnDimension('A')->setWidth(11);
-			    $spreadsheet->getActiveSheet()->setCellValue('B'.$ie, '')->getColumnDimension('B')->setWidth(4);
-			    $spreadsheet->getActiveSheet()->setCellValue('C'.$ie,'')->getColumnDimension('C')->setWidth(11);
-			    $spreadsheet->getActiveSheet()->setCellValue('D'.$ie, $value['Concepto'])->getColumnDimension('D')->setWidth(44);
-			    $spreadsheet->getActiveSheet()->getStyle('D')->getAlignment()->setWrapText(true);
-			    $spreadsheet->getActiveSheet()->setCellValue('E'.$ie,strval($value['Parcial_ME']))->getColumnDimension('E')->setWidth(23);
-			    $spreadsheet->getActiveSheet()->setCellValue('F'.$ie,strval($value['Debe']))->getColumnDimension('F')->setWidth(23);			
-			    $spreadsheet->getActiveSheet()->setCellValue('G'.$ie,strval($value['Haber']))->getColumnDimension('G')->setWidth(23);
-			    $spreadsheet->getActiveSheet()->setCellValue('H'.$ie,strval($value['Saldo']))->getColumnDimension('H')->setWidth(23);
-			    $spreadsheet->getActiveSheet()->getStyle('A'.$ie.':H'.$ie)->applyFromArray($border);	
-			     $ie = $ie+1;
-			     foreach ($sub as $key => $value1) {
-			     	if($value1['Numero'] == $value['Numero'])
-		        	{
-		        		if($value1['Debitos'] == '.0000')
-		        		{
-		        			$p='R';
-		        			$parcial = $value1['Creditos'];
+				    $spreadsheet->getActiveSheet()->setCellValue('A'.$ie, '')->getColumnDimension('A')->setWidth(11);
+				    $spreadsheet->getActiveSheet()->setCellValue('B'.$ie, '')->getColumnDimension('B')->setWidth(4);
+				    $spreadsheet->getActiveSheet()->setCellValue('C'.$ie,'')->getColumnDimension('C')->setWidth(11);
+				    $spreadsheet->getActiveSheet()->setCellValue('D'.$ie, $value['Concepto'])->getColumnDimension('D')->setWidth(44);
+				    $spreadsheet->getActiveSheet()->getStyle('D')->getAlignment()->setWrapText(true);
+				    $spreadsheet->getActiveSheet()->setCellValue('E'.$ie,strval($value['Parcial_ME']))->getColumnDimension('E')->setWidth(23);
+				    $spreadsheet->getActiveSheet()->setCellValue('F'.$ie,strval($value['Debe']))->getColumnDimension('F')->setWidth(23);			
+				    $spreadsheet->getActiveSheet()->setCellValue('G'.$ie,strval($value['Haber']))->getColumnDimension('G')->setWidth(23);
+				    $spreadsheet->getActiveSheet()->setCellValue('H'.$ie,strval($value['Saldo']))->getColumnDimension('H')->setWidth(23);
+				    $spreadsheet->getActiveSheet()->getStyle('A'.$ie.':H'.$ie)->applyFromArray($border);	
+				     $ie = $ie+1;
+				     foreach ($sub as $key => $value1) {
+				     	if($value1['Numero'] == $value['Numero'])
+			        	{
+			        		if($value1['Debitos'] == '.0000')
+			        		{
+			        			$p='R';
+			        			$parcial = $value1['Creditos'];
 
-			               $spreadsheet->getActiveSheet()->getStyle('E'.$ie)->applyFromArray($border_sub2);	
-		        		}else
-		        		{
-		        			$p='L';
-		        			$parcial = $value1['Debitos'];
+				               $spreadsheet->getActiveSheet()->getStyle('E'.$ie)->applyFromArray($border_sub2);	
+			        		}else
+			        		{
+			        			$p='L';
+			        			$parcial = $value1['Debitos'];
 
-			               $spreadsheet->getActiveSheet()->getStyle('E'.$ie)->applyFromArray($border_sub1);	
-		        		}
-		                   $spreadsheet->getActiveSheet()->setCellValue('A'.$ie, '')->getColumnDimension('A')->setWidth(11);
-			               $spreadsheet->getActiveSheet()->setCellValue('B'.$ie, '')->getColumnDimension('B')->setWidth(4);
-			               $spreadsheet->getActiveSheet()->setCellValue('C'.$ie,'')->getColumnDimension('C')->setWidth(11);
-			               $spreadsheet->getActiveSheet()->setCellValue('D'.$ie, '*'.$value1['Cliente'])->getColumnDimension('D')->setWidth(44);
-			               $spreadsheet->getActiveSheet()->getStyle('D')->getAlignment()->setWrapText(true);
-			               $spreadsheet->getActiveSheet()->setCellValue('E'.$ie,strval($parcial))->getColumnDimension('E')->setWidth(23);
-			               $spreadsheet->getActiveSheet()->setCellValue('F'.$ie,'')->getColumnDimension('F')->setWidth(23);			
-			               $spreadsheet->getActiveSheet()->setCellValue('G'.$ie,'')->getColumnDimension('G')->setWidth(23);
-			               $spreadsheet->getActiveSheet()->setCellValue('H'.$ie,'')->getColumnDimension('H')->setWidth(23);
-			               $spreadsheet->getActiveSheet()->getStyle('A'.$ie.':H'.$ie)->applyFromArray($border_sub);	
-		                 $ie = $ie+1;
-		        	}
-			     }
+				               $spreadsheet->getActiveSheet()->getStyle('E'.$ie)->applyFromArray($border_sub1);	
+			        		}
+			                   $spreadsheet->getActiveSheet()->setCellValue('A'.$ie, '')->getColumnDimension('A')->setWidth(11);
+				               $spreadsheet->getActiveSheet()->setCellValue('B'.$ie, '')->getColumnDimension('B')->setWidth(4);
+				               $spreadsheet->getActiveSheet()->setCellValue('C'.$ie,'')->getColumnDimension('C')->setWidth(11);
+				               $spreadsheet->getActiveSheet()->setCellValue('D'.$ie, '*'.$value1['Cliente'])->getColumnDimension('D')->setWidth(44);
+				               $spreadsheet->getActiveSheet()->getStyle('D')->getAlignment()->setWrapText(true);
+				               $spreadsheet->getActiveSheet()->setCellValue('E'.$ie,strval($parcial))->getColumnDimension('E')->setWidth(23);
+				               $spreadsheet->getActiveSheet()->setCellValue('F'.$ie,'')->getColumnDimension('F')->setWidth(23);			
+				               $spreadsheet->getActiveSheet()->setCellValue('G'.$ie,'')->getColumnDimension('G')->setWidth(23);
+				               $spreadsheet->getActiveSheet()->setCellValue('H'.$ie,'')->getColumnDimension('H')->setWidth(23);
+				               $spreadsheet->getActiveSheet()->getStyle('A'.$ie.':H'.$ie)->applyFromArray($border_sub);	
+			                 $ie = $ie+1;
+			        	}
+				     }
 			     $fecha = $value['Fecha']->format('Y-m-d'); 
 
 			             $debe = floatval($value['Debe']) + $debe;

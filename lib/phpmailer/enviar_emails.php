@@ -20,52 +20,105 @@ class enviar_emails
 	}
 
 
-	function enviar_email($archivos=false,$to_correo,$cuerpo_correo,$titulo_correo,$correo_apooyo,$nombre,$EMAIL_CONEXION,$EMAIL_CONTRASEÑA,$HTML=false,$gmial=0)
-	{
+function enviar_email($archivos=false,$to_correo,$cuerpo_correo,$titulo_correo,$correo_apoyo,$nombre,$HTML=false,$gmial=0)
+{
 
     // print_r($_SESSION['INGRESO']);die();
-		$to =explode(',', $to_correo);
+    $to =explode(',', $to_correo);
      foreach ($to as $key => $value) {
-  		 $mail = new PHPMailer();
-         //Server settings
-         //$mail->SMTPDebug = SMTP::DEBUG_SERVER;                      //Enable verbose debug output
-         $mail->isSMTP();                                            //Send using SMTP
-         $mail->Host       =  $_SESSION['INGRESO']['smtp_Servidor'];// 'mail.diskcoversystem.com';            //Set the SMTP server to send through
-         $mail->SMTPAuth   = true;                                   //Enable SMTP authentication
-         $mail->SMTPSecure = $_SESSION['INGRESO']['smtp_Secure'];        //Enable TLS encryption; `PHPMailer::ENCRYPTION_SMTPS` encouraged
-         $mail->Port     =$_SESSION['INGRESO']['smtp_Puerto'];                                  //TCP port to connect to, use 465 for   $mail->Username = $EMAIL_CONEXION;  //EMAIL_CONEXION DE TABLA EMPRESA //  matriculas@diskcoversystem.com
-	     $mail->Password = $EMAIL_CONTRASEÑA; //EMAIL_CONTRASEÑA DE LA TABLA EMPRESA  //Dlcjvl1210@Matric
-	     $mail->setFrom($correo_apooyo,$nombre);
+     	if($value!='.')
+     	{
+	         $mail = new PHPMailer();
+	         // $mail->SMTPDebug = SMTP::DEBUG_SERVER;        //respuesta del servidor              
+	         $mail->isSMTP();    
+	         $mail->Host       =  $_SESSION['INGRESO']['smtp_Servidor'];
+	         $mail->SMTPAuth   = true; 
+	         $mail->Username = $_SESSION['INGRESO']['Email_Conexion'];
+	         $mail->Password =  $_SESSION['INGRESO']['Email_Contrasena'];
+	         if($_SESSION['INGRESO']['smtp_Secure']==0)
+	         {
+	           $mail->SMTPSecure = 'ssl';       
+	           $mail->Port     =465;
+	         }else
+	         {                                 
+	           $mail->SMTPSecure ='tls';      
+	           $mail->Port     =587;          
+	         }
+	         $mail->setFrom($correo_apoyo,$nombre);
+	         $mail->addAddress($value);
+	         $mail->Subject = $titulo_correo;
+	         if($HTML)
+	         {
+	          $mail->isHTML(true);
+	         }
+		     $mail->Body = $cuerpo_correo; // Mensaje a enviar
+	         if($archivos)
+	         {
 
-         $mail->addAddress($value);
-         $mail->Subject = $titulo_correo;
-         if($HTML)
-         {
-          $mail->isHTML(true);
-         }
-         $mail->Body = $cuerpo_correo; // Mensaje a enviar
+	          foreach ($archivos as $key => $value) {
+	           if(file_exists(dirname(__DIR__,2).'/php/vista/TEMP/'.$value))
+	            {                   
+	              $mail->AddAttachment(dirname(__DIR__,2).'/php/vista/TEMP/'.$value);
+	            }          
+	          }         
+	        }
+	          if (!$mail->send()) 
+	          {
+	            $respuesta = false;
+	          }
+   		}
+	}
+
+ 
+ 
+}
+
+	// function enviar_email($archivos=false,$to_correo,$cuerpo_correo,$titulo_correo,$correo_apooyo,$nombre,$EMAIL_CONEXION,$EMAIL_CONTRASEÑA,$HTML=false,$gmial=0)
+	// {
+
+ //    // print_r($_SESSION['INGRESO']);die();
+	// 	$to =explode(',', $to_correo);
+ //     foreach ($to as $key => $value) {
+ //  		 $mail = new PHPMailer();
+ //         //Server settings
+ //         //$mail->SMTPDebug = SMTP::DEBUG_SERVER;                      //Enable verbose debug output
+ //         $mail->isSMTP();                                            //Send using SMTP
+ //         $mail->Host       =  $_SESSION['INGRESO']['smtp_Servidor'];// 'mail.diskcoversystem.com';            //Set the SMTP server to send through
+ //         $mail->SMTPAuth   = true;                                   //Enable SMTP authentication
+ //         $mail->SMTPSecure = $_SESSION['INGRESO']['smtp_Secure'];        //Enable TLS encryption; `PHPMailer::ENCRYPTION_SMTPS` encouraged
+ //         $mail->Port     =$_SESSION['INGRESO']['smtp_Puerto'];                                  //TCP port to connect to, use 465 for   $mail->Username = $EMAIL_CONEXION;  //EMAIL_CONEXION DE TABLA EMPRESA //  matriculas@diskcoversystem.com
+	//      $mail->Password = $EMAIL_CONTRASEÑA; //EMAIL_CONTRASEÑA DE LA TABLA EMPRESA  //Dlcjvl1210@Matric
+	//      $mail->setFrom($correo_apooyo,$nombre);
+
+ //         $mail->addAddress($value);
+ //         $mail->Subject = $titulo_correo;
+ //         if($HTML)
+ //         {
+ //          $mail->isHTML(true);
+ //         }
+ //         $mail->Body = $cuerpo_correo; // Mensaje a enviar
 
 
-         if($archivos)
-         {
-          foreach ($archivos as $key => $value) {
-           if(file_exists('../../php/vista/TEMP/'.$value))
-            {
-          //		print_r('../vista/TEMP/'.$value);
+ //         if($archivos)
+ //         {
+ //          foreach ($archivos as $key => $value) {
+ //           if(file_exists('../../php/vista/TEMP/'.$value))
+ //            {
+ //          //		print_r('../vista/TEMP/'.$value);
           
-         	  $mail->AddAttachment('../../php/vista/TEMP/'.$value);
-             }          
-          }         
-        }
-          if (!$mail->send()) 
-          {
-          	$respuesta = false;
-     	    }
-    }
+ //         	  $mail->AddAttachment('../../php/vista/TEMP/'.$value);
+ //             }          
+ //          }         
+ //        }
+ //          if (!$mail->send()) 
+ //          {
+ //          	$respuesta = false;
+ //     	    }
+ //    }
 
  
  
-  }
+ //  }
 /*
   function enviar_credenciales($archivos=false,$to_correo,$cuerpo_correo,$titulo_correo,$correo_apooyo,$nombre,$EMAIL_CONEXION,$EMAIL_CONTRASEÑA,$HTML=false,$gmail=0)
   {

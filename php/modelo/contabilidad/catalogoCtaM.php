@@ -104,7 +104,6 @@ class catalogoCtaM
 
 	function buscar_cuenta($cuenta,$item=false)
 	{
-		$cid = $this->conn;
 		$datos =array();
 		$sql = "SELECT Codigo,Cuenta from Catalogo_Cuentas WHERE Periodo ='".$_SESSION['INGRESO']['periodo']."' AND Codigo+''+Cuenta LIKE '%".$cuenta."%'";
 		if($item)
@@ -114,7 +113,8 @@ class catalogoCtaM
 		{
 			$sql.=" and Item ='".$_SESSION['INGRESO']['item']."'";
 		}
-		$dato = $this->conn->datos($sql);
+		$datos = $this->conn->datos($sql);
+		// print_r($dato);die();
 	  return $datos;
 
 	}

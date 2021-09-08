@@ -67,7 +67,7 @@
 			data:  {parametros:parametros},
 			url:   '../controlador/contabilidad/mayor_auxiliarC.php?consultar=true',
 			type:  'post',
-			//dataType: 'json',
+			dataType: 'json',
 			beforeSend: function () {		
 			  //    var spiner = '<div class="text-center"><img src="../../img/gif/proce.gif" width="100" height="100"></div>'			
 				 // $('#tabla_').html(spiner);
@@ -311,7 +311,7 @@
 	  	    <div class="tab-content" style="background-color:#E7F5FF">
 	  	    	<div id="home" class="tab-pane fade in active">
 	  	    			
-	  	    	   <div class="table-responsive" id="tabla_" style="overflow-y: scroll; height:450px; width: auto;">
+	  	    	   <div class="table-responsive" id="tabla_" style=" height:600px;">
 	  	    	   		  	    	   	
 	  	    	   </div>
 	  	    	 </div>		  	    	  	    	

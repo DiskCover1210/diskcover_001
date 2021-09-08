@@ -402,18 +402,22 @@ function aceptar(){
                   }else if(response.respuesta == '1')
                   {
                     limpiar_grid();
+                     serie = DCLinea.split(" ");
+                     cambio = $("#cambio").val();
+                     efectivo = $("#efectivo").val();  
+                     var url = '../controlador/facturacion/divisasC.php?ticketPDF=true&fac='+TextFacturaNo+'&serie='+serie[1]+'&CI='+TextCI+'&TC='+serie[0]+'&efectivo='+efectivo+'&saldo='+cambio;
+                     imprimir(url); 
+
                     Swal.fire({
                       type: 'success',
                       title: 'Este documento electronico fue autorizado',
                       text: ''
                     }).then(() => {
-                      serie = DCLinea.split(" ");
-                      cambio = $("#cambio").val();
-                      efectivo = $("#efectivo").val();
-                      var url = '../controlador/facturacion/divisasC.php?ticketPDF=true&fac='+TextFacturaNo+'&serie='+serie[1]+'&CI='+TextCI+'&TC='+serie[0]+'&efectivo='+efectivo+'&saldo='+cambio;
-                      window.open(url,'_blank');
+                                      
+                      // var url = '../controlador/facturacion/divisasC.php?ticketPDF=true&fac='+TextFacturaNo+'&serie='+serie[1]+'&CI='+TextCI+'&TC='+serie[0]+'&efectivo='+efectivo+'&saldo='+cambio;
+                      window.open(url,'_blank');                      
                       location.reload();
-                      //imprimir_ticket_fac(0,TextCI,TextFacturaNo,serie[1]);
+                      // imprimir_ticket_fac(0,TextCI,TextFacturaNo,serie[1]);
                     });
                   }else if(response.respuesta == '2')
                   {
@@ -576,6 +580,15 @@ function aceptar(){
     });
   }
 
+  function imprimir(url)
+  {
+    // var url = '../controlador/facturacion/divisasC.php?ticketPDF=true&fac=116&serie=001001&CI=1717098667&TC=FA&efectivo=0.0000&saldo=0.00&pdf=no';
+     var html='<iframe style="width:100%; height:50vw;" src="'+url+'&pdf=no" frameborder="0" allowfullscreen id="ticket"></iframe>';
+    $('#contenido').html(html);
+    document.getElementById('ticket').contentWindow.print();
+                     
+  }
+
 
 </script>
 <div class="container" id="container1">
@@ -584,6 +597,9 @@ function aceptar(){
       <div class="panel-body">
         <div class="row">
           <div class="col-sm-2">
+            <div id="contenido" style="display: none;">
+              
+            </div>
             <label>Fecha</label>
             <input type="date" class="form-control input-sm" name="fecha" id="fecha" value="<?php echo date('Y-m-d'); ?>" onchange="numeroFactura();catalogoLineas();">
           </div>

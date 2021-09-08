@@ -8,7 +8,8 @@ include(dirname(__DIR__,2).'/db/variables_globales.php');//
  	function __construct()
  	{
 
-		$this->conn = cone_ajax();
+		// $this->conn = cone_ajax();
+    $this->conn = new db();
 
  	}
   function cuentas_($ini,$fin)
@@ -26,15 +27,8 @@ include(dirname(__DIR__,2).'/db/variables_globales.php');//
           AND Periodo = '".$_SESSION['INGRESO']['periodo']."' 
           ORDER BY Codigo ";
 
-        $stmt = sqlsrv_query($cid, $sql);
-	    $result = array();	
-	   while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_ASSOC) ) 
-	   {
-		$result[] = $row;
-	   }
-
-  cerrarSQLSERVERFUN($cid);
-	   return $result;
+          $result = $this->conn->datos($sql);
+           return $result;
 
   }
 
@@ -56,17 +50,9 @@ include(dirname(__DIR__,2).'/db/variables_globales.php');//
         AND Item = '".$_SESSION['INGRESO']['item']."' 
         AND Periodo = '".$_SESSION['INGRESO']['periodo']."' 
         ORDER BY Codigo ";
-        print($sql);
-
-        $stmt = sqlsrv_query($cid, $sql);
-	    $result = array();	
-	   while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_ASSOC) ) 
-	   {
-		$result[] = $row;
-	   }
-
-  cerrarSQLSERVERFUN($cid);
-	   return $result;
+        // print($sql);
+        $result = $this->conn->datos($sql);
+           return $result;
 
   }
 
@@ -131,19 +117,9 @@ include(dirname(__DIR__,2).'/db/variables_globales.php');//
  // print_r($DCAgencia);print_r($CheckAgencia);
   // print_r($sql);
 // die();
-    $stmt = sqlsrv_query($cid, $sql);
-	   if( $stmt === false)  
-	   {  
-		 echo "Error en consulta PA.\n";  
-		 return '';
-		 die( print_r( sqlsrv_errors(), true));  
-	   }
+    $tbl = grilla_generica_new($sql,'Transacciones As T,Comprobantes As C,Clientes As Cl ','tbl_may',false,$botones=false,$check=false,$imagen=false,$border=1,$sombreado=1,$head_fijo=1,500);
 
-	  
-        $tabla = grilla_generica($stmt,null,NULL,'1',null,null,null,true);
-
-  cerrarSQLSERVERFUN($cid);
-        return $tabla;
+       return $tbl;
   
  }
 
@@ -207,22 +183,8 @@ function consultar_cuentas_datos($OpcUno,$PorConceptos,$cuentaini,$cuentafin,$de
  // print_r($DCAgencia);print_r($CheckAgencia);
 //   print_r($sql);
 // die();
-    $stmt = sqlsrv_query($cid, $sql);
-	   if( $stmt === false)  
-	   {  
-		 echo "Error en consulta PA.\n";  
-		 return '';
-		 die( print_r( sqlsrv_errors(), true));  
-	   }
-
-	    $result = array();	
-	   while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_ASSOC) ) 
-	   {
-		$result[] = $row;
-	   }
-
-  //cerrarSQLSERVERFUN($cid);
-	   return $result;
+   $result = $this->conn->datos($sql);
+           return $result;
   
  }
 
@@ -286,22 +248,10 @@ function consultar_cuentas_datos($OpcUno,$PorConceptos,$cuentaini,$cuentafin,$de
        AND T.Periodo = C.Periodo 
        AND T.Codigo = C.Codigo 
        ORDER BY T.Fecha,T.TP,T.Numero,T.Cta,T.Factura ";
+       // print_r($sql);die();
 
-  $stmt = sqlsrv_query($cid, $sql);
-     if( $stmt === false)  
-     {  
-     echo "Error en consulta PA.\n";  
-     return '';
-     die( print_r( sqlsrv_errors(), true));  
-     }
-    $result = array();
-    while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_ASSOC) ) 
-     {
-       $result[] = $row;
-     }
-
-  //cerrarSQLSERVERFUN($cid);
-     return $result;
+      $result = $this->conn->datos($sql);
+           return $result;
  }
  function consulta_totales($OpcUno,$PorConceptos,$cuentaini,$cuentafin,$desde,$hasta,$DCCtas,$CheckAgencia,$DCAgencia,$Checkusu,$DCUsuario)
  {
@@ -348,21 +298,8 @@ function consultar_cuentas_datos($OpcUno,$PorConceptos,$cuentaini,$cuentafin,$de
   $sql.="GROUP BY T.Cta ORDER BY T.Cta ";
 // print_r($sql);
  //die();
-	$stmt = sqlsrv_query($cid, $sql);
-     if( $stmt === false)  
-     {  
-     echo "Error en consulta PA.\n";  
-     return '';
-     die( print_r( sqlsrv_errors(), true));  
-     }
-
-    $result = array();
-    while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_ASSOC) ) 
-     {
-          $result[] = $row; 
-     }
-
-    return $result;
+	$result = $this->conn->datos($sql);
+           return $result;
  }
 
  function exportar_excel($parametros,$sub)
@@ -380,7 +317,8 @@ function consultar_cuentas_datos($OpcUno,$PorConceptos,$cuentaini,$cuentafin,$de
   	   }
   	   
 	//print_r($result);
- 	exportar_excel_mayor_auxi($result,$submodulo,'Mayor Auxiliar',null,null,null);    
+ 	// exportar_excel_mayor_auxi($result,$submodulo,'Mayor Auxiliar',null,null,null);  
+  excel_file_mayor_auxi($result,$submodulo,'Mayor Auxiliar',null,null,null);  
   }
  
 

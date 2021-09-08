@@ -1721,10 +1721,10 @@ function exportar_excel_libro_g($re,$stmt,$ti=null,$camne=null,$b=null,$base=nul
 {
 	excel_file_libro($re,$stmt,$ti,$camne,$b,$base); 
 }
-function exportar_excel_mayor_auxi($re,$sub,$ti=null,$camne=null,$b=null,$base=null)
-{
-	excel_file_mayor_auxi($re,$sub,$ti,$camne,$b,$base); 
-}
+// function exportar_excel_mayor_auxi($re,$sub,$ti=null,$camne=null,$b=null,$base=null)
+// {
+// 	excel_file_mayor_auxi($re,$sub,$ti,$camne,$b,$base); 
+// }
 function exportar_excel_libro_banco($re,$ti=null,$camne=null,$b=null,$base=null)
 {
 	excel_file_libro_banco($re,$ti,$camne,$b,$base); 
@@ -6405,13 +6405,19 @@ function grilla_generica_new($sql,$tabla,$id_tabla=false,$titulo=false,$botones=
     $id_tabla = 'datos_t';
   }
 
+    // print_r($sql);die();
   $pos = strpos($sql,'UNION');
 if ($pos === false) {
-    $sql2 = " SELECT COUNT(*) as 'reg' FROM ".$tabla;
+  $unit = explode(',', $tabla);
+
+    // print_r($sql);die();
+    $sql2 = " SELECT COUNT_BIG(*) as 'reg' FROM ".$unit[0];
+    // print_r($sql2);die();
     $datos2 =  $conn->datos($sql2);
     $total_registros = $datos2[0]['reg']; 
 } else {
     $sql2 = $sql;
+    // print_r($sql2);die();
     $datos2 =  $conn->datos($sql2);
     $tot_reg = count($datos2);
     $total_registros = $tot_reg;

@@ -20,13 +20,13 @@ if(isset($_GET['consultar_libro']))
 {
 	$parametros = $_POST['parametros'];
 	$controlador = new diario_generalC();
-	echo json_decode($controlador->cargar_consulta($parametros));
+	echo json_encode($controlador->cargar_consulta($parametros));
 }
 if(isset($_GET['consultar_submodulo']))
 {
 	$parametros = $_POST['parametros'];
 	$controlador = new diario_generalC();
-	echo json_decode($controlador->cargar_submodulo($parametros));
+	echo json_encode($controlador->cargar_submodulo($parametros));
 }
 if(isset($_GET['consultar_libro_1']))
 {
@@ -261,7 +261,7 @@ class diario_generalC
 	function reporte_libro_1($parametros)
 	{
 		$titulo = 'D I A R I O   G E N E R A L ';
-		$sizetable =8;
+		$sizetable =7;
 		$mostrar = TRUE;
 		$Fechaini = str_replace('-','',$parametros['Fechaini']);
 		$Fechafin = str_replace('-','',$parametros['Fechafin']);
@@ -287,7 +287,7 @@ class diario_generalC
 		$total_debe= 0;
 		$total_haber = 0;	
 		$tablaHTML = array();
-		$tablaHTML[0]['medidas']=array(20,49,22,55,23,23);
+		$tablaHTML[0]['medidas']=array(20,49,35,50,18,18);
 		$tablaHTML[0]['alineado']=array('L','L','L','L','R','R');
 		$tablaHTML[0]['datos']=array('COMPROB','CONCEPTO','CODIGO','CUENTA','DEBE','HABER');
 		$tablaHTML[0]['estilo']='BI';
@@ -315,6 +315,8 @@ class diario_generalC
 
 			$tablaHTML[$pos]['medidas']=$tablaHTML[0]['medidas'];
 		    $tablaHTML[$pos]['alineado']=$tablaHTML[0]['alineado'];
+		    // $tablaHTML[$pos]['borde'] = '1';
+
 			foreach ($datos as $key => $value) {
 				if($value['Numero'] == $value1)
 				{
@@ -380,7 +382,7 @@ class diario_generalC
 	function reporte_libro_2($parametros)
 	{
 		$titulo = 'L I B R O   D I A R I O';
-		$sizetable = 9;
+		$sizetable = 8;
 		$mostrar = TRUE;
 		$Fechaini = str_replace('-','',$parametros['Fechaini']);
 		$Fechafin = str_replace('-','',$parametros['Fechafin']);
@@ -453,10 +455,10 @@ class diario_generalC
 			{
 
 			$temp = $value['Numero'];
-		   		$tablaHTML.= '<table  BORDER="TOP"><tr><td width="70" BORDER1="LEFT-TOP"><b>Fecha:</b></td><td width="90"><i>'.$value['Fecha']->format('Y-m-d').'</i></td><td width="90"><b>Elaborado:</b></td><td width="160"><i>'.$value['CodigoU'].'</i></td><td width="30"><b>TP:</b></td><td width="50"><i>'.$value['TP'].'</i></td><td width="100"><b>Numero No:</b></td><td  BORDER1="RIGHT-TOP"><i>'.$value['Numero'].'</i></td></tr></table><table BORDER="BUTTON"><tr><td width="90"  BORDER1="LEFT-BUTTON"><b>Concepto:</b></td><td width="660" BORDER1="RIGHT-BUTTON"><i>'.$value['Concepto'].'</i></td></tr></table><table BORDER="1"><tr><td width="90"><b>Codigo</b></td><td width="390"><b>Cuenta</b></td><td width="90"><b>Parcial_ME</b></td><td width="90"><b>DEBE</b></td><td width="90"><b>HABER</b></td></tr></table><table BORDER="LEFT-RIGHT"><tr><td width="90"><i>'.$value['Cta'].'</i></td><td width="390"><i>'.$value['Cuenta']."\n".'</i></td><td width="90" ALIGN="RIGHT"><i>'.$par_me.'</i></td><td width="90" ALIGN="RIGHT"><i>'.$deb.'</i></td><td width="90" ALIGN="RIGHT"><i>'.$hab.'</i></td></tr></table>';
+		   		$tablaHTML.= '<table  BORDER="TOP"><tr><td width="70" BORDER1="LEFT-TOP"><b>Fecha:</b></td><td width="90"><i>'.$value['Fecha']->format('Y-m-d').'</i></td><td width="90"><b>Elaborado:</b></td><td width="160"><i>'.$value['CodigoU'].'</i></td><td width="30"><b>TP:</b></td><td width="50"><i>'.$value['TP'].'</i></td><td width="100"><b>Numero No:</b></td><td  BORDER1="RIGHT-TOP"><i>'.$value['Numero'].'</i></td></tr></table><table BORDER="BUTTON"><tr><td width="90"  BORDER1="LEFT-BUTTON"><b>Concepto:</b></td><td width="660" BORDER1="RIGHT-BUTTON"><i>'.$value['Concepto'].'</i></td></tr></table><table BORDER="1"><tr><td width="100"><b>Codigo</b></td><td width="380"><b>Cuenta</b></td><td width="90"><b>Parcial_ME</b></td><td width="90"><b>DEBE</b></td><td width="90"><b>HABER</b></td></tr></table><table BORDER="LEFT-RIGHT"><tr><td width="100"><i>'.$value['Cta'].'</i></td><td width="380"><i>'.$value['Cuenta']."\n".'</i></td><td width="90" ALIGN="RIGHT"><i>'.$par_me.'</i></td><td width="90" ALIGN="RIGHT"><i>'.$deb.'</i></td><td width="90" ALIGN="RIGHT"><i>'.$hab.'</i></td></tr></table>';
 		   		if($value['Detalle'] != '.')
 		   		{
-		   			$tablaHTML.= '<table BORDER="LEFT-RIGHT"><tr><td width="90"><i>&nbsp;</i></td><td width="390" SIZE="7"><i>'.$value['Detalle'].'</i></td><td width="90" ALIGN="RIGHT"><i>&nbsp;</i></td><td width="90" ALIGN="RIGHT"><i>&nbsp;</i></td><td width="90" ALIGN="RIGHT"><i>&nbsp;</i></td></tr></table>';
+		   			$tablaHTML.= '<table BORDER="LEFT-RIGHT"><tr><td width="100"><i>&nbsp;</i></td><td width="380" SIZE="7"><i>'.$value['Detalle'].'</i></td><td width="90" ALIGN="RIGHT"><i>&nbsp;</i></td><td width="90" ALIGN="RIGHT"><i>&nbsp;</i></td><td width="90" ALIGN="RIGHT"><i>&nbsp;</i></td></tr></table>';
 		   		}
 		   		foreach ($datossub as $key2 => $value2) {
 		   			if($value['Cta'] == $value2['Cta'] && $value['Numero'] == $value2['Numero'])
@@ -468,7 +470,7 @@ class diario_generalC
 		   				{
 		   					$valor = '<td width="90" ALIGN="LEFT"><i>'.round($value2['Debitos'],2).'</i></td>';
 		   				}
-		   				$tablaHTML.= '<table BORDER="LEFT-RIGHT"><tr><td width="90"><i>&nbsp;</i></td><td width="390" SIZE="7"><i>  '.$value2['Cliente'].'</i></td>'.$valor.'<td width="90" ALIGN="RIGHT"><i>&nbsp;</i></td><td width="90" ALIGN="RIGHT"><i>&nbsp;</i></td></tr></table>';
+		   				$tablaHTML.= '<table BORDER="LEFT-RIGHT"><tr><td width="100"><i>&nbsp;</i></td><td width="380" SIZE="7"><i>  '.$value2['Cliente'].'</i></td>'.$valor.'<td width="90" ALIGN="RIGHT"><i>&nbsp;</i></td><td width="90" ALIGN="RIGHT"><i>&nbsp;</i></td></tr></table>';
 
 		   			}
 		   		}
@@ -479,10 +481,10 @@ class diario_generalC
 		   {
 		   	if($temp == $value['Numero'])
 		   	{
-		   		$tablaHTML.= '<table  BORDER="LEFT-RIGHT"><tr><td width="90"><i>'.$value['Cta'].'</i></td><td width="390"><i>'.$value['Cuenta'].'</i></td><td width="90" ALIGN="RIGHT"><i>'.$par_me.'</i></td><td width="90" ALIGN="RIGHT"><i>'.$deb.'</i></td><td width="90" ALIGN="RIGHT"><i>'.$hab.'</i></td></tr></table>';
+		   		$tablaHTML.= '<table  BORDER="LEFT-RIGHT"><tr><td width="100"><i>'.$value['Cta'].'</i></td><td width="380"><i>'.$value['Cuenta'].'</i></td><td width="90" ALIGN="RIGHT"><i>'.$par_me.'</i></td><td width="90" ALIGN="RIGHT"><i>'.$deb.'</i></td><td width="90" ALIGN="RIGHT"><i>'.$hab.'</i></td></tr></table>';
 		   		if($value['Detalle'] != '.')
 		   		{
-		   			$tablaHTML.= '<table BORDER="LEFT-RIGHT"><tr><td width="90"><i>&nbsp;</i></td><td width="390" SIZE="7"><i>'.$value['Detalle'].'</i></td><td width="90" ALIGN="RIGHT"><i>&nbsp;</i></td><td width="90" ALIGN="RIGHT"><i>&nbsp;</i></td><td width="90" ALIGN="RIGHT"><i>&nbsp;</i></td></tr></table>';
+		   			$tablaHTML.= '<table BORDER="LEFT-RIGHT"><tr><td width="100"><i>&nbsp;</i></td><td width="380" SIZE="7"><i>'.$value['Detalle'].'</i></td><td width="90" ALIGN="RIGHT"><i>&nbsp;</i></td><td width="90" ALIGN="RIGHT"><i>&nbsp;</i></td><td width="90" ALIGN="RIGHT"><i>&nbsp;</i></td></tr></table>';
 		   		}
 
 		   		foreach ($datossub as $key2 => $value2) {
@@ -495,7 +497,7 @@ class diario_generalC
 		   				{
 		   					$valor = '<td width="90" ALIGN="LEFT"><i>'.round($value2['Debitos'],2).'</i></td>';
 		   				}
-		   				$tablaHTML.= '<table BORDER="LEFT-RIGHT"><tr><td width="90"><i>&nbsp;</i></td><td width="390" SIZE="7"><i>  '.$value2['Cliente'].'</i></td>'.$valor.'<td width="90" ALIGN="RIGHT"><i>&nbsp;</i></td><td width="90" ALIGN="RIGHT"><i>&nbsp;</i></td></tr></table>';
+		   				$tablaHTML.= '<table BORDER="LEFT-RIGHT"><tr><td width="100"><i>&nbsp;</i></td><td width="380" SIZE="7"><i>  '.$value2['Cliente'].'</i></td>'.$valor.'<td width="90" ALIGN="RIGHT"><i>&nbsp;</i></td><td width="90" ALIGN="RIGHT"><i>&nbsp;</i></td></tr></table>';
 
 		   			}
 		   		}
@@ -510,10 +512,10 @@ class diario_generalC
 		   		//break;
 		   		$total_debe=00;
 			    $total_haber=0;
-		   			$tablaHTML.= '<table  BORDER="TOP"><tr><td width="70" BORDER1="LEFT-TOP"><b>Fecha:</b></td><td width="90"><i>'.$value['Fecha']->format('Y-m-d').'</i></td><td width="90"><b>Elaborado:</b></td><td width="160"><i>'.$value['CodigoU'].'</i></td><td width="30"><b>TP:</b></td><td width="50"><i>'.$value['TP'].'</i></td><td width="100"><b>Numero No:</b></td><td  BORDER1="RIGHT-TOP"><i>'.$value['Numero'].'</i></td></tr></table><table BORDER="BUTTON"><tr><td width="90"  BORDER1="LEFT-BUTTON"><b>Concepto:</b></td><td width="660" BORDER1="RIGHT-BUTTON"><i>'.$value['Concepto'].'</i></td></tr></table><table BORDER="1"><tr><td width="90"><b>Codigo</b></td><td width="390"><b>Cuenta</b></td><td width="90"><b>Parcial_ME</b></td><td width="90"><b>DEBE</b></td><td width="90"><b>HABER</b></td></tr></table><table BORDER="LEFT-RIGHT"><tr><td width="90"><i>'.$value['Cta'].'</i></td><td width="390"><i>'.$value['Cuenta']."\n".'</i></td><td width="90" ALIGN="RIGHT"><i>'.$par_me.'</i></td><td width="90" ALIGN="RIGHT"><i>'.$deb.'</i></td><td width="90" ALIGN="RIGHT"><i>'.$hab.'</i></td></tr></table>';
+		   			$tablaHTML.= '<table  BORDER="TOP"><tr><td width="70" BORDER1="LEFT-TOP"><b>Fecha:</b></td><td width="90"><i>'.$value['Fecha']->format('Y-m-d').'</i></td><td width="90"><b>Elaborado:</b></td><td width="160"><i>'.$value['CodigoU'].'</i></td><td width="30"><b>TP:</b></td><td width="50"><i>'.$value['TP'].'</i></td><td width="100"><b>Numero No:</b></td><td  BORDER1="RIGHT-TOP"><i>'.$value['Numero'].'</i></td></tr></table><table BORDER="BUTTON"><tr><td width="90"  BORDER1="LEFT-BUTTON"><b>Concepto:</b></td><td width="660" BORDER1="RIGHT-BUTTON"><i>'.$value['Concepto'].'</i></td></tr></table><table BORDER="1"><tr><td width="100"><b>Codigo</b></td><td width="380"><b>Cuenta</b></td><td width="90"><b>Parcial_ME</b></td><td width="90"><b>DEBE</b></td><td width="90"><b>HABER</b></td></tr></table><table BORDER="LEFT-RIGHT"><tr><td width="100"><i>'.$value['Cta'].'</i></td><td width="380"><i>'.$value['Cuenta']."\n".'</i></td><td width="90" ALIGN="RIGHT"><i>'.$par_me.'</i></td><td width="90" ALIGN="RIGHT"><i>'.$deb.'</i></td><td width="90" ALIGN="RIGHT"><i>'.$hab.'</i></td></tr></table>';
 		   			if($value['Detalle'] != '.')
 		   		{
-		   			$tablaHTML.= '<table BORDER="LEFT-RIGHT"><tr><td width="90"><i>&nbsp;</i></td><td width="390" SIZE="7"><i>'.$value['Detalle'].'</i></td><td width="90" ALIGN="RIGHT"><i>&nbsp;</i></td><td width="90" ALIGN="RIGHT"><i>&nbsp;</i></td><td width="90" ALIGN="RIGHT"><i>&nbsp;</i></td></tr></table>';
+		   			$tablaHTML.= '<table BORDER="LEFT-RIGHT"><tr><td width="100"><i>&nbsp;</i></td><td width="380" SIZE="7"><i>'.$value['Detalle'].'</i></td><td width="90" ALIGN="RIGHT"><i>&nbsp;</i></td><td width="90" ALIGN="RIGHT"><i>&nbsp;</i></td><td width="90" ALIGN="RIGHT"><i>&nbsp;</i></td></tr></table>';
 		   		}
 		   			
 		   			foreach ($datossub as $key2 => $value2) {
@@ -526,7 +528,7 @@ class diario_generalC
 		   				{
 		   					$valor = '<td width="90" ALIGN="LEFT"><i>'.round($value2['Debitos'],2).'</i></td>';
 		   				}
-		   				$tablaHTML.= '<table BORDER="LEFT-RIGHT"><tr><td width="90"><i>&nbsp;</i></td><td width="390" SIZE="7"><i>  '.$value2['Cliente'].'</i></td>'.$valor.'<td width="90" ALIGN="RIGHT"><i>&nbsp;</i></td><td width="90" ALIGN="RIGHT"><i>&nbsp;</i></td></tr></table>';
+		   				$tablaHTML.= '<table BORDER="LEFT-RIGHT"><tr><td width="100"><i>&nbsp;</i></td><td width="380" SIZE="7"><i>  '.$value2['Cliente'].'</i></td>'.$valor.'<td width="90" ALIGN="RIGHT"><i>&nbsp;</i></td><td width="90" ALIGN="RIGHT"><i>&nbsp;</i></td></tr></table>';
 
 		   			}
 		   		}
