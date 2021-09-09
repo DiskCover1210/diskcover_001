@@ -268,17 +268,17 @@
               
 	  	<div class="col-sm-3"><br>
 	  	   <b>Cuenta inicial:</b>
-             <input type="text" name="txt_CtaI" id="txt_CtaI" class="input-sm" placeholder="<?php echo $_SESSION['INGRESO']['Formato_Cuentas']; ?>" onblur="llenar_combobox_cuentas();">
+             <input type="text" name="txt_CtaI" id="txt_CtaI" class="input-sm" placeholder="<?php echo $_SESSION['INGRESO']['Formato_Cuentas']; ?>">
 			 <br>
              <b>Cuenta final:&nbsp;&nbsp;&nbsp;</b>
-             <input type="text" name="txt_CtaF" id="txt_CtaF"  class="input-sm" placeholder="<?php echo $_SESSION['INGRESO']['Formato_Cuentas']; ?>" onblur="llenar_combobox_cuentas();"> 
+             <input type="text" name="txt_CtaF" id="txt_CtaF"  class="input-sm" placeholder="<?php echo $_SESSION['INGRESO']['Formato_Cuentas']; ?>" > 
         </div>
 	  	<div class="col-sm-3"><br>
 	  		<b>Desde:</b>
-            <input type="date" name="desde" id="desde" class="input-sm"  value="<?php echo date("Y-m-d");?>" onkeyup="validar_year_mayor(this.id)" onblur="validar_year_menor(this.id);consultar_datos(true,Individual);">
+            <input type="date" name="desde" id="desde" class="input-sm"  value="<?php echo date("Y-m-d");?>" onkeyup="validar_year_mayor(this.id)" onblur="validar_year_menor(this.id);">
 			<br>
             <b>Hasta:&nbsp;</b>
-            <input type="date" name="hasta" id="hasta"  class="input-sm"  value="<?php echo date("Y-m-d");?>" onkeyup="validar_year_mayor(this.id)" onblur="validar_year_menor(this.id);consultar_datos(true,Individual);">  	              	
+            <input type="date" name="hasta" id="hasta"  class="input-sm"  value="<?php echo date("Y-m-d");?>" onkeyup="validar_year_mayor(this.id)" onblur="validar_year_menor(this.id);">  	              	
 	  	</div>
 
 	  	<div class="col-sm-3">

@@ -70,13 +70,70 @@ if(isset($_GET['mos2']))
 			text =$('#sempresa option:selected').html(); //El texto de la opción seleccionada
 			window.location="panel.php?mos="+value+"&mos1="+text+"&mos3="+arregloDeSubCadenas[1]+"";
 		}
-			function descargar_archivos(url,archivo)
+		function descargar_archivos(url,archivo)
 		{
             var link = document.createElement("a");
             link.download = archivo;
             link.href = url;
             link.click();
-        }
+    }
+    	function validar_cuenta(campo)
+	{
+		var id = campo.id;
+		let cap = $('#'+id).val();
+		let cuentaini = cap.replace(/[.]/gi,'');
+	//	var cuentafin = $('#txt_CtaF').val();
+		var formato = "<?php if(isset($_SESSION['INGRESO']['Formato_Cuentas']))echo $_SESSION['INGRESO']['Formato_Cuentas']; ?>";
+		let parte =formato.split('.');
+		var nuevo =  new Array(); 
+		let cadnew ='';
+		for (var i = 0 ; i < parte.length; i++) {
+
+			if(cuentaini.length != '')
+			{
+				var b = parte[i].length;
+				var c = cuentaini.substr(0,b);
+				if(c.length==b)
+				{
+					nuevo[i] = c;
+					cuentaini = cuentaini.substr(b);
+				}else
+				{   
+				  if(c != 0){  
+					//for (var ii =0; ii<b; ii++) {
+						var n = c;
+						//if(n.length==b)
+						//{
+						   //if(n !='00')
+						  // {
+							nuevo[i] =n;
+				            cuentaini = cuentaini.substr(b);
+				         //  }
+				         //break;
+						  
+						//}else
+						//{
+						//	c = n;
+						//}
+						
+					//}
+				  }else
+				  {
+				  	nuevo[i] =c;
+				    cuentaini = cuentaini.substr(b);
+				  }
+				}
+			}
+		}
+		var m ='';
+		nuevo.forEach(function(item,index){
+			m+=item+'.';
+		})
+		//console.log(m);
+		$('#'+id).val(m);
+
+
+	}
 
 		function validar_year_mayor(nombre)
 		{

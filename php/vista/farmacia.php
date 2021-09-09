@@ -102,6 +102,14 @@ if(isset($_SESSION['INGRESO']['IP_VPN_RUTA']) && $_SESSION['INGRESO']['Tipo_Base
 						{
 							require_once("farmacia/farmacia_interna.php");
 						}
+						if ($_SESSION['INGRESO']['accion']=='devoluciones_insumos') 
+						{
+							require_once("farmacia/devoluciones_insumos.php");
+						}
+						if ($_SESSION['INGRESO']['accion']=='devoluciones_detalle') 
+						{
+							require_once("farmacia/devoluciones_detalle.php");
+						}
 						
 					}else
 					{

@@ -20,6 +20,7 @@
     }
   });
   $(document).ready(function () {
+    limpiar_grid();
     cargar_grilla();
     catalogoLineas();
     autocomplete_cliente();
