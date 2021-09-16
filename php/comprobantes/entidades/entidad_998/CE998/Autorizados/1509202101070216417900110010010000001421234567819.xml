@@ -1,102 +1,102 @@
 <?xml version="1.0" encoding="UTF-8"?><autorizacion>
   <estado>AUTORIZADO</estado>
-  <numeroAutorizacion>0609202101070216417900110010010000001181234567819</numeroAutorizacion>
-  <fechaAutorizacion class="fechaAutorizacion">06/09/2021 14:55:31.000</fechaAutorizacion>
-  <comprobante><![CDATA[<?xml version="1.0" encoding="UTF-8" standalone="no"?><factura id="comprobante" version="1.0.0">
+  <numeroAutorizacion>1509202101070216417900110010010000001421234567819</numeroAutorizacion>
+  <fechaAutorizacion class="fechaAutorizacion">15/09/2021 17:57:59.000</fechaAutorizacion>
+  <comprobante><![CDATA[<?xml version="1.0" encoding="UTF-8" standalone="no"?><factura id="comprobante" version="1.1.0">
   <infoTributaria>
     <ambiente>1</ambiente>
     <tipoEmision>1</tipoEmision>
     <razonSocial>VACA PRIETO WALTER JALIL</razonSocial>
     <nombreComercial>DISKCOVER SYSTEM</nombreComercial>
     <ruc>0702164179001</ruc>
-    <claveAcceso>0609202101070216417900110010010000001181234567819</claveAcceso>
+    <claveAcceso>1509202101070216417900110010010000001421234567819</claveAcceso>
     <codDoc>01</codDoc>
     <estab>001</estab>
     <ptoEmi>001</ptoEmi>
-    <secuencial>000000118</secuencial>
+    <secuencial>000000142</secuencial>
     <dirMatriz>Desarrollo para programacion de DiskCover System</dirMatriz>
   </infoTributaria>
   <infoFactura>
-    <fechaEmision>06/09/2021</fechaEmision>
+    <fechaEmision>15/09/2021</fechaEmision>
     <dirEstablecimiento>Desarrollo para programacion de DiskCover System</dirEstablecimiento>
     <obligadoContabilidad>SI</obligadoContabilidad>
     <tipoIdentificacionComprador>06</tipoIdentificacionComprador>
-    <razonSocialComprador>JAVIER FAJARDO</razonSocialComprador>
-    <identificacionComprador>1723324206</identificacionComprador>
-    <totalSinImpuestos>4.97</totalSinImpuestos>
+    <razonSocialComprador>JAVIER FARINANGO</razonSocialComprador>
+    <identificacionComprador>1716766199</identificacionComprador>
+    <totalSinImpuestos>139.00</totalSinImpuestos>
     <totalDescuento>0</totalDescuento>
     <totalConImpuestos>
       <totalImpuesto>
         <codigo>2</codigo>
         <codigoPorcentaje>0</codigoPorcentaje>
         <descuentoAdicional>0</descuentoAdicional>
-        <baseImponible>4.97</baseImponible>
+        <baseImponible>139</baseImponible>
         <valor>0.00</valor>
       </totalImpuesto>
     </totalConImpuestos>
     <propina>0</propina>
-    <importeTotal>4.97</importeTotal>
+    <importeTotal>139</importeTotal>
     <moneda>DOLAR</moneda>
     <pagos>
       <pago>
         <formaPago>01</formaPago>
-        <total>4.97</total>
+        <total>139</total>
       </pago>
     </pagos>
   </infoFactura>
   <detalles>
     <detalle>
-      <codigoPrincipal>03.01.11</codigoPrincipal>
-      <descripcion>Venta Dolar Australiano</descripcion>
+      <codigoPrincipal>03.01.02</codigoPrincipal>
+      <descripcion>Venta Pesos Colombianos</descripcion>
       <unidadMedida>DOLAR</unidadMedida>
-      <cantidad>4.2500</cantidad>
-      <precioUnitario>1.17</precioUnitario>
+      <cantidad>493450.0000</cantidad>
+      <precioUnitario>0.000282</precioUnitario>
       <descuento>0</descuento>
-      <precioTotalSinImpuesto>4.97</precioTotalSinImpuesto>
+      <precioTotalSinImpuesto>139</precioTotalSinImpuesto>
       <impuestos>
         <impuesto>
           <codigo>2</codigo>
           <codigoPorcentaje>0</codigoPorcentaje>
           <tarifa>0</tarifa>
-          <baseImponible>4.97</baseImponible>
+          <baseImponible>139</baseImponible>
           <valor>0</valor>
         </impuesto>
       </impuestos>
     </detalle>
   </detalles>
   <infoAdicional>
-    <campoAdicional nombre="Direccion">COOP 30 DE JULIO</campoAdicional>
-    <campoAdicional nombre="Telefono">0994526451</campoAdicional>
-    <campoAdicional nombre="Email">victorfapi@hotmail.com</campoAdicional>
+    <campoAdicional nombre="Direccion">CONDADO</campoAdicional>
+    <campoAdicional nombre="Telefono">5159010</campoAdicional>
+    <campoAdicional nombre="Email">ejfc19omoshiroi@gmail.com</campoAdicional>
   </infoAdicional>
-<ds:Signature xmlns:ds="http://www.w3.org/2000/09/xmldsig#" xmlns:etsi="http://uri.etsi.org/01903/v1.3.2#" Id="Signature94617">
-<ds:SignedInfo Id="Signature-SignedInfo951547">
+<ds:Signature xmlns:ds="http://www.w3.org/2000/09/xmldsig#" xmlns:etsi="http://uri.etsi.org/01903/v1.3.2#" Id="Signature33218">
+<ds:SignedInfo Id="Signature-SignedInfo295807">
 <ds:CanonicalizationMethod Algorithm="http://www.w3.org/TR/2001/REC-xml-c14n-20010315"/>
 <ds:SignatureMethod Algorithm="http://www.w3.org/2000/09/xmldsig#rsa-sha1"/>
-<ds:Reference Id="SignedPropertiesID119059" Type="http://uri.etsi.org/01903#SignedProperties" URI="#Signature94617-SignedProperties714737">
+<ds:Reference Id="SignedPropertiesID237748" Type="http://uri.etsi.org/01903#SignedProperties" URI="#Signature33218-SignedProperties384321">
 <ds:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1"/>
-<ds:DigestValue>MFyYtsmFSvJgC7QbXEpBIhu7Qgc=</ds:DigestValue>
+<ds:DigestValue>99ZXetZ3V5tAImmhLRMHM9JzBkI=</ds:DigestValue>
 </ds:Reference>
-<ds:Reference URI="#Certificate11015313">
+<ds:Reference URI="#Certificate1929700">
 <ds:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1"/>
-<ds:DigestValue>dEAdNPv73MfKoIiYTVYr6005YQw=</ds:DigestValue>
+<ds:DigestValue>bmy0SRWSKVEguSMWXU0x+R72rjA=</ds:DigestValue>
 </ds:Reference>
-<ds:Reference Id="Reference-ID-1036076" URI="#comprobante">
+<ds:Reference Id="Reference-ID-296750" URI="#comprobante">
 <ds:Transforms>
 <ds:Transform Algorithm="http://www.w3.org/2000/09/xmldsig#enveloped-signature"/>
 </ds:Transforms>
 <ds:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1"/>
-<ds:DigestValue>GjT1uxkX7ceggHA9GluSXixjrIQ=</ds:DigestValue>
+<ds:DigestValue>qFHp4pXlMEWb11xDCOmhzfWLc/8=</ds:DigestValue>
 </ds:Reference>
 </ds:SignedInfo>
-<ds:SignatureValue Id="SignatureValue263345">
-fOLCAbYApaRIkweF3Hf7f2M0NQvXUXrE5BdhXJD+pw9Rgjp2r8JY8/QJHFDTVyPBxOvuTDdXlSkB
-BO6crAtnmzNqo5pWP8x9HdEK0IbRsBV5+amRrwP88KaxoLqyV/nTAxYedyDtVhB1B03dr0xd4ZR0
-dwCGToERVb6t1k85aKAA5JX/i7+TCJIR1HwGI2LXrDHOwcfy95EsGRLWvKUOHl20GZBuQL1VutY7
-kXrxkJ9lt89GqTEtyAwKnyC43zPsnVK07tBrDsTZowqMSlTUYY41PI5CwUIPRswFGoM9k6X5qfu2
-qkbMw2ZNuOUEgHAyG0oi7eNNGfI5PrUSYtN0Vw==
+<ds:SignatureValue Id="SignatureValue403535">
+c6JJyOd9FzpqbkgUy2NslWPWSSVcqC+bSMRNz4zIb27sh0GxXLep9zlPsI3b6J+bfbOdqNhKYPVH
++xkxt0JsLisWMd1VOkX/cavtiRqhHnFLIoyqkJBSeTdP5At+vwwOsgkTzXd7osUHPPjgtKk2DCaf
+kIV8BnXdjI8dAM34xC9SZWsK702LC/lkQ2Rdlg9MPEEkKpyQyFMhfgnW+BoopqXlvUjkPZrGczu4
+2j6KqSiF+0gwboLzETOQG66xptumrF+CU44Ys5hhSghuIcLpGthIybRmgexyEqWxr1OS95L9Iktn
+lzXYUJi9MX25xes+4BRlgL1JsYuVIrzsQG/L4A==
 </ds:SignatureValue>
-<ds:KeyInfo Id="Certificate11015313">
+<ds:KeyInfo Id="Certificate1929700">
 <ds:X509Data>
 <ds:X509Certificate>
 MIILkjCCCXqgAwIBAgIEXDrIAjANBgkqhkiG9w0BAQsFADCBmTELMAkGA1UEBhMCRUMxHTAbBgNV
@@ -167,6 +167,6 @@ LRuAVSyi58qyAD0Eu1zLMc3KhEUXoxF7aA8P0w==
 </ds:RSAKeyValue>
 </ds:KeyValue>
 </ds:KeyInfo>
-<ds:Object Id="Signature94617-Object630110"><etsi:QualifyingProperties Target="#Signature94617"><etsi:SignedProperties Id="Signature94617-SignedProperties714737"><etsi:SignedSignatureProperties><etsi:SigningTime>2021-09-06T14:55:04-05:00</etsi:SigningTime><etsi:SigningCertificate><etsi:Cert><etsi:CertDigest><ds:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1"/><ds:DigestValue>m8okW/lbE8bTuXKKJc3pO5HpQGc=</ds:DigestValue></etsi:CertDigest><etsi:IssuerSerial><ds:X509IssuerName>CN=AUTORIDAD DE CERTIFICACION SUBCA-1 SECURITY DATA,OU=ENTIDAD DE CERTIFICACION DE INFORMACION,O=SECURITY DATA S.A. 1,C=EC</ds:X509IssuerName><ds:X509SerialNumber>1547356162</ds:X509SerialNumber></etsi:IssuerSerial></etsi:Cert></etsi:SigningCertificate></etsi:SignedSignatureProperties><etsi:SignedDataObjectProperties><etsi:DataObjectFormat ObjectReference="#Reference-ID-1036076"><etsi:Description>contenido comprobante</etsi:Description><etsi:MimeType>text/xml</etsi:MimeType></etsi:DataObjectFormat></etsi:SignedDataObjectProperties></etsi:SignedProperties></etsi:QualifyingProperties></ds:Object></ds:Signature></factura>]]></comprobante>
+<ds:Object Id="Signature33218-Object465484"><etsi:QualifyingProperties Target="#Signature33218"><etsi:SignedProperties Id="Signature33218-SignedProperties384321"><etsi:SignedSignatureProperties><etsi:SigningTime>2021-09-15T17:57:44-05:00</etsi:SigningTime><etsi:SigningCertificate><etsi:Cert><etsi:CertDigest><ds:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1"/><ds:DigestValue>m8okW/lbE8bTuXKKJc3pO5HpQGc=</ds:DigestValue></etsi:CertDigest><etsi:IssuerSerial><ds:X509IssuerName>CN=AUTORIDAD DE CERTIFICACION SUBCA-1 SECURITY DATA,OU=ENTIDAD DE CERTIFICACION DE INFORMACION,O=SECURITY DATA S.A. 1,C=EC</ds:X509IssuerName><ds:X509SerialNumber>1547356162</ds:X509SerialNumber></etsi:IssuerSerial></etsi:Cert></etsi:SigningCertificate></etsi:SignedSignatureProperties><etsi:SignedDataObjectProperties><etsi:DataObjectFormat ObjectReference="#Reference-ID-296750"><etsi:Description>contenido comprobante</etsi:Description><etsi:MimeType>text/xml</etsi:MimeType></etsi:DataObjectFormat></etsi:SignedDataObjectProperties></etsi:SignedProperties></etsi:QualifyingProperties></ds:Object></ds:Signature></factura>]]></comprobante>
   <mensajes/>
 </autorizacion>

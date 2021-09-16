@@ -51,9 +51,7 @@
   #customers tbody tr:nth-child(even):hover {
     background: #DDB;
   }
-  #customers tbody tr:nth-child(odd):hover {
-    background: #DDA;
-  }
+  #customers tbody tr:nth-child(odd):hover {  background: #DDA;}
   .sombra {
     width: 99%;
     box-shadow: 10px 10px 6px rgba(0, 0, 0, 0.6);
@@ -61,3 +59,19 @@
   .sinborde{
     border: 0;
   }
+
+  #tbl_style tbody tr:nth-child(even) { background:#fffff;}
+  #tbl_style tbody tr:nth-child(odd) { background: #e2fbff;}
+  #tbl_style tbody tr:nth-child(even):hover {  background: #DDB;}
+  #tbl_style thead { background: #afd6e2; }
+  #tbl_style tbody tr:nth-child(odd):hover {  background: #DDA;}
+  #tbl_style table {border-collapse: collapse;}
+  #tbl_style table, th, td {  border: solid 1px #aba0a0;  padding: 2px;  }
+  #tbl_style tbody { box-shadow: 10px 10px 6px rgba(0, 0, 0, 0.6);  }
+  #tbl_style thead { background: #afd6e2;  box-shadow: 10px 0px 6px rgba(0, 0, 0, 0.6);} 
+
+  /*#datos_t tbody { display:block; height:300px;  overflow-y:auto; width:fit-content;}*/
+  /*#datos_t thead,tbody tr {    display:table;  width:100%;  table-layout:fixed; } */
+  #tbl_style thead { width: calc( 100% - 1.2em ) /*scrollbar is average 1em/16px width, remove it from thead width*/ }
+
+  

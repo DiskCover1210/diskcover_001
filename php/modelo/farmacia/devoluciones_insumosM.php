@@ -74,6 +74,15 @@ class devoluciones_insumosM
 
 	}
 
+	function trans_kardex_linea_all($id)
+	{
+
+		$sql="SELECT *  FROM Trans_Kardex WHERE 1=1 AND Item = '".$_SESSION['INGRESO']['item']."' AND Periodo = '".$_SESSION['INGRESO']['periodo']."' AND Entrada = 0 AND ID = '".$id."' ";
+		$datos = $this->conn->datos($sql);
+        return $datos;
+
+	}
+
 
 	function producto($Codigo_Inv)
 	{
@@ -89,7 +98,7 @@ class devoluciones_insumosM
 	     exportar_excel_comp($stmt1,null,null,1);
 	}
 
-	function lineas_trans_kardex($numero)
+	function lineas_trans_kardex($numero,$query=false)
 	{
 
 		$sql="SELECT  T.Codigo_Inv,Salida,Valor_Unitario,T.Valor_Total,C.Producto,T.ID,T.Utilidad,C.Utilidad as 'utilidad_C'  
@@ -99,6 +108,10 @@ class devoluciones_insumosM
 		AND C.Periodo ='".$_SESSION['INGRESO']['periodo']."' 
 		AND Entrada = 0 
 		AND Numero = '".$numero."' ";
+		if($query)
+		{
+			$sql.=" AND T.Codigo_Inv+''+C.Producto like '%".$query."%' ";
+		}
 		// print_r($sql);die();
 		$datos = $this->conn->datos($sql);
         return $datos;
@@ -115,6 +128,24 @@ class devoluciones_insumosM
 		      AND Numero = '".$numero."' ";
 		      $datos = $this->conn->datos($sql);
         return $datos;
+	}
+
+	function lista_devoluciones($comprobante)
+	{
+	  $sql = "SELECT CODIGO_INV as 'CODIGO PRODUCTO',PRODUCTO,CANTIDAD,VALOR_UNIT AS 'VALOR UNITARIO',VALOR_TOTAL AS 'VALOR TOTAL',Fecha_Fab AS 'FECHA' FROM Asiento_K WHERE DH = '1' AND ORDEN = '".$comprobante."'";
+	  $datos = $this->conn->datos($sql);
+	  $botones[0] = array('boton'=>'Eliminar','icono'=>'<i class="fa fa-trash"></i>', 'tipo'=>'danger', 'id'=>$comprobante.',CODIGO PRODUCTO');
+
+	  $tbl = grilla_generica_new($sql,'Asiento_K ','tbl_style',false,$botones,false,$imagen=false,1,1,1,300,2,$num_reg=false,false,false);
+      return array('datos'=>$datos,'tabla'=>$tbl);
+
+	}
+
+	function eliminar_linea_dev($codigo,$comprobante)
+	{
+		$sql = "DELETE FROM Asiento_K WHERE CODIGO_INV = '".$codigo."'  AND ORDEN = '".$comprobante."'";
+		return  $this->conn->String_Sql($sql);
+
 	}
 }
 

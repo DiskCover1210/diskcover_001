@@ -77,6 +77,13 @@ if(isset($_GET['Eliminar']))
   echo json_encode($datos);
 }
 
+if(isset($_GET['buscar_facturas']))
+{  
+  $parametros = $_POST['parametros'];
+  $datos = $controlador->buscar_facturas($parametros);
+  echo json_encode($datos);
+}
+
 
 class divisasC
 {
@@ -118,69 +125,20 @@ class divisasC
     return $clientes;
   }
 
-  //  public function guardarLineas1(){
-  //   $this->modelo->deleteAsiento($_POST['codigoCliente']);
-  //   $datos = array();
-  //   $Contador = 0;
-
-  //   // $producto = $_POST['datos'];
-
-  //   // print_r($producto);die();
-  //   foreach ($_POST['datos'] as $key => $producto) {
-  //         $precio_nuevo = number_format(($producto['Total'] / $producto['Cantidad']),4);
-  //     $dato[0]['campo']='CODIGO';
-  //     $dato[0]['dato']= $producto['Codigo'];
-  //     $dato[1]['campo']='CODIGO_L';
-  //     $dato[1]['dato']= $producto['CodigoL'];
-  //     $dato[2]['campo']='PRODUCTO';
-  //     $dato[2]['dato']= $producto['Producto'] ;
-  //     $dato[3]['campo']='CANT';
-  //     $dato[3]['dato']= $producto['Cantidad'] ;
-  //     $dato[4]['campo']='PRECIO';
-  //     $dato[4]['dato']= $precio_nuevo;
-  //     $dato[5]['campo']='Total_Desc';
-  //     $dato[5]['dato']= $producto['Total_Desc'] ;
-  //     $dato[6]['campo']='Total_Desc2';
-  //     $dato[6]['dato']= $producto['Total_Desc2'] ;
-  //     $dato[7]['campo']='TOTAL';
-  //     $dato[7]['dato']= number_format($producto['Total'],2);
-  //     $dato[8]['campo']='Total_IVA';
-  //     $dato[8]['dato']= $producto['Total'] * ($producto['Iva'] / 100);
-  //     $dato[9]['campo']='Cta';
-  //     $dato[9]['dato']= 'Cuenta' ;
-  //     $dato[10]['campo']='Item';
-  //     $dato[10]['dato']= $_SESSION['INGRESO']['item'];
-  //     $dato[11]['campo']='Codigo_Cliente';
-  //     $dato[11]['dato']= $_POST['codigoCliente'];
-  //     $dato[12]['campo']='HABIT';
-  //     $dato[12]['dato']= G_PENDIENTE;
-  //     $dato[13]['campo']='Mes';
-  //     $dato[13]['dato']= $producto['MiMes'] ;
-  //     $dato[14]['campo']='TICKET';
-  //     $dato[14]['dato']= $producto['Periodo'] ;
-  //     $dato[15]['campo']='CodigoU';
-  //     $dato[15]['dato']= $_SESSION['INGRESO']['CodigoU'];
-  //     $dato[16]['campo']='A_No';
-  //     $dato[16]['dato']= $Contador;
-  //     $dato[17]['campo']='PRECIO2';
-  //     $dato[17]['dato']= $producto['Precio'];
-  //     $dato[18]['campo']='PRECIO2';
-  //     $dato[18]['dato']= $producto['Precio'];
-  //     $Contador++;
-
-  //   // print_r($dato);die();
-  //     insert_generico("Asiento_F",$dato);
-  //   }
-  // }
-
+ 
   public function guardarLineas(){
     // $this->modelo->deleteAsiento($_POST['codigoCliente']);
     $num = count($this->modelo->getAsiento());
     $datos = array();
     $producto = $_POST['datos'];
+    $precio_nuevo = $_POST['datos']['Precio'];
+    if($producto['Cantidad']>$producto['Total'])
+    {
+     $precio_nuevo = number_format(($producto['Total'] / $producto['Cantidad']),7,'.','');     
+    }
+    //print_r($producto);die();
 
-    // print_r($producto);die();
-      $precio_nuevo = number_format(($producto['Total'] / $producto['Cantidad']),6,'.','');
+     // $precio_nuevo = number_format(($producto['Total'] / $producto['Cantidad']),6,'.','');
       // $totalNuevo = number_format(($producto['Cantidad'] * $precio_nuevo),4,'.','');
       $totalNuevo = number_format($producto['Total'],2,'.','');
       $dato[0]['campo']='CODIGO';
@@ -219,8 +177,7 @@ class divisasC
       $dato[16]['dato']= $num+1;
       $dato[17]['campo']='PRECIO2';
       $dato[17]['dato']= $producto['Precio'];
-      $dato[18]['campo']='CANT_BONIF';
-      $dato[18]['dato']= number_format($producto['Cantidad'],4,'.',''); ;
+      
       return insert_generico("Asiento_F",$dato);
   }
 
@@ -422,63 +379,6 @@ class divisasC
     $datos_pre =  $this->modelo->datos_factura($parametros);
     $datos_empre =  $this->modelo->datos_empresa();
     $datos_pre['lineas'][0]['Factura'] = generaCeros($datos_pre['lineas'][0]['Factura'],9);
-    // $cabe ='<pre><font face="Courier New" size=2>Transaccion ('.$TC.'): No. '.$datos_pre['lineas'][0]['Serie'].'-'.$datos_pre['lineas'][0]['Factura'].'
-    //     Autorizacion:<br>'.$datos_pre['lineas'][0]['Autorizacion'].'<br>
-    //     Fecha: '.date('Y-m-d').' - Hora: </b>'.date('H:m:s').' <br>
-    //     Cliente: <br>'.$datos_pre['cliente']['Cliente'].'<br>
-    //     Autorizacion: <br><br>
-    //     R.U.C/C.I.: '.$datos_pre['cliente']['CI_RUC'].'<br> 
-    //     Cajero: '.$_SESSION['INGRESO']['Nombre'].' <br>
-    //     Telefono: '.$datos_pre['cliente']['Telefono'].'<br>
-    //     Dirección: '.$datos_pre['cliente']['Direccion'].'<br>';
-    // $cabe .= "<hr>PRODUCTO/Cant x PVP/TOTAL";
-    // $lineas = "<hr>";
-    // foreach ($datos_pre['lineas'] as $key => $value) {
-    //   if($value['Total_IVA']==0)
-    //   {
-    //     $lineas.= '<div class="row"><div class="col-sm-12">'.$value['Producto'].' </div></div>';
-    //   }else
-    //   {
-    //     $lineas.= '<div class="row"><div class="col-sm-12">'.$value['Producto'].'</div></div>';
-    //   }
-    //   $lineas.='<div class="row"><div class="col-sm-6">'.$value['Cantidad'].' X '.number_format($value['Precio'],2).'</div><div class="col-sm-6" style="text-align: right;">'.number_format($value['Total'],2).'</div></div>';
-    // }
-    // $totales = "<hr>
-    //  <table>
-    //    <tr>
-    //      <td style='width: 250px;' colspan='3'></td>
-    //      <td style='text-align: right;'>SUBTOTAL:</td>
-    //      <td style='text-align: right;'>".number_format($datos_pre['tota'],2) ."</td>
-    //    </tr>
-    //    <tr>
-    //      <td colspan='3'></td>
-    //      <td style='text-align: right;'>I.V.A 12%:</td>
-    //      <td style='text-align: right;'>".number_format($datos_pre['iva'],2) ."</td>
-    //    </tr>
-    //    <tr>
-    //      <td colspan='3'></td>
-    //      <td style='text-align: right;'>TOTAL FACTURA:</td>
-    //      <td style='text-align: right;'>".number_format($datos_pre['tota'],2)."</td>
-    //    </tr>
-    //    <tr>
-    //      <td colspan='3'></td>
-    //      <td style='text-align: right;'>EFECTIVO:</td>
-    //      <td style='text-align: right;'>".number_format($efectivo,2)."</td>
-    //    </tr>
-    //    <tr>
-    //      <td colspan='3'></td>
-    //      <td style='text-align: right;'>CAMBIO:</td>
-    //      <td style='text-align: right;'>".number_format($saldo,2)."</td>
-    //    </tr>
-    //  </table>";
-
-    // $datos_extra = "<hr>
-    // <table style='width:100%'>
-    //   <tr><td>Email: ".$datos_pre['cliente']['Email']."</td></tr>
-    //   <tr>
-    //     <td style='text-align:center'>Fue un placer atenderle <br>Gracias por su compra<br><br></td>
-    //   </tr>
-    // </table></font></pre>";
 
 $cabe = '<pre>
 Transaccion ('.$TC.'): No. '.$datos_pre['lineas'][0]['Serie'].'-'.$datos_pre['lineas'][0]['Factura'].'
@@ -496,6 +396,7 @@ $lineas = "<pre>
 ---------------------------------------
 ";
   foreach ($datos_pre['lineas'] as $key => $value) {
+    // print_r($pro);die();
     if($value['Total_IVA']==0)
     {
       $lineas.= $value['Producto'];
@@ -503,17 +404,19 @@ $lineas = "<pre>
     {
       $lineas.= $value['Producto'];
     }
+   
     $lineas.='
-'.$value['Cantidad'].' X '.number_format($value['Precio'],2).'                '.number_format($value['Total'],2).'
+'.number_format($value['Cantidad'],2,'.','').' X '.number_format($value['Precio2'],2,'.','').'                '.number_format($value['Total'],2,'.','').'
 ';
-   }
+   
+ }
    $lineas.='</pre>';
    $totales = "<pre>
-                   SUBTOTAL:  ".number_format($datos_pre['tota'],2) ."
-                  I.V.A 12%:   ".number_format($datos_pre['iva'],2) ."
-              TOTAL FACTURA:  ".number_format($datos_pre['tota'],2)."
-                   EFECTIVO:  ".number_format($efectivo,2)."</td>
-                     CAMBIO:   ".number_format($saldo,2)."</td>
+                   SUBTOTAL:  ".number_format($datos_pre['tota'],2,'.','') ."
+                  I.V.A 12%:   ".number_format($datos_pre['iva'],2,'.','') ."
+              TOTAL FACTURA:  ".number_format($datos_pre['tota'],2,'.','')."
+                   EFECTIVO:  ".number_format($efectivo,2,'.','')."</td>
+                     CAMBIO:   ".number_format($saldo,2,'.','')."</td>
 ----------------------------------------</pre>";
 $datos_extra = "<pre>
 Email: ".$datos_pre['cliente']['Email']."
@@ -577,6 +480,12 @@ Email: ".$datos_pre['cliente']['Email']."
     $where[0]['valor'] = $parametros['cod'];
     $where[0]['tipo'] = 'string';
     return update_generico($datos,'Clientes',$where);
+  }
+
+  function buscar_facturas($parametros)
+  {
+    $tbl = $this->modelo->lista_facturas($parametros['factura'],$parametros['query']);
+    return $tbl;
   }
         
 }

@@ -216,7 +216,7 @@ class articulosM
 		$sql ="SELECT CI_RUC,Cliente,CP.Cta,CP.Codigo as 'Codigo'
 		FROM Clientes C
 		INNER JOIN Catalogo_CxCxP CP ON C.Codigo = CP.Codigo
-		WHERE CP.Item = '".$_SESSION['INGRESO']['item']."' AND CP.Periodo = '.' AND LEN(Cliente)>1 AND CP.TC  ='P' AND Cta = '".$cta."'";
+		WHERE CP.Item = '".$_SESSION['INGRESO']['item']."' AND CP.Periodo = '".$_SESSION['INGRESO']['periodo']."' AND LEN(Cliente)>1 AND CP.TC  ='P' AND Cta = '".$cta."'";
 		if($query)
 		{
 			$sql.=" AND Cliente LIKE '%".$query."%'";

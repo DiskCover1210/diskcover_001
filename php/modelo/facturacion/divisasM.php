@@ -45,6 +45,22 @@ class divisasM
     return $stmt;
   }
 
+
+   function getProductos_datos($codigo){
+
+    $sql="SELECT Producto, Codigo_Inv, Codigo_Barra, PVP, Div
+          FROM Catalogo_Productos 
+          WHERE Item = '".$_SESSION['INGRESO']['item']."' 
+          AND Periodo = '".$_SESSION['INGRESO']['periodo']."' 
+          AND TC = 'P' 
+          AND  Codigo_Inv = '".$codigo."'
+          ORDER BY Producto,Codigo_Inv ";
+          // print_r($sql);die();
+    $stmt = $this->db->datos($sql);
+    return $stmt;
+  }
+
+
   public function deleteAsiento($codigoCliente){
     $sql = "DELETE
           FROM Asiento_F
@@ -152,7 +168,7 @@ class divisasM
   }
 
     public function cargarLineas(){
-    $sql = "SELECT CODIGO,CANT AS 'CANTIDAD',CANT_BONIF AS 'CANTIDAD BONIF',PRODUCTO,PRECIO2 AS 'PRECIO',TOTAL 
+    $sql = "SELECT CODIGO,CANT as 'CANTIDAD',PRODUCTO,PRECIO2 AS 'PRECIO',TOTAL
             FROM Asiento_F
             WHERE Item = '".$_SESSION['INGRESO']['item']."' 
             AND CodigoU = '".$_SESSION['INGRESO']['CodigoU']."'
@@ -161,6 +177,31 @@ class divisasM
            $datos = $this->db->datos($sql);
            $stmt =  grilla_generica_new($sql,'Asiento_F','tbl_lineas',false,$botones,false,false,1,1,0,$tamaño_tabla=250,4);
      return array('tbl'=>$stmt,'datos'=>$datos);
+  }
+
+  function lista_facturas($factura=false,$query=false)
+  {
+    $sql="SELECT TC,Serie,CodigoC as 'CI',Razon_Social as 'Cliente',Factura
+    FROM Facturas F
+    INNER JOIN Clientes ON CodigoC = Codigo 
+    WHERE Periodo = '".$_SESSION['INGRESO']['periodo']."'
+    AND Item = '".$_SESSION['INGRESO']['item']."'";
+    if($query)
+    {
+      $sql.=" AND Razon_Social+' '+CodigoC like '%".$query."%'";
+    }
+
+    if($factura)
+    {
+      $sql.=" AND Factura like '%".$factura."%'";
+    }
+
+    $sql.="ORDER BY F.ID DESC  OFFSET 0 ROWS FETCH NEXT 100 ROWS ONLY";
+
+    $botones[0] = array('boton'=>'Re imprimir', 'icono'=>'<i class="fa fa-print"></i>', 'tipo'=>'info', 'id'=>'Factura,Serie,CI,TC');
+    $stmt =  grilla_generica_new($sql,'Facturas F','tbl_facturas',false,$botones,false,false,1,1,0,$tamaño_tabla=250,2);
+    $datos = $this->db->datos($sql);
+    return $stmt;
   }
 }
 

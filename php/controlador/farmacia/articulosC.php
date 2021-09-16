@@ -583,6 +583,10 @@ class articulosC
 		 }else{
 		  
 			$ruc = $this->modelo->proveedores(false,$parametros['prove']);
+			if(count($ruc)==0)
+			{
+				$ruc[0]['CI_RUC'] = '.';
+			}
 			$res = $this->generar_factura_entrada($parametros['num_fact'],$ruc[0]['CI_RUC'],$parametros['prove']);
 			return $res;
 		}
@@ -606,7 +610,9 @@ class articulosC
 		// print_r($asientos_SC);die();
 		foreach ($asientos_SC as $key => $value) {
 			 $cuenta = $this->ing_descargos->catalogo_cuentas($value['CONTRA_CTA']);
+			 if(count($cuenta)==0){ $cuenta[0]['Cuenta'] = '.'; $cuenta[0]['TC'] = 'CD';$cuenta[0]['Cuenta']='.'; $cuenta[0]['TC']='.';}
 			 $sub = $this->modelo->proveedores($query=false,$value['SUBCTA']);
+			 if(count($sub)==0){$sub[0]['Cliente']='.';}
 			 $nombre=$sub[0]['Cliente'];
 			 // print_r($sub);die();
 			$parametros = array(
@@ -711,7 +717,8 @@ class articulosC
         // asiento para el haber
 		$asiento_haber  =  $this->modelo->datos_asiento_debe($orden,$CodigoPrv);
 		foreach ($asiento_haber as $key => $value) {
-			$cuenta = $this->ing_descargos->catalogo_cuentas($value['cuenta']);			
+			$cuenta = $this->ing_descargos->catalogo_cuentas($value['cuenta']);
+			if(count($cuenta)==0){$cuenta[0]['Cuenta']='.';}			
 				$parametros_haber = array(
                   "va" =>round($value['total'],2),//valor que se trae del otal sumado
                   "dconcepto1" =>$cuenta[0]['Cuenta'],

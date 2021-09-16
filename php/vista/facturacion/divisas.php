@@ -19,7 +19,9 @@
       e.preventDefault();
     }
   });
-  $(document).ready(function () {
+  $(document).ready(function () {    
+     $("#total").blur(function () { $('#btn_cal').trigger( "focus" );});
+     $("#cantidad").blur(function () { $('#btn_cal').trigger( "focus" );});
     limpiar_grid();
     cargar_grilla();
     catalogoLineas();
@@ -66,6 +68,9 @@
     producto0 = $("#producto").val();
     producto = producto0.split("/");
     $("#preciounitario").val(producto[2]);
+    var pro = producto[1].replace('Venta','');
+    var pro = pro.replace('Compra','');
+    $('#tipo_p').text(pro);
     $("#total").val(0);
     $("#cantidad").val(0);
   }
@@ -131,7 +136,85 @@
     });
   }
 
-  function calcular(){
+  function calcular()
+  {
+    var ti = $('#tipo_cal').val();
+    var DCLinea = $("#DCLinea").val();
+    var doc = DCLinea.split(' ');
+    var doc = doc[0];
+    if(ti == 'T')
+    {
+      calcular_totales(doc);
+    }else
+    {
+      calcular_canti(doc);
+    }
+  }
+
+  function calcular_canti(doc)
+  {
+    var TextVUnit = parseFloat($("#preciounitario").val());
+    // var TextCant = parseFloat($("#cantidad").val());
+    var TextVTotal = parseFloat($("#total").val());
+    var producto = $("#producto").val();
+    var producto = producto.split("/");
+    var Div = producto[3];
+    if (TextVUnit <= 0) {
+      $("#preciounitario").val(1);
+    }
+    if(doc=='FA')
+    {
+     if (Div == "1") {
+        TextCant = (TextVTotal / TextVUnit);
+      }else{
+
+        TextCant = (TextVTotal * TextVUnit);
+      }
+    }else
+    {
+      if (Div == "1") {
+        TextCant = (TextVTotal * TextVUnit);
+      }else{
+
+        TextCant = (TextVTotal / TextVUnit);
+      }
+
+    }
+    $("#cantidad").val(parseFloat(TextCant).toFixed(4));
+  }
+
+  function calcular_totales(doc){
+    var TextVUnit = parseFloat($("#preciounitario").val());
+    var TextCant = parseFloat($("#cantidad").val());
+    // var TextVTotal = parseFloat($("#total").val());
+    var producto = $("#producto").val();
+    var producto = producto.split("/");
+    var Div = producto[3];
+    if (TextVUnit <= 0) {
+      $("#preciounitario").val(1);
+    }
+    if(doc=='FA')
+    {
+
+    if (Div == "1") {
+        TextVTotal = (TextCant * TextVUnit);
+      }else{
+        TextVTotal = (TextCant / TextVUnit);
+      }
+    }else
+    {
+      if (Div == "1") {
+        TextVTotal = (TextCant / TextVUnit);
+      }else{
+        TextVTotal = (TextCant * TextVUnit);
+      }
+
+    }
+      $("#total").val(parseFloat(TextVTotal).toFixed(4));
+  
+  }
+
+   function calcular1(){
     TextVUnit = Number.parseFloat($("#preciounitario").val());
     TextCant = Number.parseFloat($("#cantidad").val());
     TextVTotal = Number.parseFloat($("#total").val());
@@ -158,76 +241,7 @@
     }
   }
 
-  // function aceptar1(){
-  //   producto = $("#producto").val();
-  //   pvp = $("#preciounitario").val();
-  //   total = $("#total").val();
-  //   cantidad = $("#cantidad").val();
-  //   producto = producto.split("/");
-  //   console.log(producto);
-  //   console.log(total);
-  //   var table = document.getElementById('customers');
-  //   var rowLength = table.rows.length;    
-  //   var tr = `<tr>
-  //     <td><input type="text" id="codigo`+rowLength+`" value="`+producto[0]+`" disabled class="sinborde"></td>
-  //     <td><input type="text" id="cantidad`+rowLength+`" value="`+cantidad+`" disabled class="sinborde"></td>
-  //     <td><input type="text" id=boni"`+rowLength+`" value="`+cantidad+`" disabled class="sinborde"></td>
-  //     <td><input type="text" id="producto`+rowLength+`" value="`+producto[1]+`" disabled class="sinborde"></td>
-  //     <td><input type="text" id="pvp`+rowLength+`" value="`+pvp+`" disabled class="sinborde"></td>
-  //     <td><input type="text" id="total`+rowLength+`" value="`+total+`" disabled class="sinborde"></td>
-  //   </tr>`;
-  //   $("#cuerpo").append(tr);
-  //   calcularTotal();
-  //   datosLineas = [];
-  //   var year = new Date().getFullYear();
-  //   var rowLength = table.rows.length;
-  //   total = 0;
-  //   key = 0;
-  //   for(var i=1; i<rowLength; i+=1){
-  //     datosLineas[key] = {
-  //       'Codigo' : $("#codigo"+i).val(),
-  //       'CodigoL' : $("#codigo"+i).val(),
-  //       'Producto' : $("#producto"+i).val(),
-  //       'Precio' : $("#pvp"+i).val(),
-  //       'Total_Desc' : 0,
-  //       'Total_Desc2' : 0,
-  //       'Iva' : 0,
-  //       'Total' : $("#total"+i).val(),
-  //       'MiMes' : '',
-  //       'Periodo' : year,
-  //       'Cantidad' : $("#cantidad"+i).val(),
-  //     };
-  //     key++;
-  //   }
-  //   // var datosLineas = 
-  //   // {
-  //   //     'Codigo' : producto[0],
-  //   //     'CodigoL' : producto[0],
-  //   //     'Producto' : producto[1],
-  //   //     'Precio' :pvp,
-  //   //     'Total_Desc' : 0,
-  //   //     'Total_Desc2' : 0,
-  //   //     'Iva' : 0,
-  //   //     'Total':total,
-  //   //     'MiMes': '',
-  //   //     'Periodo' :year,
-  //   //     'Cantidad' :cantidad,
-  //   // }
-  //   console.log(datosLineas);
-  //   codigoCliente = $("#codigoCliente").val();
-  //   $.ajax({
-  //     type: "POST",
-  //     url: '../controlador/facturacion/divisasC.php?guardarLineas=true',
-  //     data: {
-  //       'codigoCliente' : codigoCliente,
-  //       'datos' : datosLineas,
-  //     }, 
-  //     success: function(data)
-  //     {
-  //       // cargar_grilla();        
-  //     }
-  //   });
-  // }
+ 
 
 function aceptar(){
     producto = $("#producto").val();
@@ -282,9 +296,9 @@ function aceptar(){
       success: function(data)
       {
         $('#tbl_divisas').html(data.tbl);   
-        $("#total0").val(parseFloat(data.total).toFixed(4));
-        $("#totalFac").val(parseFloat(data.total).toFixed(4));
-        $("#efectivo").val(parseFloat(data.total).toFixed(4));
+        $("#total0").val(parseFloat(data.total).toFixed(2));
+        $("#totalFac").val(parseFloat(data.total).toFixed(2));
+        $("#efectivo").val(parseFloat(data.total).toFixed(2));
         $('#myModal_espera').modal('hide');
       }
     });
@@ -590,6 +604,41 @@ function aceptar(){
                      
   }
 
+  function modal_reimprimir()
+  {
+    $('#reimprimir').modal('show');
+    cargar_facs();
+   
+  }
+  function cargar_facs()
+  {
+     var parametros = 
+    {
+      'factura':$('#txt_fac').val(),
+      'query':$('#txt_buscar').val(),
+    }
+    $.ajax({
+      url:'../controlador/facturacion/divisasC.php?buscar_facturas=true',
+      type:'post',
+      dataType:'json',
+      data:{parametros:parametros},
+      success: function(response){
+        $('#tbl_fac').html(response);
+        // console.log(response);
+       }
+    });
+
+  }
+
+  function Re_imprimir(fac,serie,ci,tc)
+  {
+ var url = '../controlador/facturacion/divisasC.php?ticketPDF=true&fac='+fac+'&serie='+serie+'&CI='+ci+'&TC='+tc+'&efectivo=0.0000&saldo=0.00&pdf=no';
+     var html='<iframe style="width:100%; height:50vw;" src="'+url+'&pdf=no" frameborder="0" allowfullscreen id="re_ticket"></iframe>';
+    $('#re_frame').html(html);
+    document.getElementById('re_ticket').contentWindow.print();
+                     
+  }
+
 
 </script>
 <div class="container" id="container1">
@@ -653,49 +702,30 @@ function aceptar(){
             <input type="text" name="preciounitario" id="preciounitario" value="101.7900" class="form-control input-sm text-right">
           </div>
         </div>
-        <div class="row">
+        <div class="row">          
+          <input type="hidden" name="" id="tipo_cal" value="T">
           <div class="col-sm-4 col-sm-offset-1">
-            <label>TOTAL EN S/.</label>
-            <input type="text" name="total" id="total" value="0.00" class="form-control input-sm text-right" onblur="$('#cantidad').val(0)">
+            <label>TOTAL EN DOLARES S/.</label>
+            <input type="text" name="total" id="total" value="0.00" class="form-control input-sm text-right" onblur="$('#tipo_cal').val('C')">
           </div>
           <div class="col-sm-4">
-            <label>Cantidad Cambio</label>
-            <input type="text" name="cantidad" id="cantidad" value="0.00" class="form-control input-sm text-right" onblur="$('#total').val(0)">
+            <label>Cantidad <label id="tipo_p"></label> </label>
+            <input type="text" name="cantidad" id="cantidad" value="0.00" class="form-control input-sm text-right" onblur="$('#tipo_cal').val('T')">
           </div>
           <div class=" col-sm-2">
-              <a title="Calcular" class="btn btn-default" tabindex="22">
+              <a title="Calcular" class="btn btn-default" tabindex="22" id="btn_cal">
                 <img src="../../img/png/calculadora.png" width="25" height="30" onclick="calcular();">
               </a>
               <a title="Aprobar" class="btn btn-default" tabindex="23" onclick="calcular();aceptar();">
                 <img src="../../img/png/aprobar.png" width="25" height="30">
               </a>
+              <a title="Buscar y re imprimir" class="btn btn-default" tabindex="23" onclick="modal_reimprimir()">
+                <img src="../../img/png/re_print.png" width="25" height="30">
+              </a>
           </div>
         </div>
         <div class="row"><br>
-          <!-- <div class="col-sm-12">
-            <div class="tab-content" style="background-color:#E7F5FF">
-              <div id="home" class="tab-pane fade in active">
-                <div class="table-responsive" id="tabla_" style="overflow-y: scroll; height:250px; width: auto;">
-                  <div class="sombra" style>
-                    <table border class="table table-striped table-hover" id="customers" tabindex="14" >
-                      <thead>
-                        <tr>
-                          <th style="border: #b2b2b2 1px solid;">Código</th>
-                          <th style="border: #b2b2b2 1px solid;">Cantidad</th>
-                          <th style="border: #b2b2b2 1px solid;">Cant Bonf</th>
-                          <th style="border: #b2b2b2 1px solid;">Producto</th>
-                          <th style="border: #b2b2b2 1px solid;">Precio</th>
-                          <th style="border: #b2b2b2 1px solid;">Total</th>
-                        </tr>
-                      </thead>
-                      <tbody id="cuerpo">
-                      </tbody>
-                    </table>          
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div> -->
+         
           <div class="col-sm-12" id="tbl_divisas" style="height:300px">
            
           </div>
@@ -781,6 +811,46 @@ function aceptar(){
       </div>
       <div class="modal-body">
           <iframe  id="FCliente" width="100%" height="400px" marginheight="0" frameborder="0"></iframe>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+ <!-- Fin Modal cliente nuevo-->
+
+ <!-- buscar y reimprimir -->
+<div id="reimprimir" class="modal fade" role="dialog">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h4 class="modal-title">Comprobantes procesados</h4>
+      </div>
+      <div class="modal-body">
+         <div class="row">
+           <div class="col-sm-8">
+             <b>Nombre Cliente / CI / RUC</b>
+             <input type="text" name="txt_buscar" id="txt_buscar" class="form-control input-sm" placeholder="Nombre - CI - RUC " onkeyup="cargar_facs()">
+           </div>
+            <div class="col-sm-4">
+             <b>Numero de comprobante</b>
+             <input type="text" name="txt_fac" id="txt_fac" class="form-control input-sm" placeholder="Numero comprobante" onkeyup="cargar_facs()">
+           </div>
+         </div>
+           <br>
+         <div class="row">
+           <div class="col-sm-12">
+            <div id="re_frame" style="display: none;">
+              
+            </div>
+            <div id="tbl_fac" style="overflow-y:auto;height: 300px;">
+              
+            </div>
+           </div>
+         </div>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>

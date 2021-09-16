@@ -6391,7 +6391,7 @@ function costo_venta($codigo_inv)  // optimizado
     return $resultado[0];
   }
 
-function grilla_generica_new($sql,$tabla,$id_tabla=false,$titulo=false,$botones=false,$check=false,$imagen=false,$border=1,$sombreado=1,$head_fijo=1,$tamaño_tabla=300,$num_decimales=2,$num_reg=false,$paginacion_view= false)
+function grilla_generica_new($sql,$tabla,$id_tabla=false,$titulo=false,$botones=false,$check=false,$imagen=false,$border=1,$sombreado=1,$head_fijo=1,$tamaño_tabla=300,$num_decimales=2,$num_reg=false,$paginacion_view= false,$estilo=true)
 {  
   $conn = new db();
 
@@ -6475,27 +6475,31 @@ if ($pos === false) {
      {
             $datos[]=$row;
      }
- $tbl =' <style type="text/css">
+ $tbl =' <style type="text/css">';
+  if($estilo)
+  {
+    $tbl.='
   #'.$id_tabla.' tbody tr:nth-child(even) { background:#fffff;}
   #'.$id_tabla.' tbody tr:nth-child(odd) { background: #e2fbff;}
   #'.$id_tabla.' tbody tr:nth-child(even):hover {  background: #DDB;}
   #'.$id_tabla.' thead { background: #afd6e2; }
   #'.$id_tabla.' tbody tr:nth-child(odd):hover {  background: #DDA;}
  ';
+ }
 
- if($border)
+ if($border && $estilo)
  {
   $tbl.=' #'.$id_tabla.' table {border-collapse: collapse;}
   #'.$id_tabla.' table, th, td {  border: solid 1px #aba0a0;  padding: 2px;  }'; 
  }
 
- if($sombreado)
+ if($sombreado && $estilo)
  {
   $tbl.='#'.$id_tabla.' tbody { box-shadow: 10px 10px 6px rgba(0, 0, 0, 0.6);  }
    #'.$id_tabla.' thead { background: #afd6e2;  box-shadow: 10px 0px 6px rgba(0, 0, 0, 0.6);} ';
  }
 
- if($head_fijo)
+ if($head_fijo && $estilo)
  {
  $tbl.='#'.$id_tabla.' tbody { display:block; height:'.$tamaño_tabla.'px;  overflow-y:auto; width:fit-content;}
   #'.$id_tabla.' thead,tbody tr {    display:table;  width:100%;  table-layout:fixed; } 

@@ -889,7 +889,7 @@ function generar_xml($cabecera,$detalle)
 		}
 		
 		$xml_factura->setAttribute( "id", "comprobante" );
-		$xml_factura->setAttribute( "version", "1.0.0" );
+		$xml_factura->setAttribute( "version", "1.1.0" );
 		$xml_infoTributaria = $xml->createElement( "infoTributaria" );
 		$xml_ambiente = $xml->createElement( "ambiente",$ambiente );
 		$xml_tipoEmision = $xml->createElement( "tipoEmision",'1' );
@@ -1069,7 +1069,7 @@ function generar_xml($cabecera,$detalle)
 				$xml_descripcion = $xml->createElement( "descripcion",$value['Producto'] );
 				$xml_unidadMedida = $xml->createElement( "unidadMedida",$cabecera['moneda'] );
 				$xml_cantidad = $xml->createElement( "cantidad",$value['Cantidad'] );
-				$xml_precioUnitario = $xml->createElement( "precioUnitario",round($value['Precio'],2) );
+				$xml_precioUnitario = $xml->createElement( "precioUnitario",round($value['Precio'],6) );
 				$xml_descuento = $xml->createElement( "descuento",round($value['descuento'],2) );
 				$xml_precioTotalSinImpuesto = $xml->createElement( "precioTotalSinImpuesto",round($value['SubTotal'],2) );
 				
