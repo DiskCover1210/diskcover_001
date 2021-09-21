@@ -85,7 +85,7 @@ class db
 
 	function datos($sql,$tipo=false)
 	{
-		if($tipo=='MY SQL')
+		if($tipo=='MY SQL' || $tipo =='MYSQL')
 		{
 			$conn = $this->MySQL();
 			$resultado = mysqli_query($conn, $sql);
@@ -123,7 +123,7 @@ class db
 
 	function existe_registro($sql,$tipo=false)
 	{
-		if($tipo=='MY SQL')
+		if($tipo=='MY SQL' || $tipo =='MYSQL')
 		{
 			$conn = $this->MySQL();
 			$resultado = mysqli_query($conn, $sql);
@@ -174,7 +174,7 @@ class db
 
 	function String_Sql($sql,$tipo=false)
 	{
-		if($tipo=='MY SQL')
+		if($tipo=='MY SQL'|| $tipo =='MYSQL')
 		{
 			$conn = $this->MySQL();
 			$resultado = mysqli_query($conn, $sql);
@@ -185,6 +185,7 @@ class db
 		    }
 
 		    mysqli_close($conn);
+		    // print_r('expression');die();
 		    return 1;
 
 		}else
@@ -207,7 +208,7 @@ class db
 
 	function ejecutar_procesos_almacenados($sql,$parametros,$tipo=false)
 	{
-		if($tipo=='MY SQL')
+		if($tipo=='MY SQL' || $tipo =='MYSQL')
 		{
 			// colocar funcion para ejecutar procesos almacenados en mysql
 

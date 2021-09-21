@@ -47,6 +47,12 @@ if(isset($_GET['imprimir_excel']))
 	$controlador->imprimir_excel($parametros);	
 }
 
+if(isset($_GET['Delete_registros']))
+{   
+	$parametros= $_POST;
+	echo json_encode($controlador->delete_registros($parametros));	
+}
+
 class auditoriaC
 {
 	
@@ -182,6 +188,11 @@ class auditoriaC
   		$reg[] = array('Fecha'=>$value['Fecha'],'Hora'=>$value['Hora'],'Entidad'=>$value['enti'],'IP_Acceso'=>$value['IP_Acceso'],'Aplicacion'=>$value['Aplicacion'],'Tarea'=>$value['Tarea'],'Empresa'=>$empresas[0]['text'],'Usuario'=>$value['nom']); 
   	}
 	 $this->modelo->imprimir_excel($reg);
+  }
+
+  function delete_registros($parametros)
+  {
+  	 return $this->modelo->delete_registros($parametros);
   }
 
 }

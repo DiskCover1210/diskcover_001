@@ -66,8 +66,8 @@
   	var id =  '<?php echo $id;?>';
   	var nom =  '<?php echo $nom;?>';
 
-  	console.log(ent);
-  	console.log(id);
+  	// console.log(ent);
+  	// console.log(id);
   	if(ent != '1792164710001')
   	{
   		$('#ddl_entidad').append($('<option>',{value: ent+'_'+id, text: nom ,selected: true }));
@@ -85,7 +85,7 @@
   }
    function autocmpletar_empresa(){
        let entidad = $('#ddl_entidad').val().split('_');	
-       console.log(entidad);
+       // console.log(entidad);
       $('#ddl_empresa').select2({
         placeholder: 'Seleccione una Usuario',
         width:'90%',
@@ -209,6 +209,57 @@ function reporte_excel()
 
 }
 
+function eliminar_reg()
+{
+  var desde  = $('#txt_desde').val();
+  var hasta  = $('#txt_hasta').val();
+     Swal.fire({
+       title: 'Esta seguro que quiere Eliminar registros del '+desde+' al '+hasta,
+       text: "Esta usted seguro de que quiere modificar!",
+       type: 'warning',
+       showCancelButton: true,
+       confirmButtonColor: '#3085d6',
+       cancelButtonColor: '#d33',
+       confirmButtonText: 'Si!'
+     }).then((result) => {
+       if (result.value==true) {
+        $('#clave_supervisor').modal('show');
+        $('#TipoSuper_MYSQL').val('Supervisor');
+       }
+     })
+}
+
+function resp_clave_ingreso(response)
+{
+  if(response.respuesta == 1)
+  {
+    // alert('Eliminando');
+    Delete_registros();
+  }
+}
+
+function Delete_registros()
+{
+   var datos =  $("#filtros").serialize();
+     $.ajax({
+         data:  datos,
+         url: '../controlador/auditoria/auditoriaC.php?Delete_registros=true',
+         type:  'post',
+         dataType: 'json',
+         success:  function (response) {
+           if(response ==1)
+           {
+            Swal.fire('Registros eliminados','','success');
+            $('#clave_supervisor').modal('hide');
+           } 
+          
+          } 
+       });
+
+
+}
+
+
 </script>
 
 <div class="container-lg">
@@ -224,6 +275,9 @@ function reporte_excel()
         </div>
         <div class="col-xs-2 col-md-2 col-sm-2 col-lg-1">
             <button type="button" class="btn btn-default" title="Generar pdf" onclick="reporte_excel()"><img src="../../img/png/table_excel.png"></button>
+        </div>
+        <div class="col-xs-2 col-md-2 col-sm-2 col-lg-1">
+            <button type="button" class="btn btn-default" title="Eliminar Registro del periodo" onclick="eliminar_reg()"><img src="../../img/png/delete_file.png"></button>
         </div>
  </div>
 </div>

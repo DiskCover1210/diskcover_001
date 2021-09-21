@@ -621,7 +621,25 @@ class usuario_model{
 	   	 $IngClaves_Caption = $datos[0]["Nombre_Completo"];
 		}
 	   return array('clave'=>$ClaveGeneral,'nombre'=>$IngClaves_Caption);
-
 	}
+
+	function IngClave_MYSQL($parametros)
+	{
+
+    $ClaveGeneral = '';
+	  $IngClaves_Caption  = '';
+		$sql = "SELECT * 
+		FROM acceso_usuarios
+		WHERE Usuario = '".$parametros['tipo']."' ";
+		
+		$datos = $this->db1->datos($sql,'MY SQL');
+		if(count($datos)>0)
+		{
+			 $ClaveGeneral = $datos[0]["Clave"];
+	   	 $IngClaves_Caption = $datos[0]["Nombre_Usuario"];
+		}
+	   return array('clave'=>$ClaveGeneral,'nombre'=>$IngClaves_Caption);
+	}
+
 }
 ?>

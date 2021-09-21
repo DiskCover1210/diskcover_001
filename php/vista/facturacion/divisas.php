@@ -1,3 +1,4 @@
+
 <?php
   include "../controlador/facturacion/divisasC.php";
   $divisas = new divisasC();
@@ -317,6 +318,8 @@ function aceptar(){
   }
 
   function guardarFactura(){
+    
+    
     validarDatos = $("#total").val();
     totalFac = $("#totalFac").val();
     codigoCliente = $("#codigoCliente").val();
@@ -361,6 +364,12 @@ function aceptar(){
         Total = $("#total").val();
         
         //var confirmar = confirm("Esta seguro que desea guardar \n La factura No."+TextFacturaNo);
+        if(validador_correo()==false)
+          {
+            return false;
+            }
+
+
         Swal.fire({
           title: 'Esta seguro?',
           text: "Esta seguro que desea guardar \n La factura No."+TextFacturaNo,
@@ -639,6 +648,22 @@ function aceptar(){
                      
   }
 
+function validador_correo()
+{
+    var campo = $('#email').val();   
+    var emailRegex = /^[-\w.%+]{1,64}@(?:[A-Z0-9-]{1,63}\.){1,125}[A-Z]{2,63}$/i;
+    //Se muestra un texto a modo de ejemplo, luego va a ser un icono
+    if (emailRegex.test(campo)) {
+      // alert("válido");
+      return true;
+
+    } else {
+      Swal.fire('Email incorrecto','','info');
+      console.log(campo);
+      return false;
+    }
+}
+
 
 </script>
 <div class="container" id="container1">
@@ -669,7 +694,7 @@ function aceptar(){
           </div>
           <div class="col-sm-3">
             <b>Email:</b>
-            <input type="text" class="form-control input-sm" placeholder="Email" name="email" id="email">            
+            <input type="text" class="form-control input-sm" placeholder="Email" name="email" id="email" onblur="validador_correo()">            
           </div>
            <div class="col-sm-2">
             <b>Telefono:</b>

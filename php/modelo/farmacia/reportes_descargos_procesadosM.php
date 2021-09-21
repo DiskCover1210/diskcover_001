@@ -37,7 +37,8 @@ class reportes_descargos_procesadosM
 		// print_r($sql);die();
 	    $botones[0] = array('boton'=>'Ver detalle','icono'=>'<i class="fa fa-reorder"></i>', 'tipo'=>'primary', 'id'=>'Numero');
 	    $botones[1] = array('boton'=>'Ver Comprobante','icono'=>'<i class="fa fa-eye"></i>', 'tipo'=>'default', 'id'=>'Numero');
-	    $datos = grilla_generica_new($sql,'Comprobantes CP',$id_tabla=false,false,$botones,false,$imagen=false,1,null,null,null,2,$paginacion);
+		$num_reg = array('0','100','cargar_pedidos()');
+	    $datos = grilla_generica_new($sql,'Comprobantes CP',$id_tabla=false,false,$botones,false,$imagen=false,1,1,1,300,2,$num_reg,false);
 
       	// $datos = grilla_generica_new($sql,' Comprobantes CP ',$id_tabla=false,null,$botones,null,false,null,null,null,null,null,null,$paginacion);
 
@@ -121,6 +122,31 @@ class reportes_descargos_procesadosM
 		      $datos = $this->conn->datos($sql);
         return $datos;
 	}
+
+	function trans_kardex_linea_devolucion($Codigo_Inv,$factura)
+	{
+
+		$sql="SELECT *  FROM Trans_Kardex WHERE 1=1 AND Item = '".$_SESSION['INGRESO']['item']."' AND Periodo = '".$_SESSION['INGRESO']['periodo']."' AND  Factura = '".$factura."' and Codigo_Inv = '".$Codigo_Inv."' ";
+		// print_r($sql);die();
+		$datos = $this->conn->datos($sql);
+        return $datos;
+
+	}
+
+	function servicios()
+	{
+		$sql ="SELECT Codigo_Inv,Producto FROM Catalogo_Productos 
+			WHERE TC='P' 
+			AND Cta_Inventario='0' 
+			AND Cta_Costo_Venta = '0'
+			AND Cta_Ventas <> '0'
+			AND Cta_Ventas_0 <> '0'
+			AND Periodo = '".$_SESSION['INGRESO']['periodo']."'
+			AND Item = '".$_SESSION['INGRESO']['item']."'";
+			$datos = $this->conn->datos($sql);
+        return $datos;
+	}
+
 }
 
 ?>

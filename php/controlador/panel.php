@@ -22,6 +22,13 @@ if(isset($_GET['IngClaves']))
 	echo json_encode(IngClaves($parametros));
 }
 
+if(isset($_GET['IngClaves_MYSQL']))
+{
+	$parametros = $_POST['parametros'];
+	// print_r($parametro);die();
+	echo json_encode(IngClaves_MYSQL($parametros));
+}
+
 function IngClaves($parametros)
 {
 	// print_r($_SESSION['INGRESO']);die();
@@ -61,6 +68,49 @@ function IngClaves($parametros)
 	}
 	
 }
+
+function IngClaves_MYSQL($parametros)
+{
+	// print_r($_SESSION['INGRESO']);die();
+
+	// print_r($parametros);die();
+	$mensaje ='';
+	$resultado = -1;
+	$intentos = $parametros['intentos'];
+
+	$per=new usuario_model();
+	if($parametros['pass']=='')
+	{
+		$mensaje = 'Ingrese una clave valida';
+
+	}else
+	{
+		$clave = $per->IngClave_MYSQL($parametros);
+		// print_r($clave);
+		// print_r($parametros);
+		// die();
+		if($parametros['pass']==$clave['clave'] and $parametros['intentos']<3)
+		{
+			$resultado = 1;
+		}else if($parametros['intentos']>=3)
+		{
+			$mensaje = "Sr(a). ".$_SESSION['INGRESO']['Nombre'].": \n 
+             Usted no está autorizado \n
+             a ingresar a esta opción.";
+      $intentos= $parametros['intentos']+1;
+
+		}else
+		{
+			 $mensaje = "Sr(a). ".$_SESSION['INGRESO']['Nombre'].": \n  Clave incorrecta,";
+			 $intentos= $parametros['intentos']+1;
+
+		}
+
+		return array('msj'=>$mensaje,'respuesta'=>$resultado,'intentos'=>$intentos);
+	}
+	
+}
+
 
 function variables_sistema($EmpresaEntidad,$NombreEmp,$ItemEmp)
 {

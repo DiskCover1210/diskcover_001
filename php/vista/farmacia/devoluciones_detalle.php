@@ -98,6 +98,7 @@
         {
           $('#tbl_body').html(response.tabla);
           $('#paciente').val(response.cliente[0].Cliente);
+          $('#cod').val(response.cliente[0].CodigoL);
           $('#detalle').text(response.cliente[0].Concepto);
           $('#fecha').text(response.cliente[0].Fecha.date);
           $('#comp').val(response.cliente[0].Numero);
@@ -273,8 +274,9 @@ function lista_devolucion()
 
    }
 
-  function generar_factura(numero,prove)
+  function generar_factura(numero)
    {
+    var prove = $('#cod').val();
     // $('#myModal_espera').modal('show');  
      var parametros = 
      {
@@ -366,6 +368,7 @@ function lista_devolucion()
           <div class="col-sm-4">
             <b>Nombre:</b>
             <input type="text" name="paciente" id="paciente" class="form-control input-sm">
+            <input type="hidden" name="cod" id="cod">
           </div>
           <div class="col-sm-6">
             <b>Detalle:</b>
@@ -380,7 +383,7 @@ function lista_devolucion()
       <input type="text" name="txt_query" id="txt_query" class="form-control input-sm" placeholder="Buscar medicamento" onkeyup="cargar_pedido()">
     </div>
     <div class="col-sm-6 text-right">
-      <button id="" class="btn btn-primary" onclick="generar_factura('<?php echo $cod;?>','.')">Generar devolucion</button> 
+      <button id="" class="btn btn-primary" onclick="generar_factura('<?php echo $cod;?>')">Generar devolucion</button> 
     </div>
   </div><br>
   <div class="row">

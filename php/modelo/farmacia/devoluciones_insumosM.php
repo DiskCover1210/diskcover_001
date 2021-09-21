@@ -44,9 +44,21 @@ class devoluciones_insumosM
 
 	function cargar_comprobantes_datos($query=false,$desde='',$hasta='',$tipo='',$numero=false)
 	{
-		$sql="SELECT Numero,CP.Fecha,Concepto,Monto_Total,Cliente FROM Comprobantes CP 
+		// $sql="SELECT Numero,CP.Fecha,Concepto,Monto_Total,Cliente,Codigo FROM Comprobantes CP 
+		// LEFT JOIN Clientes C ON CP.Codigo_B = C.Codigo
+		// WHERE 1=1 AND TP='CD' AND CP.T='N' AND Item = '".$_SESSION['INGRESO']['item']."' AND Periodo = '".$_SESSION['INGRESO']['periodo']."' AND Codigo_B <> '.' AND Numero IN ( SELECT  DISTINCT Numero FROM Trans_Kardex WHERE 1=1 AND Item = '".$_SESSION['INGRESO']['item']."' AND Periodo = '".$_SESSION['INGRESO']['periodo']."'  AND Entrada = 0 )";
+
+
+		$sql = "SELECT DISTINCT CP.Numero,CP.Fecha,Concepto,Monto_Total,Cliente,TK.CodigoL FROM Comprobantes CP 
 		LEFT JOIN Clientes C ON CP.Codigo_B = C.Codigo
-		WHERE 1=1 AND TP='CD' AND CP.T='N' AND Item = '".$_SESSION['INGRESO']['item']."' AND Periodo = '".$_SESSION['INGRESO']['periodo']."' AND Codigo_B <> '.' AND Numero IN ( SELECT  DISTINCT Numero FROM Trans_Kardex WHERE 1=1 AND Item = '".$_SESSION['INGRESO']['item']."' AND Periodo = '".$_SESSION['INGRESO']['periodo']."'  AND Entrada = 0 )";
+		LEFT JOIN Trans_Kardex TK ON CP.Numero = TK.Numero
+		WHERE 1=1 
+		AND CP.TP='CD' 
+		AND CP.T='N' 
+		AND CP.Item = '".$_SESSION['INGRESO']['item']."'  
+		AND CP.Periodo = '".$_SESSION['INGRESO']['periodo']."'  
+		AND Codigo_B <> '.' 
+		AND CP.Numero IN ( SELECT  DISTINCT Numero FROM Trans_Kardex T WHERE 1=1 AND Item = '".$_SESSION['INGRESO']['item']."' AND  Periodo = '".$_SESSION['INGRESO']['periodo']."'    AND Entrada = 0 )";
 		if($tipo =='f')
 		{
 			$sql.= " AND CP.Fecha BETWEEN '".$desde."' AND '".$hasta."'";
@@ -57,8 +69,10 @@ class devoluciones_insumosM
 		}
 		if($numero)
 		{
-			$sql.="AND Numero ='".$numero."'";
+			$sql.="AND CP.Numero ='".$numero."'";
 		}
+
+		// print_r($sql);die();
 		// " AND CP.CodigoU = '".$_SESSION['INGRESO']['CodigoU']."';";
 
 		 return $this->conn->datos($sql);
@@ -78,6 +92,16 @@ class devoluciones_insumosM
 	{
 
 		$sql="SELECT *  FROM Trans_Kardex WHERE 1=1 AND Item = '".$_SESSION['INGRESO']['item']."' AND Periodo = '".$_SESSION['INGRESO']['periodo']."' AND Entrada = 0 AND ID = '".$id."' ";
+		$datos = $this->conn->datos($sql);
+        return $datos;
+
+	}
+
+	function trans_kardex_linea_devolucion($Codigo_Inv,$factura)
+	{
+
+		$sql="SELECT *  FROM Trans_Kardex WHERE 1=1 AND Item = '".$_SESSION['INGRESO']['item']."' AND Periodo = '".$_SESSION['INGRESO']['periodo']."' AND  Factura = '".$factura."' and Codigo_Inv = '".$Codigo_Inv."' ";
+		// print_r($sql);die();
 		$datos = $this->conn->datos($sql);
         return $datos;
 

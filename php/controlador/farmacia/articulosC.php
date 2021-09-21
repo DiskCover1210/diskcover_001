@@ -585,6 +585,10 @@ class articulosC
 			$ruc = $this->modelo->proveedores(false,$parametros['prove']);
 			if(count($ruc)==0)
 			{
+				$ruc = $this->modelo->clientes_all($query=false,$parametros['prove']);
+			}
+			if(count($ruc)==0)
+			{
 				$ruc[0]['CI_RUC'] = '.';
 			}
 			$res = $this->generar_factura_entrada($parametros['num_fact'],$ruc[0]['CI_RUC'],$parametros['prove']);
@@ -600,6 +604,13 @@ class articulosC
 		{
 			return array('resp'=>-3,'com'=>'');
 		}
+		$ruc1 = $ruc;
+
+		//esto se realiza  solo para devoluciones en donde CodigoPrV tiene que ser el codigo de la sub cuenta traido desde la vista
+		if($ruc=='.')
+		{
+			$ruc1 = $CodigoPrv;
+		}
 		$asientos_SC = $this->modelo->datos_asiento_SC($orden,$CodigoPrv);
 
 		$parametros_debe = array();
@@ -610,6 +621,7 @@ class articulosC
 		// print_r($asientos_SC);die();
 		foreach ($asientos_SC as $key => $value) {
 			 $cuenta = $this->ing_descargos->catalogo_cuentas($value['CONTRA_CTA']);
+			 // print_r($cuenta);die();
 			 if(count($cuenta)==0){ $cuenta[0]['Cuenta'] = '.'; $cuenta[0]['TC'] = 'CD';$cuenta[0]['Cuenta']='.'; $cuenta[0]['TC']='.';}
 			 $sub = $this->modelo->proveedores($query=false,$value['SUBCTA']);
 			 if(count($sub)==0){$sub[0]['Cliente']='.';}
@@ -621,7 +633,7 @@ class articulosC
                     'co'=> $value['CONTRA_CTA'],// codigo de cuenta cc
                     'tip'=>$cuenta[0]['TC'],//tipo de cuenta(CE,CD,..--) biene de catalogo subcuentas TC
                     'tic'=> 2, //debito o credito (1 o 2);
-                    'sub'=> $ruc, //Codigo se trae catalogo subcuenta o ruc del proveedor en caso de que se este ingresando
+                    'sub'=> $ruc1, //Codigo se trae catalogo subcuenta o ruc del proveedor en caso de que se este ingresando
                     'sub2'=>$cuenta[0]['Cuenta'],//nombre del beneficiario
                     'fecha_sc'=> $value['Fecha_DUI']->format('Y-m-d'), //fecha 
                     'fac2'=>$orden,
@@ -634,6 +646,8 @@ class articulosC
                   );
                   $this->ing_descargos->generar_asientos_SC($parametros);
 		}
+		
+		// print_r($asientos_SC);die();
 
 		//asientos para el debe
 		$asiento_debe = $this->modelo->datos_asiento_haber($orden,$CodigoPrv);

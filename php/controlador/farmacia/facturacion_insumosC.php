@@ -24,6 +24,19 @@ if(isset($_GET['reporte_excel']))
 	echo json_encode($controlador->reporte_excel($comprobante));	
 }
 
+if(isset($_GET['servicios']))
+{   
+	// $comprobante= $_GET['comprobante'];
+	// print_r($comprobante);die();
+	echo json_encode($controlador->servicios());	
+}
+
+if(isset($_GET['facturar']))
+{   
+	$comprobante= $_GET['comprobante'];
+	echo json_encode($controlador->facturar($comprobante));	
+}
+
 
 
 class facturacion_insumosC 
@@ -45,6 +58,12 @@ class facturacion_insumosC
 		$tot=0;
 		$num_lineas = count($lineas);
 		foreach ($lineas as $key => $value) {
+			 $devo = $this->descargos_procesados->trans_kardex_linea_devolucion($value['Codigo_Inv'],$comprobante);
+				 if(count($devo)>0)
+				 {
+				 	$value['Salida'] = $value['Salida']-$devo[0]['Entrada'];
+				 }
+				 
 			$key+=1;
 			$uti = number_format($value['Utilidad']*100,2);
 			if($value['Utilidad']=='' || $value['Utilidad']==0)
@@ -83,7 +102,6 @@ class facturacion_insumosC
 		$campoWhere[0]['campo']='ID';
 		$campoWhere[0]['valor']=$parametros['linea'];
 		return update_generico($datos,$tabla,$campoWhere);
-
 	}
 
 	function reporte_excel($comprobante)
@@ -150,9 +168,25 @@ class facturacion_insumosC
 
 	    }
 
-
-
 		excel_generico($titulo,$tablaHTML);
+	}
+
+
+	function servicios()
+	{
+		$datos = $this->descargos_procesados->servicios();
+		$lista = array();
+		foreach ($datos as $key => $value) {
+			$lista[] =array('id'=>$value['Codigo_Inv'],'text'=>$value['Producto']);
+		}
+		// print_r($datos);die();
+		return $lista;
+	}
+
+
+	function facturar($parametro)
+	{
+		print_r($parametro);die();
 	}
 
 

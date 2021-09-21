@@ -1064,17 +1064,18 @@ function digito_verificador_nuevo($NumeroRUC){
                         AND LEN(Codigo) = 10 
                         AND TD NOT IN ('C','R') 
                         AND ISNUMERIC(Codigo) <> 0 ";
-
+                        // print_r($SQLRUC);die();
              $conn = new db();
-             $result = $conn->datos($sql);
-                if(count($result)>0)
+             $result1 = $conn->datos($SQLRUC);
+                if(count($result1)>0)
                 {                  
-                  if(is_null($result[0]['Cod_RUC']))
+                  if(is_null($result1[0]['Cod_RUC']))
                   {
                     $CodigoRUC = 1;
                   }else
                   {
-                    $CodigoRUC = intval(substr($result[0]["Cod_RUC"], 4, strlen($result[0]["Cod_RUC"]))) + 1;
+                    $CodigoRUC = intval(substr($result1[0]["Cod_RUC"], 3, strlen($result1[0]["Cod_RUC"]))) + 1;
+                    // print_r($CodigoRUC);die();
                   }
                   $R_Codigo_RUC_CI = $_SESSION['INGRESO']['item'].generaCeros($CodigoRUC,7);                  
                 }

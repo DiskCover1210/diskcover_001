@@ -3,10 +3,31 @@ $cod = ''; $ci =''; if(isset($_GET['comprobante'])){$cod = $_GET['comprobante'];
 
 <script type="text/javascript">
    $( document ).ready(function() {
+    autocopletar_servicios();
    	 cargar_pedidos();
      var num_li =0;
    
   });
+
+
+      function autocopletar_servicios(){
+      $('#ddl_servicios').select2({
+        placeholder: 'Seleccione',
+        ajax: {
+          url:   '../controlador/farmacia/facturacion_insumosC.php?servicios=true',
+          dataType: 'json',
+          delay: 250,
+          processResults: function (data) {
+            console.log(data);
+            return {
+              results: data
+            };
+          },
+          cache: true
+        }
+      });
+    }
+
 
   function cargar_pedidos()
   {
@@ -131,6 +152,43 @@ function guardar_uti(linea,pos)
 
 }
 
+
+function facturar()
+{
+  var servicio = $('#ddl_servicios').val();
+  if(servicio =='')
+  {
+    Swal.fire('Seleccione un servicio a facturar','','info');
+    return false;
+  }
+
+   var parametros = 
+  {
+    'servicio':servicio,
+    'comprobante':'<?php echo $cod;?>',
+    'total':$('#txt_total2').text(),
+  } 
+      // console.log(parametros);
+     $.ajax({
+      data:  {parametros:parametros},
+      url:   '../controlador/farmacia/facturacion_insumosC.php?facturar=true',
+      type:  'post',
+      dataType: 'json',
+      success:  function (response) { 
+        console.log(response);
+        if(response==1)
+        {
+          Swal.fire('Linea editada','','success')
+          cargar_pedidos();
+          
+        }
+      }
+    });
+
+
+
+}
+
 </script>
 
 <div class="container-lg">
@@ -164,13 +222,7 @@ function guardar_uti(linea,pos)
         </div>
  	</div>
  </div>
-<div class="container"><br>
-  <div class="row">
-    <div class="col-sm-12 text-right">
-      <button class="btn btn-primary" onclick="preview()">Preview</button>   
-      <button class="btn btn-success" onclick="facturar()">Facturar</button>      
-    </div>
-  </div>
+<div class="container"><br> 
 	<div class="row">
 		<div class="panel panel-primary" style="margin: 2px;">
 		  <div class="panel-heading">Datos de paciente</div>
@@ -195,9 +247,20 @@ function guardar_uti(linea,pos)
 		  	
 		  </div>
 		</div>		
-	</div>
-  <div class="row">   
+	</div><br>
+   <div class="row">
     <div class="col-sm-12 text-right">
+      <button class="btn btn-primary" onclick="preview()">Preview</button>   
+      <button class="btn btn-success" onclick="facturar()">Facturar</button>      
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-sm-6">
+      <select class="form-control input-sm" id="ddl_servicios" name="ddl_servicios">
+        <option value="">Seleccione </option>
+      </select>      
+    </div>
+    <div class="col-sm-6 text-right">
       <h4><b>Gran Total:</b> <b id="txt_total2">0.00</b></h4>
     </div>
     
