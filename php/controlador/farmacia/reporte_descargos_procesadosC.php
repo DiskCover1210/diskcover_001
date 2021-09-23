@@ -154,6 +154,7 @@ class reportes_descargos_procesadosC
 
 		             $total = 0;
 		    		 foreach ($lineas as $key => $value2) {
+		    		 
 		    		 	$pro = $this->modelo->producto($value2['Codigo_Inv']);
 		    		 	$pos+=1;
 		    		    $tablaHTML[$pos]['medidas']=array(39,85,16,25,25);
@@ -180,7 +181,7 @@ class reportes_descargos_procesadosC
 		             $tablaHTML[$pos]['borde'] =$borde;
 
 		             $total = 0;
-		    		 foreach ($lineas as $key => $value2) {
+		    		 foreach ($lineas as $key => $value2) {		    		 	
 		    		 	$pro = $this->modelo->producto($value2['Codigo_Inv']);
 		    		 	$pos+=1;
 		    		    $tablaHTML[$pos]['medidas']=array(39,85,16,25,25);
@@ -366,6 +367,18 @@ class reportes_descargos_procesadosC
     	$tablaHTML[$cab]['datos']=array('<b>CODIGO','<b>PRODUCTO','<b>CANTIDAD','<b>PRECIO UNI','<b>PRECIO TOTAL');
     	$tablaHTML[$cab]['borde'] =1;
 	    foreach ($lineas as $key => $value) {
+	    		$devo = $this->modelo->trans_kardex_linea_devolucion($value['Codigo_Inv'],$comprobante);
+							 if(count($devo)>0)
+							 {
+							 	$ca= $value['Salida']-$devo[0]['Entrada'];
+							 	if($ca>=0 )
+							 	{
+							 		$value['Salida']  = $ca;
+							 		$tot1 = $ca*$value['Valor_Unitario'];
+							 		$value['Valor_Total'] =$tot1;
+							 	}
+							 }
+
 	    	if($value1['familia']==substr($value['Codigo_Inv'],0,5))
 	    	{
 
@@ -379,7 +392,10 @@ class reportes_descargos_procesadosC
 					  $uti = number_format($value['utilidad_C']);
 	    	  }
 	    	  $gra_t = ($value['Valor_Total']*$uti)+$value['Valor_Total'];
+	    	  $uni = 0;
+	    	  if($value['Salida']!=0){
 	    	  $uni = ($gra_t/$value['Salida']);
+	    	  }
 	    	 	$tablaHTML[$pos]['medidas']=$tablaHTML[1]['medidas'];
 			    $tablaHTML[$pos]['alineado']= $tablaHTML[1]['alineado'];
 			    $tablaHTML[$pos]['datos']=array($value['Codigo_Inv'],$value['Producto'],$value['Salida'],number_format($uni,2),number_format($gra_t,2));
@@ -458,6 +474,18 @@ class reportes_descargos_procesadosC
     	$tablaHTML[$cab]['datos']=array('<b>CODIGO','<b>PRODUCTO','<b>CANTIDAD','<b>PRECIO UNI','<b>UTILIDAD','<b>PRECIO TOTAL');
     	$tablaHTML[$cab]['borde'] =1;
 	    foreach ($lineas as $key => $value) {
+	    	$devo = $this->modelo->trans_kardex_linea_devolucion($value['Codigo_Inv'],$comprobante);
+							 if(count($devo)>0)
+							 {
+							 	$ca= $value['Salida']-$devo[0]['Entrada'];
+							 	if($ca>=0 )
+							 	{
+							 		$value['Salida']  = $ca;
+							 		$tot1 = $ca*$value['Valor_Unitario'];
+							 		$value['Valor_Total'] =$tot1;
+							 	}
+							 }
+
 	    	if($value1['familia']==substr($value['Codigo_Inv'],0,5))
 	    	{
 
@@ -471,7 +499,10 @@ class reportes_descargos_procesadosC
 					  $uti = number_format($value['utilidad_C']);
 	    	  }
 	    	  $gra_t = ($value['Valor_Total']*$uti)+$value['Valor_Total'];
+	    	  $uni = 0;
+	    	  if($value['Salida']!=0){
 	    	  $uni = ($gra_t/$value['Salida']);
+	    	  }
 	    	 	$tablaHTML[$pos]['medidas']=$tablaHTML[1]['medidas'];
 			    $tablaHTML[$pos]['alineado']= $tablaHTML[1]['alineado'];
 			    $tablaHTML[$pos]['datos']=array($value['Codigo_Inv'],$value['Producto'],$value['Salida'],number_format($uni,2),$value['utilidad_C'],number_format($gra_t,2));

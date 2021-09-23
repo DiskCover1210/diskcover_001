@@ -84,7 +84,7 @@
 
   function cargar_pedido()
   {   
-    $('#modal_espera').moda('show');
+    $('#modal_espera').modal('show');
     var comprobante = '<?php echo $cod; ?>';  
     var query = $('#txt_query').val();    
      // console.log(parametros);
@@ -95,7 +95,7 @@
       dataType: 'json',
       success:  function (response) { 
 
-    $('#modal_espera').moda('hide');
+    $('#modal_espera').modal('hide');
       	console.log(response);
         if(response)
         {

@@ -72,6 +72,18 @@ class reportes_descargos_procesadosM
 
 	}
 
+
+	function trans_kardex_linea_devolucion($Codigo_Inv,$factura)
+	{
+
+		$sql="SELECT *  FROM Trans_Kardex WHERE 1=1 AND Item = '".$_SESSION['INGRESO']['item']."' AND Periodo = '".$_SESSION['INGRESO']['periodo']."' AND  Factura = '".$factura."' and Codigo_Inv = '".$Codigo_Inv."' ";
+		// print_r($sql);die();
+		$datos = $this->conn->datos($sql);
+        return $datos;
+
+	}
+	
+
 	function trans_kardex($numero)
 	{
 
@@ -124,15 +136,15 @@ class reportes_descargos_procesadosM
         return $datos;
 	}
 
-	function trans_kardex_linea_devolucion($Codigo_Inv,$factura)
-	{
+	// function trans_kardex_linea_devolucion($Codigo_Inv,$factura)
+	// {
 
-		$sql="SELECT *  FROM Trans_Kardex WHERE 1=1 AND Item = '".$_SESSION['INGRESO']['item']."' AND Periodo = '".$_SESSION['INGRESO']['periodo']."' AND  Factura = '".$factura."' and Codigo_Inv = '".$Codigo_Inv."' ";
-		// print_r($sql);die();
-		$datos = $this->conn->datos($sql);
-        return $datos;
+	// 	$sql="SELECT *  FROM Trans_Kardex WHERE 1=1 AND Item = '".$_SESSION['INGRESO']['item']."' AND Periodo = '".$_SESSION['INGRESO']['periodo']."' AND  Factura = '".$factura."' and Codigo_Inv = '".$Codigo_Inv."' ";
+	// 	// print_r($sql);die();
+	// 	$datos = $this->conn->datos($sql);
+ //        return $datos;
 
-	}
+	// }
 
 	function servicios()
 	{

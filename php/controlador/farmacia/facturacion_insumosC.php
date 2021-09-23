@@ -148,6 +148,17 @@ class facturacion_insumosC
 	    	$tablaHTML[$cab]['tipo'] ='SUB';
 	    	$total_fam = 0;
 		    foreach ($lineas as $key => $value) {
+		    	 $devo = $this->descargos_procesados->trans_kardex_linea_devolucion($value['Codigo_Inv'],$comprobante);
+				 if(count($devo)>0)
+				 {
+				 	$ca= $value['Salida']-$devo[0]['Entrada'];
+				 	if($ca>=0 )
+				 	{
+				 		$value['Salida']  = $ca;
+				 		$tot1 = $ca*$value['Valor_Unitario'];
+				 		$value['Valor_Total'] =$tot1;
+				 	}
+				 }
 		    	if($value1['familia']==substr($value['Codigo_Inv'],0,5))
 		    	{
 
@@ -224,6 +235,18 @@ class facturacion_insumosC
 	    	$tablaHTML[$cab]['tipo'] ='SUB';
 	    	$total_fam = 0;
 		    foreach ($lineas as $key => $value) {
+		    	 $devo = $this->descargos_procesados->trans_kardex_linea_devolucion($value['Codigo_Inv'],$comprobante);
+				 if(count($devo)>0)
+				 {
+				 	$ca= $value['Salida']-$devo[0]['Entrada'];
+				 	if($ca>=0 )
+				 	{
+				 		$value['Salida']  = $ca;
+				 		$tot1 = $ca*$value['Valor_Unitario'];
+				 		$value['Valor_Total'] =$tot1;
+				 	}
+				 }
+
 		    	if($value1['familia']==substr($value['Codigo_Inv'],0,5))
 		    	{
 
