@@ -7106,6 +7106,20 @@ function datos_tabla($tabla,$campo=false)
     return $Respuesta;
   }
 
+function factura_numero($ser)
+{
+  $conn = new db();
+  $numero='';
+  $sql="SELECT Item, Concepto, Numero, Periodo, ID
+    FROM Codigos
+    WHERE (Item = '".$_SESSION['INGRESO']['item']."') AND 
+    (Periodo = '".$_SESSION['INGRESO']['periodo']."') AND 
+    (Concepto = 'FA_SERIE_".$ser."')"; 
+    $numero = $conn->datos($sql);
+  return $numero;
+}
+
+
   function Grabar_Factura($datos1)
   {
     //conexion
@@ -7148,6 +7162,8 @@ function datos_tabla($tabla,$campo=false)
       AND Item = '".$_SESSION['INGRESO']['item']."' 
       AND Serie = '".$ser."' 
       AND Fact = '".$datos1['TC']."'";
+
+      // print_r($sql);die();
 
        //aparecen vario registros verificar eso
        $row = $conn->datos($sql);

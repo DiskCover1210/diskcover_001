@@ -410,7 +410,7 @@ function Ver_detalle(comprobante)
             <button type="button" class="btn btn-default" title="Generar pdf" onclick="reporte_pdf()"><img src="../../img/png/pdf.png"></button>
         </div>
         <div class="col-xs-2 col-md-2 col-sm-2 col-lg-1">
-            <button type="button" class="btn btn-default" title="Generar pdf" onclick="reporte_excel()"><img src="../../img/png/table_excel.png"></button>
+            <button type="button" class="btn btn-default" title="Generar excel" onclick="reporte_excel()"><img src="../../img/png/table_excel.png"></button>
         </div>
  </div>
 </div>

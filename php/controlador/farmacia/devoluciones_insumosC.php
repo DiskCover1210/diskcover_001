@@ -110,11 +110,15 @@ class devoluciones_insumosC
 			 $devo = $this->modelo->trans_kardex_linea_devolucion($value['Codigo_Inv'],$comprobante);
 				 if(count($devo)>0)
 				 {
-				 	$value['Salida'] = $value['Salida']-$devo[0]['Entrada'];
+				 	$ca= $value['Salida']-$devo[0]['Entrada'];
+				 	if($ca>=0 )
+				 	{
+				 		$value['Salida']  = $ca;
+				 	}
 				 }
 
 			foreach ($registrado['datos'] as $key2 => $value2) {				
-				if($value['Codigo_Inv']==$value2['CODIGO PRODUCTO'])
+				if($value['ID']==$value2['A_No'])
 				{
 					$readonly = 'readonly=""';
 					break;
@@ -179,7 +183,7 @@ class devoluciones_insumosC
 		   $datos[7]['campo']='Item';
 		   $datos[7]['dato']=$_SESSION['INGRESO']['item'];
 		   $datos[8]['campo']='A_No';
-		   $datos[8]['dato']=1;
+		   $datos[8]['dato']=$parametro['linea'];
 
 		   $datos[9]['campo']='Fecha_DUI';
 		   $datos[9]['dato']=date('Y-m-d');

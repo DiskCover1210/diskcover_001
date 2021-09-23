@@ -170,7 +170,7 @@ class PDF_MC_Table extends FPDF
 			{
 				$estilo = explode('<',$data[$i]);
 				$estilo1 = explode('>',$estilo[1]);
-				if($estilo1[0]=='B' || $estilo1[0]=='I' || $estilo1[0]=='U'  || $estilo1[0]=='BI' || $estilo1[0]=='IU' || $estilo1[0]=='UB' )
+				if($estilo1[0]=='B' || $estilo1[0]=='I' || $estilo1[0]=='U'  || $estilo1[0]=='BI' || $estilo1[0]=='IU' || $estilo1[0]=='UB' || $estilo1[0]=='b' || $estilo1[0]=='i' || $estilo1[0]=='u'  || $estilo1[0]=='bi' || $estilo1[0]=='iu' || $estilo1[0]=='ub' )
 				{
 				$this->SetFont('',$estilo1[0]);		
 			    $this->MultiCell($w,$h1,str_replace('<'.$estilo1[0].'>','', $data[$i]),$b1,$a);

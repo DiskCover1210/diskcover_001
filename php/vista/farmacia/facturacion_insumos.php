@@ -3,6 +3,7 @@ $cod = ''; $ci =''; if(isset($_GET['comprobante'])){$cod = $_GET['comprobante'];
 
 <script type="text/javascript">
    $( document ).ready(function() {
+    numeroFactura();
     autocopletar_servicios();
    	 cargar_pedidos();
      var num_li =0;
@@ -120,9 +121,21 @@ function Ver_Comprobante(comprobante)
     window.open(url, '_blank');
 }
 
+function Ver_Comprobante_clinica(comprobante)
+{
+    url='../controlador/farmacia/reporte_descargos_procesadosC.php?Ver_comprobante_clinica=true&comprobante='+comprobante;
+    window.open(url, '_blank');
+}
+
 function reporte_excel(comprobante)
 {
     url='../controlador/farmacia/facturacion_insumosC.php?reporte_excel=true&comprobante='+comprobante;
+    window.open(url, '_blank');
+}
+
+function reporte_excel_clinica(comprobante)
+{
+    url='../controlador/farmacia/facturacion_insumosC.php?reporte_excel_clinica=true&comprobante='+comprobante;
     window.open(url, '_blank');
 }
 
@@ -155,7 +168,8 @@ function guardar_uti(linea,pos)
 
 function facturar()
 {
-  var servicio = $('#ddl_servicios').val();
+  var servicio =$('#ddl_servicios option:selected').text();
+  var servicio_cod = $('#ddl_servicios').val();
   if(servicio =='')
   {
     Swal.fire('Seleccione un servicio a facturar','','info');
@@ -165,6 +179,7 @@ function facturar()
    var parametros = 
   {
     'servicio':servicio,
+    'servicio_cod': servicio_cod,
     'comprobante':'<?php echo $cod;?>',
     'total':$('#txt_total2').text(),
   } 
@@ -178,16 +193,30 @@ function facturar()
         console.log(response);
         if(response==1)
         {
-          Swal.fire('Linea editada','','success')
+          Swal.fire('Factura Generada','','success')
           cargar_pedidos();
           
         }
       }
     });
-
-
-
 }
+
+ function numeroFactura(){
+    $.ajax({
+      type: "POST",
+      url: '../controlador/farmacia/facturacion_insumosC.php?numFactura=true',
+      // data: {
+      //   'DCLinea' :'FA',
+      // }, 
+      success: function(data)
+      {
+        // datos = JSON.parse(data);
+        // labelFac = "("+datos.autorizacion+") No. "+datos.serie;
+        // document.querySelector('#numeroSerie').innerText = labelFac;
+        $("#factura").val(datos.codigo);
+      }
+    });
+  }
 
 </script>
 
@@ -215,10 +244,24 @@ function facturar()
           </a>
         </div>
         <div class="col-xs-2 col-md-2 col-sm-2 col-lg-1">
-            <button type="button" class="btn btn-default" title="Generar pdf" onclick="Ver_Comprobante('<?php echo $cod; ?>')"><img src="../../img/png/pdf.png"></button>
+            <button type="button" class="btn btn-default"  data-toggle="dropdown" title="Generar pdf" aria-expanded="true">
+               <i class="fa fa-caret-down"></i>
+               <img src="../../img/png/pdf.png"></button>
+            <ul class="dropdown-menu">
+             <li><a href="#" id="imprimir_pdf" onclick="Ver_Comprobante_clinica('<?php echo $cod; ?>')" >Para Clinica</a></li>
+              <li><a href="#" id="imprimir_pdf_2" onclick="Ver_Comprobante('<?php echo $cod; ?>')" >Para paciente</a></li>
+            </ul>
         </div>
+
         <div class="col-xs-2 col-md-2 col-sm-2 col-lg-1">
-            <button type="button" class="btn btn-default" title="Generar pdf" onclick="reporte_excel('<?php echo $cod; ?>')"><img src="../../img/png/table_excel.png"></button>
+            <button type="button" class="btn btn-default" data-toggle="dropdown" aria-expanded="true" title="Generar pdf"> 
+             <i class="fa fa-caret-down"></i>
+              <img src="../../img/png/table_excel.png">
+            </button>
+             <ul class="dropdown-menu">
+             <li><a href="#" id="imprimir_pdf" onclick="reporte_excel_clinica('<?php echo $cod; ?>')">Para Clinica</a></li>
+              <li><a href="#" id="imprimir_pdf_2" onclick="reporte_excel('<?php echo $cod; ?>')" >Para paciente</a></li>
+            </ul>
         </div>
  	</div>
  </div>
@@ -239,9 +282,12 @@ function facturar()
 		  		</div>		  		
 		  	</div>
 		  	<div class="row">
-		  		<div class="col-sm-12">
+		  		<div class="col-sm-8">
 		  			<b>Detalle: </b><i id="detalle">asdasd</i>		
 		  		</div>
+          <div class="col-sm-4">
+            <b>Numero Factura: </b><i id="factura">01</i>    
+          </div>
 		  	</div>
 		  	
 		  	
@@ -250,15 +296,15 @@ function facturar()
 	</div><br>
    <div class="row">
     <div class="col-sm-12 text-right">
-      <button class="btn btn-primary" onclick="preview()">Preview</button>   
-      <button class="btn btn-success" onclick="facturar()">Facturar</button>      
+      <button class="btn btn-primary" onclick="preview()">Guardar utilidad</button>   
+      <!-- <button class="btn btn-success" onclick="facturar()">Facturar</button>       -->
     </div>
   </div>
   <div class="row">
     <div class="col-sm-6">
-      <select class="form-control input-sm" id="ddl_servicios" name="ddl_servicios">
+      <!-- <select class="form-control input-sm" id="ddl_servicios" name="ddl_servicios">
         <option value="">Seleccione </option>
-      </select>      
+      </select>  -->     
     </div>
     <div class="col-sm-6 text-right">
       <h4><b>Gran Total:</b> <b id="txt_total2">0.00</b></h4>

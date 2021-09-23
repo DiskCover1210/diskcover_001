@@ -1,5 +1,5 @@
 <?php 
-include 'pacienteC.php'; 
+include (dirname(__DIR__,2).'/modelo/farmacia/pacienteM.php');
 include (dirname(__DIR__,2).'/modelo/farmacia/reportes_descargos_procesadosM.php');
 require(dirname(__DIR__,3).'/lib/fpdf/cabecera_pdf.php');
 /**
@@ -24,6 +24,13 @@ if(isset($_GET['reporte_excel']))
 	echo json_encode($controlador->reporte_excel($comprobante));	
 }
 
+if(isset($_GET['reporte_excel_clinica']))
+{   
+	$comprobante= $_GET['comprobante'];
+	// print_r($comprobante);die();
+	echo json_encode($controlador->reporte_excel_clinica($comprobante));	
+}
+
 if(isset($_GET['servicios']))
 {   
 	// $comprobante= $_GET['comprobante'];
@@ -33,8 +40,13 @@ if(isset($_GET['servicios']))
 
 if(isset($_GET['facturar']))
 {   
-	$comprobante= $_GET['comprobante'];
+	$comprobante= $_POST['parametros'];
 	echo json_encode($controlador->facturar($comprobante));	
+}
+if(isset($_GET['numFactura']))
+{   
+	// $comprobante= $_POST['parametros'];
+	echo json_encode($controlador->num_facturar());	
 }
 
 
@@ -46,7 +58,7 @@ class facturacion_insumosC
 	function __construct()
 	{
 		$this->descargos_procesados = new reportes_descargos_procesadosM();
-		$this->paciente = new pacienteC();
+		$this->paciente = new pacienteM();
 		$this->pdf = new cabecera_pdf();
 	}
 
@@ -61,7 +73,13 @@ class facturacion_insumosC
 			 $devo = $this->descargos_procesados->trans_kardex_linea_devolucion($value['Codigo_Inv'],$comprobante);
 				 if(count($devo)>0)
 				 {
-				 	$value['Salida'] = $value['Salida']-$devo[0]['Entrada'];
+				 	$ca= $value['Salida']-$devo[0]['Entrada'];
+				 	if($ca>=0 )
+				 	{
+				 		$value['Salida']  = $ca;
+				 		$tot1 = $ca*$value['Valor_Unitario'];
+				 		$value['Valor_Total'] =$tot1;
+				 	}
 				 }
 				 
 			$key+=1;
@@ -117,16 +135,18 @@ class facturacion_insumosC
 	    $tablaHTML[0]['datos']=array('Paciente:',$datos[0]['Cliente'],'Detalle:',$datos[0]['Concepto'],'No.Comp:'.$datos[0]['Numero']);
 	    $tablaHTML[0]['tipo'] ='SUB';
 
-	    $tablaHTML[1]['medidas']=array(17,44,18,25,25);
-	    $tablaHTML[1]['datos']=array('CODIGO','PRODUCTO','CANTIDAD','PRECIO UNI','PRECIO TOTAL');
-	    $tablaHTML[1]['tipo'] ='SUB';
-
 	    $pos=2;
 	    $total =0;
 	    $familias = $this->descargos_procesados->familias($comprobante);
 	    $reg = count($familias);
+	    $cab = 1;
+	    $total_fam = 0;
 
 	    foreach ($familias as $key1 => $value1) {
+	    	$tablaHTML[$cab]['medidas']=array(17,44,18,25,25);
+	    	$tablaHTML[$cab]['datos']=array('CODIGO','PRODUCTO','CANTIDAD','PRECIO UNI','PRECIO TOTAL');
+	    	$tablaHTML[$cab]['tipo'] ='SUB';
+	    	$total_fam = 0;
 		    foreach ($lineas as $key => $value) {
 		    	if($value1['familia']==substr($value['Codigo_Inv'],0,5))
 		    	{
@@ -148,25 +168,106 @@ class facturacion_insumosC
 
 				    $pos+=2;
 				    $total+=number_format($gra_t,2);
+				    $total_fam+=number_format($gra_t,2);
 				  }
 		    }
 		     $pos+=1;
-		     $tablaHTML[$pos]['medidas']=array(17,44,17,70,17);
-	       $tablaHTML[$pos]['datos']=array('','','','Total',''.$total);
+		   $tablaHTML[$pos]['medidas']=array(17,44,17,70,17);
+	       $tablaHTML[$pos]['datos']=array('','','','Total',''.$total_fam);
 	       $tablaHTML[$pos]['tipo'] ='BR';
+	       $pos+=1;
+	       $cab =$pos+1;
 	       $pos+=1;
 	       if(($key1+1)!=$reg)
 	       {
 	       	 $tablaHTML[$pos]['medidas']=array(190);
 		       $tablaHTML[$pos]['datos']=array('');
 		        $pos+=1;
-			     $tablaHTML[$pos]['medidas']=array(39,83,18,25,25);
-		       $tablaHTML[$pos]['datos']=array('CODIGO','PRODUCTO','CANTIDAD','PRECIO UNI','PRECIO TOTAL');
-		       $tablaHTML[$pos]['tipo'] ='SUB';
-		       $pos+=1;
+		        $pos+=1;
 	       }
 
 	    }
+
+	     $pos+=1;
+		   $tablaHTML[$pos]['medidas']=array(17,44,17,70,17);
+	       $tablaHTML[$pos]['datos']=array('','','','Gran Total',''.$total);
+	       $tablaHTML[$pos]['tipo'] ='BR';
+
+		excel_generico($titulo,$tablaHTML);
+	}
+
+
+
+	function reporte_excel_clinica($comprobante)
+	{		          				
+
+	    $datos = $this->descargos_procesados->cargar_comprobantes_datos($query=false,$desde='',$hasta='',$tipo='',$comprobante);
+		$lineas = $this->descargos_procesados->lineas_trans_kardex($comprobante);
+		$titulo = 'CARGO DE INSUMOS Y MEDICAMENTOS DE PACIENTE PRIVADO';
+		
+		$tablaHTML = array();
+
+		$tablaHTML[0]['medidas']= array(17,44,17,70,17,25);
+	    $tablaHTML[0]['datos']=array('Paciente:',$datos[0]['Cliente'],'Detalle:',$datos[0]['Concepto'],'No.Comp:'.$datos[0]['Numero'],'');
+	    $tablaHTML[0]['tipo'] ='SUB';
+
+	    $pos=2;
+	    $total =0;
+	    $familias = $this->descargos_procesados->familias($comprobante);
+	    $reg = count($familias);
+	    $cab = 1;
+	    $total_fam = 0;
+
+	    foreach ($familias as $key1 => $value1) {
+	    	$tablaHTML[$cab]['medidas']=array(17,44,18,25,25,25);
+	    	$tablaHTML[$cab]['datos']=array('CODIGO','PRODUCTO','CANTIDAD','PRECIO UNI','UTILIDAD','PRECIO TOTAL');
+	    	$tablaHTML[$cab]['tipo'] ='SUB';
+	    	$total_fam = 0;
+		    foreach ($lineas as $key => $value) {
+		    	if($value1['familia']==substr($value['Codigo_Inv'],0,5))
+		    	{
+
+		    		// print_r($value1['familia']);print_r(substr($value['Codigo_Inv'],0,5));die();
+		    	  $uti = $value['Utilidad'];
+		    	  if($value['Utilidad']=='' || $value['Utilidad']==0)
+		    	  {
+		    	  	$uti = number_format($value['utilidad_C']*100,2);
+						  $parametros = array('utilidad'=>$uti,'linea'=>$value['ID']);
+						  $this->guardar_utilidad($parametros);
+						  $uti = number_format($value['utilidad_C']);
+		    	  }
+		    	  $gra_t = ($value['Valor_Total']*$uti)+$value['Valor_Total'];
+		    	  $uni = ($gra_t/$value['Salida']);
+		    	 	$tablaHTML[$pos]['medidas']=$tablaHTML[1]['medidas'];
+				    $tablaHTML[$pos]['datos']=array($value['Codigo_Inv'],$value['Producto'],$value['Salida'],number_format($uni,2),$value['utilidad_C'],number_format($gra_t,2));
+				    $tablaHTML[$pos]['tipo'] ='N';
+
+				    $pos+=2;
+				    $total+=number_format($gra_t,2);
+				    $total_fam+=number_format($gra_t,2);
+				  }
+		    }
+		     $pos+=1;
+		   $tablaHTML[$pos]['medidas']=array(17,44,17,70,25,17);
+	       $tablaHTML[$pos]['datos']=array('','','','','Total',''.$total_fam);
+	       $tablaHTML[$pos]['tipo'] ='BR';
+	       $pos+=1;
+	       $cab =$pos+1;
+	       $pos+=1;
+	       if(($key1+1)!=$reg)
+	       {
+	       	 $tablaHTML[$pos]['medidas']=array(190);
+		       $tablaHTML[$pos]['datos']=array('');
+		        $pos+=1;
+		        $pos+=1;
+	       }
+
+	    }
+
+	     $pos+=1;
+		   $tablaHTML[$pos]['medidas']=array(17,44,17,70,25,17);
+	       $tablaHTML[$pos]['datos']=array('','','','','Gran Total',''.$total);
+	       $tablaHTML[$pos]['tipo'] ='BR';
 
 		excel_generico($titulo,$tablaHTML);
 	}
@@ -184,9 +285,80 @@ class facturacion_insumosC
 	}
 
 
-	function facturar($parametro)
+	function facturar($parametros)
 	{
-		print_r($parametro);die();
+		$compro = $this->descargos_procesados->cargar_comprobantes_datos($query=false,$desde='',$hasta='',$tipo='',$parametros['comprobante']);
+		$codigo = array('query'=>$compro[0]['Cliente'],'tipo'=>'N1','codigo'=>'');
+		$cliente = $this->paciente->cargar_paciente($codigo,$pag=false);
+
+		// print_r($cliente);
+		// print_r($parametro);die();
+		
+		$datos[0]['campo'] ='CODIGO';
+		$datos[0]['dato'] = $parametros['servicio_cod'];
+		$datos[1]['campo'] ='CANT';
+		$datos[1]['dato'] ='1';
+		$datos[2]['campo'] ='PRODUCTO';
+		$datos[2]['dato'] =$parametros['servicio'];
+		$datos[3]['campo'] ='PRECIO';
+		$datos[3]['dato'] = $parametros['total'];
+		$datos[4]['campo'] ='TOTAL';
+		$datos[4]['dato'] = $parametros['total'];
+		$datos[5]['campo'] ='Codigo_Cliente';
+		$datos[5]['dato'] =$cliente[0]['Codigo'];
+		$datos[6]['campo'] ='CodigoU';
+		$datos[6]['dato'] = $_SESSION['INGRESO']['CodigoU'];
+		$datos[7]['campo'] ='Periodo';
+		$datos[7]['dato'] = $_SESSION['INGRESO']['periodo'];
+		$datos[8]['campo'] ='Item';
+		$datos[8]['dato'] =$_SESSION['INGRESO']['item'];
+	  	$datos[9]['campo']='CODIGO_L';
+      	$datos[9]['dato']= $parametros['servicio_cod'];
+      
+        $datos[10]['campo']='Cta';
+        $datos[10]['dato']= 'Cuenta' ;
+        $datos[11]['campo']='HABIT';
+        $datos[11]['dato']= G_PENDIENTE;
+        $datos[12]['campo']='Mes';
+        $datos[12]['dato']= '.';
+        $datos[13]['campo']='TICKET';
+        $datos[13]['dato']= date('Y') ;
+        $datos[14]['campo']='A_No';
+        $datos[14]['dato']= 1;
+
+        // factura_numero($ser);
+
+		$respuesta = insert_generico('Asiento_F',$datos);
+		if ($respuesta==null) {
+
+			// [DCLinea] => FA 001001 1127782029001 1.1.01.05 
+		  
+
+
+			$FA['Cliente'] = $cliente[0]['Cliente'];
+		    $FA['TextCI'] =  $cliente[0]['CI_RUC'] ;
+		    $FA['TxtEmail'] = $cliente[0]['Email'] ;
+		    $FA['Serie'] ='001020' ; 
+		    $FA['FacturaNo'] ='99999' ;
+		    $FA['me']='P';
+		    $FA['Total']= $parametros['total'];;
+		    $FA['Total_Abonos']= $parametros['total'];; 
+		    $FA['TC']='FA';
+		    $FA['codigoCliente'] = $cliente[0]['Codigo'];
+		    $FA['Autorizacion'] = '123456789';
+
+
+
+			Grabar_Factura($FA);
+
+			return 1;
+		}
+
+	}
+
+	function num_facturar()
+	{
+		print_r($_SESSION['INGRESO']);die();
 	}
 
 

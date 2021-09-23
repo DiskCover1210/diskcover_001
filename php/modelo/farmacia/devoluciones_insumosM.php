@@ -136,6 +136,7 @@ class devoluciones_insumosM
 		{
 			$sql.=" AND T.Codigo_Inv+''+C.Producto like '%".$query."%' ";
 		}
+		$sql.=" ORDER BY C.Producto ";
 		// print_r($sql);die();
 		$datos = $this->conn->datos($sql);
         return $datos;
@@ -156,7 +157,7 @@ class devoluciones_insumosM
 
 	function lista_devoluciones($comprobante)
 	{
-	  $sql = "SELECT CODIGO_INV as 'CODIGO PRODUCTO',PRODUCTO,CANTIDAD,VALOR_UNIT AS 'VALOR UNITARIO',VALOR_TOTAL AS 'VALOR TOTAL',Fecha_Fab AS 'FECHA' FROM Asiento_K WHERE DH = '1' AND ORDEN = '".$comprobante."'";
+	  $sql = "SELECT CODIGO_INV as 'CODIGO PRODUCTO',PRODUCTO,CANTIDAD,VALOR_UNIT AS 'VALOR UNITARIO',VALOR_TOTAL AS 'VALOR TOTAL',Fecha_Fab AS 'FECHA',A_No FROM Asiento_K WHERE DH = '1' AND ORDEN = '".$comprobante."'";
 	  $datos = $this->conn->datos($sql);
 	  $botones[0] = array('boton'=>'Eliminar','icono'=>'<i class="fa fa-trash"></i>', 'tipo'=>'danger', 'id'=>$comprobante.',CODIGO PRODUCTO');
 

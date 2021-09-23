@@ -19,6 +19,7 @@ class reportes_descargos_procesadosM
 	   $this->conn = new db();
 	}
 
+
 	function cargar_comprobantes($query=false,$desde,$hasta,$tipo='',$paginacion=false)
 	{
 		$sql="SELECT Numero,CP.Fecha,Concepto,Monto_Total,Cliente FROM Comprobantes CP 
@@ -50,7 +51,7 @@ class reportes_descargos_procesadosM
 
 	function cargar_comprobantes_datos($query=false,$desde='',$hasta='',$tipo='',$numero=false)
 	{
-		$sql="SELECT Numero,CP.Fecha,Concepto,Monto_Total,Cliente FROM Comprobantes CP 
+		$sql="SELECT Numero,CP.Fecha,Concepto,Monto_Total,Cliente,Codigo_B FROM Comprobantes CP 
 		LEFT JOIN Clientes C ON CP.Codigo_B = C.Codigo
 		WHERE 1=1 AND TP='CD' AND CP.T='N' AND Item = '".$_SESSION['INGRESO']['item']."' AND Periodo = '".$_SESSION['INGRESO']['periodo']."' AND Codigo_B <> '.' AND Numero IN ( SELECT  DISTINCT Numero FROM Trans_Kardex WHERE 1=1 AND Item = '".$_SESSION['INGRESO']['item']."' AND Periodo = '".$_SESSION['INGRESO']['periodo']."'  AND Entrada = 0 )";
 		if($tipo =='f')
