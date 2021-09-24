@@ -79,6 +79,7 @@ class modalesC
 
 	function guardar_cliente($parametro)
 	{
+		$resp = $this->modelo->buscar_cliente($parametro['ruc']);		
 		$dato[0]['campo']='T';
 		$dato[0]['dato']='N';
 		$dato[1]['campo']='Codigo';
@@ -114,6 +115,7 @@ class modalesC
 			$dato[13]['dato']=1;
 		}
 
+			// print_r($parametro['txt_id']);die();
 		if($parametro['txt_id']!='')
 		{
 			$campoWhere[0]['campo'] = 'ID';
@@ -121,7 +123,13 @@ class modalesC
 			$re = update_generico($dato,'Clientes',$campoWhere);
 		}else
 		{
-			$re = insert_generico('Clientes',$dato); // optimizado pero falta 
+			// print_r($resp);die();
+			if(count($resp)==0)
+		      {
+			    $re = insert_generico('Clientes',$dato); // optimizado pero falta 
+			  }else{
+			  	return 2;
+			  }
 		}
 		if($re==1 || $re==null)
 		{

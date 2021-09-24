@@ -129,6 +129,10 @@ if(isset($_SESSION['INGRESO']['IP_VPN_RUTA']) && $_SESSION['INGRESO']['Tipo_Base
 						{
 							require_once("contabilidad/resumen_retenciones.php");
 						}
+						if ($_SESSION['INGRESO']['accion']=='Clientes') 
+						{
+							require_once("contabilidad/FCliente.php");
+						}
 					}else
 					{
 						echo "<div class='box-body'><img src='../../img/modulo_contable.gif' width='100%'></div>";

@@ -154,6 +154,11 @@
 
 	function guardar_cliente()
 	{
+    if(validar()==true)
+    {
+      swal.fire('Lene todos los campos','','info')
+      return false;
+    }
 		 var datos = $('#form_cliente').serialize();
 		  $.ajax({
        data:  datos,
@@ -172,12 +177,86 @@
         		swal.fire('Registro guardado','','success')
         	}
 
+        }else if(response==2)
+        {
+          swal.fire('Este CI / RUC ya esta registrado','','info');
+        }
+      }
+    });
+	}
+
+
+  function validar_sri()
+  {
+    var ci = $('#ruc').val();
+    var url_sri = 'https://srienlinea.sri.gob.ec/sri-catastro-sujeto-servicio-internet/rest/ConsolidadoContribuyente/existePorNumeroRuc?numeroRuc='+ci;
+
+    $.ajax({
+    url: url_sri,
+    type: 'GET',
+    success: function(res) {
+      if(res==true)
+        {
+          datos_sri_ruc(ci);
         }
       }
     });
 
+  }
 
-	}
+
+  function datos_sri_ruc(ci)
+  {
+    $('#datos_sri_cliente').modal('show');
+    var url_sri = 'https://srienlinea.sri.gob.ec/facturacion-internet/consultas/publico/ruc-datos2.jspa?accion=siguiente&ruc='+ci;
+    $.ajax({
+    url: url_sri,
+    type: 'GET',
+    success: function(res) {
+      var sp = '<table class="formulario">';
+      var tbl = res.split(sp);
+      tbl = tbl[1].split('</table>');
+       html  = tbl[0].split('colspan="2"').join('colspan="2" style="display:none"');
+      tbl = '<table>'+html+'</table>';
+      console.log(tbl);
+       $('#tbl_sri').html(tbl);
+      }
+    });
+  }
+
+  function validar()
+  {
+
+    $('#e_ruc').css('display','none');   
+    $('#e_telefono').css('display','none');
+    $('#e_nombrec').css('display','none');   
+    $('#e_direccion').css('display','none');
+
+    var vali = false;    
+    if($('#ruc').val()=='')
+    {
+      $('#e_ruc').css('display','initial');
+      vali = true;
+    }
+    if($('#telefono').val()=='')
+    {
+      $('#e_telefono').css('display','initial');
+      vali = true;
+    }
+    if($('#nombrec').val()=='')
+    {
+      $('#e_nombrec').css('display','initial');
+      vali = true;
+    }
+    if($('#direccion').val()=='')
+    {
+      $('#e_direccion').css('display','initial');
+      vali = true;
+    }
+
+    return vali;
+
+  }
 </script>			
 
 			<div class="box box-info">
@@ -186,7 +265,7 @@
             <form class="form-horizontal" id="form_cliente">
               <div class="box-body">
 				<div class="row">
-					<div class="col-xs-4">
+					<div class="col-xs-4 col-sm-3 ">
 					  <label for="ruc" class="control-label" id="resultado">RUC/CI*</label>
 						<input type="hidden" class="form-control" id="txt_id" name="txt_id" placeholder="ruc" autocomplete="off">
 						<input type="text" class="form-control input-sm" id="ruc" name="ruc" placeholder="RUC/CI" autocomplete="off" onblur="codigo()">
@@ -194,14 +273,20 @@
 							<span class="help-block">Debe ingresar RUC/CI</span>
 						</div>
 					</div>
-					<div class="col-xs-4">
+          <div class="col-xs-2 col-sm-1" style="padding:0px"><br>
+            <button type="button" class="btn btn-sm" onclick="validar_sri()">
+              <img src="../../img/png/SRI.jpg" style="width: 60%">
+            </button>
+            
+          </div>
+					<div class="col-xs-3 col-sm-3 ">
 					 <label for="telefono" class="col-sm-1 control-label">Telefono*</label>
 						<input type="text" class="form-control input-sm" id="telefono" name="telefono" placeholder="Telefono" autocomplete="off">
 						<div id='e_telefono' class="form-group has-error" style='display:none'>
 							<span class="help-block">Debe ingresar Telefono</span>
 						</div>
 					</div>
-					<div class="col-xs-4">
+					<div class="col-xs-3 col-sm-3 ">
 					 <label for="codigoc" class="control-label">Codigo*</label>
 						<input type="hidden" id='buscar' name='buscar'  value='' />
 						<input type="hidden" id='TC' name='TC'  value='' />
@@ -232,7 +317,7 @@
 				<div class="row">
 					<div class="col-xs-12">
 					  <label for="email" class="control-label">Email Principal</label>
-						<input type="email" class="form-control input-sm" id="email" name="email" placeholder="Email" tabindex="0">
+						<input type="email" class="form-control input-sm" id="email" name="email" placeholder="Email" tabindex="0" onblur="validador_correo('email')">
 					</div>
         </div>
 				<div class="row">
@@ -271,4 +356,24 @@
 				      </div>
               <!-- /.box-footer -->
             </form>
+          </div>          
+
+  <div class="modal fade" id="datos_sri_cliente" role="dialog" data-keyboard="false" data-backdrop="static">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+        <h5 class="modal-title" id="titulo_clave">Datos de cliente desde SRI</h5>        
+      </div>
+        <div class="modal-body text-center">
+          <div class="col-sm-12">
+            <div id="tbl_sri" class="text-left">
+              
+            </div>                      
           </div>
+        </div>
+         <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+        </div>
+      </div>
+    </div>
+  </div>

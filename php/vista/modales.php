@@ -22,24 +22,30 @@
 <script src="../../lib/dist/js/demo.js"></script>
 
 <script src="../../lib/dist/js/jquery-ui.js"></script>
-<link rel="stylesheet" href="../../lib/dist/css/jquery-ui.css">
+<link rel="stylesheet" href="../../lib/dist/css/jquery-ui.min.css">
 <script src="../../lib/dist/js/select2.min.js"></script>
 <link rel="stylesheet" href="../../lib/dist/css/select2.min.css">
 <link rel="stylesheet" href="../../lib/dist/css/sweetalert.css">
 <script src="../../lib/dist/js/sweetalert2.min.js"></script>
 <link rel="stylesheet" href="../../lib/dist/css/sweetalert2.min.css">
   <link rel="shortcut icon" href="../../img/jpg/logo.jpg" />
-  <style>
-       .ui-autocomplete {
-            max-height: 200px;
-            overflow-y: auto;
-            /* prevent horizontal scrollbar */
-            overflow-x: hidden;
-            /* add padding to account for vertical scrollbar */
-            padding-right: 20px;
-        } 
-</style>
 <script type="text/javascript">
+		function validador_correo(imput)
+{
+    var campo = $('#'+imput).val();   
+    var emailRegex = /^[-\w.%+]{1,64}@(?:[A-Z0-9-]{1,63}\.){1,125}[A-Z]{2,63}$/i;
+    //Se muestra un texto a modo de ejemplo, luego va a ser un icono
+    if (emailRegex.test(campo)) {
+      // alert("válido");
+      return true;
+
+    } else {
+      Swal.fire('Email incorrecto','','info');
+      console.log(campo);
+      return false;
+    }
+}
+
 		function cambiar_1(){
 			$('#myModal_espera').modal('show');
 			var value =  $('#sempresa').val(); 
