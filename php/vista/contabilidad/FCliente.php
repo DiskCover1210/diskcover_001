@@ -185,44 +185,29 @@
     });
 	}
 
-
-  function validar_sri()
+function validar_sri()
   {
     var ci = $('#ruc').val();
-    var url_sri = 'https://srienlinea.sri.gob.ec/sri-catastro-sujeto-servicio-internet/rest/ConsolidadoContribuyente/existePorNumeroRuc?numeroRuc='+ci;
-
-    $.ajax({
-    url: url_sri,
-    type: 'GET',
-    success: function(res) {
-      if(res==true)
+     $.ajax({
+    data: {ci,ci},
+    url: '../controlador/modalesC.php?validar_sri=true',
+    type: 'POST',
+    dataType: 'json',
+    success: function(response) {
+      if(response.res=='1')
         {
-          datos_sri_ruc(ci);
+          $('#datos_sri_cliente').modal('show');
+          $('#tbl_sri').html(response.tbl);
+        }else
+        {
+          Swal.fire('Ruc no encontrado en el SRI','','info')
         }
+
       }
     });
 
   }
 
-
-  function datos_sri_ruc(ci)
-  {
-    $('#datos_sri_cliente').modal('show');
-    var url_sri = 'https://srienlinea.sri.gob.ec/facturacion-internet/consultas/publico/ruc-datos2.jspa?accion=siguiente&ruc='+ci;
-    $.ajax({
-    url: url_sri,
-    type: 'GET',
-    success: function(res) {
-      var sp = '<table class="formulario">';
-      var tbl = res.split(sp);
-      tbl = tbl[1].split('</table>');
-       html  = tbl[0].split('colspan="2"').join('colspan="2" style="display:none"');
-      tbl = '<table>'+html+'</table>';
-      console.log(tbl);
-       $('#tbl_sri').html(tbl);
-      }
-    });
-  }
 
   function validar()
   {

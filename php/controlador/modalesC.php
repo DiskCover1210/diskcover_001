@@ -22,6 +22,13 @@ if(isset($_GET['codigo']))
 	echo json_encode($controlador->Codigo_CI($query));
 }
 
+if(isset($_GET['validar_sri']))
+{
+	$query = $_POST['ci'];
+	echo json_encode($controlador->validar_sri($query));
+}
+
+
 
 if(isset($_GET['guardar_cliente']))
 {
@@ -139,6 +146,50 @@ class modalesC
 			return -1;
 		}
 	}
+
+	function validar_sri($ci)
+	{
+		$url = "https://srienlinea.sri.gob.ec/sri-catastro-sujeto-servicio-internet/rest/ConsolidadoContribuyente/existePorNumeroRuc?numeroRuc=".$ci;
+		$url_sri = "https://srienlinea.sri.gob.ec/facturacion-internet/consultas/publico/ruc-datos2.jspa?accion=siguiente&ruc=".$ci;
+		$res = $this->getRemoteFile($url);
+		$r = array('res'=>2,'tbl'=>'');
+		if($res=='true')
+		{
+			$r = array('res'=>2,'tbl'=>'');
+			$datos = $this->getRemoteFile($url_sri);
+			if($datos!= false)
+			{
+			$sp = '<table class="formulario">';
+            $tbl = explode($sp, $datos);
+            $tbl =  explode('</table>',$tbl[1]);
+            $html  = str_replace('<tr>
+				<td colspan="2" class="lineaSep" />
+			</tr>','',$tbl[0]);
+			// $html  = str_replace('<tr>
+			// 	<td colspan="2"></td>
+			// </tr>','',$html);
+			$html = str_replace('&oacute;','o',$html);
+			$html = str_replace('&nbsp;','',$html);
+			// $html = str_replace('U+FFFD','',$html);
+            $tbl =strval('<table id="tbl_style">'.utf8_encode($html).'</table>');
+            $r = array('res'=>1,'tbl'=>$tbl);
+           }
+
+		}
+		// print_r($tbl);die();
+		return $r;
+	}
+
+	function getRemoteFile($url, $timeout = 10) {
+	  $ch = curl_init();
+	  curl_setopt ($ch, CURLOPT_URL, $url);
+	  curl_setopt ($ch, CURLOPT_RETURNTRANSFER, 1);
+	  curl_setopt ($ch, CURLOPT_CONNECTTIMEOUT, $timeout);
+	  $file_contents = curl_exec($ch);
+	  curl_close($ch);
+	  return ($file_contents) ? $file_contents : FALSE;
+	}
+
 
 
 }
