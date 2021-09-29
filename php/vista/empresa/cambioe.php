@@ -206,7 +206,6 @@
 											<option value='0'>Seleccione Entidad</option>
 											<?php select_option_mysql('entidad','ID_Empresa','Nombre_Entidad',' 1=1 ORDER BY Nombre_Entidad '); ?>
 										</select> -->
-										ñ á
 										<select class="form-control" name="entidad" id='entidad' onChange="return buscar('ciudad');">
 											<option value=''>Seleccione Entidad</option>
 										</select>
@@ -463,13 +462,15 @@
 										var Puerto = document.getElementById('Puerto');
 										var FechaR = document.getElementById('FechaR');
 										var FechaV = document.getElementById('FechaV');
+										var Fechadb = document.getElementById('FechaDB');
+										var Fechap12 = document.getElementById('FechaP12');
 									
 										$.post('ajax/vista_ajax.php'
 										, {ajax_page: 'cambiarEmpresa', campo1: empresa.value, 
 										campo2: Estado.value, campo3: Mensaje.value, campo4: Fecha.value,
 										campo5: Servidor.value, campo6: Base.value, campo7: Usuario.value,
 										campo8: Clave.value, campo9: Motor.value, campo10: Puerto.value, 
-										campo11: FechaR.value, campo12: FechaV.value
+										campo11: FechaR.value, campo12: FechaV.value, campo13: Fechadb.value, campo14: Fechap12.value
 										})
 										.done(function( data, textStatus, jqXHR ) {
 												if ( console && console.log ) {

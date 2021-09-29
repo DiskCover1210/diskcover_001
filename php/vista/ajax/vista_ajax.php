@@ -3489,9 +3489,9 @@ function modificarEmpresa()
 	Fecha_CE='".$_POST['campo4']."' ,IP_VPN_RUTA='".$_POST['campo5']."',
 	Base_Datos='".$_POST['campo6']."' ,Usuario_DB='".$_POST['campo7']."',
 	`".$contra."`='".$_POST['campo8']."' ,Tipo_Base='".$_POST['campo9']."',
-    Puerto='".$_POST['campo10']."',Fecha='".$_POST['campo11']."',Fecha_VPN='".$_POST['campo12']."' WHERE ID='".$_POST['campo1']."' ";
-	//echo $sql;
-	//die();
+    Puerto='".$_POST['campo10']."',Fecha='".$_POST['campo11']."',Fecha_VPN='".$_POST['campo12']."',Fecha_DB='".$_POST['campo13']."',Fecha_P12='".$_POST['campo14']."' WHERE ID='".$_POST['campo1']."' ";
+	// echo $sql;
+	// die();
 	$consulta=$cid->query($sql) or die($cid->error);
 	//$stmt = sqlsrv_query( $cid, $sql);
 
@@ -3648,6 +3648,18 @@ function buscarEmpresa(){
 				</div>
 				<div class="col-md-3">
 					<div class="form-group">
+					  <label for="Fecha_DB">Fecha BD</label>
+					  <input type="date" class="form-control" id="FechaDB" value='<?php echo $filas['Fecha_DB']; ?>'>
+					</div>
+				</div>
+				<div class="col-md-3">
+					<div class="form-group">
+					  <label for="Fecha_P12">Fecha P12</label>
+					  <input type="date" class="form-control" id="FechaP12" value='<?php echo $filas['Fecha_P12']; ?>'>
+					</div>
+				</div>
+				<div class="col-md-3">
+					<div class="form-group">
 					  <label for="Servidor">Servidor</label>
 					  <input type="text" class="form-control" id="Servidor" placeholder="Servidor" value='<?php echo $filas['IP_VPN_RUTA']; ?>'>
 					</div>
@@ -3685,6 +3697,7 @@ function buscarEmpresa(){
 					  <input type="text" class="form-control" id="Puerto" placeholder="Puerto" value='<?php echo $filas['Puerto']; ?>'>
 					</div>
 				</div>
+				
 				<div class="col-md-12">
 					<div class="form-group">
 					  <label for="Mensaje">Mensaje</label>
