@@ -107,7 +107,7 @@ class facturar_pensionC
 		$datos = $this->facturacion->getClientes($query);
 		$clientes = [];
 		foreach ($datos as $value) {
-			$clientes[] = array('id'=>$value['Cliente'],'text'=>utf8_encode($value['Cliente']),'data'=>array('email'=> $value['Email'],'direccion' => utf8_encode($value['Direccion']), 'telefono' => utf8_encode($value['Telefono']), 'ci_ruc' => utf8_encode($value['CI_RUC']), 'codigo' => utf8_encode($value['Codigo']), 'cliente' => utf8_encode($value['Cliente']), 'grupo' => utf8_encode($value['Grupo']), 'tdCliente' => utf8_encode($value['TD'])));
+			$clientes[] = array('id'=>$value['Cliente'],'text'=>$value['Cliente'],'data'=>array('email'=> $value['Email'],'direccion' => $value['Direccion'], 'telefono' =>$value['Telefono'], 'ci_ruc' => $value['CI_RUC'], 'codigo' => $value['Codigo'], 'cliente' => $value['Cliente'], 'grupo' => $value['Grupo'], 'tdCliente' => $value['TD']));
 		}
     return $clientes;
 	}
@@ -239,7 +239,7 @@ class facturar_pensionC
     $cuentas[0] = array('codigo'=>'','nombre'=>'No existen datos.');
     $i = 0;
     foreach ($datos as $value) {
-			$cuentas[$i] = array('codigo'=>$value['Codigo']."/".$value['TC'],'nombre'=>utf8_encode($value['Codigo'])." - ".utf8_encode($value['NomCuenta']));
+			$cuentas[$i] = array('codigo'=>$value['Codigo']."/".$value['TC'],'nombre'=>$value['Codigo']." - ".$value['NomCuenta']);
       $i++;
 		}
 		return $cuentas;
@@ -251,7 +251,7 @@ class facturar_pensionC
     $cuentas[0] = array('codigo'=>'','nombre'=>'No existen datos.');
     $i = 0;
 		foreach ($datos as $value) {
-			$cuentas[$i] = array('codigo'=>$value['Codigo'],'nombre'=>utf8_encode($value['Codigo'])." - ".utf8_encode($value['NomCuenta']));
+			$cuentas[$i] = array('codigo'=>$value['Codigo'],'nombre'=>$value['Codigo']." - ".$value['NomCuenta']);
       $i++;
 		}
 		return $cuentas;
@@ -264,7 +264,7 @@ class facturar_pensionC
     $cuentas[0] = array('codigo'=>'','nombre'=>'No existen datos.');
     $i = 0;
     foreach ($datos as $value) {
-      $cuentas[$i] = array('codigo'=>$value['Codigo'],'nombre'=>utf8_encode($value['Codigo'])." - ".utf8_encode($value['NomCuenta']));
+      $cuentas[$i] = array('codigo'=>$value['Codigo'],'nombre'=>$value['Codigo']." - ".$value['NomCuenta']);
       $i++;
     }
     return $cuentas;
@@ -273,21 +273,23 @@ class facturar_pensionC
 	public function getSaldoFavor(){
 		$codigoCliente = $_POST['codigoCliente'];
 		$datos = $this->facturacion->getSaldoFavor($codigoCliente);
-    print_r($datos);
-		$catalogo = sqlsrv_fetch_array( $datos, SQLSRV_FETCH_ASSOC);
-		echo json_encode($catalogo);
+    // print_r($datos);
+		// $catalogo = sqlsrv_fetch_array( $datos, SQLSRV_FETCH_ASSOC);
+		echo json_encode($datos);
 		exit();
 	}
 
 	public function getSaldoPendiente(){
 		$codigoCliente = $_POST['codigoCliente'];
 		$datos = $this->facturacion->getSaldoPendiente($codigoCliente);
-		$catalogo = sqlsrv_fetch_array( $datos, SQLSRV_FETCH_ASSOC);
-		echo json_encode($catalogo);
+		// $catalogo = sqlsrv_fetch_array( $datos, SQLSRV_FETCH_ASSOC);
+		echo json_encode($datos);
 		exit();
 	}
 
 	public function guardarFacturaPension(){
+
+    // print_r($_POST);die();
 		$TextRepresentante = $_POST['TextRepresentante'];
 		$TxtDireccion = $_POST['TxtDireccion'];
 		$TxtTelefono = $_POST['TxtTelefono'];
@@ -358,6 +360,7 @@ class facturar_pensionC
     $FA['Cta_CxP'] = $resultado[3];
 		//Procedemos a grabar la factura
   	$datos = $this->facturacion->getAsiento();
+    // print_r($datos);die();
     foreach ($datos as $key => $value) {
 		  $TFA = Calculos_Totales_Factura($codigoCliente);
       $FA['Tipo_PRN'] = "FM";

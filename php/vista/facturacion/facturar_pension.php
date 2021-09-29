@@ -82,11 +82,12 @@
     $.ajax({
       type: "POST",                 
       url: '../controlador/facturacion/facturar_pensionC.php?catalogo=true',
-      data: {'fechaVencimiento' : fechaVencimiento , 'fechaEmision' : fechaEmision}, 
+      data: {'fechaVencimiento' : fechaVencimiento , 'fechaEmision' : fechaEmision},      
+      dataType:'json', 
       success: function(data)             
       {
         if (data) {
-          datos = JSON.parse(data);
+          datos = data;
           // Limpiamos el select
           cursos.find('option').remove();
           for (var indice in datos) {
@@ -114,10 +115,11 @@
       type: "POST",                 
       url: '../controlador/facturacion/facturar_pensionC.php?catalogoProducto=true',
       data: {'codigoCliente' : codigoCliente }, 
+      dataType:'json', 
       success: function(data)
       {
         if (data) {
-          datos = JSON.parse(data);
+          datos = data;
           clave = 1;
           $("#cuerpo").empty();
           for (var indice in datos) {
@@ -157,12 +159,13 @@
       type: "POST",                 
       url: '../controlador/facturacion/facturar_pensionC.php?historiaCliente=true',
       data: {'codigoCliente' : codigoCliente }, 
+      dataType:'json', 
       success: function(data)
       {
         $('#myModal_espera').modal('hide');
         $('#myModalHistoria').modal('show');
         if (data) {
-          datos = JSON.parse(data);
+          datos = data;
           clave = 0;
           $("#cuerpoHistoria").empty();
           for (var indice in datos) {
@@ -227,10 +230,11 @@
     $.ajax({
       type: "POST",                 
       url: '../controlador/facturacion/facturar_pensionC.php?saldoFavor=true',
-      data: {'codigoCliente' : codigoCliente }, 
+      data: {'codigoCliente' : codigoCliente },
+      dataType:'json', 
       success: function(data)
       {
-        datos = JSON.parse(data);
+        datos = data;
         valor = 0;
         if (datos !== null) {
           valor = datos.Saldo_Pendiente;
@@ -245,9 +249,10 @@
       type: "POST",                 
       url: '../controlador/facturacion/facturar_pensionC.php?saldoPendiente=true',
       data: {'codigoCliente' : codigoCliente }, 
+      dataType:'json', 
       success: function(data)
       {
-        datos = JSON.parse(data);
+        datos = data;
         valor = 0;
         if (datos !== null) {
           valor = datos.Saldo_Pend;
@@ -258,88 +263,92 @@
   }
 
   function totalFactura(id,valor,iva,descuento1,datos){
-    valor = parseFloat(valor);
-    descuento1 = parseFloat(descuento1);
-    var checkBox = document.getElementById(id);
-    if (checkBox.checked == true){
-      if (iva == 0) {
-        total0 += valor;
-      }else{
-        iva12 += valor*(iva/100);
-        total12 += valor;
+
+    console.log($('#'+id).prop('checked'));
+
+    // if($('#'+id).prop('checked'))
+    // {
+        datosLineas = [];
+        key = 0;
+        for (var i = 1; i <= datos; i++) {
+          datosId = 'checkbox'+i;
+          // datosCheckBox = document.getElementById(datosId);
+          if ($('#'+datosId).prop('checked')) {
+            datosLineas[key] = {
+              'Codigo' : $("#Codigo"+i).val(),
+              'CodigoL' : $("#CodigoL"+i).val(),
+              'Producto' : $("#Producto"+i).val(),
+              'Precio' : $("#valor"+i).val(),
+              'Total_Desc' : $("#descuento"+i).val(),
+              'Total_Desc2' : $("#descuento2"+i).val(),
+              'Iva' : $("#Iva"+i).val(),
+              'Total' : $("#subtotal"+i).val(),
+              'MiMes' : $("#Mes"+i).val(),
+              'Periodo' : $("#Periodo"+i).val(),
+            };
+            key++;
+          }
+        }
+        codigoCliente = $("#codigoCliente").val();
+        $.ajax({
+          type: "POST",
+          url: '../controlador/facturacion/facturar_pensionC.php?guardarLineas=true',
+          data: {
+            'codigoCliente' : codigoCliente,
+            'datos' : datosLineas,
+          }, 
+          success: function(data)
+          {
+
+          }
+        });
+      // }
+
+// ------------------------------
+var valor = 0; var descuento = 0; var total = 0;var subtotal = 0;
+  for(var i=1; i<datos+1; i++){
+      checkbox = "checkbox"+i;
+      if($('#'+checkbox).prop('checked'))
+      {
+        descuento+=parseFloat($('#descuento2'+i).val());
+        valor+=parseFloat($('#valor'+i).val());
+        subtotal+=parseFloat($('#descuento2'+i).val());
+        total+=parseFloat($('#subtotal'+i).val());
       }
-      descuento += descuento1;
-      total += valor;
-    } else {
-      if (iva == 0) {
-        total0 -= valor;  
-      }else{
-        total12 -= valor;
-      }
-      descuento -= descuento1;
-      total -= valor;
+     
     }
-    datosLineas = [];
-    key = 0;
-    for (var i = 1; i <= datos; i++) {
-      datosId = 'checkbox'+i;
-      datosCheckBox = document.getElementById(datosId);
-      if (datosCheckBox.checked == true) {
-        datosLineas[key] = {
-          'Codigo' : $("#Codigo"+i).val(),
-          'CodigoL' : $("#CodigoL"+i).val(),
-          'Producto' : $("#Producto"+i).val(),
-          'Precio' : $("#valor"+i).val(),
-          'Total_Desc' : $("#descuento"+i).val(),
-          'Total_Desc2' : $("#descuento2"+i).val(),
-          'Iva' : $("#Iva"+i).val(),
-          'Total' : $("#subtotal"+i).val(),
-          'MiMes' : $("#Mes"+i).val(),
-          'Periodo' : $("#Periodo"+i).val(),
-        };
-        key++;
-      }
-    }
-    codigoCliente = $("#codigoCliente").val();
-    $("#total12").val(parseFloat(total12).toFixed(2));
-    $("#descuento").val(parseFloat(descuento).toFixed(2));
+
+
+    $("#total12").val(parseFloat(subtotal).toFixed(2));
+    $("#descuentop").val(parseFloat(descuento).toFixed(2));
     $("#iva12").val(parseFloat(iva12).toFixed(2));
     $("#total").val(parseFloat(total).toFixed(2));
-    $("#total0").val(parseFloat(total0).toFixed(2));
+    $("#total0").val(parseFloat(valor).toFixed(2));
     $("#valorBanco").val(parseFloat(total).toFixed(2));
     $("#saldoTotal").val(parseFloat(0).toFixed(2));
 
-    $.ajax({
-      type: "POST",
-      url: '../controlador/facturacion/facturar_pensionC.php?guardarLineas=true',
-      data: {
-        'codigoCliente' : codigoCliente,
-        'datos' : datosLineas,
-      }, 
-      success: function(data)
-      {
-        
-      }
-    });    
+
   }
 
   function calcularDescuento(){
     $('#myModal').modal('hide');
     porcentaje = $('#porcentaje').val();
-    var table = document.getElementById('customers');
+    var table = document.getElementById('tbl_style');
     var rowLength = table.rows.length;
 
     for(var i=1; i<rowLength; i+=1){
       var row = table.rows[i];
       var cellLength = row.cells.length;
       checkbox = "checkbox"+i;
-      var checkBox = document.getElementById(checkbox);
-      if (checkBox.checked == true){
+      // var checkBox = document.getElementById(checkbox);
+      if ($('#'+checkbox).prop('checked')){
         valor = $("#valor"+i).val();
         descuento1 = valor * (porcentaje/100);
         $("#descuento2"+i).val(descuento1.toFixed(2));
         subtotal = valor - descuento1;
         $("#subtotal"+i).val(subtotal.toFixed(2));
+        iva = 0;
+         totalFactura(checkbox,valor,iva,descuento1,rowLength);
       }
       total0 = $("#total0").val();
       descuento = total0 * (porcentaje/100);
@@ -368,10 +377,11 @@
       url: '../controlador/facturacion/facturar_pensionC.php?numFactura=true',
       data: {
         'DCLinea' : DCLinea,
-      }, 
+      },       
+      dataType:'json', 
       success: function(data)
       {
-        datos = JSON.parse(data);
+        datos = data;
         document.querySelector('#numeroSerie').innerText = datos.serie;
         $("#factura").val(datos.codigo);
       }
@@ -384,10 +394,11 @@
       url: '../controlador/facturacion/facturar_pensionC.php?cliente=true&total=true',
       data: {
         'q' : '',
-      }, 
+      },       
+      dataType:'json', 
       success: function(data)
       {
-        datos = JSON.parse(data);
+        datos = data;
         $("#registros").val(datos.registros);
       }
     });
@@ -407,13 +418,14 @@
   function guardarPension(){
     validarDatos = $("#total").val();
     saldoTotal = $("#saldoTotal").val();
-    if (saldoTotal > 0 ) {
-      Swal.fire({
-        type: 'info',
-        title: 'Debe pagar la totalidad de la factura',
-        text: ''
-      });
-    }else if (validarDatos <= 0 ) {
+    // if (saldoTotal > 0 ) {
+    //   Swal.fire({
+    //     type: 'info',
+    //     title: 'Debe pagar la totalidad de la factura',
+    //     text: ''
+    //   });
+    // }else 
+    if (validarDatos <= 0 ) {
       Swal.fire({
         type: 'info',
         title: 'Ingrese los datos necesarios para guardar la factura',
@@ -468,7 +480,7 @@
           confirmButtonText: 'Si!'
         }).then((result) => {
           if (result.value==true) {
-            $('#myModal_espera').modal('show');
+            // $('#myModal_espera').modal('show');
             $.ajax({
             type: "POST",
             url: '../controlador/facturacion/facturar_pensionC.php?guardarPension=true',
@@ -493,14 +505,15 @@
               'TxtNC' : TxtNC,
               'Fecha' : Fecha,
               'DCNC' : DCNC, 
-            }, 
+            },
+            dataType:'json',  
             success: function(response)
             {
               
               $('#myModal_espera').modal('hide');
               if (response) {
 
-                response = JSON.parse(response);
+                response = response;
                 if(response.respuesta == '3')
                 {
                   Swal.fire({
@@ -736,28 +749,29 @@
         <div class="row">
 
           <div class="col-sm-12">
-            <div class="tab-content" style="background-color:#E7F5FF">
+            <!-- <div class="tab-content" style="background-color:#E7F5FF"> -->
+            <div class="tab-content">
               <div id="home" class="tab-pane fade in active">
                 <div class="table-responsive" id="tabla_" style="overflow-y: scroll; height:250px; width: auto;">
-                  <div class="sombra" style>
-                    <table border class="table table-striped table-hover" id="customers" tabindex="14" >
+                  <!-- <div class="sombra" style> -->
+                    <table border class="table table-striped table-hover" id="tbl_style" tabindex="14" >
                       <thead>
                         <tr>
-                          <th style="border: #b2b2b2 1px solid;"></th>
-                          <th style="border: #b2b2b2 1px solid;">Mes</th>
-                          <th style="border: #b2b2b2 1px solid;">Código</th>
-                          <th style="border: #b2b2b2 1px solid;">Año</th>
-                          <th style="border: #b2b2b2 1px solid;" width="300px">Producto</th>
-                          <th style="border: #b2b2b2 1px solid;" width="100px">Valor</th>
-                          <th style="border: #b2b2b2 1px solid;" width="100px">Descuento</th>
-                          <th style="border: #b2b2b2 1px solid;" width="100px">Desc. P. P.</th>
-                          <th style="border: #b2b2b2 1px solid;" width="100px">Total</th>
+                          <th></th>
+                          <th>Mes</th>
+                          <th>Código</th>
+                          <th>Año</th>
+                          <th>Producto</th>
+                          <th>Valor</th>
+                          <th>Descuento</th>
+                          <th>Desc. P. P.</th>
+                          <th>Total</th>
                         </tr>
                       </thead>
                       <tbody id="cuerpo">
                       </tbody>
                     </table>          
-                  </div>
+                  <!-- </div> -->
                 </div>
               </div>
             </div>
@@ -776,7 +790,6 @@
           </div>
           <div class="col-sm-2 text-left">
             <b>Desc x P P</b>
-            <button tabindex="25" type="button" class="btn" data-toggle="modal" data-target="#myModal">%</button>
           </div>
           <div class="col-sm-2 text-left">
             <b>I.V.A. 12%</b>
@@ -796,7 +809,13 @@
             <input type="text" name="descuento" id="descuento" class="form-control input-sm red text-right" readonly>
           </div>
           <div class="col-sm-2">
-            <input type="text" name="descuentop" id="descuentop" class="form-control input-sm red text-right" readonly>
+            <div class="input-group input-group-sm">
+                <input type="text" name="descuentop" id="descuentop" class="form-control input-sm red text-right" readonly>
+                    <span class="input-group-btn">
+                      <!-- <button type="button" class="btn btn-info btn-flat">Go!</button> -->
+                      <button tabindex="25" type="button" class="btn" data-toggle="modal" data-target="#myModal">%</button>
+                    </span>
+              </div>
           </div>
           <div class="col-sm-2">
             <input type="text" name="iva12" id="iva12" class="form-control input-sm red text-right" readonly>
@@ -971,8 +990,8 @@
             <div class="tab-content" style="background-color:#E7F5FF">
               <div id="home" class="tab-pane fade in active">
                 <div class="table-responsive" id="tabla_" style="overflow-y: scroll; height:450px; width: auto;">
-                  <div class="sombra" style>
-                    <table border class="table table-striped table-hover" id="customers" tabindex="14" >
+                  <!-- <div class="sombra" style> -->
+                    <table border class="table table-striped table-hover" id="tbl_style" tabindex="14" >
                       <thead>
                         <tr>
                           <th>TD</th>
@@ -991,7 +1010,7 @@
                       <tbody id="cuerpoHistoria">
                       </tbody>
                     </table>
-                  </div>
+                  <!-- </div> -->
                 </div>
               </div>
             </div>  
