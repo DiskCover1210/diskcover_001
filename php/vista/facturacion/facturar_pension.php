@@ -484,7 +484,7 @@ var valor = 0; var descuento = 0; var total = 0;var subtotal = 0;
           confirmButtonText: 'Si!'
         }).then((result) => {
           if (result.value==true) {
-            // $('#myModal_espera').modal('show');
+            $('#myModal_espera').modal('show');
             $.ajax({
             type: "POST",
             url: '../controlador/facturacion/facturar_pensionC.php?guardarPension=true',
@@ -573,7 +573,7 @@ var valor = 0; var descuento = 0; var total = 0;var subtotal = 0;
                     });
                   }else if(response.respuesta==4)
                   {
-                     Swal.fire('SRI intermitente','si el problema persiste por mas de 1 dia comuniquese con su proveedor','info');
+                     Swal.fire('SRI intermitente si el problema persiste por mas de 1 dia comuniquese con su proveedor','','info');
                      catalogoProductos(codigoCliente);
                   }
                   else
