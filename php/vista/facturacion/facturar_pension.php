@@ -22,6 +22,7 @@
     verificarTJ();
     //enviar datos del cliente
     $('#cliente').on('select2:select', function (e) {
+      console.log(e);
       var data = e.params.data.data;
       $('#email').val(data.email);
       $('#direccion').val(data.direccion);
@@ -234,9 +235,10 @@
       dataType:'json', 
       success: function(data)
       {
+        console.log(data);
         datos = data;
         valor = 0;
-        if (datos !== null) {
+        if (datos.length>0) {
           valor = datos.Saldo_Pendiente;
         }
         $("#saldoFavor").val(parseFloat(valor).toFixed(2));
@@ -469,6 +471,8 @@ var valor = 0; var descuento = 0; var total = 0;var subtotal = 0;
         Fecha = $("#fechaEmision").val();
         Total = $("#total").val();
         codigoCliente = $("#codigoCliente").val();
+        saldoFavor = $('#saldoFavor').val();
+        abono = $('#abono').val();
         //var confirmar = confirm("Esta seguro que desea guardar \n La factura No."+TextFacturaNo);
         Swal.fire({
           title: 'Esta seguro?',
@@ -504,7 +508,10 @@ var valor = 0; var descuento = 0; var total = 0;var subtotal = 0;
               'TxtEfectivo' : TxtEfectivo,
               'TxtNC' : TxtNC,
               'Fecha' : Fecha,
-              'DCNC' : DCNC, 
+              'DCNC' : DCNC,
+              'saldoTotal':saldoTotal,
+              'saldoFavor':saldoFavor,
+              'TxtNCVal':abono, 
             },
             dataType:'json',  
             success: function(response)
@@ -516,14 +523,10 @@ var valor = 0; var descuento = 0; var total = 0;var subtotal = 0;
                 response = response;
                 if(response.respuesta == '3')
                 {
-                  Swal.fire({
-                       type: 'error',
-                       title: 'Este documento electronico ya esta autorizado',
-                       text: ''
-                     });
+                  Swal.fire('Este documento electronico ya esta autorizado','','error');
 
-                  }else if(response.respuesta == '1')
-                  {
+                }else if(response.respuesta == '1')
+                {
                     Swal.fire({
                       type: 'success',
                       title: 'Este documento electronico fue autorizado',
@@ -537,8 +540,8 @@ var valor = 0; var descuento = 0; var total = 0;var subtotal = 0;
                       location.reload();
                       //imprimir_ticket_fac(0,TextCI,TextFacturaNo,serie[1]);
                     });
-                  }else if(response.respuesta == '2')
-                  {
+                }else if(response.respuesta == '2')
+                {
                     Swal.fire({
                        type: 'info',
                        title: 'XML devuelto',
@@ -553,8 +556,8 @@ var valor = 0; var descuento = 0; var total = 0;var subtotal = 0;
                       //imprimir_ticket_fac(0,TextCI,TextFacturaNo,serie[1]);
                     });
 
-                  }else if(response.respuesta == '4')
-                  {
+                }else if(response.respuesta == '5')
+                {
                     Swal.fire({
                       type: 'success',
                       title: 'Factura guardada correctamente',
@@ -568,6 +571,10 @@ var valor = 0; var descuento = 0; var total = 0;var subtotal = 0;
                       location.reload();
                       //imprimir_ticket_fac(0,TextCI,TextFacturaNo,serie[1]);
                     });
+                  }else if(response.respuesta==4)
+                  {
+                     Swal.fire('SRI intermitente','si el problema persiste por mas de 1 dia comuniquese con su proveedor','info');
+                     catalogoProductos(codigoCliente);
                   }
                   else
                   {
@@ -584,6 +591,7 @@ var valor = 0; var descuento = 0; var total = 0;var subtotal = 0;
                   title: 'La factura ya se autorizo',
                   text: ''
                 });
+                catalogoProductos(codigoCliente);
               }
             }
             });
@@ -620,7 +628,7 @@ var valor = 0; var descuento = 0; var total = 0;var subtotal = 0;
       </div>
       -->  
       <div class="col-xs-2 col-md-2 col-sm-2 col-lg-1">
-        <a title="Historia del cliente"  class="btn btn-default" onclick="historiaCliente();">
+        <a title="Historia del cliente"  class="btn btn-default">
           <img src="../../img/png/document.png" width="25" height="30">
         </a>
       </div>

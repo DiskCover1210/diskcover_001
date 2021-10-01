@@ -243,10 +243,10 @@ class articulosC
 		$tr.='<tr>
   					<td width="'.$d.'" colspan="5"></td>
   					<td width="'.$d7.'"><b>TOTALES</b></td>
-  					<td width="'.$d7.'" class="text-right">'.$dcto.'</td>
-  					<td width="'.$d7.'" class="text-right">'.$subtotal.'</td>
-  					<td width="'.$d7.'" class="text-right">'.$ivatotal.'</td>
-  					<td width="'.$d7.'" class="text-right">'.$total.'</td>
+  					<td width="'.$d7.'" class="text-right">'.number_format($dcto,2,'.','').'</td>
+  					<td width="'.$d7.'" class="text-right">'.number_format($subtotal,2,'.','').'</td>
+  					<td width="'.$d7.'" class="text-right">'.number_format($ivatotal,2,'.','').'</td>
+  					<td width="'.$d7.'" class="text-right">'.number_format($total,2,'.','').'</td>
   				</tr>';
 		if($num_reg==0)
 		{

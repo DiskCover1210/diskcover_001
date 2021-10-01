@@ -183,6 +183,16 @@ class facturar_pensionM
     return $stmt;
   }
 
+   public function deleteAsientoEd($A_No){
+    $sql = "DELETE
+            FROM Asiento_F
+            WHERE Item = '".$_SESSION['INGRESO']['item']."' 
+            AND CodigoU = '". $_SESSION['INGRESO']['CodigoU'] ."' 
+            AND A_No = ".$A_No;
+    $stmt = $this->db->String_Sql($sql);
+    return $stmt;
+  }
+
   public function getAsiento(){
     $sql = "SELECT * 
        			FROM Asiento_F
@@ -222,6 +232,51 @@ class facturar_pensionM
         ORDER BY TD,Serie, Factura, Total desc, No ";
         $sql = $SQL1 . " UNION " . $SQL2 . " UNION " . $SQL3;
     $stmt = $this->db->datos($sql);
+    return $stmt;
+  }
+
+  public function actualizar_Clientes_Facturacion($Valor,$Anio1,$Codigo,$Codigo1,$Codigo2,$Codigo3)
+  {
+    $sql="UPDATE Clientes_Facturacion
+          SET Valor = Valor - ".$Valor." 
+          WHERE Item = '".$_SESSION['INGRESO']['item']."' 
+          AND Periodo = '".$Anio1."' 
+          AND Codigo_Inv = '".$Codigo1."' 
+          AND Codigo = '".$Codigo."' 
+          AND Credito_No = '".$Codigo3."' 
+          AND Mes = '".$Codigo2."' ";
+    $stmt = $this->db->String_Sql($sql);
+    return $stmt;
+
+  }
+
+   public function actualizar_Clientes_Facturacion2($Total_Abonos,$Total_Desc,$Anio1,$Codigo,$Codigo1,$Codigo2,$Codigo3)
+  {
+
+          // print_r($Total_Abonos);
+          // print_r($Total_Desc); die();
+    $sql="UPDATE Clientes_Facturacion
+          SET Valor = ".((-1*$Total_Abonos) + $Total_Desc)."
+          WHERE Item = '".$_SESSION['INGRESO']['item']."' 
+          AND Periodo = '".$Anio1."' 
+          AND Codigo_Inv = '".$Codigo1."' 
+          AND Codigo = '".$Codigo."' 
+          AND Credito_No = '".$Codigo3."' 
+          AND Mes = '".$Codigo2."' ";
+          // print_r($sql);die();
+    $stmt = $this->db->String_Sql($sql);
+    return $stmt;
+
+  }
+
+  public function actualizar_asiento_F($Valor,$ID_Reg)
+  {
+    $sql = "UPDATE Asiento_F
+           SET TOTAL = ".$Valor.", PRECIO = ".$Valor.", Total_Desc = 0, Total_Desc2 = 0
+           WHERE Item = '".$_SESSION['INGRESO']['item']."'
+           AND CodigoU = '".$_SESSION['INGRESO']['CodigoU']."'
+           AND A_No = ".$ID_Reg." ";
+    $stmt = $this->db->String_Sql($sql);
     return $stmt;
   }
 }

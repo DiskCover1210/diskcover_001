@@ -47,10 +47,11 @@ class autorizacion_sri
 	function Autorizar($parametros)
 	{
 		/*
-			retorna entre 1 2 3
+			retorna entre 1 2 3 4
 			1 Este documento electronico autorizado
 			2 XML devuelto
 			3 Este documento electronico ya esta autorizado
+			4 sri intermitente
 
 			en el caso de que la respuesta sea una "c" revisar el el firmado si el nombre del certidicado es
 		*/		
@@ -231,6 +232,11 @@ class autorizacion_sri
 	           	 	{
 	           	 	  return array('respuesta'=>1);
 	           	 	}
+	           	 }
+	           	 if($estado[1].' '.$estado[2].' '.$estado[3]=='FACTURA NO PROCESADOEl')
+	           	 {
+	           	 	 // El comprobante fue enviado, está pendiente de autorización 0110202101070216417900110010010000001631234567811 FACTURA NO PROCESADOEl archivo no tiene autorizaciones relacionadas =>mensaje que nos envia el .jar cuando no tiene conexion con el sri
+	           	 	 return array('respuesta'=>4);
 	           	 }
 
 	           	}
@@ -1593,14 +1599,17 @@ function generar_xml_retencion($cabecera,$detalle=false)
 			// " ".$url_autorizado." ".$linkSriAutorizacion." ".$linkSriRecepcion);
 			// die();
 
-			exec("java -jar ".$quijoteCliente." ".$nom_doc." ".$url_firmados." ".$url_No_autorizados.
+			for ($i=1; $i < 4; $i++) { 
+				//autorizacion de factura
+				exec("java -jar ".$quijoteCliente." ".$nom_doc." ".$url_firmados." ".$url_No_autorizados.
 			" ".$url_autorizado." ".$linkSriAutorizacion." ".$linkSriRecepcion, $o);
-
- 		// 	exec("java -jar ".$quijoteCliente." ".$nom_doc.".xml".
-			// " ".$url_firmados." ".$url_No_autorizados.
-			// " ".$url_autorizado." ".$nom_doc."", $o);
-			sleep(4);
-			
+				if($o!=null)
+				{
+					sleep(5);
+			    	return $o;
+				}				
+			}		
+			sleep(5);		
 	       return $o;
  		}else
  		{

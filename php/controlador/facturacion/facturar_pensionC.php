@@ -360,8 +360,41 @@ class facturar_pensionC
     $FA['Cta_CxP'] = $resultado[3];
 		//Procedemos a grabar la factura
   	$datos = $this->facturacion->getAsiento();
-    // print_r($datos);die();
+    $Total_Abonos = $FA['TxtEfectivo']+$FA['TextCheque']+$FA['TxtNCVal']+$FA['saldoFavor']; 
     foreach ($datos as $key => $value) {
+       
+       $Valor = $value["TOTAL"];
+       $Total_Desc = $value["Total_Desc"]+$value["Total_Desc2"];
+       $ValorDH = $Valor - $Total_Desc;
+       $Codigo = $value["Codigo_Cliente"];
+       $Codigo1 = $value["CODIGO"];
+       $Codigo2 = $value["Mes"];
+       $Codigo3 = $value["HABIT"];
+       $Anio1 = $value["TICKET"];
+       $ID_Reg = $value["A_No"];
+       $Total_Abonos = $Total_Abonos - $ValorDH;
+          if($Total_Abonos >= 0){
+            $this->facturacion->actualizar_Clientes_Facturacion($Valor,$Anio1,$Codigo,$Codigo1,$Codigo2,$Codigo3);
+          }else{
+            $Valor = $Valor + $Total_Abonos;
+            if($Valor > 0){
+              $this->facturacion->actualizar_Clientes_Facturacion2($Total_Abonos,$Total_Desc,$Anio1,$Codigo,$Codigo1,$Codigo2,$Codigo3);
+               $Total_Abonos = $Total_Abonos + $Total_Desc;
+               $Valor = $Valor - $Total_Desc;
+              $this->facturacion->actualizar_asiento_F($Valor,$ID_Reg);
+            }else{
+              $this->facturacion->deleteAsientoEd($ID_Reg);              
+            }
+          }
+    }
+
+
+    // print_r($FA);
+    // print_r($TotalAbonos);
+    // print_r($datos);die();
+
+    foreach ($datos as $key => $value) {
+      // print_r($key);
 		  $TFA = Calculos_Totales_Factura($codigoCliente);
       $FA['Tipo_PRN'] = "FM";
       $FA['FacturaNo'] = $TextFacturaNo;
@@ -398,7 +431,7 @@ class facturar_pensionC
       $Codigo2 = $value["Mes"];
       $Codigo3 = ".";
       $Anio1 = $value["TICKET"];
-      $this->facturacion->updateClientesFacturacion1($Valor,$Anio1,$Codigo1,$Codigo,$Codigo3,$Codigo2);
+      // $this->facturacion->updateClientesFacturacion1($Valor,$Anio1,$Codigo1,$Codigo,$Codigo3,$Codigo2);
       //Grabamos el numero de factura
       Grabar_Factura($FA);
 
@@ -488,7 +521,7 @@ class facturar_pensionC
       if (strlen($FA['Autorizacion']) == 13) {
         $resultado = $this->autorizar_sri->Autorizar($FA);
       }else{
-        $resultado = array('respuesta'=>4);
+        $resultado = array('respuesta'=>5);
       }
       echo json_encode($resultado);
       exit();
@@ -525,7 +558,7 @@ class facturar_pensionC
       $dato[11]['campo']='Codigo_Cliente';
       $dato[11]['dato']= $_POST['codigoCliente'];
       $dato[12]['campo']='HABIT';
-      $dato[12]['dato']= G_PENDIENTE;
+      $dato[12]['dato']= G_NINGUNO; // hay que revisar aqui que valor va por el moento que da con punto
       $dato[13]['campo']='Mes';
       $dato[13]['dato']= $producto['MiMes'] ;
       $dato[14]['campo']='TICKET';
