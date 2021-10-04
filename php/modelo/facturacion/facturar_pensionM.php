@@ -204,33 +204,43 @@ class facturar_pensionM
   }
 
   public function historiaCliente($codigoCliente){
-    $SQL1 = "SELECT TC As TD, Fecha, Serie, Factura,'Emision ' + Producto As Detalle, YEAR(Fecha) As Anio, Mes, Total, 0 As Abonos, Mes_No, 
+   $SQL1 = "SELECT TC As TD, Fecha, Serie, Factura,'Emision ' + Producto As Detalle, YEAR(Fecha) As Anio, Mes, Total, 0 As Abonos, Mes_No, 
         (ROW_NUMBER() OVER(PARTITION BY Serie, Factura ORDER BY Fecha, Serie, Factura)) As No 
         FROM Detalle_Factura 
-        WHERE Item = '" . $_SESSION['INGRESO']['item'] . "'
-        AND CodigoC = '" . $codigoCliente . "' 
+        WHERE Item = '".$_SESSION['INGRESO']['item']."' 
+        AND CodigoC = '".$codigoCliente."' 
         AND T <> 'A' 
         AND TC IN ('NV','FA') 
-        GROUP BY TC, Fecha, Serie, Factura, Producto, Mes_No, Mes, Total ";
+        GROUP BY TC, Fecha, Serie, Factura, Producto, Mes_No, Ticket, Mes, Total ";
         
-    $SQL2 = "SELECT TP As TD, Fecha, Serie, Factura, 'Tipo de Abono: ' + Banco As Detalle, YEAR(Fecha) AS Anio, Mes, 0 As Total, Abono As Abonos, Mes_No, 
+    $SQL2 = "SELECT TC As TD, Fecha, Serie, Factura,'Descuento ' + Producto As Detalle, Ticket As Anio, Mes, 0 As Total, SUM(Total_Desc + Total_Desc2) As Abonos, Mes_No, 
+         (ROW_NUMBER() OVER(PARTITION BY Serie, Factura ORDER BY Fecha, Serie, Factura)) As No 
+         FROM Detalle_Factura 
+         WHERE Item = '".$_SESSION['INGRESO']['item']."' 
+         AND CodigoC = '".$codigoCliente."' 
+         AND T <> 'A' 
+         AND TC IN ('NV','FA') 
+         AND (Total_Desc + Total_Desc2) > 0 
+         GROUP BY TC, Fecha, Serie, Factura, Producto, Mes_No, Ticket, Mes ";
+
+   $SQL3 = "SELECT TP As TD, Fecha, Serie, Factura, 'Tipo de Abono: ' + Banco As Detalle, YEAR(Fecha) AS Anio, Mes, 0 As Total, Abono As Abonos, Mes_No, 
         (ROW_NUMBER() OVER(PARTITION BY Serie, Factura ORDER BY Serie, Factura, Fecha)) As No 
         FROM Trans_Abonos 
-        WHERE Item = '" . $_SESSION['INGRESO']['item'] . "' 
+        WHERE Item = '".$_SESSION['INGRESO']['item']."' 
         AND T <> 'A' 
-        AND CodigoC = '" . $codigoCliente . "' 
+        AND CodigoC = '".$codigoCliente."' 
         GROUP BY TP, Serie, Factura, Fecha,  Mes_No, Mes, Abono, Banco, Cheque ";
-        
-    $SQL3 = "SELECT 'PF' As TD, CF.Fecha,'999999' As Serie,'999999999' As Factura, 'Por Facturar ' + CP.Producto As Detalle, CF.Periodo As Anio, CF.Mes, 
-        CF.Valor As Total, (CF.Descuento + CF.Descuento2) As Abonos, CF.Num_Mes, (ROW_NUMBER() OVER(PARTITION BY CF.Fecha, CF.Mes ORDER BY CF.Fecha, CF.Mes)) As No 
+
+   $SQL4 = "SELECT 'PF' As TD, CF.Fecha,'999999' As Serie,'999999999' As Factura, 'Por Facturar ' + CP.Producto As Detalle, CF.Periodo As Anio, CF.Mes,CF.Valor As Total, (CF.Descuento + CF.Descuento2) As Abonos, CF.Num_Mes, (ROW_NUMBER() OVER(PARTITION BY CF.Fecha, CF.Mes ORDER BY CF.Fecha, CF.Mes)) As No 
         FROM Clientes_Facturacion As CF, Catalogo_Productos As CP 
-        WHERE CP.Item = '" . $_SESSION['INGRESO']['item'] . "' 
-        AND CF.Codigo = '" . $codigoCliente . "' 
+        WHERE CP.Item = '".$_SESSION['INGRESO']['item']."' 
+        AND CF.Codigo = '".$codigoCliente."' 
         AND CP.Periodo = '.' 
         AND CP.Item = CF.Item 
         AND CP.Codigo_Inv = CF.Codigo_Inv 
-        ORDER BY TD,Serie, Factura, Total desc, No ";
-        $sql = $SQL1 . " UNION " . $SQL2 . " UNION " . $SQL3;
+        ORDER BY TD, Fecha, Serie, Factura, Total desc, No ";        
+       
+        $sql = $SQL1." UNION ".$SQL2." UNION ".$SQL3." UNION ".$SQL4;
     $stmt = $this->db->datos($sql);
     return $stmt;
   }
@@ -279,6 +289,53 @@ class facturar_pensionM
     $stmt = $this->db->String_Sql($sql);
     return $stmt;
   }
+
+   function historial_cliente($codigoCliente)
+  {
+
+    $SQL1 = "SELECT TC As TD, Fecha, Serie, Factura,'Emision ' + Producto As Detalle, YEAR(Fecha) As Anio, Mes, Total, 0 As Abonos, Mes_No, 
+        (ROW_NUMBER() OVER(PARTITION BY Serie, Factura ORDER BY Fecha, Serie, Factura)) As No 
+        FROM Detalle_Factura 
+        WHERE Item = '".$_SESSION['INGRESO']['item']."' 
+        AND CodigoC = '".$codigoCliente."' 
+        AND T <> 'A' 
+        AND TC IN ('NV','FA') 
+        GROUP BY TC, Fecha, Serie, Factura, Producto, Mes_No, Ticket, Mes, Total ";
+        
+    $SQL2 = "SELECT TC As TD, Fecha, Serie, Factura,'Descuento ' + Producto As Detalle, Ticket As Anio, Mes, 0 As Total, SUM(Total_Desc + Total_Desc2) As Abonos, Mes_No, 
+         (ROW_NUMBER() OVER(PARTITION BY Serie, Factura ORDER BY Fecha, Serie, Factura)) As No 
+         FROM Detalle_Factura 
+         WHERE Item = '".$_SESSION['INGRESO']['item']."' 
+         AND CodigoC = '".$codigoCliente."' 
+         AND T <> 'A' 
+         AND TC IN ('NV','FA') 
+         AND (Total_Desc + Total_Desc2) > 0 
+         GROUP BY TC, Fecha, Serie, Factura, Producto, Mes_No, Ticket, Mes ";
+
+   $SQL3 = "SELECT TP As TD, Fecha, Serie, Factura, 'Tipo de Abono: ' + Banco As Detalle, YEAR(Fecha) AS Anio, Mes, 0 As Total, Abono As Abonos, Mes_No, 
+        (ROW_NUMBER() OVER(PARTITION BY Serie, Factura ORDER BY Serie, Factura, Fecha)) As No 
+        FROM Trans_Abonos 
+        WHERE Item = '".$_SESSION['INGRESO']['item']."' 
+        AND T <> 'A' 
+        AND CodigoC = '".$codigoCliente."' 
+        GROUP BY TP, Serie, Factura, Fecha,  Mes_No, Mes, Abono, Banco, Cheque ";
+
+   $SQL4 = "SELECT 'PF' As TD, CF.Fecha,'999999' As Serie,'999999999' As Factura, 'Por Facturar ' + CP.Producto As Detalle, CF.Periodo As Anio, CF.Mes,CF.Valor As Total, (CF.Descuento + CF.Descuento2) As Abonos, CF.Num_Mes, (ROW_NUMBER() OVER(PARTITION BY CF.Fecha, CF.Mes ORDER BY CF.Fecha, CF.Mes)) As No 
+        FROM Clientes_Facturacion As CF, Catalogo_Productos As CP 
+        WHERE CP.Item = '".$_SESSION['INGRESO']['item']."' 
+        AND CF.Codigo = '".$codigoCliente."' 
+        AND CP.Periodo = '.' 
+        AND CP.Item = CF.Item 
+        AND CP.Codigo_Inv = CF.Codigo_Inv 
+        ORDER BY TD, Fecha, Serie, Factura, Total desc, No ";
+
+        $sSQL = $SQL1." UNION ".$SQL2." UNION ".$SQL3." UNION ".$SQL4;
+         $stmt = $this->db->datos($sSQL);
+        return $stmt;
+
+
+  }
+
 }
 
 ?>

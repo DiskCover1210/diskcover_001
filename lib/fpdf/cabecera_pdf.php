@@ -23,12 +23,14 @@ class cabecera_pdf
 	private $pdf;
 	private $conn;
 	private $header_cuerpo;
+	private $pdf_sin_cabecera;
 
 	function __construct()
 	{
 		$this->fpdf = new FPDF();
 		$this->pdf = new PDFv();
 		$this->pdftable = new PDF_MC();
+		$this->pdf_sin_cabecera = new PDF_MC_SIN_HEADER();
 		$this->fechafin='';
 		$this->fechaini='';
 		$this->sizetable ='12';
@@ -299,6 +301,67 @@ class cabecera_pdf
 		// $this->pdftable->Output();
 	}
 
+	function DeudapendientePensionesPDF($titulo,$tablaHTML,$contenido=false,$image=false,$fechaini,$fechafin,$sizetable,$mostrar=false,$sal_hea_body=30,$orientacion='P',$download=true)
+	{	
+		$this->pdf_sin_cabecera->AddPage($orientacion);
+
+
+	   $this->pdf_sin_cabecera->SetFont('Arial','',$sizetable);
+	    foreach ($tablaHTML as $key => $value){
+	    	if(isset($value['estilo']) && $value['estilo']!='')
+	    	{
+	    		$this->pdf_sin_cabecera->SetFont('Arial',$value['estilo'],$sizetable);
+	    		$estiloRow = $value['estilo'];
+	    	}else
+	    	{
+	    		$this->pdf_sin_cabecera->SetFont('Arial','',$sizetable);
+	    		$estiloRow ='';
+	    	}
+	    	if(isset($value['borde']) && $value['borde']!='0')
+	    	{
+	    		$borde=$value['borde'];
+	    	}else
+	    	{
+	    		$borde =0;
+	    	}
+
+	    //print_r($value['medida']);
+	       $this->pdf_sin_cabecera->SetWidths($value['medidas']);
+		   $this->pdf_sin_cabecera->SetAligns($value['alineado']);
+		   //print_r($value['datos']);
+		   $arr= $value['datos'];
+		   $this->pdf_sin_cabecera->Row($arr,4,$borde,$estiloRow);		    	
+	    }
+		
+		// print_r($_SESSION['INGRESO']);die();
+		$this->pdf_sin_cabecera->Ln(30);
+		$this->pdf_sin_cabecera->Cell(0,3,'--------------------------------------',0,0,'L');	
+		$this->pdf_sin_cabecera->Ln(5);	
+		$this->pdf_sin_cabecera->Cell(0,3,strtoupper($_SESSION['INGRESO']['Nombre']),0,0,'L');
+		$this->pdf_sin_cabecera->Ln(5);
+		$this->pdf_sin_cabecera->Cell(0,3,strtoupper('COLECTURIA'),0,0,'L');					
+		
+
+		if ($download) 
+		{	
+		 if($mostrar==true)
+	       {
+	       	//muestra en pantalla
+		    $this->pdf_sin_cabecera->Output();
+	       }else
+	       {
+	       	//descarga el pdf
+		     $this->pdf_sin_cabecera->Output('D',$titulo.'.pdf',false);
+
+	      }
+		}else{
+			//descarga en temporales
+			$this->pdf_sin_cabecera->Output('F',dirname(__DIR__,2).'/php/vista/TEMP/'.$titulo.'.pdf');
+		}
+		
+	}
+
+
 
 	function cabecera_reporte_colegio($titulo,$nombre,$tablaHTML,$contenido=false,$image=false,$fechaini,$fechafin,$sizetable,$mostrar=false,$email=false,$sal_hea_body=30)
 	{	
@@ -553,6 +616,7 @@ class PDF_MC extends PDF_MC_Table
 	public $fechafin;
 	public $titulo;
 	public $salto_header_cuerpo;
+	public $orientacion;
 
     function Header()
     {
@@ -681,4 +745,73 @@ class PDF_MC extends PDF_MC_Table
 
  }
 }
+
+class PDF_MC_SIN_HEADER extends PDF_MC_Table
+{
+
+	public $fechaini;
+	public $fechafin;
+	public $titulo;
+	public $salto_header_cuerpo;
+	public $orientacion;
+
+
+    function Header()
+    {
+   
+   // print($_SESSION['INGRESO']['Logo_Tipo']);
+    	
+			      $this->SetTextColor(0,0,0);
+		if(isset($_SESSION['INGRESO']['Logo_Tipo']))
+		   {
+		   	$logo=$_SESSION['INGRESO']['Logo_Tipo'];
+		   	//si es jpg
+		   	$src = dirname(__DIR__,2).'/img/logotipos/'.$logo.'.jpg'; 
+		   	if(!file_exists($src))
+		   	{
+		   		$src = dirname(__DIR__,2).'/img/logotipos/'.$logo.'.gif'; 
+		   		if(!file_exists($src))
+		   		{
+		   			$src = dirname(__DIR__,2).'/img/logotipos/'.$logo.'.png'; 
+		   			if(!file_exists($src))
+		   			{
+		   				$logo="diskcover_web";
+		                $src= dirname(__DIR__,2).'/img/logotipos/'.$logo.'.gif';
+
+		   			}
+
+		   		}
+
+		   	}
+		  }
+
+		  // print_r($_SESSION['INGRESO']);die();
+
+         $this->Image($src,10,3,35,20); 
+         $this->SetFont('Times','I',9);
+         $this->SetXY(50,3);
+		 $this->Cell(0,3,$_SESSION['INGRESO']['Nombre_Completo'],0,0,'L');
+		 $this->Ln(5);		 
+         $this->SetX(50);
+		 $this->Cell(0,3,strtoupper($_SESSION['INGRESO']['Nombre_Comercial']),0,0,'L');				
+		 $this->Ln(5);
+		 $this->SetX(50);
+		 $this->Cell(0,3,strtoupper('R.U.C: '.$_SESSION['INGRESO']['RUC']),0,0,'L');				
+		 $this->Ln(3);
+		 $this->SetX(50);
+		 $this->SetFont('Times','I',7);
+		 $this->Cell(0,3,ucfirst(strtolower($_SESSION['INGRESO']['Direccion'])),0,0,'L');
+		 $this->Ln(3);
+		 $this->SetX(50);
+    	 $this->SetFont('Times','I',7);
+		 $this->Cell(0,3,ucfirst(strtolower('Telefono: '.$_SESSION['INGRESO']['Telefono1'])),0,0,'L');		 
+		 $this->Ln(3);
+		 $this->SetX(50);
+    	 $this->SetFont('Times','I',7);
+		 $this->Cell(0,3,ucfirst(strtolower('QUITO-ECUADOR')),0,0,'L');
+		 $this->Ln(8);
+ }
+}
+
+
 ?>

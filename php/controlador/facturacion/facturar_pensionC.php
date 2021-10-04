@@ -3,6 +3,7 @@ require_once(dirname(__DIR__,2)."/modelo/facturacion/facturar_pensionM.php");
 require_once(dirname(__DIR__,2)."/comprobantes/SRI/autorizar_sri.php");
 require_once(dirname(__DIR__,3)."/lib/excel/plantilla.php");
 require_once(dirname(__DIR__,3).'/lib/phpmailer/enviar_emails.php');
+date_default_timezone_set('America/Guayaquil'); 
 if(!class_exists('cabecera_pdf'))
 {
   require(dirname(__DIR__,3).'/lib/fpdf/cabecera_pdf.php');
@@ -62,6 +63,13 @@ if(isset($_GET['historiaClienteExcel']))
 if(isset($_GET['historiaClientePDF']))
 {
   $controlador->historiaClientePDF($_REQUEST['codigoCliente']);
+}
+
+if(isset($_GET['DeudaPensionPDF']))
+{
+  $parametros = $_GET['lineas'];
+  // print_r($parametros);die();
+  $controlador->DeudaPensionPDF($_GET['codigoCliente'],$parametros);
 }
 
 if(isset($_GET['enviarCorreo']))
@@ -160,7 +168,21 @@ class facturar_pensionC
       $codigoCliente = G_NINGUNO;
     }
     $datos = $this->facturacion->historiaCliente($codigoCliente);
-    historiaClienteExcel($datos,$ti='HistoriaCliente',$camne=null,$b=null,$base=null,$download);
+
+    $tablaHTML =array();
+       $tablaHTML[0]['medidas']=array(9,20,9,9,50,9,9,9,9,9,9);
+         $tablaHTML[0]['datos']=array('TD','Fecha','Serie','Factura','Detalle','Año','Mes','Total','Abonos','Mes No','No');
+         $tablaHTML[0]['tipo'] ='C';
+         $pos = 1;
+    foreach ($datos as $key => $value) {
+       $tablaHTML[$pos]['medidas']=$tablaHTML[0]['medidas'];
+           $tablaHTML[$pos]['datos']=array($value['TD'],$value['Fecha'],$value['Serie'],$value['Factura'],$value['Detalle'],$value['Anio'],$value['Mes'],$value['Total'],$value['Abonos'],$value['Mes_No'],$value['No']);
+           $tablaHTML[$pos]['tipo'] ='N';
+           $pos+=1;
+    }
+    excel_generico($titulo='Historia del cliente',$tablaHTML);
+
+    // historiaClienteExcel($datos,$ti='HistoriaCliente',$camne=null,$b=null,$base=null,$download);
   }
 
   public function historiaClientePDf($codigo,$download = true){
@@ -194,6 +216,51 @@ class facturar_pensionC
     }
     $this->pdf->cabecera_reporte_MC($titulo,$tablaHTML,$contenido=false,$image=false,$parametros['desde'],$parametros['hasta'],$sizetable,$mostrar,25,$orientacion='P',$download);
   }
+
+  public function DeudaPensionPDF($codigo,$lineas,$download = true){
+
+    $lin = json_decode($lineas, true);
+    // print_r($lin);die();
+    $codigoCliente = $codigo;
+    if ($codigoCliente == "") {
+      $codigoCliente = G_NINGUNO;
+    }
+    // $datos = $this->facturacion->historiaCliente($codigoCliente);
+
+    $titulo = 'HistoriaCliente';
+    $fechaini = false;
+    $fechafin = false;
+    $sizetable = 8;
+    $mostrar = true;
+    $tablaHTML = array();
+
+
+    $tablaHTML[0]['medidas'] = array(20,18,15,40,25,25,25,25);
+    $tablaHTML[0]['alineado'] = array('L','L','L','L','R','R','R','R');
+    $tablaHTML[0]['datos'] = array('MES','CODIGO','AÑO','PRODUCTO','VALOR','DESCUENTO','DESC. P.P.','TOTAL');
+    $tablaHTML[0]['borde'] = 'B';
+
+    $count = 1;
+    foreach ($lin as $key => $value) {
+      $tablaHTML[$count]['medidas'] = $tablaHTML[0]['medidas'];
+      $tablaHTML[$count]['alineado'] = $tablaHTML[0]['alineado'];
+      $tablaHTML[$count]['datos'] = array($value['mes'],$value['cod'],$value['ani'],$value['pro'],$value['val'],$value['des'],$value['p.p'],$value['tot']);
+      $tablaHTML[$count]['borde'] = 'B';
+      $count=$count+1;
+    }
+    $count=$count+1;   
+    $tablaHTML[$count]['medidas'] = array(125,40,25);
+    $tablaHTML[$count]['alineado'] = array('L','R','R');
+    $tablaHTML[$count]['datos'] = array('CORTE AL '.date('r'),'TOTAL A PAGAR USD ','0.01');
+
+    $tablaHTML[$count+1]['medidas'] = array(190);
+    $tablaHTML[$count+1]['alineado'] = array('L');
+    $tablaHTML[$count+1]['datos'] = array('Los datos presentados en este reporte, reflejan los valores pendientes de pago, por concepto de Pensiones Educativas.');
+
+    $this->pdf->DeudapendientePensionesPDF($titulo,$tablaHTML,$contenido=false,$image=false,$fechaini,$fechafin,$sizetable,$mostrar,$sal_hea_body=30,$orientacion='P',$download=true);                                         
+  }
+
+
 
   public function enviarCorreo(){
     //Eliminar archivos temporales

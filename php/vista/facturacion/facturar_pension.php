@@ -205,6 +205,39 @@
     window.open(url, '_blank');
   }
 
+    function DeudaPensionPDF(){
+    var parametros=[];
+    codigoCliente = $('#codigoCliente').val();
+    var can = $('#txt_cant_datos').val();
+    var j=0;
+    for (var i = 1; i < can+1; i++) {
+      if($('#checkbox'+i).prop('checked'))
+      {
+       parametros[j] = {
+        'mes':$('#Mes'+i).val(),
+        'cod':$('#Codigo'+i).val(),
+        'ani':$('#Periodo'+i).val(),
+        'pro':$('#Producto'+i).val(),
+        'val':$('#valor'+i).val(),
+        'des':$('#descuento'+i).val(),
+        'p.p':$('#descuento2'+i).val(),
+        'tot':$('#subtotal'+i).val(),
+      }
+      j= j+1;
+    }
+
+    }
+
+    parametros = JSON.stringify(parametros);
+    parametros = encodeURI(parametros);
+
+    
+    url = '../controlador/facturacion/facturar_pensionC.php?DeudaPensionPDF=true&codigoCliente='+codigoCliente+'&lineas='+parametros;
+    // console.log(parametros);
+    // return false;
+    window.open(url, '_blank');
+  }
+
   function enviarHistoriaCliente(){
     codigoCliente = $('#codigoCliente').val();
     email = $('#email').val();
@@ -267,6 +300,7 @@
   function totalFactura(id,valor,iva,descuento1,datos){
 
     console.log($('#'+id).prop('checked'));
+    $('#txt_cant_datos').val(datos);
 
     // if($('#'+id).prop('checked'))
     // {
@@ -628,22 +662,22 @@ var valor = 0; var descuento = 0; var total = 0;var subtotal = 0;
       </div>
       -->  
       <div class="col-xs-2 col-md-2 col-sm-2 col-lg-1">
-        <a title="Historia del cliente"  class="btn btn-default">
+        <a title="Historia del cliente"  class="btn btn-default" onclick="historiaCliente()">
           <img src="../../img/png/document.png" width="25" height="30">
         </a>
       </div>
-      <!--
+      
       <div class="col-xs-2 col-md-2 col-sm-2 col-lg-1">
-        <a href="./farmacia.php?mod=Farmacia&acc=articulos&acc1=Visualizar%20articulos&b=1&po=subcu#" title="Ingresar Articulosr"  class="btn btn-default" onclick="">
+        <a href="#" title="Presenta la deuda pendiente"  class="btn btn-default" onclick="DeudaPensionPDF()">
           <img src="../../img/png/project.png" width="25" height="30">
         </a>
       </div>
-      <div class="col-xs-2 col-md-2 col-sm-2 col-lg-1">
+    <!--   <div class="col-xs-2 col-md-2 col-sm-2 col-lg-1">
         <a href="./farmacia.php?mod=Farmacia&acc=articulos&acc1=Visualizar%20articulos&b=1&po=subcu#" title="Ingresar Articulosr"  class="btn btn-default" onclick="">
           <img src="../../img/png/data.png" width="25" height="30">
         </a>
-      </div>
-      --> 
+      </div> -->
+       
     </div>
   </div>
   <div class="row">
@@ -741,6 +775,7 @@ var valor = 0; var descuento = 0; var total = 0;var subtotal = 0;
           </div>
           <div class="col-sm-2">
             <label>Código interno</label>
+             <input type="hidden" name="txt_cant_datos" id="txt_cant_datos">
           </div>
         </div>
         <div class="row">
