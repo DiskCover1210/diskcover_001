@@ -129,26 +129,50 @@ class PDF_MC_Table extends FPDF
 			//$this->SetTextColor(0,0,0);
 			if( is_numeric($data[$i]))
 			{
-				if($data[$i]<0)
+			  if(is_float($data[$i]))
 				{
-					$this->SetTextColor(255,51,51);
-					$data[$i] = round($data[$i], 2);
-					if(($data[$i] == 0 ) )
+					if($data[$i]<0)
 					{
-						$data[$i] = '';
-					}
-				}else
-				{
-			      $this->SetTextColor(0,0,0);
-					$data[$i] = round($data[$i], 2);
-					if($data[$i] == 0 and $mostrar_cero==false)
-					{
-						$data[$i] = '';
+						$this->SetTextColor(255,51,51);
+						$data[$i] = number_format($data[$i], 2);
+						if(($data[$i] == 0 ) )
+						{
+							$data[$i] = '';
+						}
 					}else
 					{
-						$data[$i] = $data[$i];
+				      $this->SetTextColor(0,0,0);
+						$data[$i] = number_format($data[$i], 2);
+						if($data[$i] == 0 and $mostrar_cero==false)
+						{
+							$data[$i] = '';
+						}else
+						{
+							$data[$i] = $data[$i];
+						}
 					}
-				}
+			    }else
+			    {
+			    	if($data[$i]<0)
+					{
+						$this->SetTextColor(255,51,51);
+						if(($data[$i] == 0 ) )
+						{
+							$data[$i] = '';
+						}
+					}else
+					{
+				        $this->SetTextColor(0,0,0);
+						if($data[$i] == 0 and $mostrar_cero==false)
+						{
+							$data[$i] = '';
+						}else
+						{
+							$data[$i] = $data[$i];
+						}
+					}
+
+			    }
 			}else
 			{
 			  $this->SetTextColor(0,0,0);

@@ -176,7 +176,7 @@ class facturar_pensionC
          $pos = 1;
     foreach ($datos as $key => $value) {
        $tablaHTML[$pos]['medidas']=$tablaHTML[0]['medidas'];
-           $tablaHTML[$pos]['datos']=array($value['TD'],$value['Fecha'],$value['Serie'],$value['Factura'],$value['Detalle'],$value['Anio'],$value['Mes'],$value['Total'],$value['Abonos'],$value['Mes_No'],$value['No']);
+           $tablaHTML[$pos]['datos']=array($value['TD'],$value['Fecha'],$value['Serie'],$value['Factura'],$value['Detalle'],$value['Anio'],$value['Mes'],number_format($value['Total'],2),number_format($value['Abonos'],2),$value['Mes_No'],$value['No']);
            $tablaHTML[$pos]['tipo'] ='N';
            $pos+=1;
     }
@@ -191,13 +191,25 @@ class facturar_pensionC
       $codigoCliente = G_NINGUNO;
     }
     $datos = $this->facturacion->historiaCliente($codigoCliente);
+    $cli = $this->facturacion->getClientes(false,$codigoCliente);
+    // print_r($cli);die();
 
-    $titulo = 'HistoriaCliente';
+    $titulo = 'RESUMEN DE CARTERA POR CLIENTES';
     $parametros['desde'] = false;
     $parametros['hasta'] = false;
-    $sizetable = 8;
-    $mostrar = false;
+    $sizetable = 6;
+    $mostrar = true;
     $tablaHTML = array();
+
+    $contenido[0]['tipo'] = 'texto';
+    $contenido[0]['posicion'] = 'top-tabla';
+    $contenido[0]['valor'] = 'Cliente: '.$cli[0]['Cliente'];
+    $contenido[0]['estilo'] = 'I';
+    $contenido[1]['tipo'] = 'texto';
+    $contenido[1]['posicion'] = 'top-tabla';
+    $contenido[1]['valor'] = 'Direccion: '.$cli[0]['Direccion'];
+    $contenido[1]['estilo'] = 'I';
+
 
 
     $tablaHTML[0]['medidas'] = array(8,18,10,15,60,10,20,15,15,10,10);
@@ -210,11 +222,11 @@ class facturar_pensionC
     foreach ($datos as $value) {
       $tablaHTML[$count]['medidas'] = $tablaHTML[0]['medidas'];
       $tablaHTML[$count]['alineado'] = array('L','L','L','L','L','L','R','R','R','R','R');
-      $tablaHTML[$count]['datos'] = array($value['TD'],$value['Fecha']->format('Y-m-d'),$value['Serie'],$value['Factura'],$value['Detalle'], $value['Anio'],$value['Mes'],$value['Total'],$value['Abonos'],$value['Mes_No'],$value['No']);
+      $tablaHTML[$count]['datos'] = array($value['TD'],$value['Fecha']->format('Y-m-d'),$value['Serie'],$value['Factura'],$value['Detalle'], $value['Anio'],$value['Mes'],number_format($value['Total'],2),number_format($value['Abonos'],2),$value['Mes_No'],$value['No']);
       $tablaHTML[$count]['borde'] = $tablaHTML[0]['borde'];
       $count+=1;
     }
-    $this->pdf->cabecera_reporte_MC($titulo,$tablaHTML,$contenido=false,$image=false,$parametros['desde'],$parametros['hasta'],$sizetable,$mostrar,25,$orientacion='P',$download);
+    $this->pdf->cabecera_reporte_MC($titulo,$tablaHTML,$contenido,$image=false,$parametros['desde'],$parametros['hasta'],$sizetable,$mostrar,25,$orientacion='P',$download);
   }
 
   public function DeudaPensionPDF($codigo,$lineas,$download = true){
@@ -241,17 +253,19 @@ class facturar_pensionC
     $tablaHTML[0]['borde'] = 'B';
 
     $count = 1;
+    $total = 0;
     foreach ($lin as $key => $value) {
       $tablaHTML[$count]['medidas'] = $tablaHTML[0]['medidas'];
       $tablaHTML[$count]['alineado'] = $tablaHTML[0]['alineado'];
-      $tablaHTML[$count]['datos'] = array($value['mes'],$value['cod'],$value['ani'],$value['pro'],$value['val'],$value['des'],$value['p.p'],$value['tot']);
+      $tablaHTML[$count]['datos'] = array($value['mes'],$value['cod'],$value['ani'],$value['pro'],number_format($value['val'],2),number_format($value['des'],2),number_format($value['p.p'],2),number_format($value['tot'],2));
       $tablaHTML[$count]['borde'] = 'B';
       $count=$count+1;
+      $total+=$value['tot'];
     }
     $count=$count+1;   
-    $tablaHTML[$count]['medidas'] = array(125,40,25);
+    $tablaHTML[$count]['medidas'] = array(128,40,25);
     $tablaHTML[$count]['alineado'] = array('L','R','R');
-    $tablaHTML[$count]['datos'] = array('CORTE AL '.date('r'),'TOTAL A PAGAR USD ','0.01');
+    $tablaHTML[$count]['datos'] = array('CORTE AL '.date('r'),'TOTAL A PAGAR USD ',number_format($total,2));
 
     $tablaHTML[$count+1]['medidas'] = array(190);
     $tablaHTML[$count+1]['alineado'] = array('L');

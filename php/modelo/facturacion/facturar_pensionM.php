@@ -11,7 +11,7 @@ class facturar_pensionM
     $this->db = new db();
   }
 	
-	public function getClientes($query){
+	public function getClientes($query,$ruc=false){
     $sql="  SELECT C.Email,C.T,C.Codigo,C.Cliente,C.Direccion,C.Grupo,C.Telefono,C.CI_RUC,C.TD,SUM(CF.Valor) As Deuda_Total 
 			      FROM Clientes As C, Clientes_Facturacion As CF 
 			      WHERE C.T = 'N'
@@ -20,6 +20,10 @@ class facturar_pensionM
 			      AND C.Codigo <> '9999999999' 
 			      AND C.FA <> 0
 			      AND CF.Codigo = C.Codigo";
+    if($ruc)
+    {
+      $sql.=" AND C.Codigo = '".$ruc."'";
+    }
 		if($query != 'total')
 		{
 		  $sql.=" AND Cliente LIKE '%".$query."%'";

@@ -130,18 +130,19 @@ class cabecera_pdf
 		if($contenido)
 		{
 		 foreach ($contenido as $key => $value) {
+		 	if(!isset($value['estilo'])){$value['estilo'] = '';}
 		 	 if($value['tipo'] == 'texto' && $value['posicion']=='top-tabla')
 		 	 {
 		 	 	//print_r($value);
-		 	 	$this->pdftable->SetFont('Arial','',11);
+		 	 	$this->pdftable->SetFont('Arial',$value['estilo'],11);
 		 	 	$this->pdftable->MultiCell(0,3,$value['valor']);
-		 	 	$this->pdftable->Ln(5);
+		 	 	$this->pdftable->Ln(4);
 
 		 	 }else if($value['tipo'] == 'titulo' && $value['posicion']=='top-tabla')
 		 	 {
 		 	 	$this->pdftable->SetFont('Arial','',18);
 		 	 	$this->pdftable->Cell(0,3,$value['valor'],0,0,'C');
-		 	 	$this->pdftable->Ln(5);
+		 	 	$this->pdftable->Ln(4);
 
 		 	 }
 		 }
@@ -330,7 +331,7 @@ class cabecera_pdf
 		   $this->pdf_sin_cabecera->SetAligns($value['alineado']);
 		   //print_r($value['datos']);
 		   $arr= $value['datos'];
-		   $this->pdf_sin_cabecera->Row($arr,4,$borde,$estiloRow);		    	
+		   $this->pdf_sin_cabecera->Row($arr,4,$borde,$estiloRow,null,$cero=true);		    	
 	    }
 		
 		// print_r($_SESSION['INGRESO']);die();
