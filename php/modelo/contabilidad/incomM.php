@@ -1,6 +1,9 @@
 <?php 
 include(dirname(__DIR__,2).'/funciones/funciones.php');
-// include(dirname(__DIR__).'/db/variables_globales.php');
+if(!class_exists('db'))
+{
+	include(dirname(__DIR__,2).'/db/db1.php');
+}
 // print(dirname(__DIR__));die();
 // include(dirname(__DIR__).'/contabilidad_model.php');
 @session_start(); 
@@ -14,56 +17,40 @@ class incomM
 	private $conn ;
 	function __construct()
 	{
-	   $this->conn = cone_ajax();
+	   $this->conn = new db();
 	}
 
 	function beneficiarios($query)
 	{
-		$cid = $this->conn;
-		$sql="SELECT Cliente AS nombre, CI_RUC as id, email
+		$sql="SELECT TOP 25 Cliente AS nombre, CI_RUC as id, email
 		   FROM Clientes 
 		   WHERE T <> '.' ";
 		   if($query != '')
 		   {
 		   	$sql.=" AND Cliente LIKE '%".$query."%'";
 		   }
-		  $sql.=" ORDER BY Cliente OFFSET 0 ROWS FETCH NEXT 25 ROWS ONLY;";
+		  $sql.=" ORDER BY Cliente";
 		  // print_r($sql);die();
-        $stmt = sqlsrv_query($cid, $sql);
-	    $result = array();	
-	   while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_ASSOC) ) 
-	   {
-		$result[] = $row;
-	   }
-
+		 $result = $this->conn->datos($sql);
 	   return $result;
 	}
 
 	function beneficiarios_c($query)
 	{
-		$cid = $this->conn;
-		$sql="SELECT Cliente AS nombre, CI_RUC as id, email
+		$sql="SELECT TOP 25 Cliente AS nombre, CI_RUC as id, email
 		   FROM Clientes 
 		   WHERE T <> '.' ";
 		   if($query != '')
 		   {
 		   	$sql.=" AND CI_RUC='".$query."'";
 		   }
-		  $sql.=" ORDER BY Cliente OFFSET 0 ROWS FETCH NEXT 25 ROWS ONLY;";
-		  // print_r($sql);die();
-        $stmt = sqlsrv_query($cid, $sql);
-	    $result = array();	
-	   while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_ASSOC) ) 
-	   {
-		$result[] = $row;
-	   }
-
+		  $sql.=" ORDER BY Cliente";
+		   $result = $this->conn->datos($sql);
 	   return $result;
 	}
 
 	function cuentas_efectivo($query)
 	{
-		$cid = $this->conn;
 		$sql="SELECT Codigo,Codigo+' '+Cuenta  as 'cuenta' 
 		FROM Catalogo_Cuentas
 		WHERE TC = 'CJ' AND DG = 'D' ";
@@ -73,18 +60,12 @@ class incomM
 		}
 		$sql.="AND Periodo = '".$_SESSION['INGRESO']['periodo']."' AND Item = '".$_SESSION['INGRESO']['item']."'  ORDER BY Cuenta";
 		// print_r($sql);die();
-		 $stmt = sqlsrv_query($cid, $sql);
-		 $result = array();
-		 while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_ASSOC) ) 
-		 	{
-		 		$result[] = $row;
-		 	}
-		 	return $result;
+		 $result = $this->conn->datos($sql);
+	   return $result;
 	}
 
 	function cuentas_banco($query)
 	{
-		$cid = $this->conn;
 		$sql="SELECT Codigo,Codigo+' '+Cuenta  as 'cuenta' 
 		FROM Catalogo_Cuentas
 		WHERE TC ='BA' AND DG ='D' ";
@@ -94,18 +75,12 @@ class incomM
 		}
 		$sql.="AND Periodo = '".$_SESSION['INGRESO']['periodo']."' AND Item = '".$_SESSION['INGRESO']['item']."'  ORDER BY Cuenta";
 		// print_r($sql);die();
-		 $stmt = sqlsrv_query($cid, $sql);
-		 $result = array();
-		 while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_ASSOC) ) 
-		 	{
-		 		$result[] = $row;
-		 	}
-		return $result;
+		  $result = $this->conn->datos($sql);
+	   return $result;
 	}
 
 	function cuentas_todos($query,$tipo,$tipocta)
 	{
-		$cid = $this->conn;
 		$sql="SELECT Codigo+Space(19-LEN(Codigo))+'   '+TC+Space(3-LEN(TC))+'   '+cast( Clave as varchar(5))+'  '
 					+Space(5-LEN(cast( Clave as varchar(5))))+'  -'+
 					Cuenta As Nombre_Cuenta,Codigo,Cuenta,TC 
@@ -129,29 +104,18 @@ class incomM
 			   	}
 			   	$sql.="ORDER BY Codigo";
 		// print_r($sql);die();
-		 $stmt = sqlsrv_query($cid, $sql);
-		 $result = array();
-		 while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_ASSOC) ) 
-		 	{
-		 		$result[] = $row;
-		 	}
-		return $result;
+		 $result = $this->conn->datos($sql);
+	   return $result;
 	}
 
 	function cargar_asientosB()
 	{
-		$cid = $this->conn;
 		$sql="SELECT CTA_BANCO, BANCO, CHEQ_DEP, EFECTIVIZAR, VALOR, ME, T_No, Item, CodigoU
 			FROM Asiento_B
 			WHERE Item = '".$_SESSION['INGRESO']['item']."' AND CodigoU = '".$_SESSION['INGRESO']['Id']."' ";
 		// print_r($sql);die();
-		 $stmt = sqlsrv_query($cid, $sql);
-		 $result = array();
-		 while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_ASSOC) ) 
-		 	{
-		 		$result[] = $row;
-		 	}
-		return $result;
+		  $result = $this->conn->datos($sql);
+	   return $result;
 	}
 
 	function insertar_ingresos($datos)
@@ -174,31 +138,16 @@ class incomM
 		   "AND CTA_BANCO='".$cta."' ".
 		   "AND CHEQ_DEP='".$cheq."' ";
 		// print_r($sql);die();
-		 $stmt = sqlsrv_query($cid, $sql);
-		if( $stmt === false)  
-	   {  
-		 echo "Error en consulta PA.\n";  
-		 return -1;
-		 die( print_r( sqlsrv_errors(), true));  
-	   }
-		return 1;
+         return  $this->conn->String_Sql($sql);
 
 	}
 
 	function delete_asientoBTodos()
 	{
-		$cid = $this->conn;
 		$sql="Delete from Asiento_B";
 		// print_r($sql);die();
-		 $stmt = sqlsrv_query($cid, $sql);
-		if( $stmt === false)  
-	   {  
-		 echo "Error en consulta PA.\n";  
-		 return -1;
-		 die( print_r( sqlsrv_errors(), true));  
-	   }
-		return 1;
-
+		  $result = $this->conn->String_Sql($sql);
+	   return $result;
 	}
 
 	function ListarAsientoTemSQL($ti,$Opcb,$b,$ch)
@@ -228,12 +177,12 @@ class incomM
 			$ta='Asiento';
 		}
 		// echo $sql;
-		$stmt = sqlsrv_query( $cid, $sql);
-		if( $stmt === false)  
-		{  
-			 echo "Error en consulta PA.\n";  
-			 die( print_r( sqlsrv_errors(), true));  
-		}
+		// $stmt = sqlsrv_query( $cid, $sql);
+		// if( $stmt === false)  
+		// {  
+		// 	 echo "Error en consulta PA.\n";  
+		// 	 die( print_r( sqlsrv_errors(), true));  
+		// }
 		$camne=array();
 		$botones[0] = array('boton'=>'validarc', 'icono'=>'<i class="fa fa-trash"></i>', 'tipo'=>'danger', 'id'=>'CTA_BANCO,CHEQ_DEP' );
 	    $tbl = grilla_generica_new($sql,$ta,'',$titulo=false,$botones,$check=false,$imagen=false,1,1,1,100);
@@ -256,7 +205,7 @@ class incomM
 			WHERE 
 				Item = '".$_SESSION['INGRESO']['item']."' 
 				AND CodigoU = '".$_SESSION['INGRESO']['Id']."' ";
-			$stmt = sqlsrv_query( $cid, $sql);
+		//	$stmt = sqlsrv_query( $cid, $sql);
 			if( $stmt === false)  
 			{  
 				 echo "Error en consulta PA.\n";  
@@ -306,7 +255,7 @@ class incomM
        WHERE Item = '".$_SESSION['INGRESO']['item']. "'
        AND CodigoU = '".$_SESSION['INGRESO']['CodigoU']."'
        AND T_No = ".$_SESSION['INGRESO']['modulo_']." ";
-       $stmt = sqlsrv_query( $cid, $sql);
+      $stmt = $this->conn->devolver_stmt($sql);
 			if( $stmt === false)  
 			{  
 				 echo "Error en consulta PA.\n";  
@@ -323,23 +272,12 @@ class incomM
 
     function DG_asientoR()
     {
-    	$cid = $this->conn;
        $sql = "SELECT *
        FROM Asiento_Air
        WHERE Item = '".$_SESSION['INGRESO']['item']. "'
        AND CodigoU = '".$_SESSION['INGRESO']['CodigoU']."'
        AND T_No = ".$_SESSION['INGRESO']['modulo_']." ";
-        $stmt = sqlsrv_query( $cid, $sql);
-			if( $stmt === false)  
-			{  
-				 echo "Error en consulta PA.\n";  
-				 die( print_r( sqlsrv_errors(), true));  
-			}
-		$datos = array();
-		 while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_ASSOC) ) 
-		 	{
-		 		$datos[] = $row;
-		 	}
+       $datos = $this->conn->datos($sql);
        $botones[0] = array('boton'=>'eliminar', 'icono'=>'<i class="fa fa-trash"></i>', 'tipo'=>'danger', 'id'=>'CodRet,air');
 	   $tbl = grilla_generica_new($sql,'Asiento_Air',false,$titulo=false,$botones,$check=false,$imagen=false,1,1,1,100);
 			 // print_r($tbl);die();
@@ -353,18 +291,8 @@ class incomM
        WHERE Item = '".$_SESSION['INGRESO']['item']. "'
        AND CodigoU = '".$_SESSION['INGRESO']['CodigoU']."'
        AND T_No = ".$_SESSION['INGRESO']['modulo_']." ";
-       $stmt = sqlsrv_query( $cid, $sql);
-			if( $stmt === false)  
-			{  
-				 echo "Error en consulta PA.\n";  
-				 die( print_r( sqlsrv_errors(), true));  
-			}
-		$datos = array();
-		 while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_ASSOC) ) 
-		 	{
-		 		$datos[] = $row;
-		 	}
-		return $datos;
+       $result = $this->conn->datos($sql);
+	   return $result;
     }
 
     function DG_AC()
@@ -462,12 +390,7 @@ class incomM
           WHERE Codigo = '".$CodigoCta."'
           AND Item = '".$_SESSION['INGRESO']['item']."'
           AND Periodo = '".$_SESSION['INGRESO']['periodo']."' ";
-           $stmt = sqlsrv_query($cid, $sql);
-		   $result = array();
-		   while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_ASSOC) ) 
-		 	  {
-		 		  $result[] = $row;
-		 	  }
+          $result = $this->conn->datos($sql);
 		  return $result;
     	}
     }
@@ -487,14 +410,14 @@ class incomM
          AND Item = '".$_SESSION['INGRESO']['item']."'
          AND CodigoU = '".$_SESSION['INGRESO']['CodigoU']."'";
 // print_r($sql);
-        $stmt = sqlsrv_query( $cid, $sql);
-			if( $stmt === false)  
-			{  
-				 echo "Error en consulta PA.\n";  
-				 die( print_r( sqlsrv_errors(), true));  
-			}
-			else
-			{
+   //      $stmt = sqlsrv_query( $cid, $sql);
+			// if( $stmt === false)  
+			// {  
+			// 	 echo "Error en consulta PA.\n";  
+			// 	 die( print_r( sqlsrv_errors(), true));  
+			// }
+			// else
+			// {
 		      $tbl = grilla_generica_new($sql,'Asiento_SC','tbl_subcta',$titulo=false,$botones=false,$check=false,$imagen=false,1,1,1,100);
 			 // print_r($tbl);die();
 		     return $tbl;
@@ -502,7 +425,7 @@ class incomM
 
 				// $camne=array();
 				// return grilla_generica($stmt,null,null,1);
-			}
+			// }
     }
 
     function catalogo_subcta($SubCta)
@@ -518,17 +441,7 @@ class incomM
         AND Codigo <> '.' 
         ORDER BY Nivel,Detalle ";
 // print_r($sql);
-          $stmt = sqlsrv_query($cid, $sql);
-		   $result = array();
-		if( $stmt === false)  
-		{  
-			 echo "Error en consulta PA.\n";  
-			 die( print_r( sqlsrv_errors(), true));  
-		}
-		   while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_ASSOC) ) 
-		 	  {
-		 		  $result[] = $row;
-		 	  }
+         $result = $this->conn->datos($sql);
 		  return $result;
     }
     function Catalogo_CxCxP($SubCta,$SubCtaGen,$query=false)
@@ -551,17 +464,7 @@ class incomM
          $sql.=" ORDER BY Cl.Cliente ";
         
          // print_r($sql);die();
-          $stmt = sqlsrv_query($cid, $sql);
-		   $result = array();
-		if( $stmt === false)  
-		{  
-			 echo "Error en consulta PA.\n";  
-			 die( print_r( sqlsrv_errors(), true));  
-		}
-		   while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_ASSOC) ) 
-		 	  {
-		 		  $result[] = $row;
-		 	  }
+        $result = $this->conn->datos($sql);
 		  return $result;
     }
 
@@ -580,17 +483,7 @@ class incomM
          }
          $sql.="GROUP BY Detalle_SubCta
          ORDER BY Detalle_SubCta ";
-           $stmt = sqlsrv_query($cid, $sql);
-		   $result = array();
-		if( $stmt === false)  
-		{  
-			 echo "Error en consulta PA.\n";  
-			 die( print_r( sqlsrv_errors(), true));  
-		}
-		   while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_ASSOC) ) 
-		 	  {
-		 		  $result[] = $row;
-		 	  }
+           $result = $this->conn->datos($sql);
 		  return $result;
      }
 
@@ -602,16 +495,7 @@ class incomM
        WHERE Item = '".$_SESSION['INGRESO']['item']. "'
        AND CodigoU = '".$_SESSION['INGRESO']['CodigoU']."'
        AND T_No = ".$_SESSION['INGRESO']['modulo_']." ";
-       $stmt = sqlsrv_query( $cid, $sql);
-		if( $stmt === false)  
-		{  
-			echo "Error en consulta PA.\n";  
-			die( print_r( sqlsrv_errors(), true));  
-		}
-	    while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_ASSOC) ) 
-		 {
-		 	$result[] = $row;
-		 }
+       $result = $this->conn->datos($sql);
 		  return $result;
     }
     function limpiar_asiento_SC($SubCta,$SubCtaGen,$OpcDH,$OpcTM)
@@ -627,16 +511,18 @@ class incomM
          AND T_No = ".$_SESSION['INGRESO']['modulo_']."
          AND Item = '".$_SESSION['INGRESO']['item']. "'
          AND CodigoU = '".$_SESSION['INGRESO']['CodigoU']."'";
+          $result = $this->conn->String_Sql($sql);
+	     return $result;
 
-         // print_r($sql);die();
-         $stmt = sqlsrv_query( $cid, $sql);
-         if( $stmt === false)  
-		{  
-			 echo "Error en consulta PA.\n";  
-			 die( print_r( sqlsrv_errors(), true));  
-		}
+  //        // print_r($sql);die();
+  //        $stmt = sqlsrv_query( $cid, $sql);
+  //        if( $stmt === false)  
+		// {  
+		// 	 echo "Error en consulta PA.\n";  
+		// 	 die( print_r( sqlsrv_errors(), true));  
+		// }
 		   
-		return 1;
+		// return 1;
     }
     function asientos()
     { 
@@ -649,17 +535,8 @@ class incomM
          AND CodigoU = '".$_SESSION['INGRESO']['CodigoU']."'
          AND T_No = ".$_SESSION['INGRESO']['modulo_']."
          ORDER BY A_No ";
-         $stmt = sqlsrv_query( $cid, $sql);
-		if( $stmt === false)  
-		{  
-			echo "Error en consulta PA.\n";  
-			die( print_r( sqlsrv_errors(), true));  
-		}
-	    while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_ASSOC) ) 
-		 {
-		 	$result[] = $row;
-		 }
-		  return $result;
+         $result = $this->conn->datos($sql);
+	   return $result;
  
 
     }
@@ -673,17 +550,8 @@ class incomM
          WHERE Item = '".$_SESSION['INGRESO']['item']."'
          AND CodigoU = '".$_SESSION['INGRESO']['CodigoU']."'
          AND T_No = ".$_SESSION['INGRESO']['modulo_']."";
-         $stmt = sqlsrv_query( $cid, $sql);
-		if( $stmt === false)  
-		{  
-			echo "Error en consulta PA.\n";  
-			die( print_r( sqlsrv_errors(), true));  
-		}
-	    while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_ASSOC) ) 
-		 {
-		 	$result[] = $row;
-		 }
-		  return $result;
+         $result = $this->conn->datos($sql);
+	   return $result;
 
     }
     function eliminacion_retencion()
@@ -699,16 +567,8 @@ class incomM
          WHERE Item = '".$_SESSION['INGRESO']['item']."'
          AND CodigoU = '".$_SESSION['INGRESO']['CodigoU']."'
          AND T_No = ".$_SESSION['INGRESO']['modulo_'].";";
-
-         $stmt = sqlsrv_query( $cid, $sql);
-		if( $stmt === false)  
-		{  
-			return -1;
-			echo "Error en consulta PA.\n";  
-			die( print_r( sqlsrv_errors(), true));  
-		}
-	   
-		  return 1;
+         $result = $this->conn->String_Sql($sql);
+	     return $result;
 
     }
 
@@ -722,16 +582,8 @@ class incomM
          AND T_No = ".$_SESSION['INGRESO']['modulo_'].";";
 
          // print_r($sql);die();
-
-         $stmt = sqlsrv_query( $cid, $sql);
-		if( $stmt === false)  
-		{  
-			return -1;
-			echo "Error en consulta PA.\n";  
-			die( print_r( sqlsrv_errors(), true));  
-		}
-	   
-		  return 1;
+          $result = $this->conn->String_Sql($sql);
+	     return $result;
 
     }
     function retencion_compras($numero,$tipoCom)
@@ -748,18 +600,8 @@ class incomM
         AND TC.IdProv = C.Codigo 
         ORDER BY Serie_Retencion,SecRetencion ";
         // print_r($sql);die();
-        $result = array();
-         $stmt = sqlsrv_query( $cid, $sql);
-		if( $stmt === false)  
-		{  
-			echo "Error en consulta PA.\n";  
-			die( print_r( sqlsrv_errors(), true));  
-		}
-	    while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_ASSOC) ) 
-		 {
-		 	$result[] = $row;
-		 }
-		  return $result;
+         $result = $this->conn->datos($sql);
+	     return $result;
     }
 
     function validar_porc_iva($FechaIVA)
@@ -773,16 +615,7 @@ class incomM
            AND Fecha_Inicio <= '".$FechaIVA."' 
            AND Fecha_Final >= '".$FechaIVA."'
            ORDER BY Porc ";
-         $stmt = sqlsrv_query($cid, $sql);
-		if( $stmt === false)  
-		{  
-			echo "Error en consulta PA.\n";  
-			die( print_r( sqlsrv_errors(), true));  
-		}
-	    while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_ASSOC) ) 
-		 {
-		 	$result[] = $row;
-		 }
+         $result = $this->conn->datos($sql);
 		 if(count($result)>0)
 		 {
 		 	$Porc_IVA = round($result[0]["Porc"] / 100, 2);
@@ -802,16 +635,7 @@ class incomM
              AND CodigoU = '".$_SESSION['INGRESO']['CodigoU']."' 
              AND T_No = ".$T_No." 
              ORDER BY Tipo_Trans, A_No ";
-                $stmt = sqlsrv_query( $cid, $sql);
-		if( $stmt === false)  
-		{  
-			echo "Error en consulta PA.\n";  
-			die( print_r( sqlsrv_errors(), true));  
-		}
-	    while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_ASSOC) ) 
-		 {
-		 	$result[] = $row;
-		 }
+             $result = $this->conn->datos($sql);
 		 
      }
       return $result;
@@ -826,16 +650,7 @@ class incomM
         AND Numero = ".$Numero."
         AND Item = '".$_SESSION['INGRESO']['item']."'
         AND Periodo = '".$_SESSION['INGRESO']['periodo']."' ";
-        $stmt = sqlsrv_query( $cid, $sql);
-		if( $stmt === false)  
-		{  
-			echo "Error en consulta PA.\n";  
-			die( print_r( sqlsrv_errors(), true));  
-		}
-	    while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_ASSOC) ) 
-		 {
-		 	$result[] = $row;
-		 }
+        $result = $this->conn->datos($sql);
 		  return $result;
 	}
 	function Actualiza_Procesado_Kardex($CodigoInv)
@@ -932,17 +747,8 @@ class incomM
        $sqlT = $sql.$sql2.$sql3.$sql4.$sql5.$sql6.$sql7.$sql8.$sql9.$sql10;
 
        // print_r($sqlT);die();
-       $cid = $this->conn;
-	   $stmt = sqlsrv_query( $cid,$sqlT );
-	   if( $stmt === false)  
-	    {  
-	 	   return -1;
-		   echo "Error en consulta PA.\n"; 
-		   die( print_r( sqlsrv_errors(), true));  
-	   }else
-	   {
-		  return 1;
-	   }
+         $result = $this->conn->String_Sql($sql);
+	   return $result;
 
 	} 
 
@@ -955,17 +761,8 @@ class incomM
 		FROM Catalogo_Bodegas
         WHERE Item = '".$_SESSION['INGRESO']['item']."'
         AND Periodo = '".$_SESSION['INGRESO']['periodo']."' ;";
-        $stmt = sqlsrv_query( $cid, $sql);
-		if( $stmt === false)  
-		{  
-			echo "Error en consulta PA.\n";  
-			die( print_r( sqlsrv_errors(), true));  
-		}
-	    while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_ASSOC) ) 
-		 {
-		 	$result[] = $row;
-		 }
-		  return $result;
+          $result = $this->conn->datos($sql);
+	   return $result;
 
 	}
 
@@ -980,23 +777,13 @@ class incomM
        AND T_No = ".$T_No." 
        AND CodigoU = '".$_SESSION['INGRESO']['CodigoU']."' 
        ORDER BY TC,Cta,Codigo ";
-        $stmt = sqlsrv_query( $cid, $sql);
-		if( $stmt === false)  
-		{  
-			echo "Error en consulta PA.\n";  
-			die( print_r( sqlsrv_errors(), true));  
-		}
-	    while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_ASSOC) ) 
-		 {
-		 	$result[] = $row;
-		 }
-		  return $result;
+         $result = $this->conn->datos($sql);
+	   return $result;
 
 	}
 
 	function RETENCIONES_COMPRAS($T_No)
 	{
-		 $cid = $this->conn;
        $result = array();
 		$sql = "SELECT *
      FROM Asiento_Compras
@@ -1004,18 +791,8 @@ class incomM
      AND CodigoU = '".$_SESSION['INGRESO']['CodigoU']."'
      AND T_No = ".$T_No."
      ORDER BY T_No ";
-     $cid = $this->conn;
-     $stmt = sqlsrv_query( $cid, $sql);
-		if( $stmt === false)  
-		{  
-			echo "Error en consulta PA.\n";  
-			die( print_r( sqlsrv_errors(), true));  
-		}
-	    while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_ASSOC) ) 
-		 {
-		 	$result[] = $row;
-		 }
-		  return $result;
+       $result = $this->conn->datos($sql);
+	   return $result;
 
 	}
 
@@ -1029,23 +806,12 @@ class incomM
      AND CodigoU = '".$_SESSION['INGRESO']['CodigoU']."'
      AND T_No = ".$T_No."
      ORDER BY T_No DESC ";
-     $cid = $this->conn;
-     $stmt = sqlsrv_query( $cid, $sql);
-		if( $stmt === false)  
-		{  
-			echo "Error en consulta PA.\n";  
-			die( print_r( sqlsrv_errors(), true));  
-		}
-	    while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_ASSOC) ) 
-		 {
-		 	$result[] = $row;
-		 }
-		  return $result;
+      $result = $this->conn->datos($sql);
+	   return $result;
 	}
 	
 	function RETENCIONES_EXPORTACION($T_No)
 	{
-		 $cid = $this->conn;
        $result = array();
 		$sql = "SELECT *
      FROM Asiento_Exportaciones
@@ -1053,23 +819,12 @@ class incomM
      AND CodigoU = '".$_SESSION['INGRESO']['CodigoU']."'
      AND T_No = ".$T_No."
      ORDER BY T_No DESC ";
-     $cid = $this->conn;
-     $stmt = sqlsrv_query( $cid, $sql);
-		if( $stmt === false)  
-		{  
-			echo "Error en consulta PA.\n";  
-			die( print_r( sqlsrv_errors(), true));  
-		}
-	    while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_ASSOC) ) 
-		 {
-		 	$result[] = $row;
-		 }
-		  return $result;
+      $result = $this->conn->datos($sql);
+	   return $result;
 	}
 
 	function  RETENCIONES_IMPORTACIONES($T_No)
 	{
-		 $cid = $this->conn;
        $result = array();
 		$sql = "SELECT *
      FROM Asiento_Importaciones
@@ -1077,17 +832,7 @@ class incomM
      AND CodigoU = '".$_SESSION['INGRESO']['CodigoU']."'
      AND T_No = ".$T_No."
      ORDER BY T_No DESC ";
-     $cid = $this->conn;
-     $stmt = sqlsrv_query( $cid, $sql);
-		if( $stmt === false)  
-		{  
-			echo "Error en consulta PA.\n";  
-			die( print_r( sqlsrv_errors(), true));  
-		}
-	    while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_ASSOC) ) 
-		 {
-		 	$result[] = $row;
-		 }
+      $result = $this->conn->datos($sql);
 		  return $result;
 	}
 
@@ -1101,22 +846,11 @@ class incomM
      AND CodigoU = '".$_SESSION['INGRESO']['CodigoU']."'
      AND T_No = ".$T_No."
      ORDER BY Tipo_Trans,A_No ";
-     $cid = $this->conn;
-     $stmt = sqlsrv_query( $cid, $sql);
-		if( $stmt === false)  
-		{  
-			echo "Error en consulta PA.\n";  
-			die( print_r( sqlsrv_errors(), true));  
-		}
-	    while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_ASSOC) ) 
-		 {
-		 	$result[] = $row;
-		 }
-		  return $result;
+      $result = $this->conn->datos($sql);
+	   return $result;
    }
 
    function Retencion_Rol_Pagos($T_No){
-   	 $cid = $this->conn;
        $result = array();
   $sql = "SELECT *
      FROM Asiento_RP
@@ -1124,69 +858,37 @@ class incomM
      AND CodigoU = '".$_SESSION['INGRESO']['CodigoU']."'
      AND T_No = ".$T_No."
      ORDER BY Codigo ";
-     $cid = $this->conn;
-     $stmt = sqlsrv_query( $cid, $sql);
-		if( $stmt === false)  
-		{  
-			echo "Error en consulta PA.\n";  
-			die( print_r( sqlsrv_errors(), true));  
-		}
-	    while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_ASSOC) ) 
-		 {
-		 	$result[] = $row;
-		 }
-		  return  array('res'=>$result,'smtp'=>$stmt);
+      $result = $this->conn->datos($sql);
+      $stmt = $this->conn->devolver_stmt($sql);
+	  return  array('res'=>$result,'smtp'=>$stmt);
    }
 
    function Grabamos_Inventarios($T_No)
    {
-   	$cid = $this->conn;
        $result = array();
   $sql = "SELECT *
      FROM Asiento_K
      WHERE Item = '".$_SESSION['INGRESO']['item']."'
      AND T_No = ".$T_No."
      AND CodigoU = '".$_SESSION['INGRESO']['CodigoU']."' ";
-     $cid = $this->conn;
-     $stmt = sqlsrv_query( $cid, $sql);
-		if( $stmt === false)  
-		{  
-			echo "Error en consulta PA.\n";  
-			die( print_r( sqlsrv_errors(), true));  
-		}
-	    while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_ASSOC) ) 
-		 {
-		 	$result[] = $row;
-		 }
-		  return $result;
+       $result = $this->conn->datos($sql);
+	   return $result;
    }
 
    function  Grabamos_Prestamos($T_No)
    {
-   	$cid = $this->conn;
        $result = array();
   $sql = "SELECT *
      FROM Asiento_P
      WHERE Item = '".$_SESSION['INGRESO']['item']."'
      AND T_No = ".$T_No."
      AND CodigoU = '".$_SESSION['INGRESO']['CodigoU']."' ";
-     $cid = $this->conn;
-     $stmt = sqlsrv_query( $cid, $sql);
-		if( $stmt === false)  
-		{  
-			echo "Error en consulta PA.\n";  
-			die( print_r( sqlsrv_errors(), true));  
-		}
-	    while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_ASSOC) ) 
-		 {
-		 	$result[] = $row;
-		 }
-		  return $result;
+      $result = $this->conn->datos($sql);
+	   return $result;
    }
 
    function Grabamos_Transacciones($T_No)
    {
-   	$cid = $this->conn;
        $result = array();
   $sql = "SELECT *
      FROM Asiento
@@ -1194,63 +896,34 @@ class incomM
      AND T_No = ".$T_No."
      AND CodigoU = '".$_SESSION['INGRESO']['CodigoU']."'
      ORDER BY A_No,DEBE DESC,CODIGO ";
-     $cid = $this->conn;
-     $stmt = sqlsrv_query( $cid, $sql);
-		if( $stmt === false)  
-		{  
-			echo "Error en consulta PA.\n";  
-			die( print_r( sqlsrv_errors(), true));  
-		}
-	    while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_ASSOC) ) 
-		 {
-		 	$result[] = $row;
-		 }
-		  return $result;
+      $result = $this->conn->datos($sql);
+	   return $result;
    }
 
    function actualizar_email($email,$codigoB)
    {
-   	$cid = $this->conn;
    	$sql ="UPDATE Clientes
    	      SET Email = '".$email."'
    	      WHERE Codigo = '".$codigoB."' ";
-	  $stmt = sqlsrv_query( $cid, $sql);
-	  if( $stmt === false)  
-	   {  
-	 	  return -1;
-		  echo "Error en consulta PA.\n"; 
-		  die( print_r( sqlsrv_errors(), true));  
-	  }else
-	  {
-		 return 1;
-	  }
+	  $result = $this->conn->String_Sql($sql);
+	   return $result;
    }
 
    function cuentas_a_mayorizar($cta)
    {
-   		$cid = $this->conn;
    	    $sql = "UPDATE Transacciones 
                SET Procesado = 0 
                WHERE Item = '".$_SESSION['INGRESO']['item']."'
                AND Periodo = '".$_SESSION['INGRESO']['periodo']."'
                AND Cta = '".$cta."' ";
                // print_r($sql);
-        $stmt = sqlsrv_query( $cid, $sql);
-	  if( $stmt === false)  
-	   {  
-	 	  return -1;
-		  echo "Error en consulta PA.\n"; 
-		  die( print_r( sqlsrv_errors(), true));  
-	  }else
-	  {
-		 return 1;
-	  }
+          $result = $this->conn->String_Sql($sql);
+	   return $result;
 
    }
 
    function BorrarAsientos($Trans_No,$B_Asiento=false)
    {   	
-   		$cid = $this->conn;
    	$sql='';
    	if($Trans_No <= 0){$Trans_No = 1;}
   if($B_Asiento){
@@ -1329,23 +1002,14 @@ class incomM
     AND CodigoU = '".$_SESSION['INGRESO']['CodigoU']."'
     AND T_No = ".$Trans_No." ";
     // print_r($sql);die();
-     $stmt = sqlsrv_query( $cid, $sql);
-	  if( $stmt === false)  
-	   {  
-	 	  return -1;
-		  echo "Error en consulta PA.\n"; 
-		  die( print_r( sqlsrv_errors(), true));  
-	  }else
-	  {
-		 return 1;
-	  }
+      $result = $this->conn->String_Sql($sql);
+	   return $result;
    }
 
 
    function Encabezado_Comprobante($parametros)
    {
 
-   	 $cid = $this->conn;
    	 $sql = "SELECT C.*,Cl.CI_RUC,Cl.Cliente,Cl.Email,Cl.TD
        FROM Comprobantes As C, Clientes As Cl
        WHERE C.TP = '".$parametros['TP']."'
@@ -1353,22 +1017,12 @@ class incomM
        AND C.Item = '".$parametros['Item']."'
        AND C.Periodo = '".$_SESSION['INGRESO']['periodo']."'
        AND C.Codigo_B = Cl.Codigo ";
-        $stmt = sqlsrv_query( $cid, $sql);
-		if( $stmt === false)  
-		{  
-			echo "Error en consulta PA.\n";  
-			die( print_r( sqlsrv_errors(), true));  
-		}
-	    while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_ASSOC) ) 
-		 {
-		 	$result[] = $row;
-		 }
-		  return $result;
+		  $result = $this->conn->datos($sql);
+	   return $result;
    }
 
     function transacciones_comprobante($tp,$numero,$item)
      {
-   	     $cid = $this->conn;
      	 $sql = "SELECT T.Cta,Ca.Cuenta,T.Parcial_ME,T.Debe,T.Haber,T.Detalle,T.Cheq_Dep,T.Fecha_Efec,T.Codigo_C,Ca.Item,T.TP,T.Numero,T.Fecha,T.ID 
              FROM Transacciones As T, Catalogo_Cuentas As Ca 
              WHERE T.TP = '".$tp."' 
@@ -1379,14 +1033,8 @@ class incomM
              AND T.Periodo = Ca.Periodo 
              AND T.Cta = Ca.Codigo 
              ORDER BY T.ID,Debe DESC,T.Cta ";
-              $stmt = sqlsrv_query($cid, $sql);
-              $result = array();	
-              while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_ASSOC) ) 
-              	{
-              		$result[] = $row;
-              	}
-
-             return $result;
+               $result = $this->conn->datos($sql);
+	   return $result;
 
 
      } 
@@ -1401,12 +1049,8 @@ class incomM
          AND Item = '".$item."' 
          AND Numero = ".$numero." 
          AND TP = '".$tp."' ";
-          $stmt = sqlsrv_query($cid, $sql);
-              $result = array();	
-              while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_ASSOC) ) 
-              	{
-              		$result[] = $row;
-              	}
+          $stmt = $this->conn->devolver_stmt($sql);
+          $result = $this->conn->datos($sql);
 
              return array('respuesta'=>$result,'stmt'=>$stmt);
 
@@ -1421,12 +1065,8 @@ class incomM
          AND TP = '".$tp."' 
          AND Item = '".$item."' 
          AND Periodo = '".$_SESSION['INGRESO']['periodo']."'";
-         $stmt = sqlsrv_query($cid, $sql);
-         $result = array();	
-         while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_ASSOC) ) 
-          {
-           $result[] = $row;
-          }
+         $stmt = $this->conn->devolver_stmt($sql);
+         $result = $this->conn->datos($sql);
 
         return array('respuesta'=>$result,'stmt'=>$stmt);
 
@@ -1441,12 +1081,8 @@ class incomM
          AND TP = '".$tp."' 
          AND Item = '".$item."' 
          AND Periodo = '".$_SESSION['INGRESO']['periodo']."' ";
-          $stmt = sqlsrv_query($cid, $sql);
-         $result = array();	
-         while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_ASSOC) ) 
-          {
-           $result[] = $row;
-          }
+         $stmt = $this->conn->devolver_stmt($sql);
+         $result = $this->conn->datos($sql);
 
         return array('respuesta'=>$result,'stmt'=>$stmt);
      }
@@ -1459,13 +1095,8 @@ class incomM
           AND TP = '".$tp."'
           AND Item = '".$item."'
           AND Periodo = '".$_SESSION['INGRESO']['periodo']."' ";
-            $stmt = sqlsrv_query($cid, $sql);
-         $result = array();	
-         while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_ASSOC) ) 
-          {
-           $result[] = $row;
-          }
-          
+           $stmt = $this->conn->devolver_stmt($sql);
+           $result = $this->conn->datos($sql);
         return array('respuesta'=>$result,'stmt'=>$stmt);
      	
      }
@@ -1480,12 +1111,8 @@ class incomM
         AND TP = '".$tp."' 
         AND Item = '".$item."' 
         AND Periodo = '".$_SESSION['INGRESO']['periodo']."' ";
-        $stmt = sqlsrv_query($cid, $sql);
-         $result = array();	
-         while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_ASSOC) ) 
-          {
-           $result[] = $row;
-          }
+        $stmt = $this->conn->devolver_stmt($sql);
+         $result = $this->conn->datos($sql);
         return array('respuesta'=>$result,'stmt'=>$stmt);
      	
      }
@@ -1504,12 +1131,7 @@ class incomM
            AND TSC.Item = Be.Item
            AND TSC.Periodo = Be.Periodo
            ORDER BY TSC.Cta,Detalle ";
-           $stmt = sqlsrv_query($cid, $sql);
-         $result = array();	
-         while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_ASSOC) ) 
-          {
-           $result[] = $row;
-          }
+           $result = $this->conn->datos($sql);
            return $result;
      	
      }
@@ -1525,12 +1147,7 @@ class incomM
           AND TSC.TC IN ('C','P') 
           AND TSC.Codigo = Be.Codigo 
           ORDER BY TSC.Cta,Cliente ";
-          $stmt = sqlsrv_query($cid, $sql);
-         $result = array();	
-         while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_ASSOC) ) 
-          {
-           $result[] = $row;
-          }
+        $result = $this->conn->datos($sql);
            return $result;
      	
      }

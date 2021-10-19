@@ -159,6 +159,7 @@ if(isset($_GET['Cargar_DataGrid']))
 
 if(isset($_GET['Ult_fact_Prove']))
 {
+  // print_r($_POST);die();
    $parametros = $_POST['parametros'];
   echo  json_encode($controlador->Ult_fact_Prove($parametros));
 }
@@ -697,16 +698,18 @@ class registro_esC
 
   function proceso_asientos($parametros)
   {
+    // print_r($parametros);die();
     $Trans_No = 1; //cambiar por variable modulo_
     $OpcTM = 1;
     $OpcDH = 1;
     $NoCheque = G_NINGUNO;
     $Total_RetIVA = 0;
+    $ValorDH= 0; // vambiar por valor que se coloque en cotizacion
     $fecha = $parametros['FechaEmision'];
     if(Leer_Campo_Empresa('Registrar_IVA')!=0)
     {
        $Cta =buscar_cta_iva_inventario();
-       $DetalleComp = "Registro del IVA en compras Doc. No. ".$parametros['Establecimiento'].$parametros['PuntoEmision']."-".$parametros[' Secuencial'].", ".$parametros['NombreCliente'];
+       $DetalleComp = "Registro del IVA en compras Doc. No. ".$parametros['Establecimiento'].$parametros['PuntoEmision']."-".$parametros['Secuencial'].", ".$parametros['NombreCliente'];
         $datosCTA = LeerCta($Cta); 
        if($ValorDH > 0)
         {          

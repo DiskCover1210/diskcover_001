@@ -141,8 +141,8 @@ function contracuenta()
         success:  function (response) {
             if (response.length !=0) 
             {
-                // console.log(response[0].Codigo)
-                Ult_fact_Prove(response[0].Codigo);
+                // console.log(response)
+                Ult_fact_Prove(response);
             }
          
       }
@@ -744,7 +744,8 @@ function contracuenta()
                                                    
 
                                                 }else
-                                                {                                                    
+                                                {        
+                                                 var fecha = '<?php echo $fec;?>';                                            
                                                     $('#MBFechaEmi').val(fecha);
                                                     $('#MBFechaRegis').val($('#MBFechaEmi').val());
                                                 }
@@ -761,7 +762,8 @@ function contracuenta()
                                                     $('#MBFechaRegis').val($('#MBFechaEmi').val());
 
                                                 }else
-                                                {                                                    
+                                                {           
+                                                 var fecha = '<?php echo $fec;?>';                                         
                                                     $('#MBFechaEmi').val(fecha);
                                                     $('#MBFechaRegis').val($('#MBFechaEmi').val());
                                                 }

@@ -161,6 +161,35 @@ function Actualizar_Datos_ATS_SP($Items,$MBFechaI,$MBFechaF,$Numero) //---------
     return $conn->ejecutar_procesos_almacenados($sql,$parametros,$tipo=false);
 }
 
+function Leer_Codigo_Inv_SP($BuscarCodigo,$FechaInventario,$CodBodega,$CodMarca,$CodigoDeInv)
+{
+
+    $conn = new db();
+    $FechaKardex = $FechaInventario;
+    $CodigoDeInv = G_NINGUNO;
+    // Iniciar_Stored_Procedure "", MiSQL, MiCmd, MiReg
+    // MiCmd.CommandText = "sp_Leer_Codigo_Inv"
+
+     $parametros = array(
+      array(&$_SESSION['INGRESO']['item'], SQLSRV_PARAM_IN),
+      array(&$_SESSION['INGRESO']['periodo'], SQLSRV_PARAM_IN),
+      array(&$BuscarCodigo, SQLSRV_PARAM_IN),
+      array(&$FechaKardex, SQLSRV_PARAM_IN),
+      array(&$CodBodega, SQLSRV_PARAM_IN),
+      array(&$CodMarca, SQLSRV_PARAM_IN),
+      array(&$CodigoDeInv, SQLSRV_PARAM_INOUT)
+      );     
+     $sql="EXEC sp_Leer_Codigo_Inv @Item=?, @Periodo=?, @BuscarCodigo=?, @FechaInventario=?, @CodBodega=?, @CodMarca=?, @CodigoDeInv=? ";
+     // print_r($_SESSION['INGRESO']);die();}
+      $respuesta = $conn->ejecutar_procesos_almacenados($sql,$parametros);
+      if($respuesta==1)
+      {
+        return $CodigoDeInv;
+      }
+      return $respuesta;   
+
+}
+
 
 function Fecha_Del_AT($ATMes, $ATAno)
 {
@@ -4747,7 +4776,6 @@ function insert_generico($tabla=null,$datos=null) // optimizado pero falta
 function dimenciones_tabla($tabla) //---------optimizado por javier farinango
 {
 	$conn = new db();
-	$cid=$conn->conexion();
   $tabla_="";
 	$sql = "SELECT * from Information_Schema.Tables where TABLE_TYPE = 'BASE TABLE' AND TABLE_NAME='".$tabla."' ORDER BY TABLE_NAME";
   $datos = $conn->datos($sql);
@@ -5099,8 +5127,10 @@ function dimenciones_tabl($len)
 
 function ingresar_asientos_SC($parametros)  //revision parece repetida
 {
-    $conn = new Conectar();
-    $cid=$conn->conexion(); 
+  $conn = new db();
+  $cid=$conn->conexion();
+  //   $conn = new Conectar();
+  //   $cid=$conn->conexion(); 
     $cod=$parametros['sub'];    
     if($parametros['t']=='P' OR $parametros['t']=='C')
     {
@@ -5177,7 +5207,7 @@ function ingresar_asientos_SC($parametros)  //revision parece repetida
            ,Fecha_D ,Fecha_H,Bloquear,Item,CodigoU)
       VALUES
            ('".$cod."'
-           ,'".$parametros['sub2']."'
+           ,'".substr($parametros['sub2'],0,60)."'
            ,'".$fact2."'
            ,0
            ,'".$parametros['tic']."'
@@ -7696,24 +7726,299 @@ function factura_numero($ser)
     return $CadAux;
   }
 
-  function SetearCtasCierre($CtaFields){
-    /*
-    $IE = 0;
-    $ContCtas = 0;
-    ContCtas = UBound(CtasProc)
-    $Si_No = true;
-  For IE = 0 To ContCtas - 1
-      If CtaFields = CtasProc(IE).Cta Then Si_No = False
-  Next IE
-  If Si_No Then
-     IE = 0
-     While IE < ContCtas
-        If CtasProc(IE).Cta = "0" Then
-           CtasProc(IE).Cta = CtaFields
-           IE = ContCtas + 1
-        End If
-        IE = IE + 1
-     Wend
-  End If*/
+function Leer_Codigo_Inv($CodigoDeInv,$FechaInventario,$CodBodega,$CodMarca)
+{
+ // 'Datos por default
+  if($CodBodega == "" ){$CodBodega = G_NINGUNO;}
+  if($CodMarca == ""){ $CodMarca = G_NINGUNO;}
+  $Codigo_Ok = False;
+  $Con_Kardex = False;
+  $DatInv =array();
+  $DatInv["Stock"] = 0;
+  $DatInv["Costo"] = 0;
+  $DatInv["Codigo_Barra"] = G_NINGUNO;
+  $DatInv["Tipo_SubMod"] = G_NINGUNO;
+  $DatInv["Cta_Inventario"] = G_NINGUNO;
+  $DatInv["Cta_Costo_Venta"] = G_NINGUNO;
+  $DatInv["Codigo_Inv"] = $CodigoDeInv;
+  $DatInv["Fecha_Stock"] = $FechaInventario;
+  $DatInv["TC"]='';
+
+  $f = explode('-',$FechaInventario);
+  // print_r($f);die();
+  
+ // 'Validacion de datos correctos
+  if(checkdate($f[1],$f[2],$f[0]) ) { $DatInv["Fecha_Stock"] = date('Y-m-d');}
+  if(strlen($DatInv["TC"]) <= 1){$DatInv["TC"] = "FA";}
+  $BuscarCodigoInv = $CodigoDeInv;
+  $CodigoDeInv = Leer_Codigo_Inv_SP($BuscarCodigoInv,$DatInv["Fecha_Stock"],$CodBodega,$CodMarca,$DatInv["Codigo_Inv"]);
+  
+ // '-----------------------------------------------------------------
+ // 'Si existe el producto pasamos a recolectar los datos del producto
+ // '-----------------------------------------------------------------
+  if($DatInv["Codigo_Inv"] <> G_NINGUNO)
+  {
+
+     $conn = new db();
+     $sql = "SELECT Producto, Detalle, Codigo_Barra_K, Unidad, Minimo, Maximo, Cta_Inventario, Cta_Costo_Venta, Cta_Ventas, Cta_Ventas_0, Cta_Venta_Anticipada, 
+          Utilidad, Div, PVP_2, Por_Reservas, Reg_Sanitario, IVA, PVP, Tipo_SubMod, Stock, Costo, Valor_Unit 
+          FROM Catalogo_Productos 
+          WHERE Item = '".$_SESSION['INGRESO']['item']."' 
+          AND Periodo = '".$_SESSION['INGRESO']['periodo']."' 
+          AND Codigo_Inv = '".$DatInv["Codigo_Inv"]."' ";
+      $datos = $conn->datos($sql);
+      // print_r($datos);die();
+      if(count($datos)>0)
+      {
+          $DatInv["Producto"]= $datos[0]["Producto"];
+          $DatInv["Detalle"] = $datos[0]["Detalle"];
+          $DatInv["Codigo_Barra"] = $datos[0]["Codigo_Barra_K"];
+          $DatInv["Unidad"]= $datos[0]["Unidad"];
+          $DatInv["Minimo"] = $datos[0]["Minimo"];
+          $DatInv["Maximo"] = $datos[0]["Maximo"];
+          $DatInv["Cta_Inventario"] = $datos[0]["Cta_Inventario"];
+          $DatInv["Cta_Costo_Venta"]= $datos[0]["Cta_Costo_Venta"];
+          $DatInv["Cta_Ventas"] = $datos[0]["Cta_Ventas"];
+          $DatInv["Cta_Ventas_0"] = $datos[0]["Cta_Ventas_0"];
+          $DatInv["Cta_Venta_Anticipada"] = $datos[0]["Cta_Venta_Anticipada"];
+          $DatInv["Utilidad"] = $datos[0]["Utilidad"];
+          $DatInv["Div"] = $datos[0]["Div"];
+          $DatInv["PVP2"] = $datos[0]["PVP_2"];
+          $DatInv["Por_Reservas"] = $datos[0]["Por_Reservas"];
+          $DatInv["Reg_Sanitario"] = $datos[0]["Reg_Sanitario"];
+          $DatInv["Stock"] = $datos[0]["Stock"];
+          $DatInv["Costo"] = number_format($datos[0]["Costo"], $_SESSION['INGRESO']['Dec_Costo'],'.','');
+          $DatInv["Valor_Unit"] = number_format($datos[0]["Valor_Unit"], $_SESSION['INGRESO']['Dec_Costo'],'.','');
+          $DatInv["Tipo_SubMod"] = $datos[0]["Tipo_SubMod"];
+          switch ($DatInv["TC"]) {
+            case 'NV':
+            case 'PV':
+                if($datos[0]["IVA"]){$DatInv["PVP"] = $datos[0]["PVP"]*(1 + $Porc_IVA); }else{ $DatInv["PVP"] = $datos[0]["PVP"];}
+                 $DatInv["IVA"] = False;
+              break;            
+            default:
+                 $DatInv["PVP"] = $datos[0]["PVP"];
+                 $DatInv["IVA"] = $datos[0]["IVA"];
+              break;
+          }         
+          $Codigo_Ok = True;     
+
+      }else
+      {
+        $respuesta  ="Producto no Asignado";
+        return array('respueta'=>-1,'datos'=>$respuesta);
+      }
+    }else
+    {
+      $respuesta = "No existen datos";
+      return array('respueta'=>-1,'datos'=>$respuesta);
+    }
+
+ return $Leer_Codigo_Inv = array('respueta'=>$Codigo_Ok,'datos'=>$DatInv);
+
+}
+
+function BuscarFecha($FechaStr)
+{
+  if(is_numeric($FechaStr)){
+     if($_SESSION['INGRESO']['Tipo_Base']=='SQLSERVER' || $_SESSION['INGRESO']['Tipo_Base']== 'SQL SERVER'){
+
+      $newDate = date("Ymd", strtotime($FechaStr));
+        return $newDate;       
+     
+     }else{
+        $newDate = date("Y-m-d", strtotime($FechaStr));
+        return $newDate; 
+     }
+     // 'MsgBox "Fecha Incorrecta"
+  }else{
+
+     if($_SESSION['INGRESO']['Tipo_Base']=='SQLSERVER' || $_SESSION['INGRESO']['Tipo_Base']== 'SQL SERVER'){
+      $newDate = date("Ymd", strtotime($FechaStr));
+
+        return $newDate;     
+     }else{
+        $newDate = date("Y-m-d", strtotime($FechaStr));
+        return $newDate; 
+     }
   }
+}
+
+function Lineas_De_CxC($TFA)
+{
+  $conn = new db();
+  $Cant_Item_FA = 1;
+  $Cant_Item_PV = 1;
+  $Cta_CajaG=1;
+  $Cta_CajaGE=1;
+  $Cta_CajaBA=1;
+  $TFA['Vencimiento'] = date('Y-m-d');
+  if($TFA['Vencimiento']!='')
+  {
+   $FA['Vencimiento'] = $TFA['Vencimiento'];
+  }
+  $TFA['Cta_CxP'] = G_NINGUNO;
+  $TFA['Cta_Venta'] = G_NINGUNO;
+ // 'MsgBox LineaCxC
+  $sql = "SELECT * 
+        FROM Catalogo_Lineas 
+        WHERE Item = '".$_SESSION['INGRESO']['item']."' 
+        AND Periodo = '".$_SESSION['INGRESO']['periodo']."'";
+
+  if($TFA['TC'] == "NC"){
+     $sql.= " AND Fecha <= '".BuscarFecha($TFA['Fecha_NC'])."' 
+           AND Vencimiento >= '".BuscarFecha($TFA['Fecha_NC'])."' 
+          AND Fact = 'NC' ";
+  }else{
+     $sql.= " AND Fecha <= '".BuscarFecha($TFA['Fecha'])."' 
+           AND Vencimiento >= '".BuscarFecha($TFA['Fecha'])."' ";
+  }
+  $datos = array();
+
+  if(isset($TFA['Cod_CxC']) && $TFA['Cod_CxC'] !='')
+  {
+    $con = $sql; 
+    $con.=" AND Concepto='".$TFA['Cod_CxC']."'";
+    $con.=" ORDER BY Codigo ";
+    // print_r($con);die();
+    $datos = $conn->datos($con);
+    if(count($datos)==0)
+    {
+      $con = $sql; 
+      $con.=" AND Codigo='".$TFA['Cod_CxC']."'";
+      $con.=" ORDER BY Codigo ";
+      // print_r($con);die();
+      $datos = $conn->datos($con);
+       if(count($datos)==0)
+        {
+          $con = $sql; 
+          $con.=" AND CxC='".$TFA['Cod_CxC']."'";
+          $con.=" ORDER BY Codigo ";
+          // print_r($con);die();
+          $datos = $conn->datos($con);
+        }
+    }
+  }
+  if(count($datos)>0)
+  {   
+      $TFA['CxC_Clientes'] = $datos[0]["Concepto"];
+      $TFA['LogoFactura'] = $datos[0]["Logo_Factura"];
+      $TFA['AltoFactura'] = $datos[0]["Largo"];
+      $TFA['AnchoFactura'] = $datos[0]["Ancho"];
+      $TFA['EspacioFactura'] = $datos[0]["Espacios"];
+      $TFA['Pos_Factura'] = $datos[0]["Pos_Factura"];
+      $TFA['Pos_Copia'] = $datos[0]["Pos_Y_Fact"];
+      $TFA['CantFact'] = $datos[0]["Fact_Pag"];
+      
+     // 'Datos para grabar automaticamente
+      $TFA['TC'] = trim(strtoupper($datos[0]["Fact"]));
+      $TFA['Serie'] = $datos[0]["Serie"];
+      $TFA['Autorizacion'] = $datos[0]["Autorizacion"];
+      $TFA['Fecha_Aut'] = $datos[0]["Fecha"];
+      $TFA['Vencimiento'] = $datos[0]["Vencimiento"];
+      $TFA['Cta_CxP'] = $datos[0]["CxC"];
+      $TFA['Cta_Venta'] = $datos[0]["Cta_Venta"];
+      $TFA['Cta_CxP_Anterior'] = $datos[0]["CxC_Anterior"];
+      $TFA['Cod_CxC'] = $datos[0]["Codigo"];
+      $TFA['Imp_Mes'] = $datos[0]["Imp_Mes"];
+      $TFA['DireccionEstab'] = $datos[0]["Direccion_Establecimiento"];
+      $TFA['NombreEstab'] = $datos[0]["Nombre_Establecimiento"];
+      $TFA['TelefonoEstab'] = $datos[0]["Telefono_Estab"];
+      $TFA['LogoTipoEstab']= '../../img/logotipos/'.$datos[0]["Logo_Tipo_Estab"].".jpg";
+      if($TFA['TC'] == "NC"){
+         $TFA['Serie_NC'] = $datos[0]["Serie"];
+         $TFA['Autorizacion_NC'] = $datos[0]["Autorizacion"];
+      }else{
+         $Cant_Item_FA = $datos[0]["ItemsxFA"];
+         $Cant_Item_PV = $datos[0]["ItemsxFA"];
+         $Cta_Cobrar = $datos[0]["CxC"];
+         $Cta_Ventas = $datos[0]["Cta_Venta"];
+         $CodigoL = $datos[0]["Codigo"];
+         $TipoFactura = $datos[0]["Fact"];
+      }
+
+  }else
+  {
+       $MsgBox = "Codigos No Asignados o fuera de fecha";
+  }
+
+   // 'MsgBox $TFA['Cta_CxP']
+  if($TFA['Cta_CxP'] <> G_NINGUNO ){
+     $ExisteCtas = array();
+     $ExisteCtas[0] = $TFA['Cta_CxP'];
+     $ExisteCtas[1] = $Cta_CajaG;
+     $ExisteCtas[2] = $Cta_CajaGE;
+     $ExisteCtas[3] = $Cta_CajaBA;
+     $resp = VerSiExisteCta($ExisteCtas);
+     if($resp!=1)
+     {
+       return $resp;
+     }
+
+  }
+ // 'AdoLineaDB.Close
+  if($Cant_Item_FA <= 0){$Cant_Item_FA = 15;}
+  if($Cant_Item_PV <= 0 ){$Cant_Item_PV = 15;}
+  $Cadena = "Esta Ingresando Comprobantes Caducados La Fecha Tope de emision es: ".$FA['Vencimiento'];
+
+  // print_r($TFA);die();
+  $fecha1 = strtotime($TFA['Fecha']);
+  $fecha2 = strtotime($TFA['Vencimiento']->format('Y-m-d'));
+
+  if($fecha1 > $fecha2 ){ return $Cadena;}
+  return 1;
+
+}
+
+
+function VerSiExisteCta($ExisteCtas)
+{
+  $ListCtas[0] = G_NINGUNO;
+  $NCtas = "";
+  foreach ($ExisteCtas as $key => $value) {
+    if(strlen($value) > 0 ){$NCtas.="'".$value."',";}
+  }
+  $NCtas = substr($NCtas, 0,- 1);
+  if(strlen($NCtas) >= 1){
+
+    $conn = new db();
+    $sql = "SELECT Codigo 
+            FROM Catalogo_Cuentas 
+            WHERE Codigo IN (".$NCtas.") 
+            AND Item = '".$_SESSION['INGRESO']['item']."' 
+            AND Periodo = '".$_SESSION['INGRESO']['periodo']."'";
+            // print_r($sql);die();
+    $datos = $conn->datos($sql);
+    if(count($datos)>0)
+    {
+      foreach ($datos as $key => $value) {
+        $ListCtas[$key] = $value['Codigo'];
+      }
+    }
+  }
+  $NCtas = "";
+  $ExisteCtasV = count($ExisteCtas)-1;
+  $ListCtasV = count($ListCtas);
+  if($ExisteCtasV > 0){
+    for ($i=$ExisteCtasV; $i=0 ; $i--) { 
+         $NoExiste = True;
+         for ($j=$ListCtas; $j ==0 ; $j--) { 
+            if($ExisteCtas[$i]==$ListCtas[$j])
+            {
+              $NoExiste = false;
+              break;
+            }
+         }        
+         if($NoExiste){$NCtas = $NCtas."'".$ExisteCtas[$i]."',";
+    }
+  }
+  if(strlen($NCtas) > 1){
+     return "Falta de setear la(s) cuenta(s) siguiente(s):".$NCtas." no existe en el 'Catalogo de Cuenta'
+           Debe Setearla en: 'Mantenimiento' del Módulo 
+           de SETEOS";
+  }
+  return 1;
+ }
+}
+
 ?>

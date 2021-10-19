@@ -99,7 +99,7 @@
     cargar_tablas_sc();
     ListarAsientoB();
     
-     $("#btn_acep").blur(function () { if($('#modal_cuenta').hasClass('in')){if($('#txt_efectiv').is(':visible')){$('#txt_efectiv').trigger( "focus" );}else{$('#txt_moneda').trigger( "focus" );}}else{cambia_foco();}});
+     $("#btn_acep").blur(function () { if($('#modal_cuenta').hasClass('in')){if($('#txt_efectiv').is(':visible')){$('#txt_efectiv').trigger( "focus" );}else{$('#txt_moneda').trigger( "focus" );}}});
 
 
     $( "#codigo" ).autocomplete({

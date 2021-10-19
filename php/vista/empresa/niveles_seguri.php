@@ -173,42 +173,42 @@ require_once("panel.php");
           console.log(response);
     			if(response)
     			 {
-    			 	if(response.n1==1)
+    			 	if(response[0].n1==1)
     			 	{
     			 		$('#rbl_n1').prop('checked',true);
     			 	}else { $('#rbl_n1').prop('checked',false); }
-    			 	if(response.n2==1)
+    			 	if(response[0].n2==1)
     			 	{
     			 		$('#rbl_n2').prop('checked',true);
     			 	}else { $('#rbl_n2').prop('checked',false); }
-    			 	if(response.n3==1)
+    			 	if(response[0].n3==1)
     			 	{
     			 		$('#rbl_n3').prop('checked',true);
     			 	}else { $('#rbl_n3').prop('checked',false); }
-    			 	if(response.n4==1)
+    			 	if(response[0].n4==1)
     			 	{
     			 		$('#rbl_n4').prop('checked',true);
     			 	}else { $('#rbl_n4').prop('checked',false); }
-    			 	if(response.n5==1)
+    			 	if(response[0].n5==1)
     			 	{
     			 		$('#rbl_n5').prop('checked',true);
     			 	}else { $('#rbl_n5').prop('checked',false); }
-    			 	if(response.n6==1)
+    			 	if(response[0].n6==1)
     			 	{
     			 		$('#rbl_n6').prop('checked',true);
     			 	}else { $('#rbl_n6').prop('checked',false); }
-    			 	if(response.n7==1)
+    			 	if(response[0].n7==1)
     			 	{
     			 		$('#rbl_n7').prop('checked',true);
     			 	}else { $('#rbl_n7').prop('checked',false); }
-    			 	if(response.Supervisor==1)
+    			 	if(response[0].Supervisor==1)
     			 	{
     			 		$('#rbl_super').prop('checked',true);
     			 	}else { $('#rbl_super').prop('checked',false); }
-    			 	$('#txt_usuario').val(response.Usuario);
-    			 	$('#txt_pass').val(response.Clave);
-            $('#txt_email').val(response.Email);
-            $('#txt_ci_nic').val(response.CI_NIC);
+    			 	$('#txt_usuario').val(response[0].Usuario);
+    			 	$('#txt_pass').val(response[0].Clave);
+            $('#txt_email').val(response[0].Email);
+            $('#txt_ci_nic').val(response[0].CI_NIC);
     			 	console.log(response);
     			 }
 
@@ -331,7 +331,8 @@ require_once("panel.php");
     		// },
     		success:  function (response) { 
     			 	$('#myModal_espera').modal('hide');				
-    				$('#tbl_modulos').html(response);  
+    				$('#tbl_modulos').html(response.tbl);
+            $('#usuarios_tbl').html(response.usuarios);  
     		}
     	});
 
@@ -841,6 +842,7 @@ function enviar_email_masivo()
       <div class="input-group" style="display: flex; width: 90%;">
          <select class="form-control" id="ddl_entidad" name="ddl_entidad" onchange="cargar_empresas();" style="display: none;"><option value="">Seleccione entidad</option></select>
        <div class="input-group-btn">
+        <button type="button" class="btn btn-warning btn-sm" data-toggle="modal" data-target="#mymodal_user"><span class="fa fa-user"></span></button>
           <button type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#myModal_ruc"><span class="fa fa-search"></span> RUC</button>
        </div>
 
@@ -985,6 +987,39 @@ function enviar_email_masivo()
       <div class="modal-footer">
         <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
         <button type="button" class="btn btn-success" onclick="usar_busqueda()">Usar</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+<div id="mymodal_user" class="modal fade" role="dialog" data-keyboard="false" data-backdrop="static">
+  <div class="modal-dialog">
+    <!-- Modal content-->
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h4 class="modal-title">Usuario de la entidad</h4>
+      </div>
+      <div class="modal-body">
+        <div class="input-group">
+          <table class="table table-hover">
+          <thead>
+            <th>CI / RUC</th>
+            <th>NOMBRE</th>
+            <th>EMAIL</th>
+          </thead>
+          <tbody id="usuarios_tbl">
+            <tr class="text-center">
+              <td colspan="2"> No encontrado... </td>
+            </tr>
+          </tbody>
+        </table>                  
+        </div>
+        
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+        <!-- <button type="button" class="btn btn-success" onclick="usar_busqueda()">Usar</button> -->
       </div>
     </div>
 

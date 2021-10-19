@@ -206,7 +206,7 @@ function enviar_email($archivos=false,$to_correo,$cuerpo_correo,$titulo_correo,$
         //$mail->SMTPSecure='STARTTLS';
         //Recipients
         $mail->setFrom($empresaGeneral[0]['Email_Conexion'], 'DiskCover System');
-        $mail->addAddress('jdavalos450@gmail.com', 'Jonathan Avalos');     //Add a recipient
+        $mail->addAddress('infosistema@diskcoversystem.com', 'Informacion DiskCover System');     //Add a recipient
         //$mail->addAddress('jd-avalos@hotmail.com', 'Jonathan Avalos');     //Add a recipient
         $mail->addAddress($to_correo);     //Add a recipient
         $mail->addReplyTo($empresaGeneral[0]['Email_Conexion'], 'Informacion');
@@ -221,7 +221,8 @@ function enviar_email($archivos=false,$to_correo,$cuerpo_correo,$titulo_correo,$
         $mail->isHTML(true);                                  //Set email format to HTML
         $mail->Subject = $titulo_correo;
         $mail->Body    = $cuerpo_correo;
-        // print_r($mail);die();
+        // print_r($mail);
+        // die();
 
         $mail->send();
         return 1;

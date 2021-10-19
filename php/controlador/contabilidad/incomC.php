@@ -233,7 +233,7 @@ class incomC
 		$datos = $this->modelo->beneficiarios($query);
 		$bene = array();
 		foreach ($datos as $key => $value) {
-			$bene[] = array('id'=>$value['id'].'-'.$value['email'],'text'=>utf8_encode($value['nombre']));
+			$bene[] = array('id'=>$value['id'].'-'.$value['email'],'text'=>$value['nombre']);
 			// $bene[] = array('id'=>$value['id'].'-'.$value['email'],'text'=>$value['nombre']);//para produccion
 		}
 		return $bene;
@@ -244,7 +244,7 @@ class incomC
 		$datos = $this->modelo->beneficiarios_c($query);
 		$bene = array();
 		foreach ($datos as $key => $value) {
-			$bene[] = array('id'=>$value['id'].'-'.$value['email'],'text'=>utf8_encode($value['nombre']));
+			$bene[] = array('id'=>$value['id'].'-'.$value['email'],'text'=>$value['nombre']);
 			// $bene[] = array('id'=>$value['id'].'-'.$value['email'],'text'=>$value['nombre']);//para produccion
 		}
 		return $bene;
@@ -255,7 +255,7 @@ class incomC
 		$datos = $this->modelo->cuentas_efectivo($query);
 		$cuenta = array();
 		foreach ($datos as $key => $value) {
-			$cuenta[] = array('id'=>$value['Codigo'],'text'=>utf8_encode($value['cuenta']));
+			$cuenta[] = array('id'=>$value['Codigo'],'text'=>$value['cuenta']);
 			// $cuenta[] = array('id'=>$value['Codigo'],'text'=>$value['cuenta']);//para produccion
 		}
 		return $cuenta;
@@ -269,7 +269,7 @@ class incomC
 		$datos = $this->modelo->cuentas_banco($query);
 		$cuenta = array();
 		foreach ($datos as $key => $value) {
-			$cuenta[] = array('id'=>$value['Codigo'],'text'=>utf8_encode($value['cuenta']));
+			$cuenta[] = array('id'=>$value['Codigo'],'text'=>$value['cuenta']);
 			// $cuenta[] = array('id'=>$value['Codigo'],'text'=>$value['cuenta']);//para produccion
 		}
 		return $cuenta;
@@ -283,11 +283,11 @@ class incomC
 		foreach ($datos as $key => $value) {
             if($tipo=='')
             {
-                $cuenta[] = array('id'=>$value['Codigo'],'text'=>utf8_encode($value['Nombre_Cuenta']));
+                $cuenta[] = array('id'=>$value['Codigo'],'text'=>$value['Nombre_Cuenta']);
 			// $cuenta[] = array('id'=>$value['Codigo'],'text'=>$value['Nombre_Cuenta']);//para produccion
             }else
             {                
-                $cuenta[] = array('value'=>$value['Codigo'],'label'=>utf8_encode($value['Nombre_Cuenta']));
+                $cuenta[] = array('value'=>$value['Codigo'],'label'=>$value['Nombre_Cuenta']);
             }
 		}
 		return $cuenta;

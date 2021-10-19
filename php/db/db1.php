@@ -85,8 +85,9 @@ class db
 
 	function datos($sql,$tipo=false)
 	{
-		if($tipo=='MY SQL' || $tipo =='MYSQL')
+		if($tipo=='MY SQL' || $tipo =='MYSQL' || $tipo=='My SQL' || $tipo=='My sql')
 		{
+			// print_r($sql);die();
 			$conn = $this->MySQL();
 			$resultado = mysqli_query($conn, $sql);
 			if(!$resultado)
@@ -123,7 +124,7 @@ class db
 
 	function existe_registro($sql,$tipo=false)
 	{
-		if($tipo=='MY SQL' || $tipo =='MYSQL')
+		if($tipo=='MY SQL' || $tipo =='MYSQL' || $tipo=='My SQL' || $tipo=='My sql')
 		{
 			$conn = $this->MySQL();
 			$resultado = mysqli_query($conn, $sql);
@@ -174,7 +175,7 @@ class db
 
 	function String_Sql($sql,$tipo=false)
 	{
-		if($tipo=='MY SQL'|| $tipo =='MYSQL')
+		if($tipo=='MY SQL'|| $tipo =='MYSQL' || $tipo=='My SQL' || $tipo=='My sql')
 		{
 			$conn = $this->MySQL();
 			$resultado = mysqli_query($conn, $sql);
@@ -206,9 +207,9 @@ class db
 
 	}
 
-	function ejecutar_procesos_almacenados($sql,$parametros,$tipo=false)
+	function ejecutar_procesos_almacenados($sql,$parametros,$retorna=false,$tipo=false)
 	{
-		if($tipo=='MY SQL' || $tipo =='MYSQL')
+		if($tipo=='MY SQL' || $tipo =='MYSQL' || $tipo=='My SQL' || $tipo=='My sql')
 		{
 			// colocar funcion para ejecutar procesos almacenados en mysql
 
@@ -216,17 +217,49 @@ class db
 		{
 		   $conn = $this->SQLServer();
            $stmt = sqlsrv_prepare($conn, $sql, $parametros);
-           if (!sqlsrv_execute($stmt)) 
+           $res = sqlsrv_execute($stmt);
+           if ($res === false) 
            {
            	echo "Error en consulta PA.\n";  
            	$respuesta = -1;
            	die( print_r( sqlsrv_errors(), true));  
            }
 		   sqlsrv_close($conn);
+		   if($retorna)
+		   {
+		   	$result = array();
+		   	 while( $row = sqlsrv_fetch_array($res)) 
+	   			{
+		 			$result[] = $row;
+	   			}
+		   	 return $result;
+		   }
 		   return 1;
 		}
 
 	}
+
+	function devolver_stmt($sql)
+	{
+			$conn = $this->SQLServer();	
+			$stmt = sqlsrv_query($conn,$sql);
+	     sqlsrv_close($conn);
+	}
+
+	// conexion a base SQL server de terceros
+ function modulos_sql_server($host,$user,$pass,$base,$Puerto)
+   {
+   	  	$server=''.$host.', '.$Puerto;
+		$connectionInfo = array("Database"=>$base, "UID" => $user,"PWD" => $pass,"CharacterSet" => "UTF-8");
+	    $cid = sqlsrv_connect($server, $connectionInfo); //returns false
+		if( $cid === false )
+			{
+				echo 'no se pudo conectar a la base de datos';
+				die( print_r( sqlsrv_errors(), true));
+			}
+		return $cid;
+	}
+
 	
 }
 ?>

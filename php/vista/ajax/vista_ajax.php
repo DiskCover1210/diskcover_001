@@ -4,6 +4,7 @@ error_reporting(E_ALL);
 ini_set('display_errors', '1');
 
 require_once("../../db/db.php");
+require_once("../../db/db1.php");
 require_once("../../funciones/funciones_ajax.php");
 require_once("../../../lib/excel/plantilla.php");
 require_once("../../../lib/fpdf/reporte_comp.php");
@@ -1436,6 +1437,7 @@ function ingresar()
 	//ingresar asiento 
 	if($_POST['cl']=='as_i')
 	{
+		$db = new db();
 		$va = $_POST['va'];
 		$dconcepto1 = $_POST['dconcepto1'];
 		$codigo = $_POST['codigo'];
@@ -1582,10 +1584,9 @@ function ingresar()
 				VALUES
 				('".$codigo."','".$cuenta."',".$parcial.",".$debe.",".$haber.",'".$chq_as."','".$dconcepto1."',
 				'".$efectivo_as."','.','.',0,".$t_no.",'".$_SESSION['INGRESO']['item']."','".$_SESSION['INGRESO']['CodigoU']."',".$A_No.")";
-			
 			// print_r($sql);die();
-		   $stmt = sqlsrv_query( $cid, $sql);
-			if( $stmt === false)  
+				$result = $db->datos($sql);
+			if($result==-1)  
 			{  
 				 echo "Error en consulta PA.\n";  
 				 die( print_r( sqlsrv_errors(), true));  
