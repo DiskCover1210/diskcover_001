@@ -547,7 +547,7 @@ function TextoValido($texto,$numero=false,$Mayusculas=false,$NumeroDecimales=fal
 		{
 			$texto = 0;
 		}
-		if(IsNumeric($texto))
+		if(is_numeric($texto))
 		{
 			$result = round($texto, 2, PHP_ROUND_HALF_DOWN);
 			switch ($NumeroDecimales) {
@@ -7847,58 +7847,42 @@ function BuscarFecha($FechaStr)
 function Lineas_De_CxC($TFA)
 {
   $conn = new db();
-  $Cant_Item_FA = 1;
-  $Cant_Item_PV = 1;
-  $Cta_CajaG=1;
-  $Cta_CajaGE=1;
-  $Cta_CajaBA=1;
+  $Cta_CajaG=1;//crear funcion para setear esto
+  $Cta_CajaGE=1;//crear funcion para setear esto
+  $Cta_CajaBA=1;//crear funcion para setear esto
   $TFA['Vencimiento'] = date('Y-m-d');
+  $TFA['Porc_IVA'] = $_SESSION['INGRESO']['porc'];
+  $TFA['Porc_Serv'] = $_SESSION['INGRESO']['Porc_Serv'];
   if($TFA['Vencimiento']!='')
   {
    $FA['Vencimiento'] = $TFA['Vencimiento'];
   }
+
+  $Cant_Item_FA = 1;  $TFA['Cant_Item_FA']=$Cant_Item_FA ;
+  $Cant_Item_PV = 1;  
   $TFA['Cta_CxP'] = G_NINGUNO;
   $TFA['Cta_Venta'] = G_NINGUNO;
+  if($TFA['Fecha']==''){$TFA['Fecha']=date('Y-m-d');}
+  if(!isset($TFA['Fecha_NC']) || $TFA['Fecha_NC']==''){$TFA['Fecha_NC']=date('Y-m-d');}
  // 'MsgBox LineaCxC
   $sql = "SELECT * 
         FROM Catalogo_Lineas 
         WHERE Item = '".$_SESSION['INGRESO']['item']."' 
-        AND Periodo = '".$_SESSION['INGRESO']['periodo']."'";
+        AND Periodo = '".$_SESSION['INGRESO']['periodo']."'
+        AND '".$TFA['Cod_CxC']."' IN (Concepto, Codigo, CxC) ";
 
   if($TFA['TC'] == "NC"){
      $sql.= " AND Fecha <= '".BuscarFecha($TFA['Fecha_NC'])."' 
-           AND Vencimiento >= '".BuscarFecha($TFA['Fecha_NC'])."' 
-          AND Fact = 'NC' ";
+           AND Vencimiento >= '".BuscarFecha($TFA['Fecha_NC'])."'";
   }else{
      $sql.= " AND Fecha <= '".BuscarFecha($TFA['Fecha'])."' 
            AND Vencimiento >= '".BuscarFecha($TFA['Fecha'])."' ";
   }
   $datos = array();
+  $sql.=' ORDER BY Codigo';
 
-  if(isset($TFA['Cod_CxC']) && $TFA['Cod_CxC'] !='')
-  {
-    $con = $sql; 
-    $con.=" AND Concepto='".$TFA['Cod_CxC']."'";
-    $con.=" ORDER BY Codigo ";
-    // print_r($con);die();
-    $datos = $conn->datos($con);
-    if(count($datos)==0)
-    {
-      $con = $sql; 
-      $con.=" AND Codigo='".$TFA['Cod_CxC']."'";
-      $con.=" ORDER BY Codigo ";
-      // print_r($con);die();
-      $datos = $conn->datos($con);
-       if(count($datos)==0)
-        {
-          $con = $sql; 
-          $con.=" AND CxC='".$TFA['Cod_CxC']."'";
-          $con.=" ORDER BY Codigo ";
-          // print_r($con);die();
-          $datos = $conn->datos($con);
-        }
-    }
-  }
+  $datos = $conn->datos($sql);
+  // print_r($sql);die();
   if(count($datos)>0)
   {   
       $TFA['CxC_Clientes'] = $datos[0]["Concepto"];
@@ -7929,6 +7913,7 @@ function Lineas_De_CxC($TFA)
          $TFA['Serie_NC'] = $datos[0]["Serie"];
          $TFA['Autorizacion_NC'] = $datos[0]["Autorizacion"];
       }else{
+         $TFA['Cant_Item_FA'] = $datos[0]["ItemsxFA"];
          $Cant_Item_FA = $datos[0]["ItemsxFA"];
          $Cant_Item_PV = $datos[0]["ItemsxFA"];
          $Cta_Cobrar = $datos[0]["CxC"];
@@ -7957,7 +7942,7 @@ function Lineas_De_CxC($TFA)
 
   }
  // 'AdoLineaDB.Close
-  if($Cant_Item_FA <= 0){$Cant_Item_FA = 15;}
+  if($Cant_Item_FA <= 0){$Cant_Item_FA = 15; $TFA['Cant_Item_FA'] = $Cant_Item_FA;}
   if($Cant_Item_PV <= 0 ){$Cant_Item_PV = 15;}
   $Cadena = "Esta Ingresando Comprobantes Caducados La Fecha Tope de emision es: ".$FA['Vencimiento'];
 
@@ -7966,7 +7951,7 @@ function Lineas_De_CxC($TFA)
   $fecha2 = strtotime($TFA['Vencimiento']->format('Y-m-d'));
 
   if($fecha1 > $fecha2 ){ return $Cadena;}
-  return 1;
+  return $TFA; 
 
 }
 
