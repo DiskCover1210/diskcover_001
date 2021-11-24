@@ -53,12 +53,114 @@ if(isset($_GET['CDesc1']))
 	//$parametros = $_POST['parametros'];
 	echo json_encode($controlador->CDesc1());
 }
+
+//-------modal suscripcion-------
+if(isset($_GET['DGSuscripcion']))
+{
+   //$parametros = $_POST['parametros'];
+   echo json_encode($controlador->DGSuscripcion());
+}
+if(isset($_GET['DCCtaVenta']))
+{
+   //$parametros = $_POST['parametros'];
+   echo json_encode($controlador->DCCtaVenta());
+}
+if(isset($_GET['DCEjecutivoModal']))
+{
+   $query = '';
+   if(isset($_GET['q']))
+   {
+      $query = $_GET['q'];
+   }
+   echo json_encode($controlador->DCEjecutivoModal($query));
+}
+if(isset($_GET['TextComision_LostFocus']))
+{
+   $parametros = $_POST;
+   echo json_encode($controlador->TextComision_LostFocus($parametros));
+}
+if(isset($_GET['Command1']))
+{
+   $parametros = $_POST;
+   echo json_encode($controlador->Command1_Click($parametros));
+}
+if(isset($_GET['delete_asientoP']))
+{
+   //$parametros = $_POST['parametros'];
+   echo json_encode($controlador-> delete_asientoP());
+}
+//------fin modal suscripcion--------
+
+
 if(isset($_GET['DCEjecutivo']))
 {
 	//$parametros = $_POST['parametros'];
 	echo json_encode($controlador->DCEjecutivo());
 }
+//------------lista ordenes-------------
+if(isset($_GET['Listar_Ordenes']))
+{
+   //$parametros = $_POST['parametros'];
+   echo json_encode($controlador->Listar_Ordenes());
+}
+//----------------fin lista orden---------
+//------------guia--------------
 
+if(isset($_GET['DCCiudadF']))
+{
+   //$parametros = $_POST['parametros'];
+   $query = '';
+   if(isset($_GET['q']))
+   {
+      $query = $_GET['q'];
+   }
+   echo json_encode($controlador->DCCiudadF($query));
+}
+if(isset($_GET['DCCiudadI']))
+{
+   //$parametros = $_POST['parametros'];
+   $query = '';
+   if(isset($_GET['q']))
+   {
+      $query = $_GET['q'];
+   }
+   echo json_encode($controlador->DCCiudadI($query));
+}
+
+if(isset($_GET['AdoPersonas']))
+{
+   //$parametros = $_POST['parametros'];
+   $query = '';
+   if(isset($_GET['q']))
+   {
+      $query = $_GET['q'];
+   }
+   echo json_encode($controlador->AdoPersonas($query));
+}
+
+if(isset($_GET['DCEmpresaEntrega']))
+{
+   //$parametros = $_POST['parametros'];
+   $query = '';
+   if(isset($_GET['q']))
+   {
+      $query = $_GET['q'];
+   }
+   echo json_encode($controlador->DCEmpresaEntrega($query));
+}
+if(isset($_GET['MBoxFechaGRE_LostFocus']))
+{
+   $parametros = $_POST['parametros'];
+   echo json_encode($controlador->MBoxFechaGRE_LostFocus($parametros));
+}
+if(isset($_GET['DCSerieGR_LostFocus']))
+{
+   $parametros = $_POST['parametros'];
+   echo json_encode($controlador->DCSerieGR_LostFocus($parametros));
+}
+
+
+//--------fin guia-------------
 if(isset($_GET['DCGrupo_No']))
 {
 	//$parametros = $_POST['parametros'];
@@ -69,6 +171,7 @@ if(isset($_GET['DCGrupo_No']))
 	}
 	echo json_encode($controlador->DCGrupo_No($query));
 }
+
 if(isset($_GET['numero_factura']))
 {
 	//$parametros = $_POST['parametros'];
@@ -139,7 +242,23 @@ if(isset($_GET['Eliminar_linea']))
 	$parametros = $_POST['parametros'];
 	echo json_encode($controlador->delete_asientoF($parametros));
 }
-
+if(isset($_GET['numFactura']))
+{
+   $parametros = $_POST['parametros'];
+   echo json_encode($controlador->numFactura($parametros));
+}
+if(isset($_GET['Grabar_Factura_Actual']))
+{
+   $FA =$_GET;
+   $parametros = $_POST['parametros'];
+   echo json_encode($controlador->Grabar_Factura_Actual($FA,$parametros));
+}
+if(isset($_GET['Autorizar_Factura_Actual']))
+{
+   $FA =$_GET;
+   $parametros = $_POST['parametros'];
+   echo json_encode($controlador->Autorizar_Factura_Actual($FA,$parametros));
+}
 
 
 class facturarC
@@ -153,11 +272,12 @@ class facturarC
     function lineas_facturas()
     {
     	// $codigoCliente = $parametro['codigoCliente'];
-    	$datos = $this->modelo->lineas_factura();
+    	$datos = $this->modelo->lineas_factura($tabla=1);
     	 $TextFacturaNo= Leer_Campo_Empresa("Mod_Fact");
        $Mod_PVP = Leer_Campo_Empresa("Mod_PVP");
        $DCEjecutivo = Leer_Campo_Empresa("Comision_Ejecutivo");
-    	return array('tbl'=>$datos['tbl'],'TextFacturaNo'=>$TextFacturaNo,'Mod_PVP'=>$Mod_PVP,'DCEjecutivo'=>$DCEjecutivo);
+      $totales = Calculos_Totales_Factura();
+    	return array('tbl'=>$datos,'TextFacturaNo'=>$TextFacturaNo,'Mod_PVP'=>$Mod_PVP,'DCEjecutivo'=>$DCEjecutivo,'totales'=>$totales);
     }
 
     function  DCMod(){
@@ -200,9 +320,11 @@ class facturarC
     {
     	$datos = $this->modelo->Listar_Tipo_Beneficiarios($query,$grupo);
     	$lis = array();
-    	foreach ($datos as $key => $value) {
-    		$lis[] =array('id'=>$value['Codigo'],'text'=>$value['Cliente']);
+    	foreach ($datos as $key => $value) {         
+         $datos = Leer_Datos_Clientes($value['Codigo']);
+    		$lis[] =array('id'=>$value['Codigo'],'text'=>$value['Cliente'],'datos'=>$datos);
     	}
+      // print_r($lis);die();
     	return $lis;
     }
 
@@ -261,16 +383,15 @@ class facturarC
 
     function Lineas_De_CxC($parametros)
     {
+      // print_r($parametros);die();
     	 $resp = Lineas_De_CxC($parametros);
-    	 // $resp = 'ssss';
+       // print_r($resp);die();
+       $factura = ReadSetDataNum($parametros['TC']."_SERIE_".$resp['TFA']['Serie'],True, False);
+       $resp['TFA']['NoFactura'] = $factura;
+       // print_r($resp);die();
     	 return $resp;
     }
-    function Tipo_De_Facturacion($parametros)
-    {
-    	print_r($_SESSION);die();
-    	return array('Porc_Serv'=>$_SESSION['INGRESO']['porc'],'Autorizacion'=>123654789,'Serie'=>$_SESSION['INGRESO']['Serie_FA'] );
-
-    }
+    
 
     function Listar_Productos($query,$codmarca,$marca)
     {
@@ -362,8 +483,8 @@ function TextVUnit_LostFocus($parametros)
    $SubTotal = 0; $SubTotalDescuento = 0; $SubTotalIVA = 0; $SubTotalPorcComision = 0;
    $NumMeses = 0; $VUnitTemp = 0; $Interes = 0;
    $datosL = $this->modelo->lineas_factura();
-     	// print_r($parametros);die();
-   if(count($datosL['datos'])<=$parametros['Cant_Item_FA'])
+     	// print_r($datosL);die();
+   if(count($datosL)<=$parametros['Cant_Item_FA'])
    {
    	  if($parametros['TxtDetalle'] <> G_NINGUNO){$Producto = $parametros['TxtDetalle'];}
         // TxtDetalle.Visible = False //revision
@@ -384,7 +505,7 @@ function TextVUnit_LostFocus($parametros)
        // 'MsgBox Redondear(CDbl(TextVUnit), Dec_PVP) & " ..." & Redondear(Val(TextVUnit), Dec_PVP)
 
         	// print_r($parametros);die();
-        $Ln_No=count($datosL['datos'])+1; 
+        $Ln_No=count($datosL)+1; 
 
    	if(strlen($parametros['codigo']) > 1 )
    	{
@@ -502,33 +623,9 @@ function TextVUnit_LostFocus($parametros)
     }else{
        return $MsgBox = "Ya no se puede ingresar más datos.";
     }
-
-
-
-
-
-//    sSQL = "SELECT * " _
-//         & "FROM Asiento_F " _
-//         & "WHERE Item = '" & NumEmpresa & "' " _
-//         & "AND CodigoU = '" & CodigoUsuario & "' " _
-//         & "ORDER BY A_No "
-//    SQLDec = "PRECIO " & CStr(Dec_PVP) & "|CORTE " & CStr(Dec_PVP) & "|Total_IVA 4|."
-//    SelectDataGrid DGAsientoF, AdoAsientoF, sSQL, SQLDec
-//    Calculos_Totales_Factura FA
-//    LabelSubTotal.Caption = Format$(FA.Sin_IVA, "#,##0.00")
-//    LabelConIVA.Caption = Format$(FA.Con_IVA, "#,##0.00")
-//    TextDesc.Text = Format$(FA.Descuento, "#,##0.00")
-//    LabelServ.Caption = Format$(FA.Servicio, "#,##0.00")
-//    LabelIVA.Caption = Format$(FA.Total_IVA, "#,##0.00")
-//    LabelTotal.Caption = Format$(FA.Total_MN, "#,##0.00")
-//    DGAsientoF.Visible = True
-//    TextCant.Text = ""
-//    LabelVTotal.Caption = ""
-//    MarcarTexto TextDesc
-//    If (Redondear(CDbl(TextVUnit), Dec_PVP) < DatInv.Costo) And (DatInv.Costo > 0 And Len(DatInv.Cta_Inventario) > 3) Then
-//       MsgBox "Usted esta vendiendo por debajo del Costo de Produccion"
-//    End If
-//    DCArticulo.SetFocus
+   if (number_format($TextVUnit,$_SESSION['INGRESO']['Dec_Costo'],'.','') < $DatInv[0]['Costo'] && $DatInv[0]['Costo'] > 0 && strlen($DatInv[0]['Cta_Inventario']) > 3) {
+      return "Usted esta vendiendo por debajo del Costo de Produccion";
+   }
 }
 
 function delete_asientoF($parametros)
@@ -536,6 +633,623 @@ function delete_asientoF($parametros)
 	$ln_No = $parametros['ln_No'];
 	return $this->modelo->delete_asientoF($ln_No);
 }
+
+ //--------------- modal suscripcion-----------------
+  function DGSuscripcion()
+   {
+      $tabla = true;
+      $datos = $this->modelo->DGSuscripcion($tabla);
+      return $datos;
+   }
+   function DCCtaVenta()
+   {
+      $datos = $this->modelo->DCCtaVenta();
+      $list = array();
+      foreach ($datos as $key => $value) {
+         $list[] = array('codigo'=>$value['Cta_Ventas'],'nombre'=>$value['Cuenta']);
+      }
+      return $list;
+   }
+
+   function DCEjecutivoModal($query)
+   {
+      $datos = $this->modelo->DCEjecutivoModal($query);
+      $list = array();
+      foreach ($datos as $key => $value) {
+         $list[] = array('id'=>$value['Codigo'],'text'=>$value['Cliente']);
+      }
+      return $list;
+   }
+   function delete_asientoP()
+   {
+      return $this->modelo->delete_asientoP();
+
+   }
+   function TextComision_LostFocus($parametros)
+   {
+      $this->modelo->delete_asientoP();
+      $fecha1= new DateTime("1899-12-30");
+      $fecha2= new DateTime($parametros['MBDesde']);
+      $fecha3= new DateTime($parametros['MBHasta']);
+      $Saldo = 0; $Diferencia = 0; $Cuota_No = 1;$NumMeses=0;
+      $Opcion = 0;//intval($parametros['MBHasta']); //revisar esto
+      // print_r($Opcion);die();
+      $Mifecha = $parametros['MBDesde'];
+      $I = $fecha1->diff($fecha2)->days;
+      $J = $fecha1->diff($fecha3)->days;
+
+        if($parametros['opc']=='OpcMensual'){$NumMeses = number_format(($J - $I) / 31);}
+        if($parametros['opc']=='OpcQuincenal'){$NumMeses = number_format(($J - $I) / 15);}
+        if($parametros['opc']=='OpcSemanal'){$NumMeses = number_format(($J - $I) / 7);}
+        if($parametros['opc']=='OpcAnual'){$NumMeses = 1;}
+        if($parametros['opc']=='OpcTrimestral'){$NumMeses = 4;}
+        if($parametros['opc']=='OpcSemestral'){$NumMeses = 2;}
+        if($NumMeses <= 0){$NumMeses = 1;}
+        $Saldo = number_format(floatval($parametros['TextValor'])/$NumMeses, 2,'.','');
+        for ($i=$Cuota_No; $i <= intval($NumMeses); $i++) { 
+             if($parametros['opc']==' OpcMensual'){$Mifecha = date("d-m-Y",strtotime($Mifecha."+ 1 month")); }
+             if($parametros['opc']==' OpcQuincenal'){$Mifecha = date("d-m-Y",strtotime($Mifecha."+ 15 days"));}
+             if($parametros['opc']==' OpcSemanal'){$Mifecha =date("d-m-Y",strtotime($Mifecha."+ 7 days"));}
+             if($parametros['opc']==' OpcAnual'){$Mifecha = date("d-m-Y",strtotime($Mifecha."+ 366 days"));}
+             if($parametros['opc']==' OpcTrimestral'){$Mifecha = date("d-m-Y",strtotime($Mifecha."+ 91 days"));}
+             if($parametros['opc']==' OpcSemestral'){$Mifecha = date("d-m-Y",strtotime($Mifecha."+ 182 days"));}
+             if($Opcion < $Cuota_No){$Si_No = false; }Else{$Si_No = True;}
+             $Trans_No = 250;
+             $datos[0]['campo'] =  "Sector";
+             $datos[0]['dato']  =  $parametros['TextSector'];
+             $datos[1]['campo'] =  "Ejemplar";
+             $datos[1]['dato']  = $i;
+             $datos[2]['campo'] =  "Fecha";
+             $datos[2]['dato']  = $Mifecha;
+             $datos[3]['campo'] =  "Entregado";
+             $datos[3]['dato']  = $Si_No;
+             $datos[4]['campo'] =  "Comision";
+             $datos[4]['dato']  = 0;
+             $datos[5]['campo'] =  "Capital";
+             $datos[5]['dato']  = $Saldo;
+             $datos[6]['campo'] =  "T_No";
+             $datos[6]['dato']  = $Trans_No;
+             $datos[7]['campo'] =  "Item";
+             $datos[7]['dato']  = $_SESSION['INGRESO']['item'];
+             $datos[8]['campo'] =  "CodigoU";
+             $datos[8]['dato']  = $_SESSION['INGRESO']['CodigoU'];
+             $datos[9]['campo'] =  "Cuotas";
+             $datos[9]['dato']  = $i;
+             insert_generico('Asiento_P',$datos);
+
+        }
+      return $NumMeses;
+   }
+
+  function Command1_Click($parametros)
+  {
+
+   // print_r($parametros);die();
+
+  // DGSuscripcion.Visible = False;
+  // TextoValido TextTipo, , True;
+  if($parametros['opc2']=='OpcN'){$TipoProc = "N";}else{$TipoProc = "R";}
+  $Opcion = intval($parametros['TxtHasta']);
+  if($parametros['opc']=='OpcMensual'){$TipoDoc = "MENS";}
+  if($parametros['opc']=='OpcQuincenal'){$TipoDoc = "QUNC";}
+  if($parametros['opc']=='OpcSemanal'){$TipoDoc = "SEMA";}
+  if($parametros['opc']=='OpcAnual'){$TipoDoc = "ANUA";}
+  if($parametros['opc']=='OpcTrimestral'){$TipoDoc = "TRIM";}
+  if($parametros['opc']=='OpcSemestral'){$TipoDoc = "SEME";}
+
+  $Credito_No = $parametros['TextTipo']."-".generaCeros(intval($parametros['TextContrato']),7);
+  $this->modelo->delete_command1($TipoDoc,$Credito_No);
+
+  $Suscripcion = $this->modelo->DGSuscripcion();
+  if(count($Suscripcion)>0)
+  {
+       $datos[0]['campo'] =  "T";
+       $datos[0]['dato']  = $TipoProc;
+       $datos[1]['campo'] =  "Sector";
+       $datos[1]['dato']  = $parametros['TextSector'];
+       $datos[2]['campo'] =  "TP";
+       $datos[2]['dato']  = $TipoDoc;
+       $datos[3]['campo'] =  "Credito_No";
+       $datos[3]['dato']  = $Credito_No;
+       $datos[4]['campo'] =  "No_Venc";
+       $datos[4]['dato']  = $Opcion;
+       $datos[5]['campo'] =  "Cuenta_No";
+       $datos[5]['dato']  = $parametros['LblClienteCod'];
+       $datos[6]['campo'] =  "Meses";
+       $datos[6]['dato']  = $parametros['txtperiodo'];
+       $datos[7]['campo'] =  "Fecha";
+       $datos[7]['dato']  = $parametros['MBDesde'];
+       $datos[8]['campo'] =  "Fecha_C";
+       $datos[8]['dato']  = $parametros['MBHasta'];
+       $datos[9]['campo'] =  "Capital";
+       $datos[9]['dato']  = $parametros['TextValor'];
+       $datos[10]['campo'] =  "Encaje";
+       $datos[10]['dato']  = number_format(floatval($parametros['TextValor'])*(intval($parametros['TextComisionModal']) / 100),4,'.','');
+       $datos[11]['campo'] =  "Numero";
+       $datos[11]['dato']  = $parametros['TextFact'];
+       $datos[12]['campo'] =  "Atencion";
+       $datos[12]['dato']  = $parametros['TxtAtencion']; ///ojo ver
+       $datos[13]['campo'] =  "Cta";
+       $datos[13]['dato']  = $parametros['DCCtaVenta'];
+       $datos[14]['campo'] =  "Pagos";
+       $datos[14]['dato']  = number_format($Suscripcion[0]["Capital"], 2,'.','');
+       $datos[15]['campo'] =  "Item";
+       $datos[15]['dato']  = $_SESSION['INGRESO']['item'];
+       $datos[16]['campo'] =  "CodigoE";
+       $datos[16]['dato']  = $parametros['DCEjecutivoModal'];
+       $datos[17]['campo'] =  "CodigoU";
+       $datos[17]['dato']  = $_SESSION['INGRESO']['CodigoU'];
+       insert_generico('Prestamos',$datos);
+   }
+
+ // // 'Detalle
+   if(count($Suscripcion)>0)
+   {
+      foreach ($Suscripcion as $key => $value) {
+          $datosA[0]['campo'] =  "T";
+          $datosA[0]['dato']  = $TipoProc;
+          $datosA[1]['campo'] =  "AC";
+          $datosA[1]['dato']  = 0;
+          $datosA[2]['campo'] =  "TP";
+          $datosA[2]['dato']  = $TipoDoc;
+          $datosA[3]['campo'] =  "Contrato_No";
+          $datosA[3]['dato']  = $Credito_No;
+          $datosA[4]['campo'] =  "Ent_No";
+          $datosA[4]['dato']  = $value["Ejemplar"];
+          $datosA[5]['campo'] =  "Fecha";
+          $datosA[5]['dato']  = $value["Fecha"]->format('Y-m-d');
+          $datosA[6]['campo'] =  "E";
+          $datosA[6]['dato']  = $value["Entregado"];
+          $datosA[7]['campo'] =  "Item";
+          $datosA[7]['dato']  = $_SESSION['INGRESO']['item'];
+          insert_generico('Trans_Suscripciones',$datosA);         
+      }
+   }
+   return '1';
+ }
+//------------------fin modal suscripcion----------------
+ //----------------guia--------------------
+
+  function DCCiudadI($query)
+  {  
+     $datos = $this->modelo->DCCiudad($query);
+     $lista[] =array();
+     foreach ($datos as $key => $value) {
+          $lista[] = array('id'=>$value['Descripcion_Rubro'],'text'=>$value['Descripcion_Rubro']);
+       }  
+       return $lista;
+  }
+  function DCCiudadF($query)
+  { 
+    $datos = $this->modelo->DCCiudad($query);
+    $lista[] =array();
+     foreach ($datos as $key => $value) {
+          $lista[] = array('id'=>$value['Descripcion_Rubro'],'text'=>$value['Descripcion_Rubro']);
+       }     
+       return $lista;
+     
+  }
+  function AdoPersonas($query)
+  {  
+    $datos = $this->modelo->AdoPersonas($query);
+    $lista[] =array();
+     foreach ($datos as $key => $value) {
+          $lista[] = array('id'=>$value['CI_RUC'].'_'.$value['Direccion'],'text'=>$value['Cliente']);
+       }     
+       return $lista;
+     
+  }
+  function DCEmpresaEntrega($query)
+  {  
+    $datos = $this->modelo->AdoPersonas($query);
+    $lista[] =array();
+     foreach ($datos as $key => $value) {
+          $lista[] = array('id'=>$value['Codigo'],'text'=>$value['Cliente']);
+       }     
+       return $lista;
+     
+  }
+  function MBoxFechaGRE_LostFocus($parametros)
+  {
+    $datos = $this->modelo->MBoxFechaGRE_LostFocus($parametros['MBoxFechaGRE']);
+    $lis = array();
+    foreach ($datos as $key => $value) {
+       $lis[] = array('codigo'=>$value['Codigo'].'_'.$value['Serie'],'nombre'=>$value['Concepto']);
+    }
+    return $lis;
+  }
+
+  function DCSerieGR_LostFocus($parametros)
+  {
+   $DCSerieGR= $parametros['DCSerieGR'];
+   $LblGuiaR = ReadSetDataNum("GR_SERIE_".$DCSerieGR, True, False);
+   $datos = $this->modelo->MBoxFechaGRE_LostFocus($parametros['MBoxFechaGRE'],$DCSerieGR);
+   $Autorizacion = '';
+   if(count($datos)>0)
+   {
+      $Autorizacion = $datos[0]['Autorizacion'];
+   }
+   return $Autorizacion;
+  }
+ //------------------fin guia------------
+
+  // ------------------Listar_Ordenes------------
+  function Listar_Ordenes()
+  {
+    $datos = $this->modelo->Listar_Ordenes();
+    $lista = array();
+    if(count($datos)>0)
+    {
+      foreach ($datos as $key => $value) {       
+       $lista[] = array("Orden No. ".generaCeros($value["Factura"],9)." - ".$value["Cliente"]);
+      }
+    }
+
+    return $lista;
+  }
+  // ----------------fin Listar_Ordenes---------
+
+  function Grabar_Factura_Actual($FA,$parametros)
+  {
+
+   $asientoF = $this->modelo->lineas_factura();
+   if(count($asientoF)>0)
+   {
+     $TFA = Calculos_Totales_Factura();
+     foreach ($TFA as $key => $value) {
+       $FA[$key]=$value;
+     }
+         
+     $TextObs  = TextoValido($parametros['TextObs']);
+     $TextNota = TextoValido($parametros['TextNota']);
+     $TxtPedido= TextoValido($parametros['TxtPedido']);
+     $TxtZona = TextoValido($parametros['TxtZona'],false , True);
+     $TxtLugarEntrega = TextoValido($parametros['TxtLugarEntrega'],false , True);
+     $TextComision =  TextoValido($parametros['TextComision'],false , True);
+     $TxtCompra =  TextoValido($parametros['TxtCompra'], True, false, 0);
+     $MBoxFechaV = $parametros['MBoxFechaV'];
+     $TextoFormaPago = G_PAGOCRED;
+     if($parametros['Check1'] != 'false'){$Moneda_US = 1;}
+        $Moneda_US = 0; //false
+        $Total_FacturaME = 0;
+     
+     $FA['T'] = G_PENDIENTE;
+     $FA['Orden_Compra'] = 0;
+     $FA['SubCta'] = G_NINGUNO;
+     $FA['SP'] = 0; //false
+     $FA['Porc_IVA'] = $_SESSION['INGRESO']['porc'];
+
+     
+
+     $FA['Tipo_Pago'] = $parametros['DCTipoPago'];
+     $FA['Forma_Pago'] = $TextoFormaPago;
+     $FA['Observacion'] = $TextObs;
+     $FA['Nota'] = $TextNota;
+     $FA['Pedido'] = $TxtPedido;
+    
+    // // 'MsgBox Val(TxtCompra)
+     if(is_numeric($TxtCompra)){ $FA['Orden_Compra'] = intval($TxtCompra);}
+     $Adomod = $this->modelo->DCMod();
+     if(count($Adomod)>0){ $FA['SubCta'] = $parametros['DCMod'];}
+     if( intval($FA['Tipo_Pago']) <= 0){$FA['Tipo_Pago'] = "01";}
+     if($parametros['CheqSP'] == 'true'){$FA['SP'] = 1;}
+     
+     $FA['ME_'] = $Moneda_US;
+     $FA['Saldo_MN'] = $FA['Total_MN'];
+
+    //  RatonNormal
+    
+         $FA['Nuevo_Doc'] = True;
+         $FA['Factura'] = intval($parametros['TextFacturaNo']);
+
+         // print_r($FA);
+         // print_r($parametros);die();
+        if(Existe_Factura($FA)){
+          if($parametros['Reprocesar']==1)
+          {
+            $FA['Numero_Doc'] = 0;
+          }else
+          {
+            return  array('res'=>-2,'men'=>"Ya existe ".$FA['TC']." No. ".$FA['Serie']."-".generaCeros($FA['Factura'],9)." Desea Reprocesarla");
+          }
+          // if( BoxMensaje = vbYes Then FA.Nuevo_Doc = False Else GoTo NoGrabarFA
+        }else{         
+           $Factura_No = ReadSetDataNum($FA['TC']."_SERIE_".$FA['Serie'], True, False);
+           if($FA['Factura'] <> $Factura_No){
+            if($parametros['Reprocesar']==1)
+             {
+               $FA['Numero_Doc'] = 0;
+             }else
+             {
+               return  array('res'=>-3,'men'=>"La ".$FA['TC']." No. ".$FA['Serie']."-".generaCeros($FA['Factura'],9).", no esta Procesada, desea Procesarla?");
+             }
+           }
+        }
+
+        if($FA['Nuevo_Doc']){$FA['Factura'] = ReadSetDataNum($FA['TC']."_SERIE_".$FA['Serie'], True, True);}        
+        if(strlen($FA['Autorizacion_GR']) == 13){
+           $GuiaRemision = ReadSetDataNum("GR_SERIE_".$FA['Serie_GR'], True, False);
+           if($FA['Remision'] == $GuiaRemision){$FA['Remision'] = ReadSetDataNum("GR_SERIE_".$FA['Serie_GR'], True, True);}
+        }
+       
+        
+        $Comision = number_format($TextComision/100, 4,'.','');
+        $Total_SubTotal=0;
+        $Total_Comision = number_format(($Total_SubTotal*$Comision), 2,'.','');
+       
+       // 'Datos del Encabezado y totales de la factura
+        $cliente = Leer_Datos_Clientes($parametros['Cliente'],$Por_Codigo=true,$Por_CIRUC=false,$Por_Cliente=false);
+        $FA['Cliente'] = $cliente['Cliente'];
+        $FA['TextCI'] = $cliente['CI_RUC'];
+        $FA['TxtEmail'] = $cliente['Email'];
+        $FA['codigoCliente'] = $cliente['Codigo'];
+        $FA['FacturaNo'] = $parametros['TextFacturaNo'];
+        $FA['me'] = $parametros['TextFacturaNo'];  //cambiar viene de abonos
+        $FA['Total'] = $FA['Total_MN'];
+        $FA['Total_Abonos'] = 0;
+    
+        // print_r($cliente);
+        $FA['Porc_C'] = $Comision;
+        $FA['Comision'] = $Total_Comision;
+
+         // print_r($FA);
+         // print_r($parametros);
+         // die();
+       // 'Grabamos el numero de factura
+        // print_r(Grabar_Factura($FA));
+         Grabar_Factura($FA);
+        
+        
+       // 'Grabamos Abonos del numero de factura
+        $Bandera = False;
+        $Evaluar = True;
+        // $FechaTexto = MBoxFecha
+        $Factura_No = $FA['Factura'];
+        $Numero = $Factura_No;
+        
+       
+    // //    'Autorizamos la factura y/o Guia de Remision
+    //     if(strlen($FA['Autorizacion']) = 13){/* genera xml al sri*/ SRI_Crear_Clave_Acceso_Facturas($FA, False, True);}
+         
+    //     if(strlen($FA['Autorizacion_GR']) = 13){
+    //        /* genera xml al sri*/ SRI_Crear_Clave_Acceso_Guia_Remision FA, False, True
+    //        if(strlen($FA['Autorizacion_GR']) > 13){
+    //           $this->modelo->actualizar_Facturas_Auxiliares($FA);             
+    //        }
+    //     }
+    // //    'MsgBox "Documento " & FA.TC & " No. " & FA.Serie & "-" & Format(FA.Factura, "000000000")
+    //     $TA['TP'] = $FA['TC'];
+    //     $TA['Serie'] = $FA['Serie'];
+    //     $TA['Factura'] = $FA['Factura'];
+    //     $TA['Autorizacion'] = $FA['Autorizacion'];
+    //     $TA['CodigoC'] = $FA['CodigoC'];
+    //     Actualiza_Estado_Factura TA
+    //     // RatonNormal
+    //     // 'MsgBox "..."
+    //     if($FA['TC'] <> "OP"){
+    //       // 'MsgBox FA.Autorizacion & vbCrLf & FA.Autorizacion_GR
+    //        if(strlen($FA['Autorizacion']) >= 13){
+    //           If Grafico_PV Then Imprimir_Punto_Venta_Grafico FA Else Imprimir_Punto_Venta FA
+    //        }else{
+    //           Titulo = "IMPRESION"
+    //           Mensajes = "Facturacion Multiple"
+    //           If BoxMensaje = vbYes Then
+    //              Factura_Desde = FA.Factura
+    //              Factura_Hasta = FA.Factura
+    //              FA.Tipo_PRN = "FM"
+    //              Imprimir_Facturas_CxC Facturas, FA, True
+    //           Else
+    //              FA.Tipo_PRN = "FA"
+    //              Imprimir_Facturas FA
+    //           End If
+    //        }
+    //        Facturas_Impresas FA
+    //     }
+    // //     RatonReloj
+    //     if($FA['TC'] <> "OP"){
+    //        if($FA['Remision'] > 0){
+    //           if(strlen($FA['Autorizacion_GR']) < 13){
+    //              Imprimir_Guia_Remision AdoFactura, AdoAsientoF, FA
+    //           }else if(strlen($FA['Autorizacion_GR']) >= 13){
+    //              SRI_Generar_PDF_GR FA, True
+    //           }
+    //        }
+    //     }
+       
+    //  Else
+    //     RatonNormal
+    //     MsgBox "Revise los datos ingresados y vuelva a intentar grabar"
+    //  End If
+
+
+
+
+   }else
+   {
+      return -1;
+   }
+  }
+
+
+  function Autorizar_Factura_Actual($FA,$parametros)
+  {
+
+   $asientoF = $this->modelo->lineas_factura();
+   if(count($asientoF)>0)
+   {
+     $TFA = Calculos_Totales_Factura();
+     foreach ($TFA as $key => $value) {
+       $FA[$key]=$value;
+     }
+         
+     $TextObs  = TextoValido($parametros['TextObs']);
+     $TextNota = TextoValido($parametros['TextNota']);
+     $TxtPedido= TextoValido($parametros['TxtPedido']);
+     $TxtZona = TextoValido($parametros['TxtZona'],false , True);
+     $TxtLugarEntrega = TextoValido($parametros['TxtLugarEntrega'],false , True);
+     $TextComision =  TextoValido($parametros['TextComision'],false , True);
+     $TxtCompra =  TextoValido($parametros['TxtCompra'], True, false, 0);
+     $MBoxFechaV = $parametros['MBoxFechaV'];
+     $TextoFormaPago = G_PAGOCRED;
+     if($parametros['Check1'] != 'false'){$Moneda_US = 1;}
+        $Moneda_US = 0; //false
+        $Total_FacturaME = 0;
+     
+     $FA['T'] = G_PENDIENTE;
+     $FA['Orden_Compra'] = 0;
+     $FA['SubCta'] = G_NINGUNO;
+     $FA['SP'] = 0; //false
+     $FA['Porc_IVA'] = $_SESSION['INGRESO']['porc'];
+
+     
+
+     $FA['Tipo_Pago'] = $parametros['DCTipoPago'];
+     $FA['Forma_Pago'] = $TextoFormaPago;
+     $FA['Observacion'] = $TextObs;
+     $FA['Nota'] = $TextNota;
+     $FA['Pedido'] = $TxtPedido;
+    
+    // // 'MsgBox Val(TxtCompra)
+     if(is_numeric($TxtCompra)){ $FA['Orden_Compra'] = intval($TxtCompra);}
+     $Adomod = $this->modelo->DCMod();
+     if(count($Adomod)>0){ $FA['SubCta'] = $parametros['DCMod'];}
+     if( intval($FA['Tipo_Pago']) <= 0){$FA['Tipo_Pago'] = "01";}
+     if($parametros['CheqSP'] == 'true'){$FA['SP'] = 1;}
+     
+     $FA['ME_'] = $Moneda_US;
+     $FA['Saldo_MN'] = $FA['Total_MN'];
+
+    //  RatonNormal
+    
+         $FA['Nuevo_Doc'] = True;
+         $FA['Factura'] = intval($parametros['TextFacturaNo']);
+
+         // print_r($FA);
+         // print_r($parametros);die();
+        if(Existe_Factura($FA)){
+          if($parametros['Reprocesar']==1)
+          {
+            $FA['Numero_Doc'] = 0;
+          }else
+          {
+            return  array('res'=>-2,'men'=>"Ya existe ".$FA['TC']." No. ".$FA['Serie']."-".generaCeros($FA['Factura'],9)." Desea Reprocesarla");
+          }
+          // if( BoxMensaje = vbYes Then FA.Nuevo_Doc = False Else GoTo NoGrabarFA
+        }else{         
+           $Factura_No = ReadSetDataNum($FA['TC']."_SERIE_".$FA['Serie'], True, False);
+           if($FA['Factura'] <> $Factura_No){
+            if($parametros['Reprocesar']==1)
+             {
+               $FA['Numero_Doc'] = 0;
+             }else
+             {
+               return  array('res'=>-3,'men'=>"La ".$FA['TC']." No. ".$FA['Serie']."-".generaCeros($FA['Factura'],9).", no esta Procesada, desea Procesarla?");
+             }
+           }
+        }
+
+        if($FA['Nuevo_Doc']){$FA['Factura'] = ReadSetDataNum($FA['TC']."_SERIE_".$FA['Serie'], True, True);}        
+        if(strlen($FA['Autorizacion_GR']) == 13){
+           $GuiaRemision = ReadSetDataNum("GR_SERIE_".$FA['Serie_GR'], True, False);
+           if($FA['Remision'] == $GuiaRemision){$FA['Remision'] = ReadSetDataNum("GR_SERIE_".$FA['Serie_GR'], True, True);}
+        }
+       
+        
+        $Comision = number_format($TextComision/100, 4,'.','');
+        $Total_SubTotal=0;
+        $Total_Comision = number_format(($Total_SubTotal*$Comision), 2,'.','');
+       
+       // 'Datos del Encabezado y totales de la factura
+        $cliente = Leer_Datos_Clientes($parametros['Cliente'],$Por_Codigo=true,$Por_CIRUC=false,$Por_Cliente=false);
+        $FA['Cliente'] = $cliente['Cliente'];
+        $FA['TextCI'] = $cliente['CI_RUC'];
+        $FA['TxtEmail'] = $cliente['Email'];
+        $FA['codigoCliente'] = $cliente['Codigo'];
+        $FA['FacturaNo'] = $parametros['TextFacturaNo'];
+        $FA['me'] = $parametros['TextFacturaNo'];  //cambiar viene de abonos
+        $FA['Total'] = $FA['Total_MN'];
+        $FA['Total_Abonos'] = 0;
+    
+        // print_r($cliente);
+        $FA['Porc_C'] = $Comision;
+        $FA['Comision'] = $Total_Comision;
+
+         // print_r($FA);
+         // print_r($parametros);
+         // die();
+       // 'Grabamos el numero de factura
+       
+        
+       // 'Grabamos Abonos del numero de factura
+        $Bandera = False;
+        $Evaluar = True;
+        // $FechaTexto = MBoxFecha
+        $Factura_No = $FA['Factura'];
+        $Numero = $Factura_No;
+        $Titulo = "Formulario de Grabacion";
+       
+       
+    // //    'Autorizamos la factura y/o Guia de Remision
+    //     if(strlen($FA['Autorizacion']) = 13){/* genera xml al sri*/ SRI_Crear_Clave_Acceso_Facturas($FA, False, True);}
+         
+    //     if(strlen($FA['Autorizacion_GR']) = 13){
+    //        /* genera xml al sri*/ SRI_Crear_Clave_Acceso_Guia_Remision FA, False, True
+    //        if(strlen($FA['Autorizacion_GR']) > 13){
+    //           $this->modelo->actualizar_Facturas_Auxiliares($FA);             
+    //        }
+    //     }
+    // //    'MsgBox "Documento " & FA.TC & " No. " & FA.Serie & "-" & Format(FA.Factura, "000000000")
+    //     $TA['TP'] = $FA['TC'];
+    //     $TA['Serie'] = $FA['Serie'];
+    //     $TA['Factura'] = $FA['Factura'];
+    //     $TA['Autorizacion'] = $FA['Autorizacion'];
+    //     $TA['CodigoC'] = $FA['CodigoC'];
+    //     Actualiza_Estado_Factura TA
+    //     // RatonNormal
+    //     // 'MsgBox "..."
+    //     if($FA['TC'] <> "OP"){
+    //       // 'MsgBox FA.Autorizacion & vbCrLf & FA.Autorizacion_GR
+    //        if(strlen($FA['Autorizacion']) >= 13){
+    //           If Grafico_PV Then Imprimir_Punto_Venta_Grafico FA Else Imprimir_Punto_Venta FA
+    //        }else{
+    //           Titulo = "IMPRESION"
+    //           Mensajes = "Facturacion Multiple"
+    //           If BoxMensaje = vbYes Then
+    //              Factura_Desde = FA.Factura
+    //              Factura_Hasta = FA.Factura
+    //              FA.Tipo_PRN = "FM"
+    //              Imprimir_Facturas_CxC Facturas, FA, True
+    //           Else
+    //              FA.Tipo_PRN = "FA"
+    //              Imprimir_Facturas FA
+    //           End If
+    //        }
+    //        Facturas_Impresas FA
+    //     }
+    // //     RatonReloj
+    //     if($FA['TC'] <> "OP"){
+    //        if($FA['Remision'] > 0){
+    //           if(strlen($FA['Autorizacion_GR']) < 13){
+    //              Imprimir_Guia_Remision AdoFactura, AdoAsientoF, FA
+    //           }else if(strlen($FA['Autorizacion_GR']) >= 13){
+    //              SRI_Generar_PDF_GR FA, True
+    //           }
+    //        }
+    //     }
+       
+    //  Else
+    //     RatonNormal
+    //     MsgBox "Revise los datos ingresados y vuelva a intentar grabar"
+    //  End If
+
+
+
+
+   }else
+   {
+      return -1;
+   }
+  }
     
 }
 ?>

@@ -121,7 +121,8 @@ function lista_devolucion()
       type:  'post',
       dataType: 'json',
       success:  function (response) { 
-        $('#tbl_devoluciones').html(response);
+        $('#tbl_devoluciones').html(response.tr);
+        $('#lineas').val(response.lineas)
       }
     });
   }
@@ -363,7 +364,8 @@ function lista_devolucion()
         </div>
       </div>
       <div class="panel-body" style="border: 1px solid #337ab7;">
-        <div class="row">
+       
+        <div class="row">         
           <div class="col-sm-2"> 
             <b>Comprobante:</b>
             <input type="text" name="comp" id="comp" class="form-control input-sm" readonly="">      

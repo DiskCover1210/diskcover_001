@@ -466,7 +466,7 @@ class incomC
 
      function modal_ingresar_asiento($parametros)
      {
-     	$valor = $this->modelo->DG_asientos_SC_total();
+     	$valor = $this->modelo->DG_asientos_SC_total($parametros['dh']);
      	$cuenta = $this->modelo->cuentas_todos($parametros['cta'],'',''); 
         $parametros_asiento = array(
 				"va" => round($valor[0]['total'],2),

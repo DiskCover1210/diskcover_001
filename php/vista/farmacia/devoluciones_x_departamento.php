@@ -145,10 +145,10 @@ function lista_devolucion()
       success:  function (response) { 
         $('#tbl_devoluciones').html(response.tr);
         $('#lineas').val(response.lineas)
-        if(response.lineas==0)
-        {
-           location.href='../vista/farmacia.php?mod=Farmacia&acc=devoluciones_departamento&acc1=Devolucion%20por%20departamentos&b=1&po=sub'
-        }
+        // if(response.lineas==0)
+        // {
+        //    location.href='../vista/farmacia.php?mod=Farmacia&acc=devoluciones_departamento&acc1=Devolucion%20por%20departamentos&b=1&po=sub'
+        // }
       }
     });
   }

@@ -263,7 +263,7 @@ class divisasC
       $TextoFormaPago = "CONTADO";
       $Total_Abonos = $TotalCajaMN;
       $FA['Total_Abonos'] = $Total_Abonos;
-      $FA['T'] = G_PENDIENTE;
+      $FA['T'] = 'C';
       $FA['Saldo_MN'] = $FA['Total'] - $Total_Abonos;
       $FA['Porc_IVA'] = $value['Total_IVA'];
       $FA['Cliente'] = $FA['TextRepresentante'];
@@ -292,7 +292,7 @@ class divisasC
       $TA['Banco'] = strtoupper($FA['TxtGrupo'])." - ".$FA['DCBanco'];
       $TA['Cheque'] = '';
       $TA['Abono'] = $Total_Bancos;
-      Grabar_Abonos($TA);
+      // Grabar_Abonos($TA);
 
       $Cta_CajaG = 1;
       //Abono de Factura
@@ -302,7 +302,7 @@ class divisasC
       $TA['Abono'] = $TotalCajaMN;
       $TA['Comprobante'] = "";
       $TA['Codigo_Inv'] = "";
-      Grabar_Abonos($TA);
+      // Grabar_Abonos($TA);
 
       //Forma del Abono SubTotal NC
       if ($SubTotal_NC > 0) {
@@ -311,7 +311,7 @@ class divisasC
         $TA['Banco'] = "NOTA DE CREDITO";
         $TA['Cheque'] = "VENTAS";
         $TA['Abono'] = $SubTotal_NC;
-        Grabar_Abonos($TA);
+        // Grabar_Abonos($TA);
       }
      
       //Forma del Abono IVA NC
@@ -320,7 +320,7 @@ class divisasC
         $TA['Banco'] = "NOTA DE CREDITO";
         $TA['Cheque'] = "I.V.A.";
         $TA['Abono'] = $TFA['Total_IVA'];
-        Grabar_Abonos($TA);
+        // Grabar_Abonos($TA);
       }
      
       $TextInteres = 0;
@@ -333,7 +333,7 @@ class divisasC
       $TA['Cheque'] =  $FA['TextCheque'];
       $TA['Abono'] = intval($TextInteres);
       $TA['Recibi_de'] = $FA['Cliente'];
-      Grabar_Abonos($TA);
+      // Grabar_Abonos($TA);
        
       $TA['T'] = $FA['T'];
       $TA['TP'] = $FA['TC'];

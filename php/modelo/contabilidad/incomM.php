@@ -487,14 +487,15 @@ class incomM
 		  return $result;
      }
 
-     function DG_asientos_SC_total()
+     function DG_asientos_SC_total($dh)
     {
     	$cid = $this->conn;
        $sql = "SELECT SUM(Valor) as 'total'
        FROM Asiento_SC
        WHERE Item = '".$_SESSION['INGRESO']['item']. "'
        AND CodigoU = '".$_SESSION['INGRESO']['CodigoU']."'
-       AND T_No = ".$_SESSION['INGRESO']['modulo_']." ";
+       AND T_No = ".$_SESSION['INGRESO']['modulo_']." 
+       AND DH = ".$dh;
        $result = $this->conn->datos($sql);
 		  return $result;
     }
@@ -510,8 +511,27 @@ class incomM
          AND TM = '".$OpcTM."'
          AND T_No = ".$_SESSION['INGRESO']['modulo_']."
          AND Item = '".$_SESSION['INGRESO']['item']. "'
+         AND CodigoU = '".$_SESSION['INGRESO']['CodigoU']."' ;";
+
+
+         $sql.= "DELETE 
+         FROM Asiento
+         WHERE TC = '".$SubCta."'
+         AND CODIGO = '".$SubCtaGen."'
+         AND T_No = ".$_SESSION['INGRESO']['modulo_']."
+         AND Item = '".$_SESSION['INGRESO']['item']. "'
          AND CodigoU = '".$_SESSION['INGRESO']['CodigoU']."'";
+         if($OpcDH==1)
+        {
+          $sql.=" AND DEBE <> 0 and HABER = 0 ";
+        }else
+        {
+          $sql.=" AND HABER <> 0 and DEBE = 0";
+        }
+        // print_r($sql);die();
+
           $result = $this->conn->String_Sql($sql);
+          // print_r($sql);die();
 	     return $result;
 
   //        // print_r($sql);die();

@@ -11,16 +11,23 @@ class facturarM
   }
 
 
-  function lineas_factura()
+  function lineas_factura($tabla=false)
   {
   	$sql = "SELECT * 
             FROM Asiento_F 
             WHERE Item = '".$_SESSION['INGRESO']['item']."' 
             AND CodigoU = '".$_SESSION['INGRESO']['CodigoU']."' ";
-    $datos = $this->db->datos($sql);
-    $botones[0] = array('boton'=>'Eliminar linea', 'icono'=>'<i class="fa fa-trash"></i>', 'tipo'=>'danger', 'id'=>'A_No,CODIGO' );
-	$tbl = grilla_generica_new($sql,'Asiento_F','',$titulo=false,$botones,$check=false,$imagen=false,1,1,1,100);
-    return array('datos'=>$datos,'tbl'=>$tbl);  
+    
+    if($tabla)
+    {
+        $botones[0] = array('boton'=>'Eliminar linea', 'icono'=>'<i class="fa fa-trash"></i>', 'tipo'=>'danger', 'id'=>'A_No,CODIGO' );
+	       $datos = grilla_generica_new($sql,'Asiento_F','',$titulo=false,$botones,$check=false,$imagen=false,1,1,1,100);
+       
+    }else
+    {
+      $datos = $this->db->datos($sql);
+    } 
+     return $datos; 
   }
 
   function DCMod()
@@ -74,7 +81,7 @@ class facturarM
        return $this->db->datos($sql);
   }
 
-  function Listar_Tipo_Beneficiarios($query=false,$grupo)
+  function Listar_Tipo_Beneficiarios($query=false,$grupo,$ci=false)
   {
     $sql = "SELECT Cliente,CI_RUC,Codigo,Cta_CxP,Grupo,Cod_Ejec
          FROM Clientes
@@ -83,6 +90,10 @@ class facturarM
       if($query)
       {
         $sql.=" AND Cliente = '".$grupo."' ";
+      }
+      if($ci)
+      {
+         $sql.=" AND Cliente = '".$grupo."' ";
       }
     if($grupo <> G_NINGUNO )
       {
@@ -223,7 +234,7 @@ class facturarM
   {
     $sql = "DELETE 
         FROM Asiento_F 
-        WHERE Item = '".$_SESSION['INGRESO']['item']."' 
+        wHERE Item = '".$_SESSION['INGRESO']['item']."' 
         AND CodigoU = '".$_SESSION['INGRESO']['CodigoU']."' ";
         if($ln_No)
         {
@@ -242,7 +253,215 @@ class facturarM
     $respuest  = $this->db->String_Sql($sql);
      return $respuest;   
   }
+   //------------------------------------panel suscripcion------------------
+
+  function delete_asientoP()
+  {
+    $Trans_No = 250;
+    $sql = "DELETE 
+           FROM Asiento_P 
+           WHERE Item = '".$_SESSION['INGRESO']['item']."'
+           AND T_No = ".$Trans_No." 
+           AND CodigoU = '".$_SESSION['INGRESO']['CodigoU']."' ";
+    $respuest  = $this->db->String_Sql($sql);
+     return $respuest;   
+  }
+
+  function Trans_Suscripciones($PatronDeBusqueda=false,$codigo=false)
+  {   
+      $sql = "SELECT * 
+             FROM Trans_Suscripciones 
+             WHERE Item = '".$_SESSION['INGRESO']['item']."'
+             AND Fecha = '".BuscarFecha(date('Y-m-d'))."' ";
+
+     // print_r($sql);die();
+     $respuest  = $this->db->datos($sql);
+     return $respuest;
+     
+  }
+
+  function DGSuscripcion($tabla=false)
+  { 
+
+    $Trans_No = 250;
+    $sql = "SELECT Cuotas As Ejemplar,Fecha,Pagos As Entregado,Cta As Sector,Comision,Capital,T_No,Item,CodigoU
+         FROM Asiento_P
+         WHERE Item = '".$_SESSION['INGRESO']['item']."'
+         AND T_No = ".$Trans_No."
+         AND CodigoU = '".$_SESSION['INGRESO']['CodigoU']."'
+         ORDER BY Cuotas,Fecha ";
+         if($tabla)
+         {
+           // $botones[0] = array('boton'=>'Eliminar Suscripcion', 'icono'=>'<i class="fa fa-trash"></i>', 'tipo'=>'danger', 'id'=>'' );
+            $respuest = grilla_generica_new($sql,'Asiento_P','',$titulo=false,$botones=false,$check=false,$imagen=false,1,1,1,100);
+         }else
+         {
+           $respuest = $this->db->datos($sql);
+         }
+    
+     return $respuest;
+     
+  }
+
+  function DCCtaVenta()
+  {   
+    $sql = "SELECT DISTINCT CP.Cta_Ventas,CC.Cuenta
+          FROM Catalogo_Productos As CP,Catalogo_Cuentas As CC
+          WHERE CP.Item = '".$_SESSION['INGRESO']['item']."'
+          AND CP.Item = CC.Item
+          AND CP.Cta_Ventas = CC.Codigo
+          ORDER BY CP.Cta_Ventas ";
+   $respuest  = $this->db->datos($sql);
+     return $respuest;
+     
+  }
+
+  function DCEjecutivoModal($query)
+  {   
+   $sql = "SELECT CR.Codigo,C.Cliente,C.CI_RUC,C.Porc_C
+          FROM Clientes As C,Catalogo_Rol_Pagos As CR
+          WHERE CR.Item = '".$_SESSION['INGRESO']['item']."'
+          AND CR.Periodo = '".$_SESSION['INGRESO']['periodo']."' 
+          AND C.Codigo = CR.Codigo ";
+          if($query)
+          {
+            $sql.=" AND C.Cliente like '%".$query."%' ";
+          }
+          $sql.="ORDER BY C.Cliente ";
+          // print_r($sql);die();
+         $respuest  = $this->db->datos($sql);
+     return $respuest;
+     
+  }
+
+  function delete_command1($TipoDoc,$Credito_No)
+  {
+
+    $sql = "DELETE
+        FROM Prestamos 
+        WHERE Item = '".$_SESSION['INGRESO']['item']."'
+        AND TP = '".$TipoDoc."'
+        AND Credito_No = '".$Credito_No."' ";
+
+    $sql.= "DELETE 
+        FROM Trans_Suscripciones 
+        WHERE Item = '".$_SESSION['INGRESO']['item']."'
+        AND TP = '".$TipoDoc."'
+        AND Contrato_No = '".$Credito_No."' ";
+        $respuest  = $this->db->String_Sql($sql);
+     return $respuest;   
+
+  }
+
+  function AdoAux2()
+  { 
+      $sql = "SELECT * 
+            FROM Prestamos 
+            WHERE Item = '".$_SESSION['INGRESO']['item']."' 
+            AND Fecha = '".date('Y-m-d')."' ";
+   $respuest  = $this->db->datos($sql);
+     return $respuest;
+     
+  }
+  function AdoAux1()
+  {   
+    $sql = "SELECT * 
+            FROM Trans_Suscripciones 
+            WHERE Item = '".$_SESSION['INGRESO']['item']."' 
+            AND Fecha = '".date('Y-m-d')."' ";
+   $respuest  = $this->db->datos($sql);
+     return $respuest;
+     
+  }
+  //-------------------------------------fin de panel suscripcion-----------
+
+  //----------------guia------------
+  function DCCiudad($query=false)
+  {  
+    $sql = "SELECT Descripcion_Rubro 
+         FROM Tabla_Naciones 
+         WHERE TR = 'C'";
+         if($query)
+          {
+            $sql.=" and Descripcion_Rubro like '%".$query."%'";
+          } 
+         $sql.="ORDER BY Descripcion_Rubro ";
+     $respuest  = $this->db->datos($sql);
+     return $respuest;
+     
+  }
+  function AdoPersonas($query)
+  {             
+      $sql = "SELECT Cliente,CI_RUC,TD,Direccion,Codigo 
+          FROM Clientes 
+          WHERE TD IN ('C','R') ";
+         if($query)
+          {
+            $sql.=" and Cliente like '%".$query."%'";
+          } 
+         $sql.="ORDER BY Cliente OFFSET 0 ROWS FETCH NEXT 30 ROWS ONLY;";
+     $respuest  = $this->db->datos($sql);
+     return $respuest;
+     
+  }
+
+  function MBoxFechaGRE_LostFocus($fecha,$serie=false)
+  {
+      $sql = "SELECT *
+      FROM Catalogo_Lineas
+      WHERE Item = '".$_SESSION['INGRESO']['item']."'
+      AND Periodo = '".$_SESSION['INGRESO']['periodo']."'
+      AND Fact = 'GR'
+      AND '".BuscarFecha($fecha)."' BETWEEN Fecha and Vencimiento";
+      if($serie)
+      {
+        $sql.=" AND Serie='".$serie."'";
+      }
+
+      $sql.=" ORDER BY Serie ";
+       $respuest  = $this->db->datos($sql);
+     return $respuest;
+  }
+  //-------------------fin guia-------------------
+
+  //-----------------Listar_Ordenes---------------
+
+   function Listar_Ordenes(){
    
+   $sql = "SELECT OP.Factura,OP.CodigoC,OP.Fecha,C.Cliente,C.Grupo,C.CI_RUC,C.TD
+         FROM Facturas As OP,Clientes As C
+         WHERE OP.Item = '".$_SESSION['INGRESO']['item']."'
+         AND OP.Periodo = '".$_SESSION['INGRESO']['periodo']."'
+         AND OP.TC = 'OP'
+         AND OP.T <> 'A'
+         AND OP.CodigoC = C.Codigo
+         ORDER BY OP.Factura ";
+         $respuest  = $this->db->datos($sql);
+         return $respuest;
+  }
+
+
+  //--------------fin Listar_Ordenes--------------
+
+
+
+  function actualizar_Facturas_Auxiliares($FA)
+  {
+     $sql = "UPDATE Facturas_Auxiliares
+      SET Fecha_Aut_GR = '".BuscarFecha($FA['Fecha_Aut_GR'])."'
+      Autorizacion_GR = '".$FA['Autorizacion_GR']."'
+      Clave_Acceso_GR = '".$FA['ClaveAcceso_GR']."'
+      Estado_SRI_GR = '".$FA['Estado_SRI_GR']."'
+      Hora_Aut_GR = '".$FA['Hora_GR']."'
+      WHERE Factura = ".$FA['Factura']."
+      AND TC = '".$FA['TC']."'
+      AND Serie = '".$FA['Serie']."'
+      AND Autorizacion = '".$FA['Autorizacion']."'
+      AND Item = '".$_SESSION['INGRESO']['item']."'
+      AND Periodo ='".$_SESSION['INGRESO']['periodo']."'";
+      $respuest  = $this->db->String_Sql($sql);
+      return $respuest;
+  }
 
 }
 
