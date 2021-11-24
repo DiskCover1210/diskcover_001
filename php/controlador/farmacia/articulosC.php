@@ -428,7 +428,7 @@ class articulosC
 		    $datos[1]['campo'] = 'T';
 		    $datos[1]['dato'] = 'N';
 		    $datos[2]['campo'] = 'Codigo';
-		    $datos[2]['dato'] = $codigo;
+		    $datos[2]['dato'] = $codigo['Codigo'];
 		    $datos[3]['campo'] = 'Cliente';
 		    $datos[3]['dato'] = $parametros['txt_nombre_prove'];
 		    $datos[4]['campo'] = 'CI_RUC';

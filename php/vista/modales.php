@@ -29,6 +29,8 @@
 <script src="../../lib/dist/js/sweetalert2.min.js"></script>
 <link rel="stylesheet" href="../../lib/dist/css/sweetalert2.min.css">
   <link rel="shortcut icon" href="../../img/jpg/logo.jpg" />
+  
+<script src="../../lib/dist/js/principal.js"></script>
 <script type="text/javascript">
 		function validador_correo(imput)
 {
@@ -310,6 +312,10 @@ if(isset($_GET['FVentas']))
 if(isset($_GET['FCliente']))
 {
 	require_once('contabilidad/FCliente.php');
+}
+if(isset($_GET['FAbonos']))
+{
+	require_once('contabilidad/FAbonos.php');
 }
 
 ?>

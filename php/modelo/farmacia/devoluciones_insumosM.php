@@ -114,8 +114,14 @@ class devoluciones_insumosM
         $sql="SELECT Producto FROM Catalogo_Productos WHERE Codigo_Inv = '".$Codigo_Inv."' AND Item = '".$_SESSION['INGRESO']['item']."' AND Periodo = '".$_SESSION['INGRESO']['periodo']."'";
 	    $datos = $this->conn->datos($sql);
         return $datos;
+	}
 
+	function producto_all_detalle($Codigo_Inv)
+	{
 
+        $sql="SELECT * FROM Catalogo_Productos WHERE Codigo_Inv = '".$Codigo_Inv."' AND Item = '".$_SESSION['INGRESO']['item']."' AND Periodo = '".$_SESSION['INGRESO']['periodo']."'";
+	    $datos = $this->conn->datos($sql);
+        return $datos;
 	}
 	function imprimir_excel($stmt1)
 	{		
@@ -159,7 +165,25 @@ class devoluciones_insumosM
 	{
 	  $sql = "SELECT CODIGO_INV as 'CODIGO PRODUCTO',PRODUCTO,CANTIDAD,VALOR_UNIT AS 'VALOR UNITARIO',VALOR_TOTAL AS 'VALOR TOTAL',Fecha_Fab AS 'FECHA',A_No FROM Asiento_K WHERE DH = '1' AND ORDEN = '".$comprobante."'";
 	  $datos = $this->conn->datos($sql);
-	  $botones[0] = array('boton'=>'Eliminar','icono'=>'<i class="fa fa-trash"></i>', 'tipo'=>'danger', 'id'=>$comprobante.',CODIGO PRODUCTO');
+	  $botones[0] = array('boton'=>'Eliminar','icono'=>'<i class="fa fa-trash"></i>', 'tipo'=>'danger', 'id'=>$comprobante.',CODIGO PRODUCTO,A_No');
+
+	  $tbl = grilla_generica_new($sql,'Asiento_K ','tbl_style',false,$botones,false,$imagen=false,1,1,1,300,2,$num_reg=false,false,false);
+      return array('datos'=>$datos,'tabla'=>$tbl);
+
+	}
+
+	function lista_devoluciones_x_departamento($comprobante)
+	{
+	  $sql = "SELECT CODIGO_INV as 'CODIGO PRODUCTO',PRODUCTO,CANTIDAD,VALOR_UNIT AS 'VALOR UNITARIO',VALOR_TOTAL AS 'VALOR TOTAL',Fecha_Fab AS 'FECHA',SC.Detalle AS 'Area',A_No 
+	  FROM Asiento_K K
+	  INNER JOIN Catalogo_SubCtas SC ON K.SUBCTA = SC.Codigo   
+	  WHERE DH = '1' 
+	  AND ORDEN = '".$comprobante."'
+	  AND CodigoU =".$_SESSION['INGRESO']['CodigoU'].'
+	  GROUP BY CODIGO_INV,PRODUCTO,CANTIDAD,VALOR_UNIT,VALOR_TOTAL,Fecha_Fab,SC.Detalle,A_No';
+	  // print_r($sql);die();
+	  $datos = $this->conn->datos($sql);
+	  $botones[0] = array('boton'=>'Eliminar','icono'=>'<i class="fa fa-trash"></i>', 'tipo'=>'danger', 'id'=>$comprobante.',CODIGO PRODUCTO,A_No');
 
 	  $tbl = grilla_generica_new($sql,'Asiento_K ','tbl_style',false,$botones,false,$imagen=false,1,1,1,300,2,$num_reg=false,false,false);
       return array('datos'=>$datos,'tabla'=>$tbl);
@@ -169,6 +193,13 @@ class devoluciones_insumosM
 	function eliminar_linea_dev($codigo,$comprobante)
 	{
 		$sql = "DELETE FROM Asiento_K WHERE CODIGO_INV = '".$codigo."'  AND ORDEN = '".$comprobante."'";
+		return  $this->conn->String_Sql($sql);
+
+	}
+	function eliminar_linea_dev_dep($codigo,$comprobante,$No)
+	{
+		$sql = "DELETE FROM Asiento_K WHERE CODIGO_INV = '".$codigo."'  AND ORDEN = '".$comprobante."' AND A_No=".$No;
+		// print_r($sql);die();
 		return  $this->conn->String_Sql($sql);
 
 	}

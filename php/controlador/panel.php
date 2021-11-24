@@ -112,6 +112,211 @@ function IngClaves_MYSQL($parametros)
 }
 
 
+function  SeteosCtas()
+{
+	$modelo=new usuario_model();
+// // ' Establecemos Espacios y seteos de impresion
+  $Inv_Promedio = False;
+  $PVP_Al_Inicio = False;
+// // ' Cta_Ret = "0"
+// //$_SESSION['SETEOS'][' ' Cta_Ret_IVA = "0"
+  $_SESSION['SETEOS']['Cta_IVA'] = "0";
+  $_SESSION['SETEOS']['Cta_IVA_Inventario'] = "0";
+  $_SESSION['SETEOS']['Cta_CxP_Retenciones'] = "0";
+  $_SESSION['SETEOS']['Cta_Desc'] = "0";
+  $_SESSION['SETEOS']['Cta_Desc2'] = "0";
+  $_SESSION['SETEOS']['Cta_CajaG'] = "0";
+  $_SESSION['SETEOS']['Cta_General'] = "0";
+  $_SESSION['SETEOS']['Cta_CajaGE'] = "0";
+  $_SESSION['SETEOS']['Cta_CajaBA'] = "0";
+  $_SESSION['SETEOS']['Cta_Gastos'] = "0";
+  $_SESSION['SETEOS']['Cta_Diferencial'] = "0";
+  $_SESSION['SETEOS']['Cta_Comision'] = "0";
+  $_SESSION['SETEOS']['Cta_Mantenimiento'] = "0";
+  $_SESSION['SETEOS']['Cta_Fondo_Mortuorio'] = "0";
+  $_SESSION['SETEOS']['Cta_Tarjetas'] = "0";
+  $_SESSION['SETEOS']['Cta_Del_Banco'] = "0";
+  $_SESSION['SETEOS']['Cta_Seguro'] = "0";
+  $_SESSION['SETEOS']['Cta_Seguro_I'] = "0";
+// 	// ' Consultamos las cuentas de la tabla
+ 	$datos = $modelo->SeteoCta();
+
+ 	if(count($datos)>0)
+ 	{
+ 		$Cadena = '';
+ 		foreach ($datos as $key => $value) {
+ 			 $Cadena.= $value["Detalle"];
+ 			switch ($value["Detalle"]) {
+ 			    	// case "Cta_Ret_IVA":
+            // '''Cta_Ret_IVA = .Fields("Codigo")
+ 			    	// break;
+            case "Cta_IVA":
+                  $_SESSION['SETEOS']['Cta_IVA'] = $value['Codigo'];
+                  $_SESSION['SETEOS']['DC_IVA'] = $value['DC'];
+ 					  break;
+            case "Cta_Descuentos":
+                  $_SESSION['SETEOS']['Cta_Desc'] = $value['Codigo'];
+                  $_SESSION['SETEOS']['DC_Desc'] = $value['DC'];
+ 					  break;
+            case "Cta_Descuentos_Pronto_Pago":
+                 $_SESSION['SETEOS']['Cta_Desc2'] = $value['Codigo'];
+            break;
+            case "Cta_Caja_General":
+                  $_SESSION['SETEOS']['Cta_General'] = $value['Codigo'];
+                  $_SESSION['SETEOS']['DC_General'] = $value['DC'];
+            break;
+            case "Cta_Caja_GMN":
+                  $_SESSION['SETEOS']['Cta_CajaG'] = $value['Codigo'];
+                  $_SESSION['SETEOS']['DC_CajaG'] = $value['DC'];
+            break;
+            case "Cta_Caja_GME":
+                  $_SESSION['SETEOS']['Cta_CajaGE'] = $value['Codigo'];
+                  $_SESSION['SETEOS']['DC_CajaGE'] = $value['DC'];
+            break;
+            case "Cta_Caja_BAU":
+                  $_SESSION['SETEOS']['Cta_CajaBA'] = $value['Codigo'];
+                  $_SESSION['SETEOS']['DC_CajaBA'] = $value['DC'];
+            break;
+            case "Cta_Gastos":
+                  $_SESSION['SETEOS']['Cta_Gastos'] = $value['Codigo'];
+                  $_SESSION['SETEOS']['DC_Gastos'] = $value['DC'];
+            break;
+            case "Cta_Diferencial_Cambiario":
+                  $_SESSION['SETEOS']['Cta_Diferencial'] = $value['Codigo'];
+                  $_SESSION['SETEOS']['DC_Diferencial'] = $value['DC'];
+            break;
+            case "Cta_SubTotal":
+                  $_SESSION['SETEOS']['Cta_SubTotal'] = $value['Codigo'];
+                  $_SESSION['SETEOS']['DC_SubTotal'] = $value['DC'];
+            break;
+            case "Cta_Comision":
+                  $_SESSION['SETEOS']['Cta_Comision'] = $value['Codigo'];
+                  $_SESSION['SETEOS']['DC_Comision'] = $value['DC'];
+            break;
+            case "Cta_Faltantes":
+                  $_SESSION['SETEOS']['Cta_Faltantes'] = $value['Codigo'];
+                  $_SESSION['SETEOS']['DC_Faltantes'] = $value['DC'];
+            break;
+            case "Cta_Protestos":
+                  $_SESSION['SETEOS']['Cta_Protestos'] = $value['Codigo'];
+                  $_SESSION['SETEOS']['DC_Protestos'] = $value['DC'];
+            break;
+            case "Cta_Sobrantes":
+                  $_SESSION['SETEOS']['Cta_Sobrantes'] = $value['Codigo'];
+                  $_SESSION['SETEOS']['DC_Sobrantes'] = $value['DC'];
+            break;
+            case "Cta_Suspenso":
+                  $_SESSION['SETEOS']['Cta_Suspenso'] = $value['Codigo'];
+                  $_SESSION['SETEOS']['DC_Suspenso'] = $value['DC'];
+            break;
+            case "Cta_Libretas":
+                  $_SESSION['SETEOS']['Cta_Libretas'] = $value['Codigo'];
+                  $_SESSION['SETEOS']['DC_Libretas'] = $value['DC'];
+            break;
+            case "Cta_Certificado":
+                  $_SESSION['SETEOS']['Cta_Certificado'] = $value['Codigo'];
+                  $_SESSION['SETEOS']['DC_Certificado'] = $value['DC'];
+            break;
+            case "Cta_Certificado_Aportacion":
+                  $_SESSION['SETEOS']['Cta_Certificado_Apor'] = $value['Codigo'];
+                  $_SESSION['SETEOS']['DC_Certificado_Apor'] = $value['DC'];
+            break;
+            case "Cta_Apertura":
+                  $_SESSION['SETEOS']['Cta_Apertura'] = $value['Codigo'];
+                  $_SESSION['SETEOS']['DC_Apertura'] = $value['DC'];
+            break;
+            case "Cta_Transito":
+                  $_SESSION['SETEOS']['Cta_Transito'] = $value['Codigo'];
+                  $_SESSION['SETEOS']['DC_Transito'] = $value['DC'];
+            break;
+            case "Cta_Cheque_Transito":
+                 $_SESSION['SETEOS']['Cta_Cheque_Transito'] = $value['Codigo'];
+            break;
+            case "Cta_IVA_Inventario":
+                  $_SESSION['SETEOS']['Cta_IVA_Inventario'] = $value['Codigo'];
+                  $_SESSION['SETEOS']['DC_IVA_Inventario'] = $value['DC'];
+            break;
+            case "Cta_CxP_Retenciones":
+                  $_SESSION['SETEOS']['Cta_CxP_Retenciones'] = $value['Codigo'];
+            break;
+            case "Cta_Inventario":
+                  $_SESSION['SETEOS']['Cta_Inventario'] = $value['Codigo'];
+                  $_SESSION['SETEOS']['DC_Inventario'] = $value['DC'];
+            break;
+            case "Cta_Mantenimiento":
+                  $_SESSION['SETEOS']['Cta_Mantenimiento'] = $value['Codigo'];
+                  $_SESSION['SETEOS']['DC_Mantenimiento'] = $value['DC'];
+            break;
+            case "Cta_Fondo_Mortuorio":
+                  $_SESSION['SETEOS']['Cta_Fondo_Mortuorio'] = $value['Codigo'];
+                  $_SESSION['SETEOS']['DC_Fondo_Mortuorio'] = $value['DC'];
+            break;
+            case "Cta_Servicios_Basicos":
+                  $_SESSION['SETEOS']['Cta_Servicios_Basicos'] = $value['Codigo'];
+                  $_SESSION['SETEOS']['DC_Servicios_Basicos'] = $value['DC'];
+            break;
+            case "Cta_Servicio":
+                  $_SESSION['SETEOS']['Cta_Servicio'] = $value['Codigo'];
+                  $_SESSION['SETEOS']['DC_Servicio'] = $value['DC'];
+            break;
+            case "Cta_Intereses":
+                  $_SESSION['SETEOS']['Cta_Interes'] = $value['Codigo'];
+                  $_SESSION['SETEOS']['DC_Interes'] = $value['DC'];
+            break;
+            case "Cta_Intereses1":
+                  $_SESSION['SETEOS']['Cta_Interes1'] = $value['Codigo'];
+                  $_SESSION['SETEOS']['DC_Interes1'] = $value['DC'];
+            break;
+            case "Cta_CxP_Tarjetas":
+                 $_SESSION['SETEOS']['Cta_Tarjetas'] = $value['Codigo'];
+            break;
+            case "Cta_Caja_Vaucher":
+                 $_SESSION['SETEOS']['Cta_Caja_Vaucher'] = $value['Codigo'];
+            break;
+            case "Cta_Banco":
+                 $_SESSION['SETEOS']['Cta_Del_Banco'] = $value['Codigo'];
+            break;
+            case "Cta_Seguro_Desgravamen":
+                 $_SESSION['SETEOS']['Cta_Seguro'] = $value['Codigo'];
+            break;
+            case "Cta_Impuesto_Renta_Empleado":
+                 $_SESSION['SETEOS']['Cta_Impuesto_Renta_Empleado'] = $value['Codigo'];
+            break;
+            case "Cta_Seguro_Ingreso":
+                 $_SESSION['SETEOS']['Cta_Seguro_I'] = $value['Codigo'];
+            break;
+            case "Inv_Promedio": 
+                 If($value['Codigo']== "TRUE"){ $Inv_Promedio = True;}
+            break;
+            case "PVP_Al_Inicio": 
+                 If($value['Codigo']== "TRUE"){ $PVP_Al_Inicio = True;}
+            break;
+ 			}
+ 		}
+
+ 	}
+
+  $SSQLSeteos = "";
+ // 'If Cta_Ret = "0" Then SSQLSeteos = SSQLSeteos & "Cta_Ret_Ingreso" & vbCrLf
+  if($_SESSION['SETEOS']['Cta_IVA']== "0"){ $SSQLSeteos.="Cta_IVA ,";}
+  if($_SESSION['SETEOS']['Cta_Desc']== "0"){ $SSQLSeteos.="Cta_Descuentos ,";}
+  if($_SESSION['SETEOS']['Cta_Desc2']== "0"){ $SSQLSeteos.="Cta_Descuentos_Pronto_Pago ,";}
+  if($_SESSION['SETEOS']['Cta_CajaG']== "0"){ $SSQLSeteos.="Cta_Caja_GMN ,";}
+  if($_SESSION['SETEOS']['Cta_General']== "0"){ $SSQLSeteos.="Cta_Caja_General ,";}
+  if($_SESSION['SETEOS']['Cta_CajaGE']== "0"){ $SSQLSeteos.="Cta_Caja_GME ,";}
+  if($_SESSION['SETEOS']['Cta_CajaBA']== "0"){ $SSQLSeteos.="Cta_Caja_VAU ,";}
+  if($_SESSION['SETEOS']['Cta_Gastos']== "0"){ $SSQLSeteos.="Cta_Gastos ,";}
+  if($_SESSION['SETEOS']['Cta_Diferencial']== "0"){ $SSQLSeteos.="Cta_Diferencial_Cambiario ,";}
+  if($_SESSION['SETEOS']['Cta_IVA_Inventario']== "0"){ $SSQLSeteos.="Cta_IVA_Inventario ,";}
+  If($SSQLSeteos <> ""){
+     $SSQLSeteos = "Verifique el codigo de:".$SSQLSeteos."La proxima vez que ejecute el sistema se crearan estas cuentas ";
+     return $SSQLSeteos;
+   // ' MsgBox SSQLSeteos
+   // ' CtasSeteos AdoRec
+  }
+}
+
+
 function variables_sistema($EmpresaEntidad,$NombreEmp,$ItemEmp)
 {
 	$_SESSION['INGRESO']['empresa']=$EmpresaEntidad;
@@ -146,6 +351,7 @@ function variables_sistema($EmpresaEntidad,$NombreEmp,$ItemEmp)
 
         //datos de empresa seleccionada
         $empresa = getEmpresasDE($_SESSION['INGRESO']['item'],$_SESSION['INGRESO']['noempr']);
+        SeteosCtas();
 
         // print_r($empresa);die();
 

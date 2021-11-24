@@ -63,10 +63,26 @@ if(isset($_GET['lista_devolucion']))
 	$comprobante= $_POST['comprobante'];
 	echo json_encode($controlador->lista_devoluciones($comprobante));	
 }
+if(isset($_GET['lista_devolucion_dep']))
+{   
+	$comprobante= $_POST['comprobante'];
+	echo json_encode($controlador->lista_devoluciones_x_departamento($comprobante));	
+}
 if(isset($_GET['eliminar_linea_dev']))
 {   
 	$parametros= $_POST['parametros'];
 	echo json_encode($controlador->eliminar_linea_devo($parametros));	
+}
+if(isset($_GET['eliminar_linea_dev_dep']))
+{   
+	$parametros= $_POST['parametros'];
+	echo json_encode($controlador->eliminar_linea_devo_dep($parametros));	
+}
+
+if(isset($_GET['guardar_devolucion_departamentos']))
+{   
+	$parametros= $_POST['parametros'];
+	echo json_encode($controlador->guardar_devolucion_departamentos($parametros));	
 }
 
 
@@ -159,6 +175,98 @@ class devoluciones_insumosC
 		$datos = $this->descargos->costo_producto($codigo);
 		return $datos;
 	}
+    
+    function guardar_devolucion_departamentos($parametro)
+	{
+		// print_r($parametro);die();
+
+		   $linea = $this->modelo->producto_all_detalle($parametro['codigo']);
+		   // print_r($linea);die();
+		   $datos[0]['campo']='CODIGO_INV';
+		   $datos[0]['dato']=$parametro['codigo'];
+		   $datos[1]['campo']='PRODUCTO';
+		   $datos[1]['dato']=$parametro['producto'];
+		   $datos[2]['campo']='UNIDAD';
+		   $datos[2]['dato']='';
+		   $datos[3]['campo']='CANT_ES';
+		   $datos[3]['dato']=$parametro['cantidad'];
+		   $datos[4]['campo']='CTA_INVENTARIO';
+		   $datos[4]['dato']=$linea[0]['Cta_Inventario'];
+		   $datos[5]['campo']='SUBCTA';
+		   $datos[5]['dato']=$parametro['area'];		   //proveedor cod //area de donde biene
+		   $datos[6]['campo']='CodigoU';
+		   $datos[6]['dato']=$_SESSION['INGRESO']['Id'];   
+		   $datos[7]['campo']='Item';
+		   $datos[7]['dato']=$_SESSION['INGRESO']['item'];
+		   $datos[8]['campo']='A_No';
+		   $datos[8]['dato']=$parametro['linea']+1;
+
+		   $datos[9]['campo']='Fecha_DUI';
+		   $datos[9]['dato']=date('Y-m-d');
+
+		   $datos[10]['campo']='TC';
+		   $datos[10]['dato']='P';
+		   $datos[11]['campo']='VALOR_TOTAL';
+		   $datos[11]['dato']=number_format($parametro['total'],'2');
+		   $datos[12]['campo']='CANTIDAD';
+		   $datos[12]['dato']=$parametro['cantidad'];
+		   $datos[13]['campo']='VALOR_UNIT';
+		   $datos[13]['dato']= number_format($parametro['precio'],2);
+		   //round($parametro['txt_precio'],2,PHP_ROUND_HALF_DOWN);
+		   $datos[14]['campo']='DH';
+		   $datos[14]['dato']=1;
+		   $datos[15]['campo']='CONTRA_CTA';
+		   $datos[15]['dato']='4.4.02.05.02';  //colocar contra cuenta cambio
+		   $datos[16]['campo']='ORDEN';
+		   $datos[16]['dato']=$parametro['comprobante'];
+
+		   $datos[17]['campo']='Codigo_B';
+		   $datos[17]['dato']=$linea[0]['Codigo_P'];
+
+		   // $datos[17]['campo']='IVA';
+		   // $datos[17]['dato']=bcdiv($parametro['txt_iva'],'1',4);
+
+		   // $datos[18]['campo']='Fecha_Fab';
+		   // $datos[18]['dato']=$parametro['txt_fecha_ela'];
+
+		   
+		   // $datos[19]['campo']='Fecha_Exp';
+		   // $datos[19]['dato']=$parametro['txt_fecha_exp'];
+
+		   
+		   // $datos[20]['campo']='Reg_Sanitario';
+		   // $datos[20]['dato']=$parametro['txt_reg_sani'];
+
+		   
+		   // $datos[21]['campo']='Lote_No';
+		   // $datos[21]['dato']=$parametro['txt_lote'];
+
+		   
+		   $datos[18]['campo']='Procedencia';
+		   $datos[18]['dato']='Devolucion';
+
+		   
+		   // $datos[23]['campo']='Serie_No';
+		   // $datos[23]['dato']=$parametro['txt_serie'];
+
+		   // $datos[24]['campo']='P_DESC';
+		   // $datos[24]['dato']=$val_descto; 
+		   // print_r($parametro);
+
+// print_r($datos);die();
+		   $resp = $this->descargos->ingresar_asiento_K($datos);
+		   // print_r($resp);die();
+		   if($resp ==null)
+		   {
+		   	return 1;
+		   }else
+		   {
+		   	return -1;
+		   }
+	
+	    // print_r($resp);die();
+	}
+
 
 	function guardar_devoluciones($parametro)
 	{
@@ -253,12 +361,23 @@ class devoluciones_insumosC
 
 	function lista_devoluciones($comprobante){
 		$datos = $this->modelo->lista_devoluciones($comprobante);
-		return $datos['tabla'];
+		$li = count($datos['datos']);
+		return array('tr'=>$datos['tabla'],'lineas'=>$li);
+	}
+
+	function lista_devoluciones_x_departamento($comprobante){
+		$datos = $this->modelo->lista_devoluciones_x_departamento($comprobante);
+		$li = count($datos['datos']);
+		return array('tr'=>$datos['tabla'],'lineas'=>$li);
 	}
 
 	function eliminar_linea_devo($parametros)
 	{
 		return $this->modelo->eliminar_linea_dev($parametros['codigo'],$parametros['comprobante']);
+	}
+	function eliminar_linea_devo_dep($parametros)
+	{
+		return $this->modelo->eliminar_linea_dev_dep($parametros['codigo'],$parametros['comprobante'],$parametros['No']);
 	}
 
 

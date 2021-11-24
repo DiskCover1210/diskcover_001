@@ -405,7 +405,14 @@ class articulosM
 	{
      $cid = $this->conn;
     // 'LISTA DE CODIGO DE ANEXOS
-     $sql = "SELECT SUM(VALOR_TOTAL) as 'total',CONTRA_CTA,SUBCTA,Fecha_DUI,TC FROM Asiento_K  WHERE Item = '".$_SESSION['INGRESO']['item']."' AND CodigoU = '".$_SESSION['INGRESO']['Id']."' AND ORDEN = '".$orden."' AND SUBCTA='".$proveedor."' AND DH='1' GROUP BY CONTRA_CTA,Fecha_DUI,TC,SUBCTA";
+     $sql = "SELECT SUM(VALOR_TOTAL) as 'total',CONTRA_CTA,SUBCTA,Fecha_DUI,TC 
+     FROM Asiento_K  
+     WHERE Item = '".$_SESSION['INGRESO']['item']."' 
+     AND CodigoU = '".$_SESSION['INGRESO']['Id']."' 
+     AND ORDEN = '".$orden."' 
+     AND SUBCTA='".$proveedor."' AND 
+     DH='1' 
+     GROUP BY CONTRA_CTA,Fecha_DUI,TC,SUBCTA";
           // print_r($sql);die();
         $stmt = sqlsrv_query($cid, $sql);
         $datos =  array();

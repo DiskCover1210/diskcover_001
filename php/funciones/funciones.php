@@ -13,6 +13,7 @@ if(!isset($_SESSION))
 	}
 //require_once("../../lib/excel/plantilla.php");
 require_once(dirname(__DIR__,2)."/lib/excel/plantilla.php");
+// require_once(dirname(__DIR__,2)."/lib/fpdf/cabecera_pdf.php");
 // require_once(dirname(__DIR__,1)."/db/db.php");
 require_once(dirname(__DIR__,1)."/db/db1.php");
 require_once(dirname(__DIR__,1)."/db/variables_globales.php");
@@ -146,6 +147,8 @@ function control_procesos($TipoTrans,$Tarea,$opcional_proceso)
 
 function Actualizar_Datos_ATS_SP($Items,$MBFechaI,$MBFechaF,$Numero) //-------------optimizado javier farinango
 {
+
+    $conn = new db();
     $respuesta = 1;
     $conn = new db();
     $FechaIni = $MBFechaI;
@@ -160,6 +163,22 @@ function Actualizar_Datos_ATS_SP($Items,$MBFechaI,$MBFechaF,$Numero) //---------
     $sql = "EXEC sp_Actualizar_Datos_ATS @Item= ?,@Periodo=?,@FechaDesde=?,@FechaHasta=?,@Numero=?";
     return $conn->ejecutar_procesos_almacenados($sql,$parametros,$tipo=false);
 }
+
+function Leer_Datos_Cliente_SP($BuscarCodigo)
+{
+
+    $conn = new db();
+    $BuscarCodigo1 = '';
+   $parametros = array(
+      array(&$_SESSION['INGRESO']['item'], SQLSRV_PARAM_IN),
+      array(&$_SESSION['INGRESO']['periodo'], SQLSRV_PARAM_IN),
+      array(&$BuscarCodigo, SQLSRV_PARAM_IN),
+      array(&$BuscarCodigo1, SQLSRV_PARAM_INOUT)
+    );
+    $sql = "EXEC  sp_Leer_Datos_Cliente @Item= ?,@Periodo=?,@BuscarCodigo=?,@Codigo_Encontrado=?";
+    return $conn->ejecutar_procesos_almacenados($sql,$parametros,$tipo=false);
+}
+
 
 function Leer_Codigo_Inv_SP($BuscarCodigo,$FechaInventario,$CodBodega,$CodMarca,$CodigoDeInv)
 {
@@ -4639,7 +4658,8 @@ function insert_generico($tabla=null,$datos=null) // optimizado pero falta
 				{
 					if($obj->CHARACTER_MAXIMUM_LENGTH != '' && $obj->CHARACTER_MAXIMUM_LENGTH != null && $obj->CHARACTER_MAXIMUM_LENGTH != -1)
 					{
-						$datos[$i]['dato'] =substr($datos[$i]['dato'],0,$obj->CHARACTER_MAXIMUM_LENGTH);
+            // print_r($datos[$i]['dato']);
+						$datos[$i]['dato'] =substr($datos[$i]['dato'],0, $obj->CHARACTER_MAXIMUM_LENGTH);
 			    }
 			       
 					if($obj->DATA_TYPE=='int identity')
@@ -5551,10 +5571,17 @@ function ingresar_asientos($parametros) //revision parece repetida
     //verificar si ya existe en ese modulo ese registro
     $sql="SELECT CODIGO, CUENTA
     FROM Asiento
-    WHERE (CODIGO = '".$codigo."') AND (Item = '".$_SESSION['INGRESO']['item']."') 
-    AND (CodigoU = '".$_SESSION['INGRESO']['CodigoU']."') AND (DEBE = '".$va."') 
-    AND T_No=".$_SESSION['INGRESO']['modulo_']." 
-    ORDER BY A_No ASC ";
+    WHERE CODIGO = '".$codigo."' AND Item = '".$_SESSION['INGRESO']['item']."' 
+    AND CodigoU = '".$_SESSION['INGRESO']['CodigoU']."'  
+    AND T_No=".$_SESSION['INGRESO']['modulo_'];
+    if($tipo_cue==1)
+    {
+      $sql.=" AND DEBE = ".$va;
+    }else
+    {
+      $sql.=" AND HABER = ".$va;
+    }
+    $sql.=" ORDER BY A_No ASC ";
     //print_r($sql);die();
     $stmt = sqlsrv_query( $cid, $sql);
     if( $stmt === false)  
@@ -5562,6 +5589,8 @@ function ingresar_asientos($parametros) //revision parece repetida
        echo "Error en consulta PA.\n";  
        die( print_r( sqlsrv_errors(), true));  
     }
+   
+    // print_r(contar_registros($stmt));die();
     //para contar registro
     $i=0;
     $i=contar_registros($stmt);
@@ -5602,7 +5631,7 @@ function ingresar_asientos($parametros) //revision parece repetida
     //si no existe guardamos
     if($i==0)
     {
-      
+      // print_r($va);print_r($haber);print_r($debe);die();
         $sql="INSERT INTO Asiento
         (CODIGO,CUENTA,PARCIAL_ME,DEBE,HABER,CHEQ_DEP,DETALLE,EFECTIVIZAR,CODIGO_C,CODIGO_CC
         ,ME,T_No,Item,CodigoU,A_No,TC)
@@ -6099,6 +6128,7 @@ function generar_comprobantes($parametros) //revision parece repetida
             FROM Empresas 
             WHERE Item = '".$_SESSION['INGRESO']['item']."'";
     $datos = $conn->datos($sql);
+    // print_r($datos);die();
     return $datos[0][$query];
 
   }
@@ -6107,6 +6137,22 @@ function buscar_cta_iva_inventario()//  optimizado
   {
     $conn = new db();
     $sql = "SELECT * FROM Ctas_Proceso WHERE Periodo = '".$_SESSION['INGRESO']['periodo']."' AND Item='".$_SESSION['INGRESO']['item']."' AND Detalle = 'Cta_Iva_Inventario'";
+    // print_r($sql); die();
+    $datos = $conn->datos($sql);
+     if(count($datos)>0)
+     {
+       return $datos[0]['Codigo'];
+     }else
+     {
+       return -1;
+     }
+
+  }
+
+  function buscar_en_ctas_proceso($query)//  optimizado
+  {
+    $conn = new db();
+    $sql = "SELECT * FROM Ctas_Proceso WHERE Periodo = '".$_SESSION['INGRESO']['periodo']."' AND Item='".$_SESSION['INGRESO']['item']."' AND Detalle = '".$query."'";
     // print_r($sql); die();
     $datos = $conn->datos($sql);
      if(count($datos)>0)
@@ -7010,7 +7056,7 @@ function datos_tabla($tabla,$campo=false)
   function Leer_Cta_Catalogo($CodigoCta = ""){
     
     //conexion
-    $conn = new Conectar();
+    $conn = new db();
     $cid=$conn->conexion();
 
     //RatonReloj
@@ -7067,9 +7113,9 @@ function datos_tabla($tabla,$campo=false)
     return $cuenta;
   }
 
-  function Calculos_Totales_Factura($codigoCliente){
+  function Calculos_Totales_Factura($codigoCliente=false){
     //conexion
-    $conn = new Conectar();
+     $conn = new db();
     $cid=$conn->conexion();
 
     $TFA['SubTotal'] = 0;
@@ -7115,8 +7161,7 @@ function datos_tabla($tabla,$campo=false)
 
   function Existe_Factura($TFA){
     //conexion
-    $conn = new Conectar();
-    $cid=$conn->conexion();
+   $conn = new db();
 
     $Respuesta = false;
     //Consultamos si exista la factura
@@ -7128,12 +7173,8 @@ function datos_tabla($tabla,$campo=false)
             AND Item = '".$_SESSION['INGRESO']['item']."' 
             AND Periodo = '".$_SESSION['INGRESO']['periodo']."'";
     //print_r($sql);exit();
-    $stmt = sqlsrv_query( $cid, $sql);
-    $rows_affected = sqlsrv_rows_affected( $stmt);
-    if ($rows_affected > 0) {
-      $Respuesta = true;
-    }
-    return $Respuesta;
+   $numero = $conn->existe_registro($sql);
+  return $numero;
   }
 
 function factura_numero($ser)
@@ -7456,7 +7497,7 @@ function factura_numero($ser)
         $datoF[0]['campo']='C';
         $datoF[0]['dato']=1;
         $datoF[1]['campo']='T';
-        $datoF[1]['dato']='C';
+        $datoF[1]['dato']=$datos1['T'];
         $datoF[2]['campo']='TC';
         $datoF[2]['dato'] = $datos1['TC'];
         $datoF[3]['campo']='ME';
@@ -7531,6 +7572,9 @@ function factura_numero($ser)
         $datoF[37]['dato']=$propina_a; 
         $datoF[38]['campo']='Autorizacion';
         $datoF[38]['dato']=$datos1['Autorizacion'];
+        $datoF[39]['campo']='Saldo_MN';
+        $datoF[39]['dato']=$datos1['Saldo_MN'];
+
         // print_r($datoF);die();
         insert_generico("Facturas",$datoF);
 
@@ -7594,8 +7638,8 @@ function factura_numero($ser)
   function Grabar_Abonos($TA)
   {
     //conexion
-    $conn = new Conectar();
-    $cid=$conn->conexion();
+    if($TA['Abono']!=0)
+    {
     $DiarioCaja = ReadSetDataNum("Recibo_No", True, True);
     if ($TA['Abono'] == '') {
       $TA['Abono'] = 0;
@@ -7672,17 +7716,26 @@ function factura_numero($ser)
     $dato[17]['campo'] = 'CodigoU';
     $dato[17]['dato'] = $_SESSION['INGRESO']['CodigoU'];
     $dato[18]['campo'] = 'Cod_Ejec';
+    if(!isset($TA['Vendedor']) || $TA['Vendedor']==''){
     $dato[18]['dato'] = $_SESSION['INGRESO']['CodigoU'];
-    $dato[19]['campo'] = 'Total';
-    $dato[19]['dato'] = $TA['Abono'];
-    if ($TA['Banco'] == "NOTA DE CREDITO") {
-      $dato[20]['campo'] = 'Serie_NC';
-      $dato[20]['dato'] = $TA['Serie_NC'];
-      $dato[21]['campo'] = 'Autorizacion_NC';
-      $dato[21]['dato'] = $TA['Autorizacion_NC'];
-      $dato[22]['campo'] = 'Secuencial_NC';
-      $dato[22]['dato'] = $TA['Nota_Credito'];
+    }else
+    {
+      $dato[18]['dato'] = $TA['Vendedor'];
     }
+   if ($TA['Banco'] == "NOTA DE CREDITO") {
+      $dato[19]['campo'] = 'Serie_NC';
+      $dato[19]['dato'] = $TA['Serie_NC'];
+      $dato[20]['campo'] = 'Autorizacion_NC';
+      $dato[20]['dato'] = $TA['Autorizacion_NC'];
+      $dato[21]['campo'] = 'Secuencial_NC';
+      $dato[21]['dato'] = $TA['Nota_Credito'];
+    }
+    if(isset($TA['Total']))
+    {
+      $dato[22]['campo'] = 'Total';
+      $dato[22]['dato'] = $TA['Total'];
+    }
+   
       /*
        If .Banco = "NOTA DE CREDITO" Then
            Control_Procesos "A", "Anulación por " & .Banco & " de " & .TP & " No. " & .Serie & "-" & Format$(.Factura, "000000000")
@@ -7691,7 +7744,6 @@ function factura_numero($ser)
        End If
       */
     $resp = insert_generico("Trans_Abonos",$dato);
-    cerrarSQLSERVERFUN($cid);
     if($resp==1)
     {
       echo "<script type='text/javascript'>
@@ -7704,6 +7756,7 @@ function factura_numero($ser)
           });
         </script>";
     }
+   }
   }
 
   function CodigoCuentaSup($CodigoCta){
@@ -7927,6 +7980,8 @@ function Lineas_De_CxC($TFA)
        $MsgBox = "Codigos No Asignados o fuera de fecha";
   }
 
+  // print_r($TFA);die();
+
    // 'MsgBox $TFA['Cta_CxP']
   if($TFA['Cta_CxP'] <> G_NINGUNO ){
      $ExisteCtas = array();
@@ -7935,11 +7990,6 @@ function Lineas_De_CxC($TFA)
      $ExisteCtas[2] = $Cta_CajaGE;
      $ExisteCtas[3] = $Cta_CajaBA;
      $resp = VerSiExisteCta($ExisteCtas);
-     if($resp!=1)
-     {
-       return $resp;
-     }
-
   }
  // 'AdoLineaDB.Close
   if($Cant_Item_FA <= 0){$Cant_Item_FA = 15; $TFA['Cant_Item_FA'] = $Cant_Item_FA;}
@@ -7950,14 +8000,19 @@ function Lineas_De_CxC($TFA)
   $fecha1 = strtotime($TFA['Fecha']);
   $fecha2 = strtotime($TFA['Vencimiento']->format('Y-m-d'));
 
-  if($fecha1 > $fecha2 ){ return $Cadena;}
-  return $TFA; 
+  if($fecha1 > $fecha2 ){ return array('respuesta'=>-1,'TFA'=>$TFA,'mensaje'=>$Cadena);}
+   if($resp!=1)
+    {
+       return array('respuesta'=>2,'TFA'=>$TFA,'mensaje'=>$resp);
+    } 
+  return array('respuesta'=>1,'TFA'=>$TFA,'mensaje'=>'');
 
 }
 
 
 function VerSiExisteCta($ExisteCtas)
 {
+  // print_r($ExisteCtas);die();
   $ListCtas[0] = G_NINGUNO;
   $NCtas = "";
   foreach ($ExisteCtas as $key => $value) {
@@ -7982,19 +8037,20 @@ function VerSiExisteCta($ExisteCtas)
     }
   }
   $NCtas = "";
-  $ExisteCtasV = count($ExisteCtas)-1;
-  $ListCtasV = count($ListCtas);
-  if($ExisteCtasV > 0){
-    for ($i=$ExisteCtasV; $i=0 ; $i--) { 
-         $NoExiste = True;
-         for ($j=$ListCtas; $j ==0 ; $j--) { 
-            if($ExisteCtas[$i]==$ListCtas[$j])
+  // $ExisteCtasV = count($ExisteCtas)-1;
+  // $ListCtasV = count($ListCtas);
+  $d='';
+  if(count($ExisteCtas) > 0){
+    foreach ($ExisteCtas as $key => $value) {   
+         $NoExiste = 1;
+         foreach ($ListCtas as $key1 => $value1) {
+          if($value==$value1)
             {
-              $NoExiste = false;
+              $NoExiste = 0;
               break;
-            }
-         }        
-         if($NoExiste){$NCtas = $NCtas."'".$ExisteCtas[$i]."',";
+            }           
+         }      
+         if($NoExiste==1){$NCtas = $NCtas."'".$value."',";}
     }
   }
   if(strlen($NCtas) > 1){
@@ -8004,6 +8060,345 @@ function VerSiExisteCta($ExisteCtas)
   }
   return 1;
  }
+
+
+
+function Leer_Datos_Clientes($Codigo_CIRUC_Cliente,$Por_Codigo=true,$Por_CIRUC=false,$Por_Cliente=false)
+{
+
+    $conn = new db();
+    // $Por_Codigo = False;
+    // $Por_CIRUC = False;
+    // $Por_Cliente = False;
+    if(strlen($Codigo_CIRUC_Cliente) <= 0){ $Codigo_CIRUC_Cliente = G_NINGUNO;}
+    
+    // Leer_Datos_Cliente_SP($Codigo_CIRUC_Cliente);
+    $TBenef_Codigo = $Codigo_CIRUC_Cliente;
+        
+   // 'Verificamos la informacion del Clienete
+    if($TBenef_Codigo <> "." ){
+  
+        $sql = "SELECT T,FA,Cliente,Codigo,Descuento,CI_RUC,TD,Fecha,Fecha_N,Sexo,Email,Email2,EmailR,Direccion,DireccionT,DirNumero,Ciudad,Prov,Pais,Profesion,
+          Telefono,Telefono_R,TelefonoT,Grupo,Contacto,Calificacion,Plan_Afiliado,Actividad,Credito,Representante,CI_RUC_R,TD_R,Tipo_Cta,Cod_Banco,
+          Cta_Numero,Fecha_Cad,Asignar_Dr,Saldo_Pendiente 
+          FROM Clientes 
+          WHERE 1=1 ";
+          if($Por_Codigo)
+          {
+            $sql.="AND Codigo = '".$TBenef_Codigo. "' ";
+          }
+          if($Por_CIRUC)
+          {
+            $sql.="AND CI_RUC = '".$TBenef_Codigo. "' ";
+          }
+          if($Por_Cliente)
+          {
+
+            $sql.="AND Cliente = '".$TBenef_Codigo. "' ";
+          }         
+          // print_r($sql);die();
+          $datos = $conn->datos($sql);
+            if(count($datos) > 0 ){
+              return $datos[0];
+             // '.Salario = 0
+            }
+    }
+    // Leer_Datos_Clientes = TBenef
 }
+
+function  Grabar_Abonos_Retenciones($FTA)
+{
+  // Control_Procesos "P", FTA.Banco & " " & FTA.TP & " No. " & FTA.Serie & "-" & Format$(FTA.Factura, "0000000") & ", Por: " & Format$(FTA.Abono, "#,##0.00")
+  if(count($FTA))
+    {
+      if($FTA['Abono'] > 0){
+       if($FTA['T']== "" || $FTA['T'] == G_NINGUNO){ $FTA['T'] = G_NORMAL;}
+       $cuenta = buscar_en_ctas_proceso('Cta_Cobrar');
+       if($FTA['Cta_CxP'] == "" || $FTA['Cta_CxP'] == G_NINGUNO){$FTA['Cta_CxP'] = $cuenta;}
+       if($FTA['CodigoC'] == "" || $FTA['CodigoC'] == G_NINGUNO){$FTA['CodigoC'] = '999999999';}
+       if($FTA['Comprobante'] == ""){$FTA['Comprobante'] = G_NINGUNO;}
+       if($FTA['Codigo_Inv'] == ""){$FTA['Codigo_Inv'] = G_NINGUNO;}
+       if($FTA['Fecha'] == G_NINGUNO){$FTA['Fecha'] = date('Y-m-d');}
+       if($FTA['Serie'] == G_NINGUNO){$FTA['Serie'] = "001001";}
+       if($FTA['Autorizacion'] == G_NINGUNO){$FTA['Autorizacion'] = "1234567890";}
+       if($FTA['Cheque'] == G_NINGUNO && $FTA['DiarioCaja'] > 0 ){ $FTA['Cheque'] = generaCeros($FTA['DiarioCaja'],8);}
+       if($FTA['DiarioCaja'] > 0){$FTA['Recibo_No'] = generaCeros($FTA['DiarioCaja'],10);}else{$FTA['Recibo_No'] = "0000000000";}
+       $cuenta = Leer_Cta_Catalogo($FTA['Cta']);
+        $FTA['Tipo_Cta']  = '.';
+       if(isset( $cuenta['SubCta']))
+       {
+         $FTA['Tipo_Cta'] = $cuenta['SubCta'];
+       }
+
+       $datos[0]['campo'] ="T"; 
+       $datos[0]['dato'] =$FTA['T'];
+       $datos[1]['campo'] ="TP"; 
+       $datos[1]['dato'] =$FTA['TP'];
+       $datos[2]['campo'] ="Fecha"; 
+       $datos[2]['dato'] =$FTA['Fecha'];
+       $datos[3]['campo'] ="Recibo_No"; 
+       $datos[3]['dato'] =$FTA['Recibo_No'];
+       $datos[4]['campo'] ="Tipo_Cta"; 
+       $datos[4]['dato'] =$FTA['Tipo_Cta'];
+       $datos[5]['campo'] ="Cta"; 
+       $datos[5]['dato'] =$FTA['Cta'];
+       $datos[6]['campo'] ="Cta_CxP"; 
+       $datos[6]['dato'] =$FTA['Cta_CxP'];
+       $datos[7]['campo'] ="Factura"; 
+       $datos[7]['dato'] =$FTA['Factura'];
+       $datos[8]['campo'] ="CodigoC"; 
+       $datos[8]['dato'] =$FTA['CodigoC'];
+       $datos[9]['campo'] ="Abono"; 
+       $datos[9]['dato'] =$FTA['Abono'];
+       $datos[10]['campo'] ="Banco"; 
+       $datos[10]['dato'] =$FTA['Banco'];
+       $datos[11]['campo'] ="Cheque"; 
+       $datos[11]['dato'] =$FTA['Cheque'];
+       $datos[12]['campo'] ="Codigo_Inv"; 
+       $datos[12]['dato'] =$FTA['Codigo_Inv'];
+       $datos[13]['campo'] ="Comprobante"; 
+       $datos[13]['dato'] =$FTA['AutorizacionR'];
+       $datos[14]['campo'] ="EstabRetencion"; 
+       $datos[14]['dato'] =$FTA['Establecimiento'];
+       $datos[15]['campo'] ="PtoEmiRetencion"; 
+       $datos[15]['dato'] =$FTA['Emision'];
+       $datos[16]['campo'] ="Porc"; 
+       $datos[16]['dato'] =$FTA['Porcentaje'];
+       $datos[17]['campo'] ="Serie"; 
+       $datos[17]['dato'] =$FTA['Serie'];
+       $datos[18]['campo'] ="Autorizacion"; 
+       $datos[18]['dato'] =$FTA['Autorizacion'];
+       $datos[19]['campo'] ="Autorizacion_R"; 
+       $datos[19]['dato'] =$FTA['AutorizacionR'];
+       $datos[20]['campo'] ="CodigoU";
+       $datos[20]['dato'] = $_SESSION['INGRESO']['CodigoU'];
+       $datos[21]['campo'] ="Item";
+       $datos[21]['dato'] = $_SESSION['INGRESO']['item'];
+       // print_r($datos);die();
+       insert_generico("Trans_Abonos",$datos);
+
+   }
+ }
+  Actualiza_Estado_Factura($FTA);
+}
+
+
+function Actualiza_Estado_Factura($FTA)
+{
+  $conn = new db();
+ // 'MsgBox FTA.Factura & vbCrLf & FTA.Serie & vbCrLf & FTA.Autorizacion & vbCrLf & FTA.TP
+   if(count($FTA)>0){
+       $AbonoTP = 0;
+       $sql_Abono = "SELECT Factura, SUM(Abono) As Total_Abonos
+                  FROM Trans_Abonos
+                  WHERE TP = '".$FTA['TP']."'
+                  AND Serie = '".$FTA['Serie']."'
+                  AND Factura = ".$FTA['Factura']."
+                  AND Autorizacion = '".$FTA['Autorizacion']."'
+                  AND CodigoC = '".$FTA['CodigoC']."'
+                  AND Periodo = '".$_SESSION['INGRESO']['periodo']."'
+                  AND Item = '".$_SESSION['INGRESO']['item']."'
+                  GROUP BY Factura ";
+
+        $datos = $conn->datos($sql_Abono);
+        if(count($datos)>0)
+        {
+          $AbonoTP = number_format($datos[0]['Total_Abonos'],2,'.','');
+        }
+       if($AbonoTP > 0 ){
+          $sqlAbono = "UPDATE Facturas 
+                  SET Saldo_MN = Total_MN - ".$AbonoTP." 
+                  WHERE Factura = ".$FTA['Factura']." 
+                  AND Serie = '".$FTA['Serie']."' 
+                  AND Autorizacion = '".$FTA['Autorizacion']."' 
+                  AND TC = '".$FTA['TP']."' 
+                  AND CodigoC = '".$FTA['CodigoC']."' 
+                  AND Periodo = '".$_SESSION['INGRESO']['periodo']."' 
+                  AND Item = '".$_SESSION['INGRESO']['item']."' ";
+                  $conn->String_Sql($sqlAbono);
+          
+          $sqlAbono = "UPDATE Facturas 
+                    SET T = 'C' 
+                    WHERE Factura = ".$FTA['Factura']." 
+                    AND Serie = '".$FTA['Serie']."' 
+                    AND Autorizacion = '".$FTA['Autorizacion']."' 
+                    AND TC = '".$FTA['TP']."' 
+                    AND CodigoC = '".$FTA['CodigoC']."' 
+                    AND Periodo = '".$_SESSION['INGRESO']['periodo']."' 
+                    AND Item = '".$_SESSION['INGRESO']['item']."' 
+                    AND Saldo_MN <= 0 
+                    AND T <> 'A' ";
+                    $conn->String_Sql($sqlAbono);
+          
+          if($_SESSION['INGRESO']['Tipo_Base']=='SQL SERVER'){
+             $sqlAbono = "UPDATE Detalle_Factura
+                       SET T = F.T 
+                       FROM Detalle_Factura As DF, Facturas As F ";
+          }else{
+             $sqlAbono = "UPDATE Detalle_Factura As DF, Facturas As F
+                       SET DF.T = F.T ";
+          }
+          $sqlAbono.= "WHERE F.Factura = ".$FTA['Factura']." 
+                    AND F.Serie = '".$FTA['Serie']."' 
+                    AND F.Autorizacion = '".$FTA['Autorizacion']."' 
+                    AND F.TC = '".$FTA['TP']."' 
+                    AND F.CodigoC = '".$FTA['CodigoC']."' 
+                    AND F.Item = '".$_SESSION['INGRESO']['item']."' 
+                    AND F.Periodo = '".$_SESSION['INGRESO']['periodo']."' 
+                    AND F.Item = DF.Item 
+                    AND F.Periodo = DF.Periodo 
+                    AND F.Factura = DF.Factura 
+                    AND F.CodigoC = DF.CodigoC 
+                    AND F.Autorizacion = DF.Autorizacion 
+                    AND F.Serie = DF.Serie 
+                    AND F.TC = DF.TC ";
+
+                    // print_r($sqlAbono);die();
+                    $conn->String_Sql($sqlAbono);
+       
+          if($_SESSION['INGRESO']['Tipo_Base']=='SQL SERVER'){
+             $sqlAbono = "UPDATE Trans_Abonos
+                       SET T = F.T 
+                       FROM Trans_Abonos As DF, Facturas As F ";
+          }else{
+             $sqlAbono = "UPDATE Trans_Abonos As DF, Facturas As F;
+                       SET DF.T = F.T ";
+          }
+          $sqlAbono.= "WHERE F.Factura = ".$FTA['Factura']." 
+                    AND F.Serie = '".$FTA['Serie']."' 
+                    AND F.Autorizacion = '".$FTA['Autorizacion']."' 
+                    AND F.TC = '".$FTA['TP']."' 
+                    AND F.CodigoC = '".$FTA['CodigoC']."' 
+                    AND F.Item = '".$_SESSION['INGRESO']['item']."' 
+                    AND F.Periodo = '".$_SESSION['INGRESO']['periodo']."' 
+                    AND F.Item = DF.Item 
+                    AND F.Periodo = DF.Periodo 
+                    AND F.Factura = DF.Factura 
+                    AND F.CodigoC = DF.CodigoC 
+                    AND F.Autorizacion = DF.Autorizacion 
+                    AND F.Serie = DF.Serie 
+                    AND F.TC = DF.TP ";
+                    $conn->String_Sql($sqlAbono);
+
+      }
+  }
+}
+
+
+function Imprimir_Comprobante_Caja($FTA)
+{
+  $comm = new db();  
+  $Saldo_P ='';
+  if(Leer_Campo_Empresa("Imp_Recibo_Caja"))
+  {
+     $TRecibo['Tipo_Recibo'] = "I";
+     $Saldo_P = 0;
+     $sql= "SELECT Factura,Saldo_MN
+          FROM Facturas
+          WHERE Item = '".$_SESSION['INGRESO']['item']."'
+          AND Periodo = '".$_SESSION['INGRESO']['periodo']."'
+          AND TC = '" .$FTA['TP']. "'
+          AND Serie = '" .$FTA['Serie']. "'
+          AND Autorizacion = '" .$FTA['Autorizacion']. "'
+          AND Factura = " .$FTA['Factura']. "
+          AND CodigoC = '" .$FTA['CodigoC']. "' ";
+      $datos = $comm->datos($sql);
+     if(count($datos) > 0){$Saldo_P = $datos[0]["Saldo_MN"];}
+     
+     $sql1 = "SELECT Factura,Mes,Ticket,Codigo,Producto 
+          FROM Detalle_Factura 
+          WHERE Item = '".$_SESSION['INGRESO']['item']."'
+          AND Periodo = '".$_SESSION['INGRESO']['periodo']."'
+          AND TC = '".$FTA['TP']."' 
+          AND Serie = '".$FTA['Serie']."' 
+          AND Autorizacion = '".$FTA['Autorizacion']."' 
+          AND Factura = ".$FTA['Factura']." 
+          AND CodigoC = '".$FTA['CodigoC']."' 
+          ORDER BY Codigo,Ticket,Mes ";
+      $datos1 = $comm->datos($sql1);    
+      $TRecibo['Concepto'] = "";
+      if(count($datos1))
+      {
+          $Codigo_M = $datos1[0]["Mes"];
+          $Codigo_A = $datos1[0]["Ticket"];
+          $Codigo_P = $datos1[0]["Codigo"];
+          if($datos1[0]["Ticket"] <> G_NINGUNO){
+              $Codigo_S = $datos1[0]["Ticket"].", ".$datos1[0]["Producto"]." ";
+          }else{
+              $Codigo_S = $datos1[0]["Producto"]." ";
+          }
+          foreach ($datos1 as $key => $value) 
+          {           
+             if($Codigo_A <> $value["Ticket"])
+             {
+                $TRecibo['Concepto'] = $TRecibo['Concepto'].$Codigo_S;
+                $Codigo_P = $value["Codigo"];
+                if($value["Ticket"] <> G_NINGUNO){
+                    $Codigo_S = $value["Ticket"].", ".$value["Producto"]." ";
+                }else{
+                    $Codigo_S = ", ".$value["Producto"]." ";
+                }
+                $Codigo_A = $value["Ticket"];
+             }
+             if($Codigo_P <> $value["Codigo"])
+             {
+                $TRecibo['Concepto'] = $TRecibo['Concepto'].$Codigo_S;
+                $Codigo_P = $value["Codigo"];
+                if($value["Ticket"] <> G_NINGUNO)
+                {
+                    $Codigo_S = $value["Ticket"].", ".$value["Producto"]." ";
+                }else{
+                    $Codigo_S = ", ".$value["Producto"]." ";
+                }
+              }
+             if($value["Mes"] <> G_NINGUNO){ $Codigo_S = $Codigo_S." ".$value["Mes"];}
+             $TRecibo['Concepto'] = $TRecibo['Concepto'].$Codigo_S;
+          }
+        }
+     
+     $sql3 = "SELECT Serie,Factura,Abono,Cheque,Banco,Cta 
+          FROM Trans_Abonos 
+          WHERE Item = '".$_SESSION['INGRESO']['item']."'
+          AND Periodo = '".$_SESSION['INGRESO']['periodo']."'
+          AND TP = '".$FTA['TP']."' 
+          AND Fecha = '".BuscarFecha($FTA['Fecha'])."' 
+          AND Serie = '".$FTA['Serie']."' 
+          AND Autorizacion = '".$FTA['Autorizacion']."' 
+          AND Factura = ".$FTA['Factura']." 
+          AND CodigoC = '".$FTA['CodigoC']."' ";
+     $datos3 = $comm->datos($sql3);
+     if(count($datos3))
+     {    
+        $TRecibo['Cobrado_a'] = $FTA['Recibi_de'];
+        $TRecibo['Recibo_No'] = $FTA['Recibo_No'];
+        $TRecibo['Fecha'] = $FTA['Fecha'];
+        $TRecibo['Total'] = 0;
+      foreach ($datos3 as $key => $value) {        
+           $TRecibo['Total'] = $TRecibo['Total'] + $value["Abono"];
+           $Valor_Str = number_format($value['Abono'],2,'.',',');
+           $TRecibo['Concepto'] = $TRecibo['Concepto'].
+                   "CI/RUC/Codigo: ".$FTA['CI_RUC_Cli'].", 
+                    Factura No. ".$value["Serie"]."-".generaCeros($value["Factura"],9).", "
+                   .$value["Cheque"]
+                   .$value["Banco"].", "
+                   .$value["Cta"].", USD "
+                   .number_format($value["Abono"],2,'.',',');
+         }
+        if($Saldo_P <> 0){ $TRecibo['Concepto'] = $TRecibo['Concepto']."Saldo Pendiente USD ".number_format($Saldo_P,2,'.',',');}
+
+    }
+    // print_r($TRecibo);die();    
+    return  Imprimir_Recibo_Caja($TRecibo);
+  } 
+  return 1;
+}
+
+
+
+function Imprimir_Recibo_Caja($TRecibo)
+{
+  $pdf = new cabecera_pdf();
+
+  }
 
 ?>

@@ -25,6 +25,16 @@ class usuario_model{
       //  $this->contacto=array();
     }
 
+    function SeteoCta()
+    {
+    	  $sql= "SELECT *
+            FROM Ctas_Proceso 
+            WHERE Item = '".$_SESSION['INGRESO']['item']."'
+            AND Periodo = '".$_SESSION['INGRESO']['periodo']."'
+            ORDER BY T_No ";
+        return  $this->db1->datos($sql);
+    }
+
 	
 	// Metdo devuelve true o false para ingresar a la sesccion de pagina de administracion
 	function Ingresar($usuario,$pass,$entidad){

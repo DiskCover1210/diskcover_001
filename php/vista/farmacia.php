@@ -110,6 +110,10 @@ if(isset($_SESSION['INGRESO']['IP_VPN_RUTA']) && $_SESSION['INGRESO']['Tipo_Base
 						{
 							require_once("farmacia/devoluciones_detalle.php");
 						}
+						if ($_SESSION['INGRESO']['accion']=='devoluciones_departamento') 
+						{
+							require_once("farmacia/devoluciones_x_departamento.php");
+						}
 						
 					}else
 					{
