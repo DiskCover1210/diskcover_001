@@ -7262,6 +7262,7 @@ function factura_numero($ser)
              AND CodigoU = '". $_SESSION['INGRESO']['CodigoU'] ."' 
              AND Codigo_Cliente = '". $datos1['codigoCliente'] ."' 
              ORDER BY CODIGO";
+             // print_r($sql);die();
          $datos = $conn->datos($sql);
          foreach ($datos as $key => $value) {
               $dato[0]['campo']='T';
@@ -7305,6 +7306,7 @@ function factura_numero($ser)
               $dato[19]['campo']='Precio2';
               $dato[19]['dato']=$value['PRECIO2'];
               $total_iva=$total_iva+$value['Total_IVA'];
+              // print_r($value);die();
               insert_generico("Detalle_Factura",$dato);
               if($value['Total_IVA']==0)
               {
@@ -7314,8 +7316,15 @@ function factura_numero($ser)
               {
                 $total_coniva=$value['TOTAL']+$total_coniva;
               }
-         }       
-        $total_total_ = $total_siniva;
+              // print_r($total_siniva);die();
+              // print_r($total_coniva);die();
+         }
+         if($total_siniva!=0)
+         {       
+           $total_total_ = $total_siniva;
+         }
+
+        // print_r($total_total_);die();
 
         //agregamos abono
         $sql="SELECT * 
@@ -8399,6 +8408,441 @@ function Imprimir_Recibo_Caja($TRecibo)
 {
   $pdf = new cabecera_pdf();
 
-  }
+}
+
+function  Imprimir_Facturas($TFA){
+// Dim AdoDBDetalle As ADODB.Recordset
+// Dim CadenaMoneda As String
+// Dim Numero_Letras As String
+// Dim NombUusuario As String
+// Dim Cad_Tipo_Pago As String
+// Dim PVP_Desc As Currency
+// Dim Orden_No_S As String
+// Dim PFilT As Single
+// Dim PFilTemp As Single
+// Dim Desc_Sin_IVA As Currency
+// Dim Desc_Con_IVA As Currency
+
+// 'Establecemos Espacios y seteos de impresion
+// On Error GoTo Errorhandler
+//   'MsgBox TipoFact
+//    CEConLineas = ProcesarSeteos(TFA.TC)
+// CantFils = 0
+// Mensajes = "Imprmir Factura No. " & TFA.Factura
+// Titulo = "IMPRESION"
+// Bandera = False
+// SetPrinters.Show 1
+// If PonImpresoraDefecto(SetNombrePRN) Then
+   
+//    tPrint.TipoImpresion = Es_Printer
+//    tPrint.NombreArchivo = TFA.TC & "-" & TFA.Serie & "-" & Format(TFA.Factura, "000000000")
+//    tPrint.TituloArchivo = TFA.TC & "-" & TFA.Serie & "-" & Format(TFA.Factura, "000000000")
+//    tPrint.TipoLetra = TipoCourier ' TipoArialNarrow
+//    tPrint.OrientacionPagina = Orientacion_Pagina
+//    tPrint.PaginaA4 = True
+//    tPrint.EsCampoCorto = False
+//    tPrint.VerDocumento = True
+//    Set cPrint = New cImpresion
+//    cPrint.iniciaImpresion
+//    RatonReloj
+//    Orden_No_S = ""
+//    cPrint.tipoDeLetra = TipoCourier ' TipoArialNarrow
+//    cPrint.tipoNegrilla = True
+//    Leer_Datos_FA_NV TFA
+//    Set AdoDBDetalle = Leer_Datos_FA_NV_Detalle(TFA)
+//    With AdoDBDetalle
+//     If .RecordCount > 0 Then
+//         Orden_No = .Fields("Orden_No")
+//         Do While (Not .EOF)
+//            If Orden_No <> TFA.Orden_Compra And TFA.Orden_Compra > 0 Then
+//               Orden_No_S = Orden_No_S & CStr(Orden_No) & " "
+//               Orden_No = TFA.Orden_Compra
+//            End If
+//           .MoveNext
+//         Loop
+//         Orden_No_S = Orden_No_S & CStr(Orden_No) & " "
+//        .MoveFirst
+//     End If
+//    End With
+//   'MsgBox FA.Si_Existe_Doc
+//    If FA.Si_Existe_Doc Then
+//      '--------------------------------------------------------------------------------------------------------
+//      'Encabezado de la factura
+//      '--------------------------------------------------------------------------------------------------------
+//      'Imagen de la factura
+//       If TFA.LogoFactura <> "NINGUNO" And TFA.AnchoFactura > 0 And TFA.AltoFactura > 0 Then
+//          If SetD(1).PosX > 0 And SetD(1).PosY > 0 Then
+//             Codigo4 = Format$(TFA.Factura, "000000000")
+//             If TFA.LogoFactura = "MATRICIA" Then
+//                Imprimir_Formato_Propio "IF", SetD(1).PosX, SetD(1).PosY
+//             Else
+//                Cadena = RutaSistema & "\FORMATOS\" & TFA.LogoFactura & ".gif"
+//                cPrint.printImagen Cadena, SetD(1).PosX, SetD(1).PosY, TFA.AnchoFactura, TFA.AltoFactura
+//                cPrint.printImagen LogoTipo, SetD(34).PosX, SetD(34).PosY, 2.5, 1.25
+//             End If
+//          End If
+//       End If
+//       If SetD(2).PosX > 0 And SetD(2).PosY > 0 Then
+//          cPrint.PorteDeLetra = SetD(2).Tamaño
+//          cPrint.printTexto SetD(2).PosX, SetD(2).PosY, TFA.Serie & "-" & Format$(TFA.Factura, "000000000")
+//       End If
+//       If SetD(8).PosX > 0 And SetD(8).PosY > 0 Then
+//          cPrint.PorteDeLetra = SetD(8).Tamaño
+//          If TFA.Razon_Social = TFA.Cliente Then Cadena = TFA.Cliente Else Cadena = TFA.Razon_Social
+//          cPrint.printTexto SetD(8).PosX, SetD(8).PosY, Cadena
+//       End If
+//       If SetD(64).PosX > 0 And SetD(64).PosY > 0 Then
+//          cPrint.PorteDeLetra = SetD(64).Tamaño
+//          If TFA.Razon_Social <> TFA.Cliente Then
+//             cPrint.printTexto SetD(64).PosX, SetD(64).PosY, TFA.Cliente
+//          End If
+//       End If
+//       If SetD(11).PosX > 0 And SetD(11).PosY > 0 Then
+//          DireccionCli = TFA.DireccionC
+//          If Len(TFA.DirNumero) > 1 And TFA.DirNumero <> Ninguno Then
+//             If TFA.DirNumero <> "S/N" Then DireccionCli = DireccionCli & " (" & TFA.DirNumero & ")"
+//          End If
+//          cPrint.PorteDeLetra = SetD(11).Tamaño
+//          cPrint.printTexto SetD(11).PosX, SetD(11).PosY, DireccionCli
+//       End If
+//       If SetD(10).PosX > 0 And SetD(10).PosY > 0 Then
+//          cPrint.PorteDeLetra = SetD(10).Tamaño
+//          cPrint.printTexto SetD(10).PosX, SetD(10).PosY, TFA.Grupo
+//       End If
+//      'Codigo abreviado del Usuario
+//       If SetD(18).PosX > 0 And SetD(18).PosY > 0 Then
+//          NombUusuario = TFA.Digitador
+//          Cadena = Cambio_Usuario_Inicial(NombUusuario)
+//          cPrint.PorteDeLetra = SetD(18).Tamaño
+//          cPrint.printTexto SetD(18).PosX, SetD(18).PosY, Cadena
+//       End If
+//       If SetD(21).PosX > 0 And SetD(21).PosY > 0 Then
+//          cPrint.PorteDeLetra = SetD(21).Tamaño
+//          cPrint.printTexto SetD(21).PosX, SetD(21).PosY, TFA.Ejecutivo_Venta
+//       End If
+//       If SetD(3).PosX > 0 And SetD(3).PosY > 0 Then
+//          cPrint.PorteDeLetra = SetD(3).Tamaño
+//          cPrint.printTexto SetD(3).PosX, SetD(3).PosY, FechaStrgCorta(TFA.Fecha)
+//       End If
+//       If SetD(4).PosX > 0 And SetD(4).PosY > 0 Then
+//          Cadena = FechaDia(TFA.Fecha) & Space(10) & FechaMes(TFA.Fecha) & Space(10) & FechaAnio(TFA.Fecha)
+//          cPrint.PorteDeLetra = SetD(4).Tamaño
+//          cPrint.printTexto SetD(4).PosX, SetD(4).PosY, Cadena
+//       End If
+//       If SetD(7).PosX > 0 And SetD(7).PosY > 0 Then
+//          cPrint.PorteDeLetra = SetD(7).Tamaño
+//          cPrint.printTexto SetD(7).PosX, SetD(7).PosY, FechaStrgCiudad(TFA.Fecha)
+//       End If
+//       If SetD(5).PosX > 0 And SetD(5).PosY > 0 Then
+//          cPrint.PorteDeLetra = SetD(5).Tamaño
+//          cPrint.printTexto SetD(5).PosX, SetD(5).PosY, FechaStrgCorta(TFA.Fecha_V)
+//       End If
+//       If SetD(6).PosX > 0 And SetD(6).PosY > 0 Then
+//          Cadena = FechaDia(TFA.Fecha_V) & Space(10) & FechaMes(TFA.Fecha_V) & Space(10) & FechaAnio(TFA.Fecha_V)
+//          cPrint.PorteDeLetra = SetD(6).Tamaño
+//          cPrint.printTexto SetD(6).PosX, SetD(6).PosY, Cadena
+//       End If
+//       If SetD(14).PosX > 0 And SetD(14).PosY > 0 Then
+//          cPrint.PorteDeLetra = SetD(14).Tamaño
+//          cPrint.printTexto SetD(14).PosX, SetD(14).PosY, TFA.TelefonoC
+//       End If
+//       If SetD(12).PosX > 0 And SetD(12).PosY > 0 Then
+//          cPrint.PorteDeLetra = SetD(12).Tamaño
+//          cPrint.printTexto SetD(12).PosX, SetD(12).PosY, TFA.CiudadC
+//       End If
+//       If SetD(13).PosX > 0 And SetD(13).PosY > 0 Then
+//          cPrint.PorteDeLetra = SetD(13).Tamaño
+//          cPrint.printTexto SetD(13).PosX, SetD(13).PosY, TFA.CI_RUC
+//       End If
+//       If SetD(15).PosX > 0 And SetD(15).PosY > 0 Then
+//          cPrint.PorteDeLetra = SetD(15).Tamaño
+//          cPrint.printTexto SetD(15).PosX, SetD(15).PosY, TFA.EmailC
+//       End If
+//       If SetD(51).PosX > 0 And SetD(71).PosY > 0 Then
+//          cPrint.PorteDeLetra = SetD(51).Tamaño
+//          cPrint.printTexto SetD(51).PosX, SetD(51).PosY, TFA.DAU
+//       End If
+//       If SetD(52).PosX > 0 And SetD(52).PosY > 0 Then
+//          cPrint.PorteDeLetra = SetD(52).Tamaño
+//          cPrint.printTexto SetD(52).PosX, SetD(52).PosY, TFA.FUE
+//       End If
+//       If SetD(53).PosX > 0 And SetD(53).PosY > 0 Then
+//          cPrint.PorteDeLetra = SetD(53).Tamaño
+//          cPrint.printTexto SetD(53).PosX, SetD(53).PosY, TFA.Declaracion
+//       End If
+//       If SetD(54).PosX > 0 And SetD(54).PosY > 0 Then
+//          cPrint.PorteDeLetra = SetD(54).Tamaño
+//          cPrint.printTexto SetD(54).PosX, SetD(54).PosY, TFA.Remision
+//       End If
+//       If SetD(55).PosX > 0 And SetD(55).PosY > 0 Then
+//          cPrint.PorteDeLetra = SetD(55).Tamaño
+//          cPrint.printTexto SetD(55).PosX, SetD(55).PosY, TFA.Comercial
+//       End If
+//       If SetD(56).PosX > 0 And SetD(56).PosY > 0 Then
+//         cPrint.PorteDeLetra = SetD(56).Tamaño
+//         cPrint.printTexto SetD(56).PosX, SetD(56).PosY, TFA.Solicitud
+//       End If
+//       If SetD(57).PosX > 0 And SetD(57).PosY > 0 Then
+//         cPrint.PorteDeLetra = SetD(57).Tamaño
+//         cPrint.printTexto SetD(57).PosX, SetD(57).PosY, TFA.Cantidad
+//       End If
+//       If SetD(58).PosX > 0 And SetD(58).PosY > 0 Then
+//          cPrint.PorteDeLetra = SetD(58).Tamaño
+//          cPrint.printTexto SetD(58).PosX, SetD(58).PosY, TFA.Kilos
+//       End If
+//       If SetD(60).PosX > 0 And SetD(60).PosY > 0 Then
+//          cPrint.PorteDeLetra = SetD(60).Tamaño
+//          cPrint.printTexto SetD(60).PosX, SetD(60).PosY, Format$(Day(TFA.Fecha), "00")
+//       End If
+//       If SetD(61).PosX > 0 And SetD(61).PosY > 0 Then
+//          Cadena = UCaseStrg(MidStrg(MesesLetras(CInt(Month(TFA.Fecha))), 1, 3))
+//          cPrint.PorteDeLetra = SetD(61).Tamaño
+//          cPrint.printTexto SetD(61).PosX, SetD(61).PosY, Cadena
+//       End If
+//       If SetD(62).PosX > 0 And SetD(62).PosY > 0 Then
+//          cPrint.PorteDeLetra = SetD(62).Tamaño
+//          cPrint.printTexto SetD(62).PosX, SetD(62).PosY, Format$(Year(TFA.Fecha), "0000")
+//       End If
+//       If SetD(67).PosX > 0 And SetD(67).PosY > 0 Then
+//         cPrint.PorteDeLetra = SetD(67).Tamaño
+//         cPrint.printTexto SetD(67).PosX, SetD(67).PosY, FechaStrgCorta(TFA.Fecha_C)
+//       End If
+//       If SetD(16).PosX > 0 And SetD(16).PosY > 0 Then
+//         cPrint.PorteDeLetra = SetD(16).Tamaño
+//         NumeroLineas = cPrint.printTextoMultiple(SetD(16).PosX, SetD(16).PosY, TFA.Observacion, SetD(26).PosX)
+//       End If
+//       If SetD(17).PosX > 0 And SetD(17).PosY > 0 Then
+//         cPrint.PorteDeLetra = SetD(17).Tamaño
+//         NumeroLineas = cPrint.printTextoMultiple(SetD(17).PosX, SetD(17).PosY, TFA.Nota, SetD(26).PosX)
+//       End If
+//      '--------------------------------------------------------------------------------------------------------
+//      'Pie de factura
+//      '--------------------------------------------------------------------------------------------------------
+//       cPrint.tipoNegrilla = True
+//       Total = Redondear(TFA.Total_MN, 2)
+//       Total_ME = Redondear(TFA.Total_ME, 2)
+//      'Porcentaje Con IVA
+//       If SetD(39).PosX > 0 And SetD(39).PosY > 0 Then
+//          cPrint.PorteDeLetra = SetD(39).Tamaño
+//          cPrint.printTexto SetD(39).PosX, SetD(39).PosY, CStr(TFA.Porc_IVA * 100)
+//       End If
+//      'Sin IVA
+//       If SetD(37).PosX > 0 And SetD(37).PosY > 0 Then
+//          cPrint.PorteDeLetra = SetD(37).Tamaño
+//          Diferencia = TFA.Sin_IVA - TFA.Descuento_0
+//          cPrint.printVariable SetD(37).PosX, SetD(37).PosY, Diferencia
+//       End If
+//      'Con IVA
+//       If SetD(38).PosX > 0 And SetD(38).PosY > 0 Then
+//          cPrint.PorteDeLetra = SetD(38).Tamaño
+//          Diferencia = TFA.Con_IVA - TFA.Descuento_X
+//          cPrint.printVariable SetD(38).PosX, SetD(38).PosY, Diferencia
+//       End If
+//      'Descuento palabra
+//       If SetD(43).PosX > 0 And SetD(43).PosY > 0 Then
+//          cPrint.PorteDeLetra = SetD(43).Tamaño
+//          cPrint.printTexto SetD(43).PosX, SetD(43).PosY, "Descuento"
+//       End If
+//      'Total Descuento
+//       If SetD(42).PosX > 0 And SetD(42).PosY > 0 Then
+//          cPrint.PorteDeLetra = SetD(42).Tamaño
+//          cPrint.printVariable SetD(42).PosX, SetD(42).PosY, TFA.Total_Descuento
+//       End If
+//      'Total Comision
+//       If SetD(48).PosX > 0 And SetD(48).PosY > 0 Then
+//          cPrint.PorteDeLetra = SetD(48).Tamaño
+//          cPrint.printVariable SetD(48).PosX, SetD(48).PosY, TFA.Comision
+//       End If
+//      'Total Servicio
+//       If SetD(49).PosX > 0 And SetD(49).PosY > 0 Then
+//          cPrint.PorteDeLetra = SetD(49).Tamaño
+//          cPrint.printVariable SetD(49).PosX, SetD(49).PosY, TFA.Servicio
+//       End If
+//      'IVA Porcentaje
+//       If SetD(41).PosX > 0 And SetD(41).PosY > 0 Then
+//          cPrint.PorteDeLetra = SetD(41).Tamaño
+//          cPrint.printTexto SetD(41).PosX, SetD(41).PosY, CStr(TFA.Porc_IVA * 100) & " "
+//       End If
+//      'Total IVA
+//       If SetD(40).PosX > 0 And SetD(40).PosY > 0 Then
+//          cPrint.PorteDeLetra = SetD(40).Tamaño
+//          cPrint.printVariable SetD(40).PosX, SetD(40).PosY, TFA.Total_IVA
+//       End If
+//      'SubTotal
+//       If SetD(36).PosX > 0 And SetD(36).PosY > 0 Then
+//          cPrint.PorteDeLetra = SetD(36).Tamaño
+//          cPrint.printVariable SetD(36).PosX, SetD(36).PosY, TFA.SubTotal
+//       End If
+//      'SubTotal - Descuentos
+//       If SetD(66).PosX > 0 And SetD(66).PosY > 0 Then
+//          cPrint.PorteDeLetra = SetD(66).Tamaño
+//          cPrint.printVariable SetD(66).PosX, SetD(66).PosY, TFA.SubTotal - TFA.Total_Descuento
+//       End If
+//      'Total Facturado
+//       If SetD(44).PosX > 0 And SetD(44).PosY > 0 Then
+//          cPrint.PorteDeLetra = SetD(44).Tamaño
+//          cPrint.printVariable SetD(44).PosX, SetD(44).PosY, TFA.Total_MN
+//       End If
+//      'Total Facturado en letras
+//       If SetD(45).PosX > 0 And SetD(45).PosY > 0 Then
+//          Numero_Letras = Cambio_Letras(TFA.Total_MN, 2)
+//          cPrint.PorteDeLetra = SetD(45).Tamaño
+//          PrinterLineas SetD(45).PosX, SetD(45).PosY, Numero_Letras, 11.5
+//       End If
+//      'CxC Clientes: Linea de Produccion
+//       If SetD(50).PosX > 0 And SetD(50).PosY > 0 Then
+//          cPrint.PorteDeLetra = SetD(50).Tamaño
+//          cPrint.printTexto SetD(50).PosX, SetD(50).PosY, TFA.CxC_Clientes
+//       End If
+//      'Hora de Proceso
+//       If SetD(63).PosX > 0 And SetD(63).PosY > 0 Then
+//          cPrint.PorteDeLetra = SetD(63).Tamaño
+//          cPrint.printTexto SetD(63).PosX, SetD(63).PosY, TFA.Hora
+//       End If
+//       If SetD(68).PosX > 0 And SetD(68).PosY > 0 Then
+//          cPrint.PorteDeLetra = SetD(68).Tamaño
+//          cPrint.printTexto SetD(68).PosX, SetD(68).PosY, TrimStrg(Orden_No_S)
+//       End If
+//      'Tipo_Pago
+//       If Len(TFA.Tipo_Pago_Det) > 1 Then
+//          If SetD(79).PosX > 0 And SetD(79).PosY > 0 Then
+//             cPrint.PorteDeLetra = SetD(79).Tamaño
+//             cPrint.printVariable SetD(79).PosX, SetD(79).PosY, TFA.Fecha_V
+//          End If
+//          If SetD(78).PosX > 0 And SetD(78).PosY > 0 Then
+//             cPrint.PorteDeLetra = SetD(78).Tamaño
+//             cPrint.printVariable SetD(78).PosX, SetD(78).PosY, TFA.Total_MN
+//          End If
+//          If SetD(77).PosX > 0 And SetD(77).PosY > 0 Then
+//             RutaOrigen = RutaSistema & "\ICONOS\Vistofp.jpg"
+//             cPrint.printImagen RutaOrigen, SetD(77).PosX, SetD(77).PosY, SetD(77).Tamaño, SetD(77).Tamaño
+//          End If
+//          If SetD(76).PosX > 0 And SetD(76).PosY > 0 Then
+//             cPrint.PorteDeLetra = SetD(76).Tamaño
+//             cPrint.printTexto SetD(76).PosX, SetD(76).PosY, "TIPO PAGO:"
+//          End If
+//          If SetD(75).PosX > 0 And SetD(75).PosY > 0 Then
+//             cPrint.PorteDeLetra = SetD(75).Tamaño
+//             cPrint.printTexto SetD(75).PosX, SetD(75).PosY, TrimStrg(MidStrg(TFA.Tipo_Pago_Det, 15, Len(TFA.Tipo_Pago_Det)))
+//          End If
+//       End If
+//      'MsgBox Orden_No_S & " ...."
+//    End If
+//   'Printer.FontName = TipoConsola
+//    SaldoInic = 0: SaldoFinal = 0
+//    Orden_No_S = ""
+//    cPrint.tipoNegrilla = False
+//   'Comenzamos a recoger los detalles de la factura
+//    sSQL = "SELECT DF.*,CP.Detalle,CP.Codigo_Barra,CP.Unidad,CP.Reg_Sanitario,CM.Marca " _
+//         & "FROM Detalle_Factura As DF,Catalogo_Productos As CP,Catalogo_Marcas As CM " _
+//         & "WHERE DF.Factura = " & TFA.Factura & " " _
+//         & "AND DF.TC = '" & TFA.TC & "' " _
+//         & "AND DF.Serie = '" & TFA.Serie & "' " _
+//         & "AND DF.Item = '" & NumEmpresa & "' " _
+//         & "AND DF.Periodo = '" & Periodo_Contable & "' " _
+//         & "AND DF.Periodo = CP.Periodo " _
+//         & "AND DF.Periodo = CM.Periodo " _
+//         & "AND DF.Item = CP.Item " _
+//         & "AND DF.Item = CM.Item " _
+//         & "AND DF.Codigo = CP.Codigo_Inv " _
+//         & "AND DF.CodMarca = CM.CodMar " _
+//         & "ORDER BY DF.ID,DF.Codigo "
+//    Select_AdoDB AdoDBDetalle, sSQL
+//    With AdoDBDetalle
+//     If .RecordCount > 0 Then
+//         PFil = SetD(22).PosY
+//         Orden_No = .Fields("Orden_No")
+//         Do While (Not .EOF)
+//           'MsgBox .RecordCount
+//            SaldoInic = SaldoInic + .Fields("Cantidad")
+//            SaldoFinal = SaldoFinal + .Fields("Tonelaje")
+//            cPrint.PorteDeLetra = SetD(23).Tamaño
+//            cPrint.printFields SetD(23).PosX, PFil, .Fields("Codigo")
+//            cPrint.PorteDeLetra = SetD(30).Tamaño
+//            cPrint.printFields SetD(30).PosX, PFil, .Fields("Codigo_Barra")
+//            If .Fields("CodMarca") <> Ninguno Then
+//                cPrint.PorteDeLetra = SetD(31).Tamaño
+//                cPrint.printTexto SetD(31).PosX, PFil, "(" & TrimStrg(MidStrg(.Fields("Marca"), 1, 3)) & ")"
+//            End If
+//            cPrint.PorteDeLetra = SetD(33).Tamaño
+//            cPrint.printFields SetD(33).PosX, PFil, .Fields("Ruta")
+//            cPrint.PorteDeLetra = SetD(32).Tamaño
+//            cPrint.printFields SetD(32).PosX, PFil, .Fields("Unidad")
+//            If .Fields("Cant_Hab") > 0 And Len(.Fields("Tipo_Hab")) > 1 Then
+//                cPrint.PorteDeLetra = SetD(70).Tamaño
+//                cPrint.printFields SetD(70).PosX, PFil, .Fields("Fecha_IN")
+//                cPrint.PorteDeLetra = SetD(71).Tamaño
+//                cPrint.printFields SetD(71).PosX, PFil, .Fields("Fecha_OUT")
+//                cPrint.PorteDeLetra = SetD(72).Tamaño
+//                cPrint.printFields SetD(72).PosX, PFil, .Fields("Cant_Hab")
+//                cPrint.PorteDeLetra = SetD(73).Tamaño
+//                cPrint.printFields SetD(73).PosX, PFil, .Fields("Tipo_Hab")
+//            End If
+//            If SetD(24).PosX <= SetD(25).PosX Then
+//               cPrint.PorteDeLetra = SetD(24).Tamaño
+//               cPrint.printTexto SetD(24).PosX, PFil, " " & CStr(.Fields("Cantidad"))
+//            End If
+//            cPrint.PorteDeLetra = SetD(25).Tamaño
+//            PFilTemp = PFil
+//            PFilT = PrinterLineasTexto(SetD(25).PosX, PFil - 0.2, .Fields("Producto"), SetD(26).PosX)
+//            If PVP_Al_Inicio Then PFil = PFilTemp Else PFil = PFilT
+//            If Len(.Fields("Lote_No")) > 1 And Len(.Fields("Reg_Sanitario")) > 1 Then
+//               PFil = PFil + Printer.TextHeight("H")
+//               Cadena = "-LOTE No. " & .Fields("Lote_No") _
+//                      & ", REG. SANITARIO: " & .Fields("Reg_Sanitario")
+//               'cPrint.printTexto SetD(25).PosX, PFil, Cadena
+//               PFilT = PrinterLineasTexto(SetD(25).PosX, PFil, Cadena, SetD(26).PosX)
+//               PFil = PFil + Printer.TextHeight("H")
+//               Cadena = UCaseStrg("-FAB: " & Format(.Fields("Fecha_Fab"), "MMM-yyyy") & ", EXP: " & Format(.Fields("Fecha_Exp"), "MMM-yyyy"))
+//               'cPrint.printTexto SetD(25).PosX, PFil, Cadena
+//               PFilT = PrinterLineasTexto(SetD(25).PosX, PFil, Cadena, SetD(26).PosX)
+//            End If
+//            PFil = PFil + 0.2
+//            If SetD(24).PosX > SetD(25).PosX Then
+//               cPrint.PorteDeLetra = SetD(24).Tamaño
+//               cPrint.printTexto SetD(24).PosX, PFil, " " & CStr(.Fields("Cantidad"))
+//            End If
+//            cPrint.PorteDeLetra = SetD(29).Tamaño
+//            cPrint.printFields SetD(29).PosX, PFil, .Fields("Total")
+//            PVP_Desc = .Fields("Total") - .Fields("Total_Desc") - .Fields("Total_Desc2")
+//            cPrint.PorteDeLetra = SetD(69).Tamaño
+//            cPrint.printVariable SetD(69).PosX, PFil, PVP_Desc
+//            cPrint.PorteDeLetra = SetD(28).Tamaño
+//            cPrint.printFields SetD(28).PosX, PFil, .Fields("Precio"), , , , Dec_PVP
+//            cPrint.PorteDeLetra = SetD(27).Tamaño
+//            If .Fields("Precio") > 0 And .Fields("Cantidad") > 0 Then
+//                cPrint.printTexto SetD(27).PosX, PFil, Format$(.Fields("Total_Desc") / (.Fields("Cantidad") * .Fields("Precio")), "00.00%")
+//            End If
+//            cPrint.PorteDeLetra = SetD(34).Tamaño
+//            cPrint.printTexto SetD(34).PosX, PFil, Format$(.Fields("Tonelaje"), "#,##0.00")
+//           'Descuentos en Ventas
+//            If .Fields("Total_IVA") > 0 Then
+//                Desc_Con_IVA = Desc_Con_IVA + .Fields("Total_Desc")
+//            Else
+//                Desc_Sin_IVA = Desc_Sin_IVA + .Fields("Total_Desc")
+//            End If
+//            If PVP_Al_Inicio Then PFil = PFilT
+//            PFil = PFil + Printer.TextHeight("H")
+//            If Orden_No <> TFA.Orden_Compra And TFA.Orden_Compra > 0 Then
+//               Orden_No_S = Orden_No_S & CStr(Orden_No) & " "
+//               Orden_No = TFA.Orden_Compra
+//            End If
+//           .MoveNext
+//         Loop
+//         Orden_No_S = Orden_No_S & CStr(Orden_No) & " "
+//     End If
+//    End With
+//    cPrint.finalizaImpresion
+// End If
+// 'Printer.FontName = LetraAnterior
+// MensajeEncabData = ""
+// RatonNormal
+// Exit Sub
+// Errorhandler:
+//     RatonNormal
+//     ErrorDeImpresion
+//     Exit Sub
+// End Sub
+}
 
 ?>

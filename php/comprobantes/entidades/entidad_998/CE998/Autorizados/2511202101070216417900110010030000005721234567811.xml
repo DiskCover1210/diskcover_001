@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?><autorizacion>
   <estado>AUTORIZADO</estado>
-  <numeroAutorizacion>0410202101070216417900110010010000001701234567811</numeroAutorizacion>
-  <fechaAutorizacion class="fechaAutorizacion">04/10/2021 09:47:01.000</fechaAutorizacion>
+  <numeroAutorizacion>2511202101070216417900110010030000005721234567811</numeroAutorizacion>
+  <fechaAutorizacion class="fechaAutorizacion">25/11/2021 15:16:40.000</fechaAutorizacion>
   <comprobante><![CDATA[<?xml version="1.0" encoding="UTF-8" standalone="no"?><factura id="comprobante" version="1.1.0">
   <infoTributaria>
     <ambiente>1</ambiente>
@@ -9,113 +9,102 @@
     <razonSocial>VACA PRIETO WALTER JALIL</razonSocial>
     <nombreComercial>DISKCOVER SYSTEM</nombreComercial>
     <ruc>0702164179001</ruc>
-    <claveAcceso>0410202101070216417900110010010000001701234567811</claveAcceso>
+    <claveAcceso>2511202101070216417900110010030000005721234567811</claveAcceso>
     <codDoc>01</codDoc>
     <estab>001</estab>
-    <ptoEmi>001</ptoEmi>
-    <secuencial>000000170</secuencial>
+    <ptoEmi>003</ptoEmi>
+    <secuencial>000000572</secuencial>
     <dirMatriz>Desarrollo para programacion de DiskCover System</dirMatriz>
   </infoTributaria>
   <infoFactura>
-    <fechaEmision>04/10/2021</fechaEmision>
+    <fechaEmision>25/11/2021</fechaEmision>
     <dirEstablecimiento>Desarrollo para programacion de DiskCover System</dirEstablecimiento>
     <obligadoContabilidad>SI</obligadoContabilidad>
-    <tipoIdentificacionComprador>06</tipoIdentificacionComprador>
-    <razonSocialComprador>AGUIRRE TAPIA FABIAN ARMANDO</razonSocialComprador>
-    <identificacionComprador>1702212208</identificacionComprador>
-    <totalSinImpuestos>34.00</totalSinImpuestos>
+    <tipoIdentificacionComprador>04</tipoIdentificacionComprador>
+    <razonSocialComprador>8A IMPORTACIONES</razonSocialComprador>
+    <identificacionComprador>0190376826001</identificacionComprador>
+    <totalSinImpuestos>26.40</totalSinImpuestos>
     <totalDescuento>0</totalDescuento>
     <totalConImpuestos>
       <totalImpuesto>
         <codigo>2</codigo>
         <codigoPorcentaje>0</codigoPorcentaje>
         <descuentoAdicional>0</descuentoAdicional>
-        <baseImponible>34</baseImponible>
+        <baseImponible>0</baseImponible>
         <valor>0.00</valor>
+      </totalImpuesto>
+      <totalImpuesto>
+        <codigo>2</codigo>
+        <codigoPorcentaje>2</codigoPorcentaje>
+        <descuentoAdicional>0</descuentoAdicional>
+        <baseImponible>26.4</baseImponible>
+        <tarifa>12</tarifa>
+        <valor>3.6</valor>
       </totalImpuesto>
     </totalConImpuestos>
     <propina>0</propina>
-    <importeTotal>34</importeTotal>
+    <importeTotal>33.6</importeTotal>
     <moneda>DOLAR</moneda>
     <pagos>
       <pago>
         <formaPago>01</formaPago>
-        <total>34</total>
+        <total>33.6</total>
       </pago>
     </pagos>
   </infoFactura>
   <detalles>
     <detalle>
-      <codigoPrincipal>98.90</codigoPrincipal>
-      <descripcion>Servicio de Entrega</descripcion>
+      <codigoPrincipal>01.99.04.02</codigoPrincipal>
+      <descripcion>COMBO EL RIOBAMBENITO</descripcion>
       <unidadMedida>DOLAR</unidadMedida>
       <cantidad>1.0000</cantidad>
-      <precioUnitario>2.2</precioUnitario>
+      <precioUnitario>30</precioUnitario>
       <descuento>0</descuento>
-      <precioTotalSinImpuesto>2.2</precioTotalSinImpuesto>
+      <precioTotalSinImpuesto>30</precioTotalSinImpuesto>
       <impuestos>
         <impuesto>
           <codigo>2</codigo>
-          <codigoPorcentaje>0</codigoPorcentaje>
-          <tarifa>0</tarifa>
-          <baseImponible>2.2</baseImponible>
-          <valor>0</valor>
-        </impuesto>
-      </impuestos>
-    </detalle>
-    <detalle>
-      <codigoPrincipal>99.03</codigoPrincipal>
-      <descripcion>Socios Personales Classic</descripcion>
-      <unidadMedida>DOLAR</unidadMedida>
-      <cantidad>1.0000</cantidad>
-      <precioUnitario>31.8</precioUnitario>
-      <descuento>0</descuento>
-      <precioTotalSinImpuesto>31.8</precioTotalSinImpuesto>
-      <impuestos>
-        <impuesto>
-          <codigo>2</codigo>
-          <codigoPorcentaje>0</codigoPorcentaje>
-          <tarifa>0</tarifa>
-          <baseImponible>31.8</baseImponible>
-          <valor>0</valor>
+          <codigoPorcentaje>2</codigoPorcentaje>
+          <tarifa>12</tarifa>
+          <baseImponible>30</baseImponible>
+          <valor>3.6</valor>
         </impuesto>
       </impuestos>
     </detalle>
   </detalles>
   <infoAdicional>
-    <campoAdicional nombre="Direccion">CALLE N NO. 7324 Y AV A EL CONDADO</campoAdicional>
-    <campoAdicional nombre="Telefono">003975100</campoAdicional>
-    <campoAdicional nombre="Email">faguirret@hotmail.com</campoAdicional>
+    <campoAdicional nombre="Direccion">MANUEL VEGA 848 Y SUCRE</campoAdicional>
+    <campoAdicional nombre="Email">monge</campoAdicional>
     <campoAdicional nombre="Referencia">DINERS</campoAdicional>
   </infoAdicional>
-<ds:Signature xmlns:ds="http://www.w3.org/2000/09/xmldsig#" xmlns:etsi="http://uri.etsi.org/01903/v1.3.2#" Id="Signature1020845">
-<ds:SignedInfo Id="Signature-SignedInfo607584">
+<ds:Signature xmlns:ds="http://www.w3.org/2000/09/xmldsig#" xmlns:etsi="http://uri.etsi.org/01903/v1.3.2#" Id="Signature651825">
+<ds:SignedInfo Id="Signature-SignedInfo25630">
 <ds:CanonicalizationMethod Algorithm="http://www.w3.org/TR/2001/REC-xml-c14n-20010315"/>
 <ds:SignatureMethod Algorithm="http://www.w3.org/2000/09/xmldsig#rsa-sha1"/>
-<ds:Reference Id="SignedPropertiesID828777" Type="http://uri.etsi.org/01903#SignedProperties" URI="#Signature1020845-SignedProperties585410">
+<ds:Reference Id="SignedPropertiesID244133" Type="http://uri.etsi.org/01903#SignedProperties" URI="#Signature651825-SignedProperties113598">
 <ds:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1"/>
-<ds:DigestValue>++O+QHQy99w/Dyd4NjnznCBA1LI=</ds:DigestValue>
+<ds:DigestValue>vli+xgF/rwx1NnuLozxmzwvTYKU=</ds:DigestValue>
 </ds:Reference>
-<ds:Reference URI="#Certificate1408127">
+<ds:Reference URI="#Certificate1722646">
 <ds:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1"/>
-<ds:DigestValue>IqZF4h6WZhFIUhmRWug/Q+dz0Vs=</ds:DigestValue>
+<ds:DigestValue>trBjufarMUP4TYl8DIZHTtIIwnw=</ds:DigestValue>
 </ds:Reference>
-<ds:Reference Id="Reference-ID-1002123" URI="#comprobante">
+<ds:Reference Id="Reference-ID-291850" URI="#comprobante">
 <ds:Transforms>
 <ds:Transform Algorithm="http://www.w3.org/2000/09/xmldsig#enveloped-signature"/>
 </ds:Transforms>
 <ds:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1"/>
-<ds:DigestValue>ZNfciDMT2S+vsbV40RQUfeP5aDQ=</ds:DigestValue>
+<ds:DigestValue>zmlFCYayNx7bS/bpF4DMzRQbafQ=</ds:DigestValue>
 </ds:Reference>
 </ds:SignedInfo>
-<ds:SignatureValue Id="SignatureValue164120">
-Lj/bwIJeiZg5JpIW0y6qvWCHASsWcHyCV4GGJ0nwukyYozxDT2e9yAeXDLBrCfFMzLHvzWD4Nb7y
-W+qgikF0Mqiq3pGBWi3FwDfrESF1xh5L/Bo8tOj6fUilCNVPQB99lrLDHgaW0AcoN7O8hvJ7x7tD
-UHwJtJZwyJ94/fHRGjTp8lqLxmchY2Tvp03YTJj4rT4cbWR9cusw+ilP0kEUDI1UqZmyvxGrFHZ9
-YboJCHXhfUBCbvSnJk9S41WmI5Hdt4F6D/wQL5svsC7BnpsY6XVrAfk5mnCIaXhONnOnqFgta2TF
-2N1trbrV7c8DY3LUkJIzeBdW1pdUb8l5JjofTw==
+<ds:SignatureValue Id="SignatureValue520756">
+MhTBoLkBEHC8SSt9kEJnkb4ZHWaWoadcgpupQo3shbXZl+OHceHJXslCUoa48V+f+UDH7JtgDNZ/
+u2S2cmQD+ZMlUckvH9cKQVS/kRAllytbexlP4kCSm91DTnylqJaEtLhQn7qo7cZk4F0puJ3nroWD
+sEKc3vXgcyfrhLUBZBsS9Mtnrtb7oeBwBCkbHo3SWPaQi2ryK2jDWAeLIZoLwhE9RoYAEarzsAXH
+pwI5z8dC+9px2UuyUgfKl7NjTDWQsPZbIVVTmQVorbNwxHmap5ATxifLMZf+B4tf1EgtxrQ0LRuJ
+uIv2yTEC28z0Dto7//4JobuBEwQTUyf1VZimDQ==
 </ds:SignatureValue>
-<ds:KeyInfo Id="Certificate1408127">
+<ds:KeyInfo Id="Certificate1722646">
 <ds:X509Data>
 <ds:X509Certificate>
 MIILkjCCCXqgAwIBAgIEXDrIAjANBgkqhkiG9w0BAQsFADCBmTELMAkGA1UEBhMCRUMxHTAbBgNV
@@ -186,6 +175,6 @@ LRuAVSyi58qyAD0Eu1zLMc3KhEUXoxF7aA8P0w==
 </ds:RSAKeyValue>
 </ds:KeyValue>
 </ds:KeyInfo>
-<ds:Object Id="Signature1020845-Object944562"><etsi:QualifyingProperties Target="#Signature1020845"><etsi:SignedProperties Id="Signature1020845-SignedProperties585410"><etsi:SignedSignatureProperties><etsi:SigningTime>2021-10-04T09:46:25-05:00</etsi:SigningTime><etsi:SigningCertificate><etsi:Cert><etsi:CertDigest><ds:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1"/><ds:DigestValue>m8okW/lbE8bTuXKKJc3pO5HpQGc=</ds:DigestValue></etsi:CertDigest><etsi:IssuerSerial><ds:X509IssuerName>CN=AUTORIDAD DE CERTIFICACION SUBCA-1 SECURITY DATA,OU=ENTIDAD DE CERTIFICACION DE INFORMACION,O=SECURITY DATA S.A. 1,C=EC</ds:X509IssuerName><ds:X509SerialNumber>1547356162</ds:X509SerialNumber></etsi:IssuerSerial></etsi:Cert></etsi:SigningCertificate></etsi:SignedSignatureProperties><etsi:SignedDataObjectProperties><etsi:DataObjectFormat ObjectReference="#Reference-ID-1002123"><etsi:Description>contenido comprobante</etsi:Description><etsi:MimeType>text/xml</etsi:MimeType></etsi:DataObjectFormat></etsi:SignedDataObjectProperties></etsi:SignedProperties></etsi:QualifyingProperties></ds:Object></ds:Signature></factura>]]></comprobante>
+<ds:Object Id="Signature651825-Object525631"><etsi:QualifyingProperties Target="#Signature651825"><etsi:SignedProperties Id="Signature651825-SignedProperties113598"><etsi:SignedSignatureProperties><etsi:SigningTime>2021-11-25T15:16:33-05:00</etsi:SigningTime><etsi:SigningCertificate><etsi:Cert><etsi:CertDigest><ds:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1"/><ds:DigestValue>m8okW/lbE8bTuXKKJc3pO5HpQGc=</ds:DigestValue></etsi:CertDigest><etsi:IssuerSerial><ds:X509IssuerName>CN=AUTORIDAD DE CERTIFICACION SUBCA-1 SECURITY DATA,OU=ENTIDAD DE CERTIFICACION DE INFORMACION,O=SECURITY DATA S.A. 1,C=EC</ds:X509IssuerName><ds:X509SerialNumber>1547356162</ds:X509SerialNumber></etsi:IssuerSerial></etsi:Cert></etsi:SigningCertificate></etsi:SignedSignatureProperties><etsi:SignedDataObjectProperties><etsi:DataObjectFormat ObjectReference="#Reference-ID-291850"><etsi:Description>contenido comprobante</etsi:Description><etsi:MimeType>text/xml</etsi:MimeType></etsi:DataObjectFormat></etsi:SignedDataObjectProperties></etsi:SignedProperties></etsi:QualifyingProperties></ds:Object></ds:Signature></factura>]]></comprobante>
   <mensajes/>
 </autorizacion>

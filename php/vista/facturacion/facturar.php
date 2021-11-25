@@ -2,6 +2,7 @@
 <script type="text/javascript">
 	window.closeModal = function(){
     $('#myModal_Abonos').modal('hide');
+     Autorizar_Factura_Actual();
 };
 	 let Modificar = false;
    let Bandera = true;
@@ -523,7 +524,7 @@ function TextVUnit_LostFocus()
   	  	'TxtDetalle':$('#TxtDetalle').val(),
   	  	'bodega':$('#DCBodega').val(),
   	  	'marca':$('#DCMarca').val(),
-  	  	//$('#DCArticulos option:selected').text(),
+  	  	'Cliente':$('#DCCliente').val(),
   	  	'Cant_Item_FA':$('#Cant_Item').val(),
   	  	'tipoFactura':$('#TipoFactura').val(),
   	  	'Mod_PVP':$('#Mod_PVP').val(),
@@ -702,19 +703,49 @@ function Autorizar_Factura_Actual()
 			  success: function(data)
 			  {
 			  	console.log(data);
-			  	if(data.res==-2)
-			  	{
-			  		alerta_reprocesar('ADVERTENCIA',data.men);
-			  	}else if(data.res==-3)
-			  	{
-			  		alerta_reprocesar('Formulario de Confirmación',data.men);
-			  	}else if(data.res==null)
-			  	{
-			  		Abonos(FA);
-			  	}
-			  	
+			  	imprimir();			  	
 			  }
 			})
+	}
+
+
+	function imprimir()
+	{
+		var FA = $("#FA").serialize();
+		var parametros = {
+			'TextObs':$('#TextObs').val(),
+			'TextNota':$('#TextNota').val(),
+			'TxtCompra':$('#TxtCompra').val(),
+			'TxtPedido':$('#TxtPedido').val(),
+			'TxtZona':$('#TxtZona').val(),
+			'TxtLugarEntrega':$('#TxtLugarEntrega').val(),
+			'TextComision':$('#TextComision').val(),
+			'MBoxFechaV':$('#MBoxFechaV').val(),
+			'Check1':$('#Check1').prop('checked'),
+			'CheqSP':$('#CheqSP').prop('checked'),
+			// 'DCTipoPago':$('#DCTipoPago option:selected').text(),
+			'DCTipoPago':$('#DCTipoPago').val(),
+			'TextFacturaNo':$('#TextFacturaNo').val(),
+			'DCMod':$('#DCMod').val(),
+			'Reprocesar':$('#Reprocesar').val(),
+			'Cliente':$('#DCCliente').val(),
+			'Total':$('#LabelTotal').val(),
+		}
+		$.ajax({
+			  type: "POST",
+			  url: '../controlador/facturacion/facturarC.php?imprimir_factura=true&'+FA,
+			  data: {parametros:parametros}, 
+			  dataType:'json',
+			  success: function(data)
+			  {
+			  	if(data.AU.respuesta==1)
+			  	{
+			  		 Swal.fire('Factura Autorizada','','success');
+			  	}
+			  	console.log(data);
+			  	imprimir();			  	
+			  }
+			})	  
 	}
 
 
@@ -735,8 +766,10 @@ function Abonos(FA)
      	  if(FA == "OP"){
      	  	// la otra opcion
         }else{
+        	src ="../vista/modales.php?FAbonos=true";
+					$('#frame').attr('src',src).show();
          	$('#myModal_Abonos').modal('show');	  
-      		Autorizar_Factura_Actual();
+      		// Autorizar_Factura_Actual();
         }
      }else
      {

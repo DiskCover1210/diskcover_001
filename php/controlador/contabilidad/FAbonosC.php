@@ -310,18 +310,28 @@ function Grabar_abonos($parametro){
      }
      $TA['DiarioCaja'] = $DiarioCaja;
      $TA['Recibo_No'] = $DiarioCaja;
-     
-     $banco = explode('  ',$parametro['DCBancoNom']);
-     $banco = strlen($banco[0]);
 
-     $Cta = trim($banco[0]);
+     $banco = '';$Cta = '';
+     if($parametro['DCBancoNom']!=''){     
+	     $banco = explode('  ',$parametro['DCBancoNom']);
+	     $banco = strlen($banco[0]);
+	     $Cta = trim($banco[0]);
+     }
      // trim(substr($parametro['DCBancoNom'],$banco,strlen($parametro['DCBancoNom'])));
 
-     $tarjeta = explode('  ',$parametro['DCTarjetaNom']);
-     $tarjeta = strlen($tarjeta[0]);
+     $tarjeta = '';
+     if($parametro['DCTarjetaNom']!='')
+     {
+	     $tarjeta = explode('  ',$parametro['DCTarjetaNom']);
+	     $tarjeta = strlen($tarjeta[0]);
+     }
 
      $Cta1 = $parametro['DCTarjeta'];
-     $NombreBanco1 = trim(substr($parametro['DCTarjetaNom'],$banco,strlen($parametro['DCTarjetaNom']))); 
+     $NombreBanco1 = '';
+     if($parametro['DCTarjetaNom'] !='')
+     {
+       $NombreBanco1 = trim(substr($parametro['DCTarjetaNom'],$banco,strlen($parametro['DCTarjetaNom']))); 
+     }
  
     // 'Abono de Factura Caja MN
      $TA['T'] = G_NORMAL;

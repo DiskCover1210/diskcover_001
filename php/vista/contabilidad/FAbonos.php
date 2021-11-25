@@ -2,7 +2,7 @@
 
 ?>
 <script type="text/javascript"></script>
-<script src="../../../lib/dist/js/FAbonos.js"></script>
+<script src="../../lib/dist/js/FAbonos.js"></script>
 <script type="text/javascript">
   $(document).ready(function()
   {
