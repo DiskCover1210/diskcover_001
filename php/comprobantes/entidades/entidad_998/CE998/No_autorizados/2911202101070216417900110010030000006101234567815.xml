@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?><autorizacion>
-  <estado>AUTORIZADO</estado>
-  <numeroAutorizacion>2511202101070216417900110010030000005721234567811</numeroAutorizacion>
-  <fechaAutorizacion class="fechaAutorizacion">25/11/2021 15:16:40.000</fechaAutorizacion>
+  <estado>NO AUTORIZADO</estado>
+  <fechaAutorizacion class="fechaAutorizacion">29/11/2021 15:35:17.000</fechaAutorizacion>
   <comprobante><![CDATA[<?xml version="1.0" encoding="UTF-8" standalone="no"?><factura id="comprobante" version="1.1.0">
   <infoTributaria>
     <ambiente>1</ambiente>
@@ -9,21 +8,21 @@
     <razonSocial>VACA PRIETO WALTER JALIL</razonSocial>
     <nombreComercial>DISKCOVER SYSTEM</nombreComercial>
     <ruc>0702164179001</ruc>
-    <claveAcceso>2511202101070216417900110010030000005721234567811</claveAcceso>
+    <claveAcceso>2911202101070216417900110010030000006101234567815</claveAcceso>
     <codDoc>01</codDoc>
     <estab>001</estab>
     <ptoEmi>003</ptoEmi>
-    <secuencial>000000572</secuencial>
+    <secuencial>000000610</secuencial>
     <dirMatriz>Desarrollo para programacion de DiskCover System</dirMatriz>
   </infoTributaria>
   <infoFactura>
-    <fechaEmision>25/11/2021</fechaEmision>
+    <fechaEmision>29/11/2021</fechaEmision>
     <dirEstablecimiento>Desarrollo para programacion de DiskCover System</dirEstablecimiento>
     <obligadoContabilidad>SI</obligadoContabilidad>
-    <tipoIdentificacionComprador>04</tipoIdentificacionComprador>
-    <razonSocialComprador>8A IMPORTACIONES</razonSocialComprador>
-    <identificacionComprador>0190376826001</identificacionComprador>
-    <totalSinImpuestos>26.40</totalSinImpuestos>
+    <tipoIdentificacionComprador>06</tipoIdentificacionComprador>
+    <razonSocialComprador>ABAD GUERRA BORIS PATRICIO</razonSocialComprador>
+    <identificacionComprador>0901031096</identificacionComprador>
+    <totalSinImpuestos>79.20</totalSinImpuestos>
     <totalDescuento>0</totalDescuento>
     <totalConImpuestos>
       <totalImpuesto>
@@ -37,25 +36,25 @@
         <codigo>2</codigo>
         <codigoPorcentaje>2</codigoPorcentaje>
         <descuentoAdicional>0</descuentoAdicional>
-        <baseImponible>26.4</baseImponible>
+        <baseImponible>79.2</baseImponible>
         <tarifa>12</tarifa>
-        <valor>3.6</valor>
+        <valor>10.8</valor>
       </totalImpuesto>
     </totalConImpuestos>
     <propina>0</propina>
-    <importeTotal>33.6</importeTotal>
+    <importeTotal>100.8</importeTotal>
     <moneda>DOLAR</moneda>
     <pagos>
       <pago>
         <formaPago>01</formaPago>
-        <total>33.6</total>
+        <total>100.8</total>
       </pago>
     </pagos>
   </infoFactura>
   <detalles>
     <detalle>
-      <codigoPrincipal>01.99.04.02</codigoPrincipal>
-      <descripcion>COMBO EL RIOBAMBENITO</descripcion>
+      <codigoPrincipal>01.99.04.04</codigoPrincipal>
+      <descripcion>COMBO EL SECRETO DE BUCKINGHAM</descripcion>
       <unidadMedida>DOLAR</unidadMedida>
       <cantidad>1.0000</cantidad>
       <precioUnitario>30</precioUnitario>
@@ -71,40 +70,58 @@
         </impuesto>
       </impuestos>
     </detalle>
+    <detalle>
+      <codigoPrincipal>01.99.04.04</codigoPrincipal>
+      <descripcion>COMBO EL SECRETO DE BUCKINGHAM</descripcion>
+      <unidadMedida>DOLAR</unidadMedida>
+      <cantidad>2.0000</cantidad>
+      <precioUnitario>30</precioUnitario>
+      <descuento>0</descuento>
+      <precioTotalSinImpuesto>60</precioTotalSinImpuesto>
+      <impuestos>
+        <impuesto>
+          <codigo>2</codigo>
+          <codigoPorcentaje>2</codigoPorcentaje>
+          <tarifa>12</tarifa>
+          <baseImponible>60</baseImponible>
+          <valor>7.2</valor>
+        </impuesto>
+      </impuestos>
+    </detalle>
   </detalles>
   <infoAdicional>
-    <campoAdicional nombre="Direccion">MANUEL VEGA 848 Y SUCRE</campoAdicional>
-    <campoAdicional nombre="Email">monge</campoAdicional>
+    <campoAdicional nombre="Direccion">LOS CABILDOS N40131  QUITO TENNIS</campoAdicional>
+    <campoAdicional nombre="Email">DINERS</campoAdicional>
     <campoAdicional nombre="Referencia">DINERS</campoAdicional>
   </infoAdicional>
-<ds:Signature xmlns:ds="http://www.w3.org/2000/09/xmldsig#" xmlns:etsi="http://uri.etsi.org/01903/v1.3.2#" Id="Signature651825">
-<ds:SignedInfo Id="Signature-SignedInfo25630">
+<ds:Signature xmlns:ds="http://www.w3.org/2000/09/xmldsig#" xmlns:etsi="http://uri.etsi.org/01903/v1.3.2#" Id="Signature771564">
+<ds:SignedInfo Id="Signature-SignedInfo593174">
 <ds:CanonicalizationMethod Algorithm="http://www.w3.org/TR/2001/REC-xml-c14n-20010315"/>
 <ds:SignatureMethod Algorithm="http://www.w3.org/2000/09/xmldsig#rsa-sha1"/>
-<ds:Reference Id="SignedPropertiesID244133" Type="http://uri.etsi.org/01903#SignedProperties" URI="#Signature651825-SignedProperties113598">
+<ds:Reference Id="SignedPropertiesID2414" Type="http://uri.etsi.org/01903#SignedProperties" URI="#Signature771564-SignedProperties521398">
 <ds:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1"/>
-<ds:DigestValue>vli+xgF/rwx1NnuLozxmzwvTYKU=</ds:DigestValue>
+<ds:DigestValue>CDnBsjPaPK7/Pc/o3WrA7bC0R/c=</ds:DigestValue>
 </ds:Reference>
-<ds:Reference URI="#Certificate1722646">
+<ds:Reference URI="#Certificate11014885">
 <ds:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1"/>
-<ds:DigestValue>trBjufarMUP4TYl8DIZHTtIIwnw=</ds:DigestValue>
+<ds:DigestValue>IxWdKVXRgx4IeQn+zQSvah56Ecg=</ds:DigestValue>
 </ds:Reference>
-<ds:Reference Id="Reference-ID-291850" URI="#comprobante">
+<ds:Reference Id="Reference-ID-13351" URI="#comprobante">
 <ds:Transforms>
 <ds:Transform Algorithm="http://www.w3.org/2000/09/xmldsig#enveloped-signature"/>
 </ds:Transforms>
 <ds:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1"/>
-<ds:DigestValue>zmlFCYayNx7bS/bpF4DMzRQbafQ=</ds:DigestValue>
+<ds:DigestValue>1YVUfhT2tUZ6LvnXVMG4ixxvco8=</ds:DigestValue>
 </ds:Reference>
 </ds:SignedInfo>
-<ds:SignatureValue Id="SignatureValue520756">
-MhTBoLkBEHC8SSt9kEJnkb4ZHWaWoadcgpupQo3shbXZl+OHceHJXslCUoa48V+f+UDH7JtgDNZ/
-u2S2cmQD+ZMlUckvH9cKQVS/kRAllytbexlP4kCSm91DTnylqJaEtLhQn7qo7cZk4F0puJ3nroWD
-sEKc3vXgcyfrhLUBZBsS9Mtnrtb7oeBwBCkbHo3SWPaQi2ryK2jDWAeLIZoLwhE9RoYAEarzsAXH
-pwI5z8dC+9px2UuyUgfKl7NjTDWQsPZbIVVTmQVorbNwxHmap5ATxifLMZf+B4tf1EgtxrQ0LRuJ
-uIv2yTEC28z0Dto7//4JobuBEwQTUyf1VZimDQ==
+<ds:SignatureValue Id="SignatureValue91497">
+ZSp1AWJGhptoHtF3oQhD4i9RsnYT6McmZPvELyE/rHc/f+WDfG/IEGTPjE1QAew1VxsRRp1e4vE4
+oVyWFkhHZBlWxjDNGebZiS31/lF7K6ouZsJ80D9q+xKZVnllLp+bTM+Uhw88lx/hxE4nfJHOf2E6
+LPsY0uqz62gQHg4omaOLTZRJrAqM+3H21o/ryfszFY0uvIt+4gy+z7UH52nfVIuh071MetRU7eFn
+dWnim6fKVCOrm//z2bW2N8qj99WSyBkflRn6dMMPOm3GxKZXAHfcTZ0535dk9+NLYN0SrSWIZ+Y3
+K84Xl7xCuDwbWWT8PVp9Y6d8ChmBe2qcKNnGAA==
 </ds:SignatureValue>
-<ds:KeyInfo Id="Certificate1722646">
+<ds:KeyInfo Id="Certificate11014885">
 <ds:X509Data>
 <ds:X509Certificate>
 MIILkjCCCXqgAwIBAgIEXDrIAjANBgkqhkiG9w0BAQsFADCBmTELMAkGA1UEBhMCRUMxHTAbBgNV
@@ -175,6 +192,23 @@ LRuAVSyi58qyAD0Eu1zLMc3KhEUXoxF7aA8P0w==
 </ds:RSAKeyValue>
 </ds:KeyValue>
 </ds:KeyInfo>
-<ds:Object Id="Signature651825-Object525631"><etsi:QualifyingProperties Target="#Signature651825"><etsi:SignedProperties Id="Signature651825-SignedProperties113598"><etsi:SignedSignatureProperties><etsi:SigningTime>2021-11-25T15:16:33-05:00</etsi:SigningTime><etsi:SigningCertificate><etsi:Cert><etsi:CertDigest><ds:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1"/><ds:DigestValue>m8okW/lbE8bTuXKKJc3pO5HpQGc=</ds:DigestValue></etsi:CertDigest><etsi:IssuerSerial><ds:X509IssuerName>CN=AUTORIDAD DE CERTIFICACION SUBCA-1 SECURITY DATA,OU=ENTIDAD DE CERTIFICACION DE INFORMACION,O=SECURITY DATA S.A. 1,C=EC</ds:X509IssuerName><ds:X509SerialNumber>1547356162</ds:X509SerialNumber></etsi:IssuerSerial></etsi:Cert></etsi:SigningCertificate></etsi:SignedSignatureProperties><etsi:SignedDataObjectProperties><etsi:DataObjectFormat ObjectReference="#Reference-ID-291850"><etsi:Description>contenido comprobante</etsi:Description><etsi:MimeType>text/xml</etsi:MimeType></etsi:DataObjectFormat></etsi:SignedDataObjectProperties></etsi:SignedProperties></etsi:QualifyingProperties></ds:Object></ds:Signature></factura>]]></comprobante>
-  <mensajes/>
+<ds:Object Id="Signature771564-Object467745"><etsi:QualifyingProperties Target="#Signature771564"><etsi:SignedProperties Id="Signature771564-SignedProperties521398"><etsi:SignedSignatureProperties><etsi:SigningTime>2021-11-29T15:35:07-05:00</etsi:SigningTime><etsi:SigningCertificate><etsi:Cert><etsi:CertDigest><ds:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1"/><ds:DigestValue>m8okW/lbE8bTuXKKJc3pO5HpQGc=</ds:DigestValue></etsi:CertDigest><etsi:IssuerSerial><ds:X509IssuerName>CN=AUTORIDAD DE CERTIFICACION SUBCA-1 SECURITY DATA,OU=ENTIDAD DE CERTIFICACION DE INFORMACION,O=SECURITY DATA S.A. 1,C=EC</ds:X509IssuerName><ds:X509SerialNumber>1547356162</ds:X509SerialNumber></etsi:IssuerSerial></etsi:Cert></etsi:SigningCertificate></etsi:SignedSignatureProperties><etsi:SignedDataObjectProperties><etsi:DataObjectFormat ObjectReference="#Reference-ID-13351"><etsi:Description>contenido comprobante</etsi:Description><etsi:MimeType>text/xml</etsi:MimeType></etsi:DataObjectFormat></etsi:SignedDataObjectProperties></etsi:SignedProperties></etsi:QualifyingProperties></ds:Object></ds:Signature></factura>]]></comprobante>
+  <mensajes>
+    <mensaje>
+      <mensaje>
+        <identificador>52</identificador>
+        <mensaje>ERROR EN DIFERENCIAS</mensaje>
+        <informacionAdicional>
+
+--- Inventario de errores ---
+
+- Factura:
+	El importe total esperado 100.8 no coincide con el calculado 90.0: total sin impuestos 79.2 - total descuento adicional 0.0 - total devolucion iva 0.0 - total compensaciones 0.0 + total impuestos 10.8 + propina 0.0 + total retenciones 0.0 + totalExportaciones 0.0 + total rubros terceros 0.0
+	El total sin impuestos de la factura 79.2 no es igual a la suma de los totales sin impuestos de los detalles 90.0
+- ImpuestoTotalizado:
+	La base imponible total FacturaTotalConImpuesto [codigo=2, codigoPorcentaje=2] esperado 79.2 no coincide con el calculado 90.0</informacionAdicional>
+        <tipo>ERROR</tipo>
+      </mensaje>
+    </mensaje>
+  </mensajes>
 </autorizacion>

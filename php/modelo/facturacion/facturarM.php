@@ -158,6 +158,7 @@ class facturarM
 
   function Listar_Productos($Cod_Marca,$OpcServicio=false,$PatronDeBusqueda=false,$NombreMarca=false,$SQL_Server=false)
   {
+    // print_r('es');die();
     if($NombreMarca=='.')
     {
       $NombreMarca ='';
@@ -462,6 +463,25 @@ class facturarM
       $respuest  = $this->db->String_Sql($sql);
       return $respuest;
   }
+
+ function Facturas_Impresas($TFA){
+    $sql = "UPDATE Facturas 
+          SET P = 1 
+          WHERE Item = '".$_SESSION['INGRESO']['item']."' 
+          AND Periodo = '".$_SESSION['INGRESO']['periodo']."' 
+          AND TC = '".$TFA['TC']."' 
+          AND Serie = '".$TFA['Serie']."' 
+          AND P = 0 ";
+    if (isset($TFA['Desde']) and  isset($TFA['Hasta']) And ($TFA['Desde'] <= $TFA['Hasta'])){
+        $sql.= " AND Factura BETWEEN ".$TFA['Desde']." and ".$TFA['Hasta']." ";
+    }else{
+        $sql.= " AND Factura = ".$TFA['Factura']." ";
+    }
+    $respuest  = $this->db->String_Sql($sql);
+    return $respuest;
+  }
+
+
 
 }
 

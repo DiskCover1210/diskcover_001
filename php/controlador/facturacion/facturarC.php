@@ -1,6 +1,7 @@
 <?php
 require_once(dirname(__DIR__,2)."/modelo/facturacion/facturarM.php");
 require_once(dirname(__DIR__,2)."/comprobantes/SRI/autorizar_sri.php");
+require_once(dirname(__DIR__,3)."/lib/fpdf/cabecera_pdf.php");
 
 $controlador = new facturarC();
 if(isset($_GET['lineas_factura']))
@@ -271,10 +272,12 @@ class facturarC
 {
 	private $modelo;
    private $sri;
+   private $pdf;
 
 	public function __construct(){
         $this->modelo = new facturarM();
         $this->sri = new autorizacion_sri();	
+        $this->pdf = new cabecera_pdf();
     }
 
     function lineas_facturas()
@@ -1091,6 +1094,7 @@ function delete_asientoF($parametros)
 
   function Autorizar_Factura_Actual($FA,$parametros)
   {
+   // print_r($parametros);die();
    $asientoF = $this->modelo->lineas_factura();
    if(count($asientoF)>0)
    {
@@ -1144,7 +1148,7 @@ function delete_asientoF($parametros)
          // print_r($FA);
          // print_r($parametros);die();
 
-        if($FA['Nuevo_Doc']){$FA['Factura'] = ReadSetDataNum($FA['TC']."_SERIE_".$FA['Serie'], True, True);}        
+        // if($FA['Nuevo_Doc']==false){$FA['Factura'] = ReadSetDataNum($FA['TC']."_SERIE_".$FA['Serie'], True, True);}        
         if(strlen($FA['Autorizacion_GR']) == 13){
            $GuiaRemision = ReadSetDataNum("GR_SERIE_".$FA['Serie_GR'], True, False);
            if($FA['Remision'] == $GuiaRemision){$FA['Remision'] = ReadSetDataNum("GR_SERIE_".$FA['Serie_GR'], True, True);}
@@ -1186,6 +1190,7 @@ function delete_asientoF($parametros)
 
         $respuseta = ''; 
         $respuesta2 = '';     
+      
        
        // 'Autorizamos la factura y/o Guia de Remision
         if(strlen($FA['Autorizacion']) == 13){
@@ -1219,56 +1224,53 @@ function delete_asientoF($parametros)
         $TA['CodigoC'] = $FA['codigoCliente'];
         Actualiza_Estado_Factura($TA);
 
-        return array('AU'=>$respuesta,'GR'=>$respuesta2);
+        $Grafico_PV = Leer_Campo_Empresa("Grafico_PV");
+        $imp = '';
+         if($FA['TC'] <> "OP")
+        {
+          // 'MsgBox FA.Autorizacion & vbCrLf & FA.Autorizacion_GR
+           if(strlen($FA['Autorizacion']) >= 13){
+              if($Grafico_PV){ 
+               $info = Imprimir_Punto_Venta_Grafico_datos($FA);
+               $this->pdf->Imprimir_Punto_Venta_Grafico($info);
+               $imp = $FA['Serie'].'-'.generaCeros($FA['Factura'],7);
+            }else{ Imprimir_Punto_Venta($FA); }
+           }else{
+               return array('AU'=>'multiple');
+           }
+           $this->modelo->Facturas_Impresas($FA);
+        }
+
+
+        return array('AU'=>$respuesta,'GR'=>$respuesta2,'pdf'=>$imp);
    }else
    {
       return -1;
    }
   }
 
-  function imprimir_factura($parametros)
+
+  function Imprimir_Punto_Venta_Grafico($FA)
+  {
+
+
+  }
+
+  function imprimir_multiple($parametros)
   {
 
    print_r($parametros);die();
-        $Grafico_PV = Leer_Campo_Empresa("Grafico_PV");
-       //     // RatonNormal
-       //     // 'MsgBox "..."
-        // if($FA['TC'] <> "OP")
-        // {
-        //   // 'MsgBox FA.Autorizacion & vbCrLf & FA.Autorizacion_GR
-        //    if(strlen($FA['Autorizacion']) >= 13){
-        //       if($Grafico_PV){ Imprimir_Punto_Venta_Grafico FA }else{ Imprimir_Punto_Venta FA }
-        //    }else{
-        //       Titulo = "IMPRESION"
-        //       Mensajes = "Facturacion Multiple"
-        //       If BoxMensaje = vbYes Then
-        //          Factura_Desde = FA.Factura
-        //          Factura_Hasta = FA.Factura
-        //          FA.Tipo_PRN = "FM"
-        //          Imprimir_Facturas_CxC Facturas, FA, True
-        //       Else
-        //          $FA['Tipo_PRN'] = "FA";
-        //          Imprimir_Facturas($FA);
-        //       End If
-        //    }
-        //    Facturas_Impresas FA
-        // }
-        //  //RatonReloj
-        // if($FA['TC'] <> "OP")
-        // {
-        //    if($FA['Remision'] > 0){
-        //       if(strlen($FA['Autorizacion_GR']) < 13){
-        //          Imprimir_Guia_Remision AdoFactura, AdoAsientoF, FA
-        //       }else if(strlen($FA['Autorizacion_GR']) >= 13){
-        //          SRI_Generar_PDF_GR FA, True
-        //       }
-        //    }
-        // }
-       
-    //  Else
-    //     RatonNormal
-    //     MsgBox "Revise los datos ingresados y vuelva a intentar grabar"
-    //  End If
+     // Titulo = "IMPRESION"
+     //          Mensajes = "Facturacion Multiple"
+     //          If BoxMensaje = vbYes Then
+     //             Factura_Desde = FA.Factura
+     //             Factura_Hasta = FA.Factura
+     //             FA.Tipo_PRN = "FM"
+     //             Imprimir_Facturas_CxC Facturas, FA, True
+     //          Else
+     //             $FA['Tipo_PRN'] = "FA";
+     //             Imprimir_Facturas($FA);
+     //          End If
 
 
   }

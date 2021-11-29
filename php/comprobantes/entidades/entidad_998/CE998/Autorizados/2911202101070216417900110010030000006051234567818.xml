@@ -1,25 +1,29 @@
-<?xml version="1.0" encoding="UTF-8"?><factura id="comprobante" version="1.1.0">
+<?xml version="1.0" encoding="UTF-8"?><autorizacion>
+  <estado>AUTORIZADO</estado>
+  <numeroAutorizacion>2911202101070216417900110010030000006051234567818</numeroAutorizacion>
+  <fechaAutorizacion class="fechaAutorizacion">29/11/2021 15:16:59.000</fechaAutorizacion>
+  <comprobante><![CDATA[<?xml version="1.0" encoding="UTF-8" standalone="no"?><factura id="comprobante" version="1.1.0">
   <infoTributaria>
     <ambiente>1</ambiente>
     <tipoEmision>1</tipoEmision>
     <razonSocial>VACA PRIETO WALTER JALIL</razonSocial>
     <nombreComercial>DISKCOVER SYSTEM</nombreComercial>
     <ruc>0702164179001</ruc>
-    <claveAcceso>2511202101070216417900110010030000005721234567811</claveAcceso>
+    <claveAcceso>2911202101070216417900110010030000006051234567818</claveAcceso>
     <codDoc>01</codDoc>
     <estab>001</estab>
     <ptoEmi>003</ptoEmi>
-    <secuencial>000000572</secuencial>
+    <secuencial>000000605</secuencial>
     <dirMatriz>Desarrollo para programacion de DiskCover System</dirMatriz>
   </infoTributaria>
   <infoFactura>
-    <fechaEmision>25/11/2021</fechaEmision>
+    <fechaEmision>29/11/2021</fechaEmision>
     <dirEstablecimiento>Desarrollo para programacion de DiskCover System</dirEstablecimiento>
     <obligadoContabilidad>SI</obligadoContabilidad>
     <tipoIdentificacionComprador>04</tipoIdentificacionComprador>
     <razonSocialComprador>8A IMPORTACIONES</razonSocialComprador>
     <identificacionComprador>0190376826001</identificacionComprador>
-    <totalSinImpuestos>26.40</totalSinImpuestos>
+    <totalSinImpuestos>0.00</totalSinImpuestos>
     <totalDescuento>0</totalDescuento>
     <totalConImpuestos>
       <totalImpuesto>
@@ -29,59 +33,70 @@
         <baseImponible>0</baseImponible>
         <valor>0.00</valor>
       </totalImpuesto>
-      <totalImpuesto>
-        <codigo>2</codigo>
-        <codigoPorcentaje>2</codigoPorcentaje>
-        <descuentoAdicional>0</descuentoAdicional>
-        <baseImponible>26.4</baseImponible>
-        <tarifa>12</tarifa>
-        <valor>3.6</valor>
-      </totalImpuesto>
     </totalConImpuestos>
     <propina>0</propina>
-    <importeTotal>33.6</importeTotal>
+    <importeTotal>0</importeTotal>
     <moneda>DOLAR</moneda>
     <pagos>
       <pago>
         <formaPago>01</formaPago>
-        <total>33.6</total>
+        <total>0</total>
       </pago>
     </pagos>
   </infoFactura>
-  <detalles/>
+  <detalles>
+    <detalle>
+      <codigoPrincipal>01.99.04.04</codigoPrincipal>
+      <descripcion>COMBO EL SECRETO DE BUCKINGHAM</descripcion>
+      <unidadMedida>DOLAR</unidadMedida>
+      <cantidad>.0000</cantidad>
+      <precioUnitario>30</precioUnitario>
+      <descuento>0</descuento>
+      <precioTotalSinImpuesto>0</precioTotalSinImpuesto>
+      <impuestos>
+        <impuesto>
+          <codigo>2</codigo>
+          <codigoPorcentaje>0</codigoPorcentaje>
+          <tarifa>0</tarifa>
+          <baseImponible>0</baseImponible>
+          <valor>0</valor>
+        </impuesto>
+      </impuestos>
+    </detalle>
+  </detalles>
   <infoAdicional>
     <campoAdicional nombre="Direccion">MANUEL VEGA 848 Y SUCRE</campoAdicional>
     <campoAdicional nombre="Email">monge</campoAdicional>
     <campoAdicional nombre="Referencia">DINERS</campoAdicional>
   </infoAdicional>
-<ds:Signature xmlns:ds="http://www.w3.org/2000/09/xmldsig#" xmlns:etsi="http://uri.etsi.org/01903/v1.3.2#" Id="Signature486034">
-<ds:SignedInfo Id="Signature-SignedInfo452105">
+<ds:Signature xmlns:ds="http://www.w3.org/2000/09/xmldsig#" xmlns:etsi="http://uri.etsi.org/01903/v1.3.2#" Id="Signature384296">
+<ds:SignedInfo Id="Signature-SignedInfo784929">
 <ds:CanonicalizationMethod Algorithm="http://www.w3.org/TR/2001/REC-xml-c14n-20010315"/>
 <ds:SignatureMethod Algorithm="http://www.w3.org/2000/09/xmldsig#rsa-sha1"/>
-<ds:Reference Id="SignedPropertiesID936789" Type="http://uri.etsi.org/01903#SignedProperties" URI="#Signature486034-SignedProperties610543">
+<ds:Reference Id="SignedPropertiesID255770" Type="http://uri.etsi.org/01903#SignedProperties" URI="#Signature384296-SignedProperties383690">
 <ds:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1"/>
-<ds:DigestValue>NfeXHZ4rtjMTml49kglm1wUBurU=</ds:DigestValue>
+<ds:DigestValue>NhVlObN+TShVj2Wy6Hb7ZyezaO0=</ds:DigestValue>
 </ds:Reference>
-<ds:Reference URI="#Certificate1986627">
+<ds:Reference URI="#Certificate1831444">
 <ds:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1"/>
-<ds:DigestValue>p3jXLKycMYkJUPS3/Jr2+HxF1Yw=</ds:DigestValue>
+<ds:DigestValue>0U3dsv4VMTbTIdx4Vx5nSsPGwL4=</ds:DigestValue>
 </ds:Reference>
-<ds:Reference Id="Reference-ID-975293" URI="#comprobante">
+<ds:Reference Id="Reference-ID-110713" URI="#comprobante">
 <ds:Transforms>
 <ds:Transform Algorithm="http://www.w3.org/2000/09/xmldsig#enveloped-signature"/>
 </ds:Transforms>
 <ds:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1"/>
-<ds:DigestValue>MgNcl4/f3NORSvBet4okozgb9iY=</ds:DigestValue>
+<ds:DigestValue>4R4ZfOu2rruzzt4IIuWJnBfFhLU=</ds:DigestValue>
 </ds:Reference>
 </ds:SignedInfo>
-<ds:SignatureValue Id="SignatureValue611433">
-idUtpJmh/jQg7+G7A33Av8lXOi+Q/iaZ4Hveb2Jpf3/WBkP0feszIpeCCBiUkp1afBn+Rrog6D4x
-3i5ajnbjt1aUDeaDr7i40auuCkAQiEBz5DYwZW0+5/ycFGZM85mgfHreF9dgYi0DXfI08KILFqMq
-NSNZvyuv+SkP/HYOTHM+Y3jRt0nf3Ztd4m5Seb1lUy4SN6qHIgfyiTLo+K2S+5mcI9M01KHFOe3I
-U4fDkB2qcxLEZ+0HiC2C+rFCweNYBK/FA3H+57cfp3b3DSU9ae6p7JkYftUjo47I4uyvRQHCnE0l
-ZZXdQrMzhfoj2U7TxkJPph0d5zZQW2KtNjRg3w==
+<ds:SignatureValue Id="SignatureValue714428">
+aLcM+QhhQnGQG/f/wuStVYwqcZyKz/CnwBbmiYCfOcMTUOMyI390okaG0pL25i2pirELbPP2ydFR
+CrswHH9LgNNvSGd+88dfU0nmk488hRmLr5tEVzqz2v003v6VVHl1BPAqZnLCikWD+tTj8yhGXHuq
+emmI+MgCQ2Tkdvqdk9d/bDAt7Yt3ViMZQoUOfy0Q1KGMm+ZMY1zr3dAuV837o4lSpbKzKHXDVQV8
+ru77MjcsAu0jHDcgnOUNb5Y0uUnjb/f4c/d3A70odKsf3GOQuJ3y1KPEXYLTYCFTOxAnGa0TUa+x
+AdgF/PzRE+UJRf9iIp7Oj/G1uYfuFvj2F5eK1Q==
 </ds:SignatureValue>
-<ds:KeyInfo Id="Certificate1986627">
+<ds:KeyInfo Id="Certificate1831444">
 <ds:X509Data>
 <ds:X509Certificate>
 MIILkjCCCXqgAwIBAgIEXDrIAjANBgkqhkiG9w0BAQsFADCBmTELMAkGA1UEBhMCRUMxHTAbBgNV
@@ -152,19 +167,6 @@ LRuAVSyi58qyAD0Eu1zLMc3KhEUXoxF7aA8P0w==
 </ds:RSAKeyValue>
 </ds:KeyValue>
 </ds:KeyInfo>
-<ds:Object Id="Signature486034-Object672680"><etsi:QualifyingProperties Target="#Signature486034"><etsi:SignedProperties Id="Signature486034-SignedProperties610543"><etsi:SignedSignatureProperties><etsi:SigningTime>2021-11-25T15:14:01-05:00</etsi:SigningTime><etsi:SigningCertificate><etsi:Cert><etsi:CertDigest><ds:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1"/><ds:DigestValue>m8okW/lbE8bTuXKKJc3pO5HpQGc=</ds:DigestValue></etsi:CertDigest><etsi:IssuerSerial><ds:X509IssuerName>CN=AUTORIDAD DE CERTIFICACION SUBCA-1 SECURITY DATA,OU=ENTIDAD DE CERTIFICACION DE INFORMACION,O=SECURITY DATA S.A. 1,C=EC</ds:X509IssuerName><ds:X509SerialNumber>1547356162</ds:X509SerialNumber></etsi:IssuerSerial></etsi:Cert></etsi:SigningCertificate></etsi:SignedSignatureProperties><etsi:SignedDataObjectProperties><etsi:DataObjectFormat ObjectReference="#Reference-ID-975293"><etsi:Description>contenido comprobante</etsi:Description><etsi:MimeType>text/xml</etsi:MimeType></etsi:DataObjectFormat></etsi:SignedDataObjectProperties></etsi:SignedProperties></etsi:QualifyingProperties></ds:Object></ds:Signature><ns2:respuestaSolicitud xmlns:ns2="http://ec.gob.sri.ws.recepcion">
-    <estado>DEVUELTA</estado>
-    <comprobantes>
-        <comprobante>
-            <claveAcceso>2511202101070216417900110010030000005721234567811</claveAcceso>
-            <mensajes>
-                <mensaje>
-                    <identificador>35</identificador>
-                    <mensaje>ARCHIVO NO CUMPLE ESTRUCTURA XML</mensaje>
-                    <informacionAdicional>Se encontró el siguiente error en la estructura del comprobante: cvc-complex-type.2.4.b: The content of element 'detalles' is not complete. One of '{detalle}' is expected..</informacionAdicional>
-                    <tipo>ERROR</tipo>
-                </mensaje>
-            </mensajes>
-        </comprobante>
-    </comprobantes>
-</ns2:respuestaSolicitud></factura>
+<ds:Object Id="Signature384296-Object1017627"><etsi:QualifyingProperties Target="#Signature384296"><etsi:SignedProperties Id="Signature384296-SignedProperties383690"><etsi:SignedSignatureProperties><etsi:SigningTime>2021-11-29T15:16:52-05:00</etsi:SigningTime><etsi:SigningCertificate><etsi:Cert><etsi:CertDigest><ds:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1"/><ds:DigestValue>m8okW/lbE8bTuXKKJc3pO5HpQGc=</ds:DigestValue></etsi:CertDigest><etsi:IssuerSerial><ds:X509IssuerName>CN=AUTORIDAD DE CERTIFICACION SUBCA-1 SECURITY DATA,OU=ENTIDAD DE CERTIFICACION DE INFORMACION,O=SECURITY DATA S.A. 1,C=EC</ds:X509IssuerName><ds:X509SerialNumber>1547356162</ds:X509SerialNumber></etsi:IssuerSerial></etsi:Cert></etsi:SigningCertificate></etsi:SignedSignatureProperties><etsi:SignedDataObjectProperties><etsi:DataObjectFormat ObjectReference="#Reference-ID-110713"><etsi:Description>contenido comprobante</etsi:Description><etsi:MimeType>text/xml</etsi:MimeType></etsi:DataObjectFormat></etsi:SignedDataObjectProperties></etsi:SignedProperties></etsi:QualifyingProperties></ds:Object></ds:Signature></factura>]]></comprobante>
+  <mensajes/>
+</autorizacion>

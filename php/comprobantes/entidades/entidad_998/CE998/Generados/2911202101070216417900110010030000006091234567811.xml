@@ -6,20 +6,20 @@
     <razonSocial>VACA PRIETO WALTER JALIL</razonSocial>
     <nombreComercial>DISKCOVER SYSTEM</nombreComercial>
     <ruc>0702164179001</ruc>
-    <claveAcceso>2511202101070216417900110010030000005721234567811</claveAcceso>
+    <claveAcceso>2911202101070216417900110010030000006091234567811</claveAcceso>
     <codDoc>01</codDoc>
     <estab>001</estab>
     <ptoEmi>003</ptoEmi>
-    <secuencial>000000572</secuencial>
+    <secuencial>000000609</secuencial>
     <dirMatriz>Desarrollo para programacion de DiskCover System</dirMatriz>
   </infoTributaria>
   <infoFactura>
-    <fechaEmision>25/11/2021</fechaEmision>
+    <fechaEmision>29/11/2021</fechaEmision>
     <dirEstablecimiento>Desarrollo para programacion de DiskCover System</dirEstablecimiento>
     <obligadoContabilidad>SI</obligadoContabilidad>
-    <tipoIdentificacionComprador>04</tipoIdentificacionComprador>
-    <razonSocialComprador>8A IMPORTACIONES</razonSocialComprador>
-    <identificacionComprador>0190376826001</identificacionComprador>
+    <tipoIdentificacionComprador>06</tipoIdentificacionComprador>
+    <razonSocialComprador>ALAVA CARRANZA PAULO JAVIER</razonSocialComprador>
+    <identificacionComprador>1316640745</identificacionComprador>
     <totalSinImpuestos>26.40</totalSinImpuestos>
     <totalDescuento>0</totalDescuento>
     <totalConImpuestos>
@@ -51,8 +51,26 @@
   </infoFactura>
   <detalles>
     <detalle>
-      <codigoPrincipal>01.99.04.02</codigoPrincipal>
-      <descripcion>COMBO EL RIOBAMBENITO</descripcion>
+      <codigoPrincipal>01.99.04.04</codigoPrincipal>
+      <descripcion>COMBO EL SECRETO DE BUCKINGHAM</descripcion>
+      <unidadMedida>DOLAR</unidadMedida>
+      <cantidad>.0000</cantidad>
+      <precioUnitario>30</precioUnitario>
+      <descuento>0</descuento>
+      <precioTotalSinImpuesto>0</precioTotalSinImpuesto>
+      <impuestos>
+        <impuesto>
+          <codigo>2</codigo>
+          <codigoPorcentaje>0</codigoPorcentaje>
+          <tarifa>0</tarifa>
+          <baseImponible>0</baseImponible>
+          <valor>0</valor>
+        </impuesto>
+      </impuestos>
+    </detalle>
+    <detalle>
+      <codigoPrincipal>01.99.04.04</codigoPrincipal>
+      <descripcion>COMBO EL SECRETO DE BUCKINGHAM</descripcion>
       <unidadMedida>DOLAR</unidadMedida>
       <cantidad>1.0000</cantidad>
       <precioUnitario>30</precioUnitario>
@@ -70,8 +88,7 @@
     </detalle>
   </detalles>
   <infoAdicional>
-    <campoAdicional nombre="Direccion">MANUEL VEGA 848 Y SUCRE</campoAdicional>
-    <campoAdicional nombre="Email">monge</campoAdicional>
-    <campoAdicional nombre="Referencia">DINERS</campoAdicional>
+    <campoAdicional nombre="Direccion">CUARTO DE BASICA</campoAdicional>
+    <campoAdicional nombre="Email">example@example.com</campoAdicional>
   </infoAdicional>
 </factura>

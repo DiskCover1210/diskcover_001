@@ -673,6 +673,45 @@ function Grabar_Factura_Actual()
 			})
 	}
 
+function Autorizar_Factura_Actual2()
+{
+	var FA = $("#FA").serialize();
+	var parametros = {
+		'TextObs':$('#TextObs').val(),
+		'TextNota':$('#TextNota').val(),
+		'TxtCompra':$('#TxtCompra').val(),
+		'TxtPedido':$('#TxtPedido').val(),
+		'TxtZona':$('#TxtZona').val(),
+		'TxtLugarEntrega':$('#TxtLugarEntrega').val(),
+		'TextComision':$('#TextComision').val(),
+		'MBoxFechaV':$('#MBoxFechaV').val(),
+		'Check1':$('#Check1').prop('checked'),
+		'CheqSP':$('#CheqSP').prop('checked'),
+		// 'DCTipoPago':$('#DCTipoPago option:selected').text(),
+		'DCTipoPago':$('#DCTipoPago').val(),
+		'TextFacturaNo':$('#TextFacturaNo').val(),
+		'DCMod':$('#DCMod').val(),
+		'Reprocesar':$('#Reprocesar').val(),
+		'Cliente':$('#DCCliente').val(),
+		'Total':$('#LabelTotal').val(),
+	}
+
+	// var url=  '../controlador/facturacion/facturarC.php?Autorizar_Factura_Actual=true&'+FA+'&'+parametros.serialize();;
+	// window.open(url, '_blank'); 
+		$.ajax({
+			  type: "POST",
+			  url: '../controlador/facturacion/facturarC.php?Autorizar_Factura_Actual=true&'+FA,
+			  data: {parametros:parametros}, 
+			  dataType:'json',
+			  success: function(data)
+			  {
+			  	var url=  '../vista/TEMP/'+data+'.pdf';
+					window.open(url, '_blank'); 				  	
+			  }
+			})
+	}
+
+
 function Autorizar_Factura_Actual()
 {
 	var FA = $("#FA").serialize();
@@ -702,14 +741,32 @@ function Autorizar_Factura_Actual()
 			  dataType:'json',
 			  success: function(data)
 			  {
-			  	console.log(data);
-			  	imprimir();			  	
+			  	if(data.AU.respuesta==1)
+			  	{
+			  		var url=  '../vista/TEMP/'+data.pdf+'.pdf';
+					   window.open(url, '_blank'); 				  	
+					   	Swal.fire({
+								type:'success',
+							  title: 'Factura Autorizada',
+							  confirmButtonText: 'Ok!',
+							  allowOutsideClick: false,
+							}).then((result) => {
+							  /* Read more about isConfirmed, isDenied below */
+							  if (result.value) {
+							  	location.reload();
+							  } 
+							})
+
+			  	}else if(data.AU.respuesta==3)
+			  	{
+			  		 Swal.fire('Factura Autorizada','','success');
+			  	} 	
 			  }
 			})
 	}
 
 
-	function imprimir()
+	function imprimir_multiple()
 	{
 		var FA = $("#FA").serialize();
 		var parametros = {
@@ -741,9 +798,9 @@ function Autorizar_Factura_Actual()
 			  	if(data.AU.respuesta==1)
 			  	{
 			  		 Swal.fire('Factura Autorizada','','success');
-			  	}
-			  	console.log(data);
-			  	imprimir();			  	
+				  	console.log(data);
+				  	imprimir();			 
+			  	} 	
 			  }
 			})	  
 	}
@@ -897,9 +954,35 @@ function boton5()
 }
 function boton6()
 {
-	src ="../vista/modales.php?FAbonos=true";
-	$('#frame').attr('src',src).show();
-	$('#myModal_Abonos').modal('show');
+
+
+
+
+	// src ="../vista/modales.php?FAbonos=true";
+	// $('#frame').attr('src',src).show();
+	// $('#myModal_Abonos').modal('show');
+
+	// $.ajax({
+	// 		  type: "POST",
+	// 		  url: '../controlador/facturacion/facturarC.php?imprimir=true',
+	// 		  // data: {parametros:parametros }, 
+	// 		  dataType:'json',
+	// 		  success: function(data)
+	// 		  {
+	// 		  	if(data.length>0)
+	// 		  	{
+
+	// 		  		//llena un alista
+	// 		  	}else
+	// 		  	{
+	// 		  		Swal.fire('No existe Ordenes para procesar','','info');
+	// 		  	}
+			  	
+	// 		  }
+	// 		})
+
+
+
 }
 //---------------Listar_Ordenes()------------
 function Listar_Ordenes()
@@ -1180,6 +1263,9 @@ function DCCiudadI()
         <div class="col-xs-2 col-md-2 col-sm-2 col-lg-1">
             <button type="button" class="btn btn-default" title="Asignar reserva" onclick="boton6()"><img src="../../img/png/archivero2.png"></button>
         </div>
+         <!-- <div class="col-xs-2 col-md-2 col-sm-2 col-lg-1">
+            <a href="#" class="btn btn-default" title="Asignar reserva" onclick="Autorizar_Factura_Actual2();" target="_blank" ><img src="../../img/png/archivero2.png"></a>
+        </div> -->
  </div>
 </div>
 <div class="container">	
