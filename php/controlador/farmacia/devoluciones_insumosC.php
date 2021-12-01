@@ -216,7 +216,37 @@ class devoluciones_insumosC
 		   $datos[14]['campo']='DH';
 		   $datos[14]['dato']=1;
 		   $datos[15]['campo']='CONTRA_CTA';
-		   $datos[15]['dato']='4.4.02.05.02';  //colocar contra cuenta cambio
+		   if($parametro['cc']!='')
+		   {
+		   	 // $cc = explode('-',$parametro['cc']);
+		   	 $datos[15]['dato']=$parametro['cc'];
+		   }else
+		   {
+		   	 $cta = buscar_en_ctas_proceso('Cta_Devoluciones');
+		   	 if($cta!=-1)
+		   	 {
+		   	 	$datos[15]['dato']=$cta; 
+		   	 }else
+		   	 {
+		   	 	$cta[0]['campo'] = 'Periodo'; 
+		   	 	$cta[0]['dato'] = $_SESSION['INGRESO']['periodo'];
+		   	 	$cta[1]['campo'] = 'Item';
+		   	 	$cta[1]['dato'] = $_SESSION['INGRESO']['item'];
+		   	 	$cta[2]['campo'] =	'DC';	   	 	
+		   	 	$cta[2]['dato'] =  'D';
+		   	 	$cta[3]['campo'] =	'Lst';	   	 	
+		   	 	$cta[3]['dato'] =  0;
+		   	 	$cta[4]['campo'] =	'Detalle';	   	 	
+		   	 	$cta[4]['dato'] =  'Cta_Devoluciones';
+		   	 	$cta[5]['campo'] =	'Codigo';	   	 	
+		   	 	$cta[5]['dato'] =  '4.4.02.05.02';
+		   	 	insert_generico('Ctas_Proceso',$cta);
+
+		   	 	$datos[15]['dato']='4.4.02.05.02';  
+
+		   	 }
+
+		   }
 		   $datos[16]['campo']='ORDEN';
 		   $datos[16]['dato']=$parametro['comprobante'];
 

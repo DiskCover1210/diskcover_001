@@ -1,5 +1,7 @@
-<?php  require_once("panel.php"); $cod='';$area='';$sub='';if(isset($_GET['comprobante'])){$cod =$_GET['comprobante'];}
+<?php  require_once("panel.php"); $cod='';$area='';$sub='';$cc='';$cc_no='';if(isset($_GET['comprobante'])){$cod =$_GET['comprobante'];}
 if(isset($_GET['subcta'])){$sub =$_GET['subcta'];}
+if(isset($_GET['centroc'])){$cc =$_GET['centroc'];}
+if(isset($_GET['cc_no'])){$cc_no =$_GET['cc_no'];}
 if(isset($_GET['area'])){$area =$_GET['area'];}
  $_SESSION['INGRESO']['modulo_']='99'; date_default_timezone_set('America/Guayaquil'); 
       unset($_SESSION['NEGATIVOS']['CODIGO_INV']);?>
@@ -25,6 +27,7 @@ if(isset($_GET['area'])){$area =$_GET['area'];}
     var num_li=0;
     // cargar_pedido();
     lista_devolucion();
+    autocoplet_cc();
 
   });
 
@@ -121,13 +124,22 @@ function lista_devolucion()
       $('#txt_orden').val(comprobante);
       var sub= '<?php echo $sub; ?>';
       var no = '<?php echo $area; ?>';
+      var cc = '<?php echo $cc; ?>';
+      var cc_no = '<?php echo $cc_no; ?>';
       // console.log(sub);console.log(no);
       $('#ddl_areas').append($('<option>',{value: sub, text: no,selected: true }));
+      $('#ddl_cc').append($('<option>',{value: cc, text: cc_no,selected: true }));
     if(sub!='')
     {
        // $('#ddl_areas').attr('readonly',true);
        // $('select').prop('disabled', true);
        $('#ddl_areas').prop('disabled', true);
+    }
+    if(cc!='')
+    {
+       // $('#ddl_areas').attr('readonly',true);
+       // $('select').prop('disabled', true);
+       $('#ddl_cc').prop('disabled', true);
     }
     if(comprobante=='')
     {
@@ -221,6 +233,10 @@ function lista_devolucion()
    {
    	var com = $('#txt_orden').val();
     var are = $('#ddl_areas').val();
+    var cc_nom = $('#ddl_cc option:selected').text();
+    var cc = $('#ddl_cc').val();
+    var cc = cc.split('-');
+    var cc = cc[0];
     var nom_a = $('#ddl_areas option:selected').text();
     var parametros = 
     {
@@ -232,8 +248,9 @@ function lista_devolucion()
       'area':are,
       'comprobante': com,
       'linea': $('#lineas').val(),
+      'cc':cc,
     }
-    if( $('#txt_cant').val() == 0 || $('#ddl_producto').val()=='' || $('#ddl_areas').val() =='' || com=='')
+    if( $('#txt_cant').val() == 0 || $('#ddl_producto').val()=='' || $('#ddl_areas').val() =='' || com=='' || cc=='')
     {
       Swal.fire('Asegurese de llenar todos os campos','','info');
       return false;
@@ -250,7 +267,7 @@ function lista_devolucion()
           Swal.fire('Agregado a lista de devoluciones','','success');
           if($('#lineas').val()==0)
           {
-          location.href='../vista/farmacia.php?mod=Farmacia&acc=devoluciones_departamento&acc1=Devolucion%20por%20departamentos&b=1&po=sub&comprobante='+com+'&subcta='+are+'&area='+nom_a; 
+          location.href='../vista/farmacia.php?mod=Farmacia&acc=devoluciones_departamento&acc1=Devolucion%20por%20departamentos&b=1&po=sub&comprobante='+com+'&subcta='+are+'&area='+nom_a+'&centroc='+cc+'&cc_no='+cc_nom; 
           }else{
           lista_devolucion();
           }
@@ -408,6 +425,24 @@ function lista_devolucion()
    
   }
 
+    function autocoplet_cc(){
+      $('#ddl_cc').select2({
+        placeholder: 'Seleccione centro de costos',
+        ajax: {
+          url:   '../controlador/farmacia/ingreso_descargosC.php?cc=true',
+          dataType: 'json',
+          delay: 250,
+          processResults: function (data) {
+            // console.log(data);
+            return {
+              results: data
+            };
+          },
+          cache: true
+        }
+      });
+  }
+
 </script>
  
 
@@ -453,12 +488,18 @@ function lista_devolucion()
       </div>
       <div class="panel-body" style="border: 1px solid #337ab7;">
         <div class="row">
-          <div class="col-sm-7">
+          <div class="col-sm-4">
             <button id="" class="btn btn-primary" onclick="generar_factura('<?php echo $cod;?>')"><i class="icon fa fa-cogs"></i> Procesar devolucion</button>                       
           </div>
           <div class="col-sm-2">
             <b>No Orden</b>
              <input type="text" name="txt_orden" id="txt_orden" class="form-control input-sm" readonly>
+          </div>
+          <div class="col-sm-3"> 
+            <b>Centro de costos:</b>
+            <select class="form-control input-sm" id="ddl_cc" onchange="">
+              <option value="">Seleccione Centro de costos</option>
+            </select>           
           </div>             
            <div class="col-sm-3">
             <b>Area de devolucion:</b>
