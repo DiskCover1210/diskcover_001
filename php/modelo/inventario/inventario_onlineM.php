@@ -8,9 +8,11 @@ $_SESSION['INGRESO']['modulo_']='60';
 class inventario_onlineM
 {
 	private $conn ;
+	private $db;
 	function __construct()
 	{
 	   $this->conn = cone_ajax();
+	   $this->db = new db();
 	}
 
 	function listar_articulos($query='')
@@ -19,27 +21,13 @@ class inventario_onlineM
      //$sql2="SELECT  Codigo_Inv,Producto,Unidad from Catalogo_Productos WHERE Item = '".$_SESSION['INGRESO']['item']."' AND TC = 'I' AND Periodo='".$_SESSION['INGRESO']['periodo']."'";
 			$sql2 = "SELECT Codigo_Inv,Producto,TC,Valor_Total,Unidad,Stock_Actual,Cta_Inventario FROM Catalogo_Productos WHERE INV = 1 AND Periodo = '".$_SESSION['INGRESO']['periodo']."' AND Item = '".$_SESSION['INGRESO']['item']."' AND LEN(Cta_Inventario)>3 AND LEN(Cta_Costo_Venta)>3 AND Producto LIKE '%".$query."%'";
      // print_r($sql2);die();
-        $stmt = sqlsrv_query($cid, $sql2);
-        $datos =  array();
-	   if( $stmt === false)  
-	   {  
-		 echo "Error en consulta PA.\n";  
-		 return '';
-		 die( print_r( sqlsrv_errors(), true));  
-	   }
-	    while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_ASSOC) ) 
-	   {
-	   	  
-	   	  // print_r($costo);die();
-          
-         // $datos[]=['id'=>$row['Codigo_Inv'].','.$row['Unidad'].','.$row['Stock_Actual'].','.$row['TC'].','.$row['Valor_Total'].','.$row['Cta_Inventario'],'text'=>utf8_encode($row['Producto'])];
-            $datos[]=['id'=>$row['Codigo_Inv'].','.$row['Unidad'].','.$row['Stock_Actual'].','.$row['TC'].','.$row['Valor_Total'].','.$row['Cta_Inventario'],'text'=>$row['Producto']];
 
-
-		//$datos[]=['id'=>$row['Codigo_Inv'].'/'.$row['Unidad'],'text'=>utf8_encode($row['Producto']),'children'=>$this->lista_hijos($row['Codigo_Inv'],$query)];	
-		   // $datos[]=['id'=>$row['Codigo_Inv'].'/'.$row['Unidad'],'text'=>$row['Producto'],'children'=>$this->lista_hijos($row['Codigo_Inv'],$query)];	
+	   $datos1 =  $this->db->datos($sql2);
+	   $datos = array();
+	   foreach ($datos1 as $key => $value) {
+	   	 $datos[]=array('id'=>$value['Codigo_Inv'].','.$value['Unidad'].','.$value['Stock_Actual'].','.$value['TC'].','.$value['Valor_Total'].','.$value['Cta_Inventario'],'text'=>$value['Producto']);		
 	   }
-	   // print_r($datos);die();
+
        return $datos;
 	}
 
@@ -104,7 +92,7 @@ order by CP.Codigo_Inv,CP.Producto,CP.TC,CP.Valor_Total,CP.Unidad,CP.Cta_Inventa
 	}
 
 
-	function listar_cc($query='')
+	function listar_cc($query='',$proyectos=false)
 	{
 			$cid = $this->conn;
     // 'LISTA DE CODIGO DE ANEXOS
@@ -113,21 +101,17 @@ order by CP.Codigo_Inv,CP.Producto,CP.TC,CP.Valor_Total,CP.Unidad,CP.Cta_Inventa
      {
      	$sql .=" AND Cuenta+' '+Codigo LIKE '%".$query."%'"; 
      }
-     // print_r($sql);die();
-        $stmt = sqlsrv_query($cid, $sql);
-        $datos =  array();
-	   if( $stmt === false)  
-	   {  
-		 echo "Error en consulta PA.\n";  
-		 return '';
-		 die( print_r( sqlsrv_errors(), true));  
-	   }
-	    while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_ASSOC) ) 
-	   {
-		$datos[]=['id'=>$row['Codigo'],'text'=>utf8_encode($row['Cuenta'])];
-		// $datos[]=['id'=>$row['Codigo'],'text'=>$row['Cuenta']];	
-	   }
-       return $datos;
+      if($proyectos)
+     {
+     	$sql .=" AND Codigo LIKE '".$proyectos."%'"; 
+     }
+     	
+		 $datos1 =  $this->db->datos($sql);
+		 $datos = array();
+		 foreach ($datos1 as $key => $value) {
+		   	$datos[]=array('id'=>$value['Codigo'],'text'=>$value['Cuenta']);		
+		 }
+	     return $datos;
 
 	}
 
@@ -140,25 +124,16 @@ order by CP.Codigo_Inv,CP.Producto,CP.TC,CP.Valor_Total,CP.Unidad,CP.Cta_Inventa
      {
      	$sql .=" AND Cuenta+' '+Codigo LIKE '%".$query."%'"; 
      }
-     // print_r($sql);die();
-        $stmt = sqlsrv_query($cid, $sql);
-        $datos =  array();
-	   if( $stmt === false)  
-	   {  
-		 echo "Error en consulta PA.\n";  
-		 return '';
-		 die( print_r( sqlsrv_errors(), true));  
-	   }
-	    while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_ASSOC) ) 
-	   {
-		$datos[]=['id'=>$row['Codigo'],'text'=>utf8_encode($row['Cuenta'])];
-		// $datos[]=['id'=>$row['Codigo'],'text'=>$row['Cuenta']];	
+	   $datos1 =  $this->db->datos($sql);
+	   $datos = array();
+	   foreach ($datos1 as $key => $value) {
+	   	 $datos[]=array('id'=>$value['Codigo'],'text'=>$value['Cuenta']);		
 	   }
        return $datos;
 
 	}
 
-	function listar_rubro($query='')
+	function listar_rubro($query='',$proyectos=false)
 	{
 	
 	$cid = $this->conn;
@@ -168,27 +143,22 @@ order by CP.Codigo_Inv,CP.Producto,CP.TC,CP.Valor_Total,CP.Unidad,CP.Cta_Inventa
      {
      	$sql .=" AND Detalle+' '+Codigo LIKE '%".$query."%'"; 
      }
+     if($proyectos)
+     {
+     	$sql .=" AND Cta_Reembolso LIKE '".$proyectos."%'"; 
+     }
+     $sql.= "  ORDER BY Codigo ASC";
 
      // print_r($sql);die();
-     $sql.= "  ORDER BY Codigo ASC";
-          // print_r($sql);die();
-        $stmt = sqlsrv_query($cid, $sql);
-        $datos =  array();
-	   if( $stmt === false)  
-	   {  
-		 echo "Error en consulta PA.\n";  
-		 return '';
-		 die( print_r( sqlsrv_errors(), true));  
-	   }
-	    while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_ASSOC) ) 
-	   {
-		// $datos[]=['id'=>$row['Codigo'],'text'=>utf8_encode($row['Detalle'])];
-		$datos[]=['id'=>$row['Codigo'],'text'=>$row['Detalle']];		
+	   $datos1 =  $this->db->datos($sql);
+	   $datos = array();
+	   foreach ($datos1 as $key => $value) {
+	   	 $datos[]=array('id'=>$value['Codigo'],'text'=>$value['Detalle']);		
 	   }
        return $datos;
 	}
 
-	function listar_rubro_bajas($query='')
+	function listar_rubro_bajas($query='',$proyectos=false)
 	{
 	
 	$cid = $this->conn;
@@ -198,23 +168,18 @@ order by CP.Codigo_Inv,CP.Producto,CP.TC,CP.Valor_Total,CP.Unidad,CP.Cta_Inventa
      {
      	$sql .=" AND Detalle+' '+Codigo LIKE '%".$query."%'"; 
      }
-
-     // print_r($sql);die();
+      if($proyectos)
+     {
+     	$sql .=" AND Cta_Reembolso LIKE '".$proyectos."%'"; 
+     }
      $sql.= "  ORDER BY Codigo ASC";
-          // print_r($sql);die();
-        $stmt = sqlsrv_query($cid, $sql);
-        $datos =  array();
-	   if( $stmt === false)  
-	   {  
-		 echo "Error en consulta PA.\n";  
-		 return '';
-		 die( print_r( sqlsrv_errors(), true));  
+
+	   $datos1 =  $this->db->datos($sql);
+	   $datos = array();
+	   foreach ($datos1 as $key => $value) {
+	   	 $datos[]=array('id'=>$value['Codigo'],'text'=>$value['Detalle']);		
 	   }
-	    while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_ASSOC) ) 
-	   {
-		// $datos[]=['id'=>$row['Codigo'],'text'=>utf8_encode($row['Detalle'])];
-		$datos[]=['id'=>$row['Codigo'],'text'=>$row['Detalle']];		
-	   }
+	
        return $datos;
 	}
 	
@@ -228,18 +193,8 @@ order by CP.Codigo_Inv,CP.Producto,CP.TC,CP.Valor_Total,CP.Unidad,CP.Cta_Inventa
          	$sql .= " AND Fecha_Fab='".$fecha."'";
          }
           // print_r($sql);die();
-        $stmt = sqlsrv_query($cid, $sql);
-        $datos =  array();
-	   if( $stmt === false)  
-	   {  
-		 echo "Error en consulta PA.\n";  
-		 return '';
-		 die( print_r( sqlsrv_errors(), true));  
-	   }
-	    while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_ASSOC) ) 
-	   {
-		$datos[]=$row;	
-	   }
+
+	   $datos =  $this->db->datos($sql);
        return $datos;
 	}
 
@@ -275,19 +230,11 @@ order by CP.Codigo_Inv,CP.Producto,CP.TC,CP.Valor_Total,CP.Unidad,CP.Cta_Inventa
 
 	 function eliminar_aiseto_K()
 	{
-		 $cid=$this->conn;
+		 // $cid=$this->conn;
 		$sql = "DELETE Asiento_K WHERE Item='".$_SESSION['INGRESO']['item']."' AND CodigoU='".$_SESSION['INGRESO']['CodigoU']."'";
 		// print_r($sql);die();
-		$stmt = sqlsrv_query($cid, $sql);
-	    if( $stmt === false)  
-	      {  
-		     echo "Error en consulta PA.\n";  
-		     return -1;
-		     die( print_r( sqlsrv_errors(), true));  
-	      }
-	      else{
-	      	return 1;
-	      }      
+
+		return $this->db->String_Sql($sql);
 
 	}
 
@@ -333,18 +280,8 @@ LEFT JOIN Catalogo_SubCtas CS2 on A.Codigo_Dr = CS2.Codigo  WHERE  CodigoU = '".
     // 'LISTA DE CODIGO DE ANEXOS
      $sql = "SELECT SUM(VALOR_TOTAL) as 'total',CONTRA_CTA as 'cuenta',Fecha_Fab as 'fecha',TC,SUM(Consumos) AS 'Consumos',VALOR_UNIT FROM Asiento_K  WHERE Item =  '".$_SESSION['INGRESO']['item']."' AND CodigoU ='".$_SESSION['INGRESO']['Id']."' AND Fecha_Fab = '".$fecha."' GROUP BY CONTRA_CTA,Fecha_Fab,TC,Consumos,VALOR_UNIT";
           // print_r($sql);die();
-        $stmt = sqlsrv_query($cid, $sql);
-        $datos =  array();
-	   if( $stmt === false)  
-	   {  
-		 echo "Error en consulta PA.\n";  
-		 return '';
-		 die( print_r( sqlsrv_errors(), true));  
-	   }
-	    while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_ASSOC) ) 
-	   {
-		$datos[]=$row;	
-	   }
+
+	   $datos =  $this->db->datos($sql);
        return $datos;
 	}
 
@@ -354,18 +291,8 @@ LEFT JOIN Catalogo_SubCtas CS2 on A.Codigo_Dr = CS2.Codigo  WHERE  CodigoU = '".
     // 'LISTA DE CODIGO DE ANEXOS
      $sql = "SELECT SUM(VALOR_TOTAL) as 'total',CTA_INVENTARIO as 'cuenta',Fecha_Fab as 'fecha',TC FROM Asiento_K  WHERE Item = '".$_SESSION['INGRESO']['item']."' AND CodigoU = '".$_SESSION['INGRESO']['CodigoU']."' AND Fecha_Fab = '".$fecha."' GROUP BY CTA_INVENTARIO,Fecha_Fab,TC";
           // print_r($sql);die();
-        $stmt = sqlsrv_query($cid, $sql);
-        $datos =  array();
-	   if( $stmt === false)  
-	   {  
-		 echo "Error en consulta PA.\n";  
-		 return '';
-		 die( print_r( sqlsrv_errors(), true));  
-	   }
-	    while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_ASSOC) ) 
-	   {
-		$datos[]=$row;	
-	   }
+
+	   $datos =  $this->db->datos($sql);
        return $datos;
 	}
 
@@ -375,18 +302,8 @@ LEFT JOIN Catalogo_SubCtas CS2 on A.Codigo_Dr = CS2.Codigo  WHERE  CodigoU = '".
     // 'LISTA DE CODIGO DE ANEXOS
      $sql = "SELECT Codigo_Dr,Sum(Consumos*VALOR_UNIT) AS 'TOTAL',Fecha_Fab as 'fecha' FROM Asiento_K  WHERE Item = '".$_SESSION['INGRESO']['item']."' AND CodigoU =  '".$_SESSION['INGRESO']['CodigoU']."'  AND LEN(Codigo_Dr)>1  AND Fecha_Fab = '".$fecha."' GROUP BY Codigo_Dr,Fecha_Fab";
           // print_r($sql);die();
-        $stmt = sqlsrv_query($cid, $sql);
-        $datos =  array();
-	   if( $stmt === false)  
-	   {  
-		 echo "Error en consulta PA.\n";  
-		 return '';
-		 die( print_r( sqlsrv_errors(), true));  
-	   }
-	    while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_ASSOC) ) 
-	   {
-		$datos[]=$row;	
-	   }
+
+	   $datos =  $this->db->datos($sql);
        return $datos;
 	}
 	function desperdicios_haber($fecha)
@@ -395,18 +312,7 @@ LEFT JOIN Catalogo_SubCtas CS2 on A.Codigo_Dr = CS2.Codigo  WHERE  CodigoU = '".
     // 'LISTA DE CODIGO DE ANEXOS
      $sql = "SELECT CTA_INVENTARIO,Sum(Consumos*VALOR_UNIT) AS 'TOTAL',Fecha_Fab as 'fecha' FROM Asiento_K  WHERE Item = '".$_SESSION['INGRESO']['item']."' AND CodigoU =  '".$_SESSION['INGRESO']['CodigoU']."'  AND LEN(Codigo_Dr)>1  AND Fecha_Fab = '".$fecha."'  GROUP BY CTA_INVENTARIO,Fecha_Fab";
           // print_r($sql);die();
-        $stmt = sqlsrv_query($cid, $sql);
-        $datos =  array();
-	   if( $stmt === false)  
-	   {  
-		 echo "Error en consulta PA.\n";  
-		 return '';
-		 die( print_r( sqlsrv_errors(), true));  
-	   }
-	    while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_ASSOC) ) 
-	   {
-		$datos[]=$row;	
-	   }
+	   $datos =  $this->db->datos($sql);
        return $datos;
 	}
 
@@ -417,54 +323,23 @@ LEFT JOIN Catalogo_SubCtas CS2 on A.Codigo_Dr = CS2.Codigo  WHERE  CodigoU = '".
     // 'LISTA DE CODIGO DE ANEXOS
      $sql = "SELECT SUM(VALOR_TOTAL) as 'total',CONTRA_CTA,SUBCTA,Fecha_Fab,TC FROM Asiento_K  WHERE Item = '".$_SESSION['INGRESO']['item']."' AND CodigoU = '".$_SESSION['INGRESO']['Id']."' AND Fecha_Fab = '".$fecha."' GROUP BY CONTRA_CTA,Fecha_Fab,TC,SUBCTA";
           // print_r($sql);die();
-        $stmt = sqlsrv_query($cid, $sql);
-        $datos =  array();
-	   if( $stmt === false)  
-	   {  
-		 echo "Error en consulta PA.\n";  
-		 return '';
-		 die( print_r( sqlsrv_errors(), true));  
-	   }
-	    while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_ASSOC) ) 
-	   {
-		$datos[]=$row;	
-	   }
+
+	   $datos =  $this->db->datos($sql);
        return $datos;
 	}
 
 	function cuenta_existente()
 	{
-		 $cid = $this->conn;
+		 // $cid = $this->conn;
 		 $sql="SELECT CP.Codigo as 'Codigo'  FROM Ctas_Proceso CP WHERE CP.Item = '".$_SESSION['INGRESO']['item']."' AND CP.Periodo = '".$_SESSION['INGRESO']['periodo']."' AND CP.Detalle = 'Cta_Desperdicio'";
 		 // print_r($sql);die();
-        $stmt = sqlsrv_query($cid, $sql);
-        $datos =  array();
-	   if( $stmt === false)  
-	   {  
-		 echo "Error en consulta PA.\n";  
-		 return '';
-		 die( print_r( sqlsrv_errors(), true));  
-	   }
-	    while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_ASSOC) ) 
-	   {
-		$datos[]=$row;	
-	   }
+	   $datos =  $this->db->datos($sql);
 	   if (count($datos)>0) {
 	   	   $sql1="SELECT Codigo FROM Catalogo_Cuentas WHERE Codigo = '".$datos[0]['Codigo']."' AND  Item = '".$_SESSION['INGRESO']['item']."' AND Periodo = '".$_SESSION['INGRESO']['periodo']."' AND DG = 'D' ";
 
         // print_r($sql1);die();
-        $stmt1 = sqlsrv_query($cid, $sql1);
-        $datos1 =  array();
-	   if( $stmt1 === false)  
-	   {  
-		 echo "Error en consulta PA.\n";  
-		 return '';
-		 die( print_r( sqlsrv_errors(), true));  
-	   }
-	    while( $row1 = sqlsrv_fetch_array( $stmt1, SQLSRV_FETCH_ASSOC) ) 
-	   {
-		$datos1[]=$row1;	
-	   }
+
+	   $datos1 =  $this->db->datos($sql1);
 	   if(count($datos1)>0)	   {
 
 	     	$_SESSION['INGRESO']['CTA_DESPERDICIO'] = $datos1[0]['Codigo'];
@@ -487,18 +362,8 @@ LEFT JOIN Catalogo_SubCtas CS2 on A.Codigo_Dr = CS2.Codigo  WHERE  CodigoU = '".
     // 'LISTA DE CODIGO DE ANEXOS
      $sql = "SELECT * FROM Catalogo_Cuentas  WHERE Item = '".$_SESSION['INGRESO']['item']."' AND Periodo = '".$_SESSION['INGRESO']['periodo']."' AND Codigo = '".$cuenta."'";
           // print_r($sql);die();
-        $stmt = sqlsrv_query($cid, $sql);
-        $datos =  array();
-	   if( $stmt === false)  
-	   {  
-		 echo "Error en consulta PA.\n";  
-		 return '';
-		 die( print_r( sqlsrv_errors(), true));  
-	   }
-	    while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_ASSOC) ) 
-	   {
-		$datos[]=$row;	
-	   }
+
+	   $datos =  $this->db->datos($sql);
        return $datos;
 	}
 	function catalogo_subcuentas($cuenta)
@@ -508,18 +373,7 @@ LEFT JOIN Catalogo_SubCtas CS2 on A.Codigo_Dr = CS2.Codigo  WHERE  CodigoU = '".
     // 'LISTA DE CODIGO DE ANEXOS
      $sql = "SELECT * FROM Catalogo_SubCtas   WHERE Item = '".$_SESSION['INGRESO']['item']."' AND Periodo = '".$_SESSION['INGRESO']['periodo']."' AND Codigo = '".$cuenta."'";
           // print_r($sql);die();
-        $stmt = sqlsrv_query($cid, $sql);
-        $datos =  array();
-	   if( $stmt === false)  
-	   {  
-		 echo "Error en consulta PA.\n";  
-		 return '';
-		 die( print_r( sqlsrv_errors(), true));  
-	   }
-	    while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_ASSOC) ) 
-	   {
-		$datos[]=$row;	
-	   }
+	   $datos =  $this->db->datos($sql);
        return $datos;
 	}
 
@@ -527,19 +381,7 @@ LEFT JOIN Catalogo_SubCtas CS2 on A.Codigo_Dr = CS2.Codigo  WHERE  CodigoU = '".
 	{
 		$cid = $this->conn;
 		$sql="SELECT * FROM Asiento WHERE CodigoU='".$_SESSION['INGRESO']['CodigoU']."' AND Item='".$_SESSION['INGRESO']['item']."' AND T_No = '60'";
-		// print_r($sql);die();
-		  $stmt = sqlsrv_query($cid, $sql);
-        $datos =  array();
-	   if( $stmt === false)  
-	   {  
-		 echo "Error en consulta PA.\n";  
-		 return '';
-		 die( print_r( sqlsrv_errors(), true));  
-	   }
-	    while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_ASSOC) ) 
-	   {
-		$datos[]=$row;	
-	   }
+	   $datos =  $this->db->datos($sql);
        return $datos;
 	}
 	function insertar_trans_kardex($datos)
@@ -550,7 +392,7 @@ LEFT JOIN Catalogo_SubCtas CS2 on A.Codigo_Dr = CS2.Codigo  WHERE  CodigoU = '".
 
 	function stock_kardex($id)
 	{
-		$cid = $this->conn;
+		// $cid = $this->conn;
 		$sql="SELECT SUM(Entrada-Salida) as 'stock' 
 		FROM Trans_Kardex 
 		WHERE Item = '".$_SESSION['INGRESO']['item']."' 
@@ -558,19 +400,8 @@ LEFT JOIN Catalogo_SubCtas CS2 on A.Codigo_Dr = CS2.Codigo  WHERE  CodigoU = '".
 		AND  Fecha <= '".date('Y-m-d')."' 
 		AND Codigo_Inv ='".$id."' 
 		AND T <> 'A' ";
-		// print_r($sql);die();
-		  $stmt = sqlsrv_query($cid, $sql);
-        $datos =  array();
-	   if( $stmt === false)  
-	   {  
-		 echo "Error en consulta PA.\n";  
-		 return '';
-		 die( print_r( sqlsrv_errors(), true));  
-	   }
-	    while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_ASSOC) ) 
-	   {
-		$datos[]=$row;	
-	   }
+        $datos =  $this->db->datos($sql);
+	
        return $datos;
 
 	}
@@ -585,37 +416,47 @@ LEFT JOIN Catalogo_SubCtas CS2 on A.Codigo_Dr = CS2.Codigo  WHERE  CodigoU = '".
 		AND Periodo = '".$_SESSION['INGRESO']['periodo']."'
 		AND T <> 'A'
 		ORDER BY Fecha DESC,TP DESC, Numero DESC,ID DESC";
-		$stmt = sqlsrv_query($cid, $sql);
-        $datos =  array();
-	   if( $stmt === false)  
-	   {  
-		 echo "Error en consulta PA.\n";  
-		 return '';
-		 die( print_r( sqlsrv_errors(), true));  
-	   }
-	    while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_ASSOC) ) 
-	   {
-		$datos[]=$row;	
-	   }
+		// $stmt = sqlsrv_query($cid, $sql);
+        $datos =  $this->db->datos($sql);
+	
        return $datos;
 
 	}
 	function delete_SC_ASientos(){
-		 $cid=$this->conn;
 		$sql = "DELETE Asiento_SC WHERE  Item='".$_SESSION['INGRESO']['item']."' AND T_No='60' AND CodigoU='".$_SESSION['INGRESO']['CodigoU']."';";
 		$sql.= "DELETE Asiento WHERE  Item='".$_SESSION['INGRESO']['item']."' AND T_No='60' AND CodigoU='".$_SESSION['INGRESO']['CodigoU']."';";
 		//print_r($sql);die();
-		$stmt = sqlsrv_query($cid, $sql);
-	    if( $stmt === false)  
-	      {  
-		     echo "Error en consulta PA.\n";  
-		     return -1;
-		     die( print_r( sqlsrv_errors(), true));  
-	      }
-	      else{
-	      	return 1;
-	      }      
 
+		return $this->db->String_Sql($sql);
+	
+
+	}
+
+	function codmarca()
+	{
+		$sql = "SELECT   CodMar, Marca, Item, Periodo, X, ID
+		FROM Catalogo_Marcas
+		WHERE   Item = '".$_SESSION['INGRESO']['item']."' 
+		AND Periodo = '".$_SESSION['INGRESO']['periodo']."' 
+		AND LEN(CodMar) = 2
+		ORDER BY Marca ";
+		return $this->db->datos($sql);
+
+	}
+
+	function proyectos()
+	{
+		$sql="SELECT CP.Codigo,CC.Cuenta 
+			FROM Catalogo_Cuentas as CC, Ctas_Proceso As CP
+			WHERE CC.DG='G' 
+			AND CC.Periodo = '".$_SESSION['INGRESO']['periodo']."' 
+			AND CC.Item = '".$_SESSION['INGRESO']['item']."' 
+			AND CP.Detalle like 'Cta_Proyecto:%'
+			AND CC.Periodo = CP.Periodo
+			AND CC.Item = CP.Item
+			AND CC.Codigo = CP.Codigo
+			ORDER BY CP.Codigo ";
+			return $this->db->datos($sql);
 
 	}
 

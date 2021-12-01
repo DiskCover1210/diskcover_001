@@ -1,9 +1,16 @@
-<?php  require_once("panel.php"); $_SESSION['INGRESO']['modulo_']='60'; ?>
+<?php  require_once("panel.php"); $_SESSION['INGRESO']['modulo_']='60'; 
+$marca = '';
+$proye = '';
+if(isset($_GET['marca'])){$marca=$_GET['marca'];}
+if(isset($_GET['proyecto'])){$proye=$_GET['proyecto'];}
+
+?>
 <script type="text/javascript">
   var f = '';
-
-     function verificar_cuenta()
+function verificar_cuenta()
   {
+    var mar = $('#txt_CodMar').val(); 
+    var pro = $('#txt_proyecto').val(); 
 
     $.ajax({
      // data:  {parametros:parametros},
@@ -19,8 +26,26 @@
           }else if(response == -2)
           {           
             window.location = "../vista/inventario.php?mod=Inventario&cuenta=-2";
-          }
-          
+          }else
+          {
+            console.log(mar+'-'+pro);
+            if(mar=='' && pro == '')
+            {
+              $('#myModal_proyecto').modal('show');    
+            }else
+            {
+              $("#ddl_proyecto option[value='"+pro+"']").attr("selected",true);
+              $("#ddl_marca option[value='"+mar+"']").attr("selected",true);
+
+              console.log($('#ddl_proyecto option:selected').text());
+
+              // $('#ddl_proyecto').val(pro);
+              // $('#ddl_marca').val(mar);
+              
+              $('#lbl_proyecto').text($('#ddl_proyecto option:selected').text());
+              $('#lbl_marca').text($('#ddl_marca option:selected').text());
+            }
+          }     
          
       }
     });
@@ -29,7 +54,8 @@
 
   $(document).ready(function()
   {
-
+    marcas();
+    proyectos();
     verificar_cuenta();
 
   $('#imprimir_pdf').click(function(){
@@ -66,11 +92,12 @@
      });
 
      $('body').on('DOMNodeInserted', '.selectr', function () {
-        
+
+                var pro = $('#txt_proyecto').val();          
                $("#"+this.id).select2({
                 placeholder: 'Seleccione rubro',
                 ajax: {
-                url: '../controlador/inventario/inventario_onlineC.php?rubro=true',
+                url: '../controlador/inventario/inventario_onlineC.php?rubro=true&pro='+pro,
                 dataType: 'json',
                 delay: 250,
                 processResults: function (data) {
@@ -82,12 +109,13 @@
               }
             });
   }); 
-       $('body').on('DOMNodeInserted', '.select_cc', function () {       
-          
+       $('body').on('DOMNodeInserted', '.select_cc', function () {  
+
+               var pro = $('#txt_proyecto').val();  
                $("#"+this.id).select2({
                  placeholder: 'Centro costo',
                  ajax: {
-                 url: '../controlador/inventario/inventario_onlineC.php?cc=true',
+                 url: '../controlador/inventario/inventario_onlineC.php?cc=true&pro='+pro,
                  dataType: 'json',
                  delay: 250,
                  processResults: function (data) {
@@ -141,11 +169,11 @@
    
   }
   function autocmpletar_rubro(id=''){
-   
+      var pro = $('#txt_proyecto').val();      
       $('#ddl_rubro_'+id).select2({
         placeholder: 'Seleccione rubro',
         ajax: {
-          url: '../controlador/inventario/inventario_onlineC.php?rubro=true',
+          url: '../controlador/inventario/inventario_onlineC.php?rubro=true&pro='+pro,
           dataType: 'json',
           delay: 250,
           processResults: function (data) {
@@ -159,7 +187,7 @@
     
   }
     function autocmpletar_rubro_bajas(id=''){
-   
+       var pro = $('#txt_proyecto').val();         
       $('#ddl_rubro_bajas_'+id).select2({
         placeholder: 'Seleccione Baja por',
         ajax: {
@@ -177,11 +205,12 @@
     
   }
    function autocmpletar_cc(id=''){
-   
+
+    var pro = $('#txt_proyecto').val();   
        $('#ddl_cc_'+id).select2({
         placeholder: 'Centro costo',
         ajax: {
-          url: '../controlador/inventario/inventario_onlineC.php?cc=true',
+          url: '../controlador/inventario/inventario_onlineC.php?cc=true&pro='+pro,
           dataType: 'json',
           delay: 250,
           processResults: function (data) {
@@ -338,9 +367,9 @@
             $('#num_filas').val(response.length);
             $.each(response,function(i,item){
               console.log(item.Fecha_Fab.date);
-                lineas +='<div class="row"><div class="col-sm-12"><div class="col-sm-1"><b>Fecha</b><br><input type="text" readonly value="'+item.Fecha_Fab.date.substr(0,10)+'" class="form-control input-sm" id="fecha_'+i+'"/></div><div class="col-sm-1" style=" padding-left: 0px;  padding-right: 0px;"><b>Codigo</b><input type="hidden" id="txt_id_pro_'+i+'" value="'+item.CODIGO_INV+'"><input type="hidden" id="txt_pos_'+i+'" value="'+item.A_No+'"><input type="text" name="" id="txt_codigo_'+i+'" class="form-control input-sm" value="'+item.CODIGO_INV+'"></div><div class="col-sm-2"  style=" padding-left: 2px;  padding-right: 0px;"><b>Descripcion</b><select class="form-control select2" id="ddl_productos_'+i+'" name="ddl_productos_'+i+'" onchange="cargar_datos(\''+i+'\')" onfocus="cargar(\''+i+'\')"><option>Seleccione producto</option></select><input type="hidden" id="txt_stock_'+i+'"></div><div class="col-sm-1"  style=" padding-left: 2px;  padding-right: 0px;"><b>UNI</b><input type="" value="'+item.UNIDAD+'" name="txt_uni_" id="txt_uni_'+i+'" class="form-control input-sm"></div><div class="col-sm-1"  style=" padding-left: 2px;  padding-right: 0px;"><b>Cantidad</b><input value="'+item.CANT_ES+'" type="text" name="txt_cant_" id="txt_cant_'+i+'" placeholder="Cantidad" class="form-control input-sm" onblur="validar_stock2(\''+i+'\');"></div><div class="col-sm-1"  style=" padding-left: 2px;  padding-right: 0px;"><b>Centro de costos</b><br><select class="form-control select_cc" id="ddl_cc_'+i+'"  id="ddl_cc_'+i+'"><option>Centro de costos</option></select></div><div class="col-sm-1"  style=" padding-left: 2px;  padding-right: 0px;"><b>Rubro</b><br><select class="form-control selectr" id="ddl_rubro_'+i+'" name="ddl_rubro_'+i+'"><option>Rubro</option></select></div><div class="col-sm-1"  style=" padding-left: 2px;  padding-right: 0px;"> <b style="font-size: 13px;">Bajas o desperdicios</b><input type="" name="" placeholder="Bajas o desperdicios" id ="txt_bajas_'+i+'" class="form-control input-sm" value="'+item.Consumos+'" onblur="validar_bajas(\''+i+'\')"></div>';
+                lineas +='<div class="row"><div class="col-sm-12"><div class="col-sm-1"><b>Fecha</b><br><input type="text" readonly value="'+item.Fecha_Fab.date.substr(0,10)+'" class="form-control input-sm" id="fecha_'+i+'"/></div><div class="col-sm-1" style=" padding-left: 0px;  padding-right: 0px;"><b>Codigo</b><input type="hidden" id="txt_id_pro_'+i+'" value="'+item.CODIGO_INV+'"><input type="hidden" id="txt_pos_'+i+'" value="'+item.A_No+'"><input type="text" name="" id="txt_codigo_'+i+'" class="form-control input-sm" value="'+item.CODIGO_INV+'"></div><div class="col-sm-3"  style=" padding-left: 2px;  padding-right: 0px;"><b>Descripcion</b><select class="form-control select2" id="ddl_productos_'+i+'" name="ddl_productos_'+i+'" onchange="cargar_datos(\''+i+'\')" onfocus="cargar(\''+i+'\')"><option>Seleccione producto</option></select><input type="hidden" id="txt_stock_'+i+'"></div><div class="col-sm-1"  style="width:4%; padding-left: 2px;  padding-right: 0px;"><b>UNI</b><input type="" value="'+item.UNIDAD+'" name="txt_uni_" id="txt_uni_'+i+'" class="form-control input-sm"></div><div class="col-sm-1"  style="width:5%; padding-left: 2px;  padding-right: 0px;"><b>Cantidad</b><input value="'+item.CANT_ES+'" type="text" name="txt_cant_" id="txt_cant_'+i+'" placeholder="Cantidad" class="form-control input-sm" onblur="validar_stock2(\''+i+'\');"></div><div class="col-sm-2"  style=" padding-left: 2px;  padding-right: 0px;"><b>Centro de costos</b><br><select class="form-control select_cc" id="ddl_cc_'+i+'"  id="ddl_cc_'+i+'"><option>Centro de costos</option></select></div><div class="col-sm-2"  style=" padding-left: 2px;  padding-right: 0px;"><b>Rubro</b><br><select class="form-control selectr" id="ddl_rubro_'+i+'" name="ddl_rubro_'+i+'"><option>Rubro</option></select></div><div class="col-sm-1"  style=" padding-left: 2px;  padding-right: 0px; display:none"> <b style="font-size: 13px;">Bajas o desperdi</b><input type="" name="" placeholder="Bajas o desperdicios" id ="txt_bajas_'+i+'" class="form-control input-sm" value="'+item.Consumos+'" onblur="validar_bajas(\''+i+'\')"></div>';
                   
-                    lineas+='<div class="col-sm-1"  style=" padding-left: 2px;  padding-right: 0px;"><b>Bajas por</b><br><select class="form-control select_b" id="ddl_rubro_bajas_'+i+'" name="ddl_rubro_bajas_'+i+'"><option>Bajas por</option></select></div><div class="col-sm-1"  style=" padding-left: 2px;  padding-right: 0px;"><b>Observaciones</b><textarea placeholder="observacion" class="form-control" id="txt_obs_'+i+'">'+item.Procedencia+'</textarea></div><div class="col-sm-1"><br><button onclick="Guardar(\''+i+'\')" class="btn btn-primary" title="Guardar"><span class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span></button><button onclick="eliminar(\''+i+'\')" class="btn btn-danger" title="Eliminar"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span></button></div></div></div>';
+                    lineas+='<div class="col-sm-1"  style=" padding-left: 2px;  padding-right: 0px; display:none"><b>Bajas por</b><br><select class="form-control select_b" id="ddl_rubro_bajas_'+i+'" name="ddl_rubro_bajas_'+i+'"><option>Bajas por</option></select></div><div class="col-sm-1"  style=" padding-left: 2px;  padding-right: 0px; display:none "><b>Observaciones</b><textarea placeholder="observacion" class="form-control" id="txt_obs_'+i+'">'+item.Procedencia+'</textarea></div><div class="col-sm-1"><br><button onclick="Guardar(\''+i+'\')" class="btn btn-primary btn-sm" title="Guardar" style="display:none"><span class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span></button><button onclick="eliminar(\''+i+'\')" class="btn btn-danger btn-sm" title="Eliminar"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span></button></div></div></div>';
               
                  
             });            
@@ -390,6 +419,8 @@
         'TC':$('#TC').val(),
         'valor':$('#valor_total').val(),
         'total':$('#valor_total_linea').val(),
+        'pro':$('#txt_proyecto').val(),
+        'codma':$('#txt_CodMar').val(),
     };
 
   if(validar_entrada()==true)
@@ -484,7 +515,7 @@ function validar_entrada()
     Swal.fire({
   title: 'Quiere eliminar linea?',
   text: "Esta seguro d eliminar linea!",
-  icon: 'warning',
+  type: 'warning',
   showCancelButton: true,
   confirmButtonColor: '#3085d6',
   cancelButtonColor: '#d33',
@@ -506,8 +537,8 @@ function validar_entrada()
         if(response ==1)
         {
           Swal.fire(
+            'Registro eliminado',
             '',
-            'Agregado en entregas.',
             'success'
           )         
          cargar_entrega(); 
@@ -547,11 +578,13 @@ function validar_entrada()
     });
   }
 
-   function rubro_cod(id,pos)
+  function rubro_cod(id,pos)
   {
+
+    var pro = $('#txt_proyecto').val();  
     $.ajax({
      // data:  {parametros:parametros},
-      url:    '../controlador/inventario/inventario_onlineC.php?rubro=true&q='+id,
+      url:    '../controlador/inventario/inventario_onlineC.php?rubro=true&q='+id+'&pro='+pro,
       type:  'post',
       dataType: 'json',
         success:  function (response) { 
@@ -564,11 +597,10 @@ function validar_entrada()
   }
 function cc_cod(id,pos)
   {
-
-          // console.log(id);
+    var pro = $('#txt_proyecto').val();  
     $.ajax({
      // data:  {parametros:parametros},
-      url:   '../controlador/inventario/inventario_onlineC.php?cc=true&q='+id,
+      url:   '../controlador/inventario/inventario_onlineC.php?cc=true&q='+id+'&pro='+pro,
       type:  'post',
       dataType: 'json',
         success:  function (response) { 
@@ -707,14 +739,26 @@ function generar_comprobante(parametros)
       // },
        success:  function (response) {
 
-        var com = parametros.num_com.split('-');       
+        var com = parametros.num_com.split('-'); 
          Swal.fire({
-             //position: 'top-end',
             type: 'success',
             title: 'Comprobante '+com[1]+' ingresado con exito!',
-            showConfirmButton: true
-            //timer: 2500
-          }); 
+            confirmButtonText: 'OK!',
+            allowOutsideClick: false,
+          }).then((result) => {
+            if (result.value) {
+               location.href='../vista/inventario.php?mod=Inventario&acc=inventario_online&acc1=Inventario%20online&b=1&po=subcu'
+            }
+          })
+
+
+         // Swal.fire({
+         //     //position: 'top-end',
+         //    type: 'success',
+         //    title: 'Comprobante '+com[1]+' ingresado con exito!',
+         //    showConfirmButton: true
+         //    //timer: 2500
+         //  }); 
       $('#myModal_espera').modal('hide');                                  
       generar_uno_uno();
       }
@@ -747,20 +791,11 @@ function generar_comprobante(parametros)
   }
 function datos_comprobante(codigo)
 {
-  // if(readCookie('intentos')==null)
-  // {
-  //  document.cookie = "intentos=1";
-  // }else
-  // {
-  //   var int = intval(readCookie('intentos'));
-  //   int = int+1;
-  //   document.cookie = "intentos="+int;
-  // }
-  // if(readCookie('intentos')<3)
-  // {
+  var lbl = $('#lbl_proyecto').text();
+
   var fechaC = f;
    $.ajax({
-      data:  {codigo:codigo,fechaC:fechaC},
+      data:  {codigo:codigo,fechaC:fechaC,proyecto:lbl},
       url:   '../controlador/inventario/inventario_onlineC.php?datos_comprobante=true',
       type:  'post',
       dataType: 'json',
@@ -814,6 +849,7 @@ function ingresar_trans_kardex(comprobante,fechaC)
     });
 
 }
+
 function datos_asiento_SC()
 {
    $('#myModal_espera').modal('show');
@@ -985,7 +1021,7 @@ function datos_asiento_SC_(fecha)
       }
     });
    }
-     function costo_venta(id)
+  function costo_venta(id)
    {
      $.ajax({
       data:  {id:id},
@@ -1037,6 +1073,49 @@ function datos_asiento_SC_(fecha)
 $('#txt_'+id+'_').val(nu);
 
 }
+
+
+function generar_proyecto()
+{
+  var a = location.href;
+  var pro = $('#ddl_proyecto').val();
+  var marca = $('#ddl_marca').val();
+  if(pro!='' && marca!='')
+  {
+   location.href = a+'&proyecto='+pro+'&marca='+marca;
+  }else
+  {
+    Swal.fire('Seleccione todos los campos','','info');
+  }
+}
+
+function marcas()
+{
+  // var ma = $('#txt_Codmar').val();
+  $.ajax({
+      // data:  {id:id},
+      url:   '../controlador/inventario/inventario_onlineC.php?codmarca=true',
+      type:  'post',
+      dataType: 'json',
+        success:  function (response) { 
+          llenarComboList(response,'ddl_marca');
+      }
+    });
+}
+
+function proyectos()
+{
+  var pro = $('#txt_proyecto').val();
+  $.ajax({
+      // data:  {id:id},
+      url:   '../controlador/inventario/inventario_onlineC.php?proyecto=true',
+      type:  'post',
+      dataType: 'json',
+        success:  function (response) { 
+           llenarComboList(response,'ddl_proyecto');
+      }
+    });
+}
 </script>
 
    <div style="padding-left: 20px;padding-right: 20px">
@@ -1079,19 +1158,34 @@ $('#txt_'+id+'_').val(nu);
         <input type="hidden" name="" id="valor_total">
         <input type="hidden" name="" id="valor_total_linea">
         <input type="hidden" name="" id="fechas_compro">
-         <div class="row">  
+        <div class="row">
+           <div class="col-sm-2">
+          <b>Fecha</b><br>
+           <input type="date" name="txt_fecha" id="txt_fecha" class="form-control input-sm" value="<?php echo date('Y-m-d');?>">
+        </div>
+        <div class="col-sm-2">
+          <b>Proceso</b><br>
+          <label id="lbl_marca"></label>
+        </div>
+         <div class="col-sm-4">
+          <b>Proyecto</b><br>
+          <label id="lbl_proyecto"></label>
+        </div>
+         
+        </div>
+         <div class="row"> 
+       
         <div class="col-sm-12">
-               <div class="col-sm-1"  style=" padding-left: 2px;  padding-right: 0px;width: 130px;">
-                  <b>Fecha</b><br>
-                   <input type="date" name="txt_fecha" id="txt_fecha" class="form-control input-sm" value="<?php echo date('Y-m-d');?>">
-                </div>
+          <input type="hidden" name="txt_CodMar" id="txt_CodMar" class="form-control input-sm" value="<?php echo $marca; ?>">
+          <input type="hidden" name="txt_proyecto" id="txt_proyecto" class="form-control input-sm" value="<?php echo $proye; ?>">
+               
                <div class="col-sm-1" style=" padding-left: 0px;  padding-right: 0px;width: 6%;">
                   <b>Codigo</b>
                   <input type="text" name="txt_codigo_" id="txt_codigo_" disabled="" class="form-control input-sm">
                 </div>
-                <div class="col-sm-2"  style=" padding-left: 2px;  padding-right: 0px;">
+                <div class="col-sm-4"  style=" padding-left: 2px;  padding-right: 0px;">
                    <b>Descripcion</b><br>
-                  <select class="form-control" id="ddl_productos_" name="ddl_productos_" onchange="cargar_datos()">
+                  <select class="form-control input-sm" id="ddl_productos_" name="ddl_productos_" onchange="cargar_datos()">
                     <option>Seleccione producto</option>
                   </select>
                 </div>
@@ -1107,24 +1201,24 @@ $('#txt_'+id+'_').val(nu);
                     </div>
                   </div>
                 </div>
-                <div class="col-sm-1"  style=" padding-left: 2px;  padding-right: 0px;">
+                <div class="col-sm-1"  style=" padding-left: 2px;  padding-right: 0px; width: 5%;">
                   <b>Cantidad</b>
                   <input name="txt_cant_" id="txt_cant_" placeholder="Cantidad" class="form-control input-sm" onblur="validar_stock()" value="0" type="text" onkeyup="comprueba_negativos('cant')">
                 </div>
-                <div class="col-sm-1"  style=" padding-left: 2px;  padding-right: 0px;">
+                <div class="col-sm-2"  style=" padding-left: 2px;  padding-right: 0px;">
                   <b>Centro de costos</b><br>
                  <select class="form-control" id="ddl_cc_">
                    <option value="">Centro de costos</option>
                  </select>
                 </div>
-                <div class="col-sm-1"  style=" padding-left: 2px;  padding-right: 0px;">
+                <div class="col-sm-2"  style=" padding-left: 2px;  padding-right: 0px;">
                   <b>Rubro</b><br>
                     <select class="form-control" id="ddl_rubro_" name="ddl_rubro_">
                       <option value="">Rubro</option>
                     </select>
                 </div>                
-                <div class="col-sm-1"  style=" padding-left: 2px;  padding-right: 0px;">
-                  <b style="font-size: 13px;">Bajas o desperdicios</b>
+                <div class="col-sm-1"  style=" padding-left: 2px;  padding-right: 0px;display: none;">
+                  <b style="font-size: 13px;">Bajas o desperdi.</b>
                   <input name="" id="txt_bajas_" placeholder="Bajas o desperdicios" class="form-control input-sm" value="0" onblur="validar_stock();validar_bajas()" type="text" onkeyup="comprueba_negativos('bajas')">
                 </div>
                 <div class="col-sm-1"  style=" padding-left: 2px;  padding-right: 0px; display: none" id="ba" >
@@ -1133,7 +1227,7 @@ $('#txt_'+id+'_').val(nu);
                       <option value="">Baja por</option>
                     </select>
                 </div>  
-                <div class="col-sm-1"  style=" padding-left: 2px;  padding-right: 0px;"  id ="ob">
+                <div class="col-sm-1"  style=" padding-left: 2px;  padding-right: 0px; display: none;"  id ="ob">
                   <b>Observaciones</b>
                   <textarea placeholder="observacion" class="form-control" id="txt_obs_"></textarea>
                 </div>
@@ -1152,3 +1246,30 @@ $('#txt_'+id+'_').val(nu);
        </div>
      </div>
    </div>
+
+<div id="myModal_proyecto" class="modal fade" role="dialog" data-keyboard="false" data-backdrop="static">
+ <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <!-- <button type="button" class="close" data-dismiss="modal">&times;</button> -->
+        <!-- <h4 class="modal-title">Cliente Nuevo</h4> -->
+      </div>
+      <div class="modal-body">
+        <b>Proyectos</b>
+        <select class="form-control" name="ddl_proyecto" id="ddl_proyecto">
+          <option value="">Seleccione proyecto</option>
+        </select>     
+        <b>Proceso</b>
+        <select class="form-control" name="ddl_marca" id="ddl_marca">
+          <option value="">Seleccione marca</option>
+        </select>
+           
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-primary btn-sm" onclick="generar_proyecto()">Aceptar</button> 
+        <a href="../vista/inventario.php?mod=Inventario" class="btn btn-default">Cerrar</a>
+      </div>
+    </div>
+
+  </div>
+</div>

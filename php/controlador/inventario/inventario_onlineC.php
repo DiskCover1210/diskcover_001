@@ -22,7 +22,8 @@ if (isset($_GET['rubro'])) {
 	{
 		$_GET['q'] =''; 
 	}
-	echo json_encode($controlador->lista_rubro($_GET['q']));
+	$pro = $_GET['pro'];
+	echo json_encode($controlador->lista_rubro($_GET['q'],$pro));
 }
 if (isset($_GET['rubro_bajas'])) {
 	if(!isset($_GET['q']))
@@ -36,7 +37,8 @@ if (isset($_GET['cc'])) {
 	{
 		$_GET['q'] =''; 
 	}
-	echo json_encode($controlador->lista_cc($_GET['q']));
+	$pro = $_GET['pro'];
+	echo json_encode($controlador->lista_cc($_GET['q'],$pro));
 }
 if (isset($_GET['entrega'])) {
 	
@@ -70,7 +72,12 @@ if (isset($_GET['datos_asiento_SC'])) {
 }
 
 if (isset($_GET['datos_comprobante'])) {
-	echo json_encode($controlador->datos_comprobante($_POST['codigo']));
+	 $pro = '';
+	 if(isset($_POST['proyecto']))
+	 {
+	 	 $pro = $_POST['proyecto'];
+	 }
+	echo json_encode($controlador->datos_comprobante($_POST['codigo'],$pro));
 }
 if (isset($_GET['Trans_kardex'])) {
 	echo json_encode($controlador->ingresar_trans_kardex_salidas($_POST['comprobante'],$_POST['f']));
@@ -83,6 +90,13 @@ if (isset($_GET['stock_kardex'])) {
 }
 if (isset($_GET['costo_venta'])) {
 	echo json_encode($controlador->costo_venta($_POST['id']));
+}
+
+if (isset($_GET['codmarca'])) {
+	echo json_encode($controlador->codmarca());
+}
+if (isset($_GET['proyecto'])) {
+	echo json_encode($controlador->proyecto());
 }
 
 class inventario_onlineC
@@ -108,10 +122,10 @@ class inventario_onlineC
 		$resp = $this->modelo->listar_articulos($query);
 		return $resp;
 	}
-	function lista_rubro($query)
+	function lista_rubro($query,$proyecto)
 	{
 		// print_r($query);die();
-		$resp = $this->modelo->listar_rubro($query);
+		$resp = $this->modelo->listar_rubro($query,$proyecto);
 		return $resp;
 	}
 
@@ -121,9 +135,9 @@ class inventario_onlineC
 		$resp = $this->modelo->listar_rubro_bajas($query);
 		return $resp;
 	}
-	function lista_cc($query)
+	function lista_cc($query,$proyecto)
 	{
-		$resp = $this->modelo->listar_cc($query);
+		$resp = $this->modelo->listar_cc($query,$proyecto);
 		return $resp;
 	}
 
@@ -288,6 +302,13 @@ class inventario_onlineC
 		   $datos[17]['dato']=2;
 		   $datos[18]['campo']='CONTRA_CTA';
 		   $datos[18]['dato']=$parametro['cc'];
+
+		   $datos[19]['campo']='CodMar';
+		   $datos[19]['dato']=$parametro['codma'];
+
+		   // $datos[20]['campo']='CONTRA_CTA';
+		   // $datos[20]['dato']=$parametro['cc'];
+
 		   // print_r($datos);die();
 		   $resp = $this->modelo->ingresar_asiento_K($datos);
 		   return $resp;
@@ -382,7 +403,7 @@ return $resp;
 		$this->modelo->cargar_datos_cuenta_datos(true);
 	}
 
-	function datos_comprobante($codigo)
+	function datos_comprobante($codigo,$concepto=false)
 	{
 		$datos_Asi = $this->modelo->datos_comprobante($_POST['fechaC']);
 		$debe = 0;
@@ -398,7 +419,7 @@ return $resp;
 			{
 
 			// print_r($debe."-".$haber.'---'); die();
-			  $datosCom = array('ru'=>$_SESSION['INGRESO']['CodigoU'],'tip'=>'CD','fecha1'=>date('Y-m-d'),'concepto'=>'Salida de inventario por centro de costos '.date('Y-m-d'),'totalh'=>round($haber,2),'num_com'=>$codigo);
+			  $datosCom = array('ru'=>$_SESSION['INGRESO']['CodigoU'],'tip'=>'CD','fecha1'=>date('Y-m-d'),'concepto'=>'Salida de inventario '.$concepto.' '.date('Y-m-d'),'totalh'=>round($haber,2),'num_com'=>$codigo);
 		    }else
 		    {
    // print_r($debe."-".$haber); die();
@@ -530,6 +551,23 @@ function eliminar_asientos_k()
  	$resp = $this->modelo->costo_venta($id);
  	// print_r($resp);die();
  	return $resp;
+ }
+
+ function codmarca()
+ {
+ 	$datos = $this->modelo->codmarca();
+ 	 foreach ($datos as $key => $value) {
+ 	 	 $res[] = array('codigo'=>$value['CodMar'],'nombre'=>$value['Marca']);
+ 	 }
+ 	 return $res;
+ }
+ function proyecto()
+ {
+ 	 $datos = $this->modelo->proyectos();
+ 	 foreach ($datos as $key => $value) {
+ 	 	 $res[] = array('codigo'=>$value['Codigo'],'nombre'=>$value['Cuenta']);
+ 	 }
+ 	 return $res;
  }
 }
 ?>
