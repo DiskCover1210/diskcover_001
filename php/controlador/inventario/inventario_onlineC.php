@@ -21,9 +21,9 @@ if (isset($_GET['rubro'])) {
 	if(!isset($_GET['q']))
 	{
 		$_GET['q'] =''; 
-	}
-	$pro = $_GET['pro'];
-	echo json_encode($controlador->lista_rubro($_GET['q'],$pro));
+	}	
+	$cc = $_GET['pro'];
+	echo json_encode($controlador->lista_rubro($_GET['q'],$cc));
 }
 if (isset($_GET['rubro_bajas'])) {
 	if(!isset($_GET['q']))
@@ -122,10 +122,10 @@ class inventario_onlineC
 		$resp = $this->modelo->listar_articulos($query);
 		return $resp;
 	}
-	function lista_rubro($query,$proyecto)
+	function lista_rubro($query,$cc)
 	{
 		// print_r($query);die();
-		$resp = $this->modelo->listar_rubro($query,$proyecto);
+		$resp = $this->modelo->listar_rubro($query,$cc);
 		return $resp;
 	}
 
@@ -144,7 +144,7 @@ class inventario_onlineC
 	function lista_entrega()
 	{
 		$resp = $this->modelo->lista_entrega();
-		$resp= array_map(array($this, 'encode'), $resp);
+		// $resp= array_map(array($this, 'encode'), $resp);
 		// print_r($resp);die();
 		return $resp;
 	}

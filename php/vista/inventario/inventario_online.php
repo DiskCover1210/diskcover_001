@@ -68,7 +68,7 @@ function verificar_cuenta()
 }); 
 
 
-   autocmpletar();
+    autocmpletar();
     autocmpletar_rubro();
     autocmpletar_cc();
     cargar_entrega();
@@ -169,7 +169,7 @@ function verificar_cuenta()
    
   }
   function autocmpletar_rubro(id=''){
-      var pro = $('#txt_proyecto').val();      
+      var pro = $('#ddl_cc_'+id).val();      
       $('#ddl_rubro_'+id).select2({
         placeholder: 'Seleccione rubro',
         ajax: {
@@ -206,7 +206,7 @@ function verificar_cuenta()
   }
    function autocmpletar_cc(id=''){
 
-    var pro = $('#txt_proyecto').val();   
+       var pro = $('#txt_proyecto').val();   
        $('#ddl_cc_'+id).select2({
         placeholder: 'Centro costo',
         ajax: {
@@ -362,6 +362,7 @@ function verificar_cuenta()
         //   $('#contenido_entrega').html('<img src="../../img/gif/loader4.1.gif" width="50%">');
         // },
         success:  function (response) { 
+          console.log(response);
           if(response)
            {
             $('#num_filas').val(response.length);
@@ -378,9 +379,9 @@ function verificar_cuenta()
             $.each(response,function(i,item){
               stock_pro(item.CODIGO_INV,i);
                $('#ddl_productos_'+i).append($('<option>',{value: item.CODIGO_INV, text: item.PRODUCTO,selected: true }));
-                rubro_cod(item.SUBCTA,i);
-               cc_cod(item.CONTRA_CTA,i);
-               bajas_(item.Codigo_Dr,i);
+               
+               cc_cod(item.CONTRA_CTA,i,item.SUBCTA);
+               // bajas_(item.Codigo_Dr,i);
             });
                 
            }
@@ -400,6 +401,11 @@ function verificar_cuenta()
     bajas = $('#txt_bajas_'+id).val();
     ddl_bajas = $('#ddl_rubro_bajas_'+id).val().split(',');
     producto = $('#ddl_productos_'+id).val().split(',');
+    if(producto=='')
+    {
+      Swal.fire('Seleccione producto','','info');
+      return false;
+    }
     console.log(producto);
     var parametros = 
     {
@@ -581,30 +587,36 @@ function validar_entrada()
   function rubro_cod(id,pos)
   {
 
-    var pro = $('#txt_proyecto').val();  
+    var cc = $('#ddl_cc_'+pos).val();  
+    console.log(pos);
+    console.log(cc);
+    false;
     $.ajax({
      // data:  {parametros:parametros},
-      url:    '../controlador/inventario/inventario_onlineC.php?rubro=true&q='+id+'&pro='+pro,
+      url:    '../controlador/inventario/inventario_onlineC.php?rubro=true&q='+id+'&pro='+cc,
       type:  'post',
       dataType: 'json',
         success:  function (response) { 
-          // console.log(response)
+          console.log(response);
+          console.log('ss');
 
              $('#ddl_rubro_'+pos).append($('<option>',{value: response[0].id, text:response[0].text,selected: true }));
          
       }
     });
   }
-function cc_cod(id,pos)
+function cc_cod(id,pos,subcta)
   {
-    var pro = $('#txt_proyecto').val();  
     $.ajax({
      // data:  {parametros:parametros},
-      url:   '../controlador/inventario/inventario_onlineC.php?cc=true&q='+id+'&pro='+pro,
+      url:   '../controlador/inventario/inventario_onlineC.php?cc=true&q='+id+'&pro=',
       type:  'post',
       dataType: 'json',
         success:  function (response) { 
-             $('#ddl_cc_'+pos).append($('<option>',{value: response[0].id, text:response[0].text,selected: true }));         
+          // console.log(response); 
+             $('#ddl_cc_'+pos).append($('<option>',{value: response[0].id, text:response[0].text,selected: true }));    
+            rubro_cod(subcta,pos);    
+           
       }
     });
   }
@@ -1186,7 +1198,7 @@ function proyectos()
                 <div class="col-sm-4"  style=" padding-left: 2px;  padding-right: 0px;">
                    <b>Descripcion</b><br>
                   <select class="form-control input-sm" id="ddl_productos_" name="ddl_productos_" onchange="cargar_datos()">
-                    <option>Seleccione producto</option>
+                    <option value="">Seleccione producto</option>
                   </select>
                 </div>
                 <div class="col-sm-1"  style="padding-left: 2px;  padding-right: 0px;">
@@ -1207,7 +1219,7 @@ function proyectos()
                 </div>
                 <div class="col-sm-2"  style=" padding-left: 2px;  padding-right: 0px;">
                   <b>Centro de costos</b><br>
-                 <select class="form-control" id="ddl_cc_">
+                 <select class="form-control" id="ddl_cc_" onchange="autocmpletar_rubro()">
                    <option value="">Centro de costos</option>
                  </select>
                 </div>

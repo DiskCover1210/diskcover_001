@@ -6907,8 +6907,13 @@ if($titulo)
 
                  $tbl.='<td style="width:'.$medida.'" class="'.$alineado.'">'.$value1.'</td>';
                 }else
-                {                  
-                 $tbl.='<td style="width:'.$medida.'" class="'.$alineado.'">'.number_format($value1,$num_decimales).'</td>'; 
+                {  
+                    $color = 'black';                
+                  if($value1<0)
+                  {
+                    $color = 'red';
+                  }
+                 $tbl.='<td style="width:'.$medida.'; color:'.$color.'" class="'.$alineado.'">'.number_format($value1,$num_decimales,'.','').'</td>'; 
                 }
               }    
              }

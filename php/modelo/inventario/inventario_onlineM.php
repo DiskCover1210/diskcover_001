@@ -96,7 +96,12 @@ order by CP.Codigo_Inv,CP.Producto,CP.TC,CP.Valor_Total,CP.Unidad,CP.Cta_Inventa
 	{
 			$cid = $this->conn;
     // 'LISTA DE CODIGO DE ANEXOS
-     $sql = "SELECT Codigo,Cuenta FROM Catalogo_Cuentas WHERE TC='G' AND DG='D' AND Periodo = '".$_SESSION['INGRESO']['periodo']."' AND Item = '".$_SESSION['INGRESO']['item']."' ";
+     $sql = "SELECT Codigo,Cuenta 
+     FROM Catalogo_Cuentas 
+     WHERE TC='G' 
+     AND DG='D' 
+     AND Periodo = '".$_SESSION['INGRESO']['periodo']."' 
+     AND Item = '".$_SESSION['INGRESO']['item']."' ";
      if($query !='')
      {
      	$sql .=" AND Cuenta+' '+Codigo LIKE '%".$query."%'"; 
@@ -105,8 +110,9 @@ order by CP.Codigo_Inv,CP.Producto,CP.TC,CP.Valor_Total,CP.Unidad,CP.Cta_Inventa
      {
      	$sql .=" AND Codigo LIKE '".$proyectos."%'"; 
      }
-     	
+     	// print_r($sql);die();
 		 $datos1 =  $this->db->datos($sql);
+
 		 $datos = array();
 		 foreach ($datos1 as $key => $value) {
 		   	$datos[]=array('id'=>$value['Codigo'],'text'=>$value['Cuenta']);		
@@ -133,29 +139,34 @@ order by CP.Codigo_Inv,CP.Producto,CP.TC,CP.Valor_Total,CP.Unidad,CP.Cta_Inventa
 
 	}
 
-	function listar_rubro($query='',$proyectos=false)
+	function listar_rubro($query='',$cc=false)
 	{
-	
-	$cid = $this->conn;
-    // 'LISTA DE CODIGO DE ANEXOS
-     $sql = "SELECT Codigo+','+TC as 'Codigo',Detalle FROM Catalogo_SubCtas WHERE TC='G' AND Nivel='00' AND Periodo = '".$_SESSION['INGRESO']['periodo']."' AND Item = '".$_SESSION['INGRESO']['item']."' ";
-     if($query !='')
-     {
-     	$sql .=" AND Detalle+' '+Codigo LIKE '%".$query."%'"; 
-     }
-     if($proyectos)
-     {
-     	$sql .=" AND Cta_Reembolso LIKE '".$proyectos."%'"; 
-     }
-     $sql.= "  ORDER BY Codigo ASC";
 
-     // print_r($sql);die();
-	   $datos1 =  $this->db->datos($sql);
-	   $datos = array();
-	   foreach ($datos1 as $key => $value) {
-	   	 $datos[]=array('id'=>$value['Codigo'],'text'=>$value['Detalle']);		
-	   }
-       return $datos;
+
+		$sql = "SELECT CS.Detalle,CS.Codigo, 0 As Credito 
+		FROM Catalogo_SubCtas As CS, Trans_Presupuestos As TP
+		WHERE CS.Periodo = '".$_SESSION['INGRESO']['periodo']."' 
+		AND CS.Item = '".$_SESSION['INGRESO']['item']."'
+		AND TP.Cta = '".$cc."'
+		AND CS.TC = 'G'
+		AND TP.MesNo = 0
+		AND CS.Periodo = TP.Periodo
+		AND CS.Item = TP.Item
+		AND CS.Codigo = TP.Codigo";
+	     if($query !='')
+	     {
+	     	$sql .=" AND CS.Detalle+' '+CS.Codigo LIKE '%".$query."%'"; 
+	     }
+	     
+	     $sql.= "  ORDER BY CS.Detalle ";
+
+	     // print_r($sql);die();
+		   $datos1 =  $this->db->datos($sql);
+		   $datos = array();
+		   foreach ($datos1 as $key => $value) {
+		   	 $datos[]=array('id'=>$value['Codigo'],'text'=>$value['Detalle']);		
+		   }
+	       return $datos;
 	}
 
 	function listar_rubro_bajas($query='',$proyectos=false)
@@ -446,16 +457,24 @@ LEFT JOIN Catalogo_SubCtas CS2 on A.Codigo_Dr = CS2.Codigo  WHERE  CodigoU = '".
 
 	function proyectos()
 	{
-		$sql="SELECT CP.Codigo,CC.Cuenta 
-			FROM Catalogo_Cuentas as CC, Ctas_Proceso As CP
-			WHERE CC.DG='G' 
-			AND CC.Periodo = '".$_SESSION['INGRESO']['periodo']."' 
-			AND CC.Item = '".$_SESSION['INGRESO']['item']."' 
-			AND CP.Detalle like 'Cta_Proyecto:%'
-			AND CC.Periodo = CP.Periodo
-			AND CC.Item = CP.Item
-			AND CC.Codigo = CP.Codigo
-			ORDER BY CP.Codigo ";
+		$sql = "SELECT Codigo, Cuenta 
+			 FROM Catalogo_Cuentas 
+			 WHERE Periodo = '".$_SESSION['INGRESO']['periodo']."' 
+			 AND Item = '".$_SESSION['INGRESO']['item']."' 
+			 AND TC = 'CC' 
+			 AND DG = 'G' 
+			 ORDER BY Codigo ";
+
+		// $sql="SELECT CP.Codigo,CC.Cuenta 
+		// 	FROM Catalogo_Cuentas as CC, Ctas_Proceso As CP
+		// 	WHERE CC.DG='G' 
+		// 	AND CC.Periodo = '".$_SESSION['INGRESO']['periodo']."' 
+		// 	AND CC.Item = '".$_SESSION['INGRESO']['item']."' 
+		// 	AND CP.Detalle like 'Cta_Proyecto:%'
+		// 	AND CC.Periodo = CP.Periodo
+		// 	AND CC.Item = CP.Item
+		// 	AND CC.Codigo = CP.Codigo
+		// 	ORDER BY CP.Codigo ";
 			return $this->db->datos($sql);
 
 	}
