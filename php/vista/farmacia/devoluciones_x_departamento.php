@@ -135,16 +135,16 @@ function lista_devolucion()
        // $('select').prop('disabled', true);
        $('#ddl_areas').prop('disabled', true);
     }
-    if(cc!='')
-    {
-       // $('#ddl_areas').attr('readonly',true);
-       // $('select').prop('disabled', true);
-       $('#ddl_cc').prop('disabled', true);
-    }
-    if(comprobante=='')
-    {
-       $('#txt_orden').attr('readonly',false);
-    }
+    // if(cc!='')
+    // {
+    //    // $('#ddl_areas').attr('readonly',true);
+    //    // $('select').prop('disabled', true);
+    //    $('#ddl_cc').prop('disabled', true);
+    // }
+    // if(comprobante=='')
+    // {
+    //    $('#txt_orden').attr('readonly',false);
+    // }
      // console.log(parametros);
      $.ajax({
       data:  {comprobante:comprobante},
@@ -223,6 +223,9 @@ function lista_devolucion()
       success:  function (response) { 
         console.log(response);
         $('#num').text(response);
+        var num = Math.floor((Math.random() * (10-0))+0);
+        console.log(num);
+        $('#txt_orden').val(response+''+num);
       }
     });
 

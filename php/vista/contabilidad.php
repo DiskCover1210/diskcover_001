@@ -133,6 +133,10 @@ if(isset($_SESSION['INGRESO']['IP_VPN_RUTA']) && $_SESSION['INGRESO']['Tipo_Base
 						{
 							require_once("contabilidad/FCliente.php");
 						}
+						if ($_SESSION['INGRESO']['accion']=='subcta_proyectos') 
+						{
+							require_once("contabilidad/Subcta_proyectos.php");
+						}
 					}else
 					{
 						echo "<div class='box-body'><img src='../../img/modulo_contable.gif' width='100%'></div>";
