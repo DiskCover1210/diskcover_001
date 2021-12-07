@@ -243,7 +243,13 @@ class db
 	{
 			$conn = $this->SQLServer();	
 			$stmt = sqlsrv_query($conn,$sql);
-	     sqlsrv_close($conn);
+			if( $stmt === false)  
+				{  
+					 echo "Error en consulta PA.\n";  
+					 die( print_r( sqlsrv_errors(), true));  
+				}				
+	   sqlsrv_close($conn);
+			return $stmt;
 	}
 
 	// conexion a base SQL server de terceros
