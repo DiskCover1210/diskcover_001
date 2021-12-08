@@ -215,7 +215,7 @@ class db
 
 		}else
 		{
-		   $conn = $this->SQLServer();
+		       $conn = $this->SQLServer();
            $stmt = sqlsrv_prepare($conn, $sql, $parametros);
            $res = sqlsrv_execute($stmt);
            if ($res === false) 
@@ -223,18 +223,19 @@ class db
            	echo "Error en consulta PA.\n";  
            	$respuesta = -1;
            	die( print_r( sqlsrv_errors(), true));  
-           }
-		   sqlsrv_close($conn);
-		   if($retorna)
-		   {
-		   	$result = array();
-		   	 while( $row = sqlsrv_fetch_array($res)) 
-	   			{
-		 			$result[] = $row;
-	   			}
-		   	 return $result;
-		   }
-		   return 1;
+           }else{
+				   sqlsrv_close($conn);
+				   // if($retorna)
+				   // {
+				   // 	$result = array();
+				   // 	 while( $row = sqlsrv_fetch_array($res)) 
+			   	// 		{
+				 		// 	$result[] = $row;
+			   	// 		}
+				   // 	 return $result;
+				   // }
+				   return 1;
+				 }
 		}
 
 	}

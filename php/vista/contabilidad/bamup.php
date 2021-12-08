@@ -68,11 +68,11 @@ function bamup(tipo)
       data:  {parametros:parametros},
       url:   '../controlador/contabilidad_controller.php?balance=true',
       type:  'post',
-    //  dataType: 'json',
+     dataType: 'json',
          beforeSend: function () {		
 			  //    var spiner = '<div class="text-center"><img src="../../img/gif/proce.gif" width="100" height="100"></div>'			
 				 // $('#tabla_').html(spiner);
-				 $('#myModal_espera').modal('show');
+				 // $('#myModal_espera').modal('show');
 			},
         success:  function (response) {
         	//resultado que obtenemos de todo el proceso si es -1 fallo proceso 

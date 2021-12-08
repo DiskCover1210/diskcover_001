@@ -220,6 +220,9 @@
                if (result.value==true) {
                 agregar();
 
+               }else
+               {
+                DGCostos();
                }
              })
         }

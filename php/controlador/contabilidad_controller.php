@@ -37,7 +37,7 @@ if(isset($_GET['reporte_pdf']))
 if(isset($_GET['datos_balance']))
 {
 	$parametros = $_POST['parametros'];
-	echo json_decode(sp_proceso_balance($parametros));
+	echo json_encode(sp_proceso_balance($parametros));
 	// echo json_decode($l='ss');
 }
 
@@ -80,8 +80,9 @@ if(isset($_GET['reporte_pdf_bacsg']))
 if(isset($_GET['datos_tabla']))
 {
 	$modelo = new contabilidad_model();
-	 $tabla = $modelo->listar_tipo_balanceSQl(false,1,'');
-	echo json_decode($tabla);
+	$tabla = $modelo->listar_tipo_balanceSQl(false,1,'');	
+	echo json_encode($tabla);
+   
 	
 }
 
@@ -107,7 +108,7 @@ if(isset($_GET['balance']))
 	//llamamops a la funcion a ejecutar
      $tabla = reporte_analitico_mensual($parametros);
      //para devolverla a la vista la retornaremos como json
-     echo json_decode($tabla);
+     echo json_encode($tabla);
      //este proseso se puede simplificar colocando  "echo json_decode(reporte_analitico_mensual($parametros());"
 }
 
@@ -140,12 +141,14 @@ function reporte_analitico_mensual($parametros)
 	$modelo = new contabilidad_model();
 	//enviamos los datos al modelo
 	$respuesta = $modelo->sp_Reporte_Analitico_Mensual($parametros['Tipo'],$parametros['desde'],$parametros['hasta']);
+
 	//verificamos si todo salio bien  1 ejecutado -1 fallo al ejecutar (respuestas que personalmente las coloco)
 	if($respuesta['respuesta'] == 1)
 	{
 		if($parametros['Imp']=='false')
 		{
 		   $tabla = $modelo->Reporte_Analitico_Mensual_gilla($parametros['Tipo'],$respuesta['query']);
+		   return $tabla;
 		//retoprnamos la tabla este retorno se realizara a la primera duncion donde se llamar "don de esta isset($_GET['balance']"
 		   return $tabla;
 	    }else
@@ -492,6 +495,7 @@ function sp_errores($item,$modulo,$id)
 
 function sp_proceso_balance($parametros)
 {
+	// print_r($parametros);die();
 	$modelo = new contabilidad_model();
 	$fechaini = str_replace('-','',$parametros['desde']);
 	$fechafin = str_replace('-','',$parametros['hasta']);
@@ -505,11 +509,12 @@ function sp_proceso_balance($parametros)
 	}
 	// print_r($parametros);die();
 	if($parametros['check']=='false'){
-		$balance=$modelo->sp_procesar_balance_SQL($fechaini,$fechafin,$parametros['coop'],$parametros['sucur'],$parametros['balMes'],$parametros['ext']);
+		 $balance=$modelo->sp_procesar_balance_SQL($fechaini,$fechafin,$parametros['coop'],$parametros['sucur'],$parametros['balMes'],$parametros['ext']);
     }else
     {
     	$balance=$modelo->sp_procesar_balance_ext();
     }
+    // print_r($parametros);die();
 	if($balance == 1)
 	{
 		if($parametros['check']=='false')
@@ -520,7 +525,7 @@ function sp_proceso_balance($parametros)
 			  return $tabla;
 			 }else
 			 {
-			 	$modelo->listar_tipo_balanceSQl($parametros['balMes'],$parametros['tipo_b'],$parametros['tipo_p'],true);
+			 	return $modelo->listar_tipo_balanceSQl($parametros['balMes'],$parametros['tipo_b'],$parametros['tipo_p'],true);
 			 }
 		}else
 		{
@@ -531,7 +536,7 @@ function sp_proceso_balance($parametros)
 			return $tabla;
 		    }else
 		    {
-		    	$modelo->ListarTipoDeBalance_Ext($parametros['balMes'],'BC',$parametros['ext'],true);
+		    	return $modelo->ListarTipoDeBalance_Ext($parametros['balMes'],'BC',$parametros['ext'],true);
 		    }
 
 		}
@@ -591,7 +596,7 @@ function sp_proceso_balance_pdf($parametros)
 				if($value == 'Codigo')
 				{
 					$ali[$key] = 'L';
-					$medi[$key] =25;
+					$medi[$key] =26;
 				}
 			}
 			$pdf = new cabecera_pdf();	
@@ -611,7 +616,14 @@ function sp_proceso_balance_pdf($parametros)
 		    	$datos = array();
 		    	foreach($value as $key1 => $valu)
 		    	{
-		    		array_push($datos, $valu);
+		    		if(is_float($valu))
+		    		{
+
+		    			array_push($datos, number_format($valu,2,'.',''));
+		    		}else
+		    		{
+		    			array_push($datos, $valu);		    			
+		    		}
 		    	}
 
 		    	// print_r($datos);die();
@@ -675,7 +687,19 @@ function sp_proceso_balance_pdf($parametros)
 		    	$datos = array();
 		    	foreach($value as $key1 => $valu)
 		    	{
-		    		array_push($datos, $valu);
+		    		if(is_int($valu))
+		    		{  
+		    			if(is_numeric($valu))
+		    			{
+		    				array_push($datos, number_format($valu,2,'.',''));
+		    			}else
+		    			{
+		    				array_push($datos, $valu);	
+		    			}
+		    		}else
+		    		{
+		    			array_push($datos, $valu);		    			
+		    		}
 		    	}
 
 		    	// print_r($datos);die();

@@ -127,7 +127,7 @@
 			data:  {parametros:parametros},
 			url:   '../controlador/contabilidad_controller.php?datos_balance=true',
 			type:  'post',
-			//dataType: 'json',
+			dataType: 'json',
 			    beforeSend: function () {   
 			    	$('#myModal_espera').modal('show');
 				},		
@@ -153,17 +153,13 @@
 			// data:  {parametros:parametros},
 			url:   '../controlador/contabilidad_controller.php?datos_tabla=true',
 			type:  'post',
-			//dataType: 'json',
+			dataType: 'json',
 			    beforeSend: function () {   
 			    	$('#myModal_espera').modal('show');
 				},		
 				success:  function (response) {
 
 					console.log(response);
-					// $.each(response,function(i,item){
-					// 	option+='<option value="'+item.Codigo+'">'+item.Detalle+'</option>';
-					// })
-
 					$('#tabla').html(response);
 					$('#myModal_espera').modal('hide');
 				
@@ -323,7 +319,10 @@
 		 </div>
 	  </div>
 	  <div class="row">
-	  	<div class="col-sm-12" id="tabla">
+	  	<div class="table-responsive">
+	  		<div class="col-sm-12" id="tabla">
+	  			
+	  		</div>
 	  		
 	  	</div>
 	  </div>
