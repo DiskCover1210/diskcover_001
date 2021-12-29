@@ -62,24 +62,56 @@ class autorizacion_sri
 	    $cabecera['razon_social_principal']=$this->quitar_carac($_SESSION['INGRESO']['Razon_Social']);
 	    $cabecera['ruc_principal']=$_SESSION['INGRESO']['RUC'];
 	    $cabecera['direccion_principal']= $this->quitar_carac($_SESSION['INGRESO']['Direccion']);
-	    $cabecera['serie']=$parametros['serie'];
-	    $cabecera['factura']=$parametros['num_fac'];
-	    $cabecera['esta']=substr($parametros['serie'],0,3); 
-	    $cabecera['pto_e']=substr($parametros['serie'],3,5); 	    
+	    if(isset($parametros['serie'])){
+	    	$cabecera['serie']=$parametros['serie'];
+	    	$cabecera['esta']=substr($parametros['serie'],0,3); 
+	    	$cabecera['pto_e']=substr($parametros['serie'],3,5); 	    
+	    }else if(isset($parametros['Serie']))
+	    {	    	
+	    	$cabecera['serie']=$parametros['Serie'];
+	    	$cabecera['esta']=substr($parametros['Serie'],0,3); 
+	   		$cabecera['pto_e']=substr($parametros['Serie'],3,5); 	    
+	    }
+
+	    if(isset($parametros['num_fac'])){
+	    	$cabecera['factura']=$parametros['num_fac'];
+	    }else if(isset($parametros['FacturaNo']))
+	    {	    	
+	    	$cabecera['factura']=$parametros['FacturaNo'];
+	    }
+	    else if(isset($parametros['Factura']))
+	    {	    	
+	    	$cabecera['factura']=$parametros['Factura'];
+	    }	    
 	    $cabecera['item']=$_SESSION['INGRESO']['item'];
-	    $cabecera['tc']=$parametros['tc'];
+
+	    if(isset($parametros['tc'])){
+	    	$cabecera['tc']=$parametros['tc'];
+	    }else if(isset($parametros['TC']))
+	    {	    	
+	    	$cabecera['tc']=$parametros['TC'];
+	    }
+
+	    if(isset($parametros['cod_doc'])){   	
+
+	    	$cabecera['cod_doc']=$parametros['cod_doc'];
+	    }
+
 	    $cabecera['periodo']=$_SESSION['INGRESO']['periodo'];
-	    $cabecera['cod_doc']=$parametros['cod_doc'];
-		if($parametros['tc']=='LC')
+		if($cabecera['tc']=='LC')
 		{
 			$cabecera['cod_doc']='03';
+		}else if($cabecera['tc']=='FA')
+		{
+			$cabecera['cod_doc']='01';
 		}
 
+		// print_r($parametros);die();
 
-	    if($parametros['cod_doc']=='01')
+	    if($cabecera['cod_doc']=='01')
 	    {
 	    	//datos de factura
-	    	$datos_fac = $this->datos_factura($parametros['serie'],$parametros['num_fac'],$parametros['tc']);
+	    	$datos_fac = $this->datos_factura($cabecera['serie'],$cabecera['factura'],$cabecera['tc']);
 	    	// print_r($datos_fac);die();
 	    	    $cabecera['RUC_CI']=$datos_fac[0]['RUC_CI'];
 				$cabecera['Fecha']=$datos_fac[0]['Fecha']->format('Y-m-d');
@@ -311,6 +343,8 @@ class autorizacion_sri
 			AND DF.Periodo = CP.Periodo 
 			AND DF.Codigo = CP.Codigo_Inv 
 			ORDER BY DF.ID,DF.Codigo;";
+
+			// print_r($sql);die();
 			$datos = $this->db->datos($sql);
 	        return $datos;
 	}

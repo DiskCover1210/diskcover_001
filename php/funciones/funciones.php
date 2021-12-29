@@ -106,7 +106,12 @@ $iv = base64_decode("C9fBxl1EWtYTL1/M8jfstw==");
 //----------------------------------- fin funciones en duda--------------------------- 
 function control_procesos($TipoTrans,$Tarea,$opcional_proceso)
 {  
+  // print_r($_SESSION['INGRESO']);die();
+  $conn = new db();
   $TMail_Credito_No = G_NINGUNO;
+  $NumEmpresa = $_SESSION['INGRESO']['item'];
+  $TMail = '';
+  $Modulo = $_SESSION['INGRESO']['modulo_'];
   if($NumEmpresa=="")
   {
     $NumEmpresa = G_NINGUNO;
@@ -125,11 +130,11 @@ function control_procesos($TipoTrans,$Tarea,$opcional_proceso)
       $Tarea = substr($Tarea,0,60);
     }
     $proceso = substr($opcional_proceso,0,60);
-    $NombreUsuario1 = substr($NombreUsuario, 0, 60);
+    $NombreUsuario1 = substr($_SESSION['INGRESO']['Nombre'], 0, 60);
     $TipoTrans = $TipoTrans;
     $Mifecha1 = date("Y-m-d");
     $MiHora1 = date("H:i:s");
-    $$CodigoUsuario='';
+    $CodigoUsuario= $_SESSION['INGRESO']['CodigoU'];
     if($Tarea == "")
     {
       $Tarea = G_NINGUNO;
@@ -140,7 +145,8 @@ function control_procesos($TipoTrans,$Tarea,$opcional_proceso)
     }
     $sql = "INSERT INTO acceso_pcs (IP_Acceso,CodigoU,Item,Aplicacion,RUC,Fecha,Hora,
              ES,Tarea,Proceso,Credito_No,Periodo)VALUES('172.168.2.20','".$CodigoUsuario."','".$NumEmpresa."',
-             '".$Modulo."','".$_SESSION['INGRESO']['Id']."','".$Mifecha1."','".$MiHora1."','".$TipoTrans."','".$Tarea."','".$Proceso."','".$TMail_Credito_No."','".$_SESSION['INGRESO']['periodo']."');";
+             '".$Modulo."','".$_SESSION['INGRESO']['Id']."','".$Mifecha1."','".$MiHora1."','".$TipoTrans."','".$Tarea."','".$proceso."','".$TMail_Credito_No."','".$_SESSION['INGRESO']['periodo']."');";
+    $conn->String_Sql($sql,'MYSQL');
 
   }
 }
@@ -153,6 +159,7 @@ function Actualizar_Datos_ATS_SP($Items,$MBFechaI,$MBFechaF,$Numero) //---------
     $conn = new db();
     $FechaIni = $MBFechaI;
     $FechaFin = $MBFechaF;
+      $Items = iconv("CP1252", "UTF-8",$Items);
     $parametros = array(
       array(&$Items, SQLSRV_PARAM_IN),
       array(&$_SESSION['INGRESO']['periodo'], SQLSRV_PARAM_IN),
@@ -160,8 +167,11 @@ function Actualizar_Datos_ATS_SP($Items,$MBFechaI,$MBFechaF,$Numero) //---------
       array(&$FechaFin, SQLSRV_PARAM_IN),
       array(&$Numero, SQLSRV_PARAM_IN)
     );
+    // print_r($parametros);die();
     $sql = "EXEC sp_Actualizar_Datos_ATS @Item= ?,@Periodo=?,@FechaDesde=?,@FechaHasta=?,@Numero=?";
-    return $conn->ejecutar_procesos_almacenados($sql,$parametros,$tipo=false);
+    $res = $conn->ejecutar_procesos_almacenados($sql,$parametros);
+    print_r($res);die();
+    return $res;
 }
 
 function Leer_Datos_Cliente_SP($BuscarCodigo)
@@ -7209,7 +7219,11 @@ function factura_numero($ser)
     $ser= $datos1['Serie'];
     $ser1=explode("_", $ser);
     $n_fac= $datos1['FacturaNo'];
-    $me= $datos1['me'];
+    $me = '.';
+    if(isset($datos1['me']))
+    {
+      $me= $datos1['me'];
+    }
     $total_total_= $datos1['Total'];
     $total_abono= $datos1['Total_Abonos']; 
     $fecha_actual = date("Y-m-d"); 
@@ -7418,88 +7432,6 @@ function factura_numero($ser)
               $datoA[21]['dato']=$datos1['Autorizacion'];
               $this->insert_generico("Trans_Abonos",$datoA);
         }
-        // while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_NUMERIC) ) 
-        // {
-        //   //datos de la cuenta
-        //   $sql="SELECT TC,Codigo,Cuenta,Tipo_Pago FROM Catalogo_Cuentas 
-        //     WHERE TC IN ('BA','CJ','CP','C','P','TJ','CF','CI','CB') 
-        //     AND DG = 'D' AND Item = '".$_SESSION['INGRESO']['item']."' 
-        //     AND Periodo = '".$_SESSION['INGRESO']['periodo']."' AND Codigo='".$row[11]."' ";
-        //     //echo $sql.'<br>';
-        //   $stmt1 =sqlsrv_query( $cid, $sql);
-        //   if( $stmt1 === false)  
-        //   {  
-        //      echo "Error en consulta PA.\n";  
-        //      die( print_r( sqlsrv_errors(), true));  
-        //   }
-        //   while( $row1 = sqlsrv_fetch_array( $stmt1, SQLSRV_FETCH_NUMERIC) ) 
-        //   {
-        //     $cod_cue=$row1[1];
-        //     $TC=$row1[0];
-        //     $cuenta=$row1[2];
-        //     if($row1[3]!='.')
-        //     {
-        //       if($tipo_pago=='.')
-        //       {
-        //         $tipo_pago=$row1[3];
-        //       }
-        //       else
-        //       {
-        //         if($tipo_pago<$row1[3])
-        //         {
-        //           $tipo_pago=$row1[3];
-        //         }
-        //       }
-        //     }
-        //   }
-        //   $dato[0]['campo']='T';
-        //   $dato[0]['dato']='C';
-        //   $dato[1]['campo']='TP';
-        //   $dato[1]['dato']=$datos1['TC'];
-        //   $dato[2]['campo']='CodigoC';
-        //   $dato[2]['dato']=$codigo;
-        //   $dato[3]['campo']='Factura';
-        //   $dato[3]['dato']=$n_fac;
-        //   $dato[4]['campo']='Fecha';
-        //   $dato[4]['dato']=$fecha_actual; 
-        //   $dato[5]['campo']='Cta';
-        //   $dato[5]['dato']=$cod_cue;
-        //   $dato[6]['campo']='Cta_CxP';
-        //   $dato[6]['dato']=$cod_linea;  
-        //   $dato[7]['campo']='Recibo_No';
-        //   $dato[7]['dato']='0000000000';  
-        //   $dato[8]['campo']='Comprobante';
-        //   $dato[8]['dato']='.';
-        //   $dato[9]['campo']='Abono';
-        //   //$dato[9]['dato']=$row[9]; 
-        //   $dato[9]['dato']=$total_total_;
-        //   $dato[10]['campo']='Total';
-        //   //$dato[10]['dato']=$row[9];  
-        //   $dato[10]['dato']=$total_total_;
-        //   $dato[11]['campo']='Cheque';
-        //   $dato[11]['dato']=$row[12];
-        //   $dato[12]['campo']='Fecha_Aut_NC';
-        //   $dato[12]['dato']=$fecha_actual;  
-        //   $dato[13]['campo']='Item';
-        //   $dato[13]['dato']=$_SESSION['INGRESO']['item']; 
-        //   $dato[14]['campo']='CodigoU';
-        //   $dato[14]['dato']=$_SESSION['INGRESO']['CodigoU'];  
-        //   $dato[15]['campo']='Periodo';
-        //   $dato[15]['dato']=$_SESSION['INGRESO']['periodo'];  
-        //   $dato[16]['campo']='Serie';
-        //   $dato[16]['dato']=$ser; 
-        //   $dato[17]['campo']='Fecha_Aut';
-        //   $dato[17]['dato']=$fecha_actual;
-        //   $dato[18]['campo']='C';
-        //   $dato[18]['dato']=0;
-        //   $dato[19]['campo']='Tipo_Cta';
-        //   $dato[19]['dato']=$TC;
-        //   $dato[20]['campo']='Banco';
-        //   $dato[20]['dato']=$cuenta;
-        //   $dato[21]['campo']='Autorizacion';
-        //   $dato[21]['dato']=$datos1['Autorizacion'];
-        //   $this->insert_generico("Trans_Abonos",$dato);
-        // }
 
         $dato = [];
         if($tipo_pago=='.')
@@ -7665,14 +7597,28 @@ function factura_numero($ser)
     if ($TA['Cta_CxP'] == "" || $TA['Cta_CxP'] == G_NINGUNO) {
       $TA['Cta_CxP'] = $TA['Cta_CxP'];
     }
+    if(!isset($TA['CodigoC']))
+    {
+      $TA['CodigoC'] = '';
+    }
     if ($TA['CodigoC'] == "" || $TA['CodigoC'] == G_NINGUNO) {
       $TA['CodigoC'] = $TA['CodigoC'];
+    }
+    if(!isset($TA['Comprobante']))
+    {
+      $TA['Comprobante'] = '';
     }
     if ($TA['Comprobante'] == "") {
       $TA['Comprobante'] = G_NINGUNO;
     }
-    if ($TA['Codigo_Inv'] == "") {
-      $TA['Codigo_Inv'] = G_NINGUNO;
+    if(isset($TA['Codigo_Inv']))
+    {
+      if ($TA['Codigo_Inv'] == "") {
+        $TA['Codigo_Inv'] = G_NINGUNO;
+      }
+    }else
+    {
+       $TA['Codigo_Inv'] = G_NINGUNO;
     }
     if ($TA['Fecha'] == G_NINGUNO) {
       $TA['Fecha'] = date('Y-m-d');
@@ -7793,7 +7739,7 @@ function factura_numero($ser)
     return $CadAux;
   }
 
-function Leer_Codigo_Inv($CodigoDeInv,$FechaInventario,$CodBodega,$CodMarca)
+function Leer_Codigo_Inv($CodigoDeInv,$FechaInventario,$CodBodega,$CodMarca='')
 {
  // 'Datos por default
   if($CodBodega == "" ){$CodBodega = G_NINGUNO;}
@@ -8930,6 +8876,5 @@ function  Imprimir_Punto_Venta_Grafico_datos($TFA)
   
  
 }
-
 
 ?>

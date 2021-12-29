@@ -88,6 +88,9 @@ if(isset($_GET['mos2']))
       return false;
     }
 }
+function is_numeric(value) {
+	return !isNaN(parseFloat(value)) && isFinite(value);
+}
 
 		function cambiar_1(){
 			$('#myModal_espera').modal('show');
