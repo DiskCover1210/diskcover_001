@@ -46,6 +46,8 @@ $(document).ready(function()
 
 function bamup(tipo)
 {
+
+  $('#myModal_espera').modal('show');
 	$('#txt_tipo').val(tipo);
 	var parametros = 
  	{
@@ -77,8 +79,8 @@ function bamup(tipo)
         success:  function (response) {
         	//resultado que obtenemos de todo el proceso si es -1 fallo proceso 
         	if(response.respuesta == -1)
-        	{
-
+        	{        		
+        		 $('#myModal_espera').modal('hide');
         	}else
         	{
         		//colocamos el resultado donde queramos

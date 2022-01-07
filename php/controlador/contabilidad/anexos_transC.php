@@ -72,14 +72,15 @@ class anexos_transC
      // Progreso_Esperar
      
      // If InStr(1, CStr(FechaFin), "-") > 0 Then Numero = CLng(Replace(FechaFin, "-", "")) Else Numero = CLng(FechaFin)
-	 $pos = '';
+	   $pos = '';
      $pos = strpos($FechaFin,"-");
      if ($pos !== false) 
      {
      	$Numero =  str_replace('-','', $FechaFin);
-     } else 
+     }else 
      {
        $Numero = $FechaFin;
+       
        if(Actualizar_Datos_ATS_SP($_SESSION['INGRESO']['item'],$FechaIni,$FechaFin,$Numero)==1)
        	 {
        	 	// 'LISTA DE CODIGO DE ANEXOS
@@ -90,6 +91,8 @@ class anexos_transC
      // comienza el proceso de generar ats
      //Consultar_Anexos
     $resultados =  $this->consulta_anexos($FechaIni,$FechaFin,false);
+
+    print_r($resultados);die();
 
 		if($this->xml($mes,$Anio,$resultados,$FechaIni,$FechaFin)==1)
     {

@@ -60,33 +60,33 @@ if(isset($_POST['ajax_page']) )
 	//datos empresa
 	if($_REQUEST['ajax_page']=='empresa')
 	{
-		buscarEmpresa();
+		return buscarEmpresa();
 	}
 	//modificar empresa
-	if($_REQUEST['ajax_page']=='cambiarEmpresa')
-	{
-		modificarEmpresa();
-	}
+	// if($_REQUEST['ajax_page']=='cambiarEmpresa')
+	// {
+	// 	modificarEmpresa();
+	// }
 	//modificar entidad
-	if($_REQUEST['ajax_page']=='cambiarEmpresaMa')
-	{
-		modificarEmpresaMa();
-	}
+	// if($_REQUEST['ajax_page']=='cambiarEmpresaMa')
+	// {
+	// 	modificarEmpresaMa();
+	// }
 	//mensaje individual
-	if($_REQUEST['ajax_page']=='mindividual')
-	{
-		mindividual();
-	}
+	// if($_REQUEST['ajax_page']=='mindividual')
+	// {
+	// 	mindividual();
+	// }
 	//mensaje masivo
-	if($_REQUEST['ajax_page']=='mmasivo')
-	{
-		mmasivo();
-	}
+	// if($_REQUEST['ajax_page']=='mmasivo')
+	// {
+	// 	mmasivo();
+	// }
 	//mensaje grupo
-	if($_REQUEST['ajax_page']=='mgrupo')
-	{
-		mgrupo();
-	}
+	// if($_REQUEST['ajax_page']=='mgrupo')
+	// {
+	// 	mgrupo();
+	// }
 	//eliminar registro asiento_b
 	if($_REQUEST['ajax_page']=='eli1')
 	{
@@ -3339,184 +3339,184 @@ function eliminar()
     echo json_encode($jsondata);
     exit();
 }
-function mgrupo()
-{
-	$cid = Conectar::conexion('MYSQL');
+// function mgrupo()
+// {
+// 	$cid = Conectar::conexion('MYSQL');
 
-	if($_POST['campo11']=='')
-		{
-			 $sql = "UPDATE lista_empresas set Mensaje='".$_POST['campo3']."' WHERE ID_Empresa='".$_POST['campo1']."' ";
-		}
-		else
-		{
-			 $sql = "UPDATE lista_empresas set Mensaje='".$_POST['campo3']."' WHERE ID_Empresa='".$_POST['campo1']."'  AND Ciudad='".$_POST['campo11']."'";
-		}
+// 	if($_POST['campo11']=='')
+// 		{
+// 			 $sql = "UPDATE lista_empresas set Mensaje='".$_POST['campo3']."' WHERE ID_Empresa='".$_POST['campo1']."' ";
+// 		}
+// 		else
+// 		{
+// 			 $sql = "UPDATE lista_empresas set Mensaje='".$_POST['campo3']."' WHERE ID_Empresa='".$_POST['campo1']."'  AND Ciudad='".$_POST['campo11']."'";
+// 		}
 
-	//echo $sql;
-	//die();
-	$consulta=$cid->query($sql);// or die($cid->error);
-	//$stmt = sqlsrv_query( $cid, $sql);
+// 	//echo $sql;
+// 	//die();
+// 	$consulta=$cid->query($sql);// or die($cid->error);
+// 	//$stmt = sqlsrv_query( $cid, $sql);
 
-	if( $consulta === false)  
-	{  
-		// echo "Error en consulta.\n";  
-		 $jsondata = array('success' => false);
-		 //die( print_r( sqlsrv_errors(), true));  
-	}
-	else
-	{	
+// 	if( $consulta === false)  
+// 	{  
+// 		// echo "Error en consulta.\n";  
+// 		 $jsondata = array('success' => false);
+// 		 //die( print_r( sqlsrv_errors(), true));  
+// 	}
+// 	else
+// 	{	
 
-		$_SESSION['INGRESO']['Cambio']=1;
-		$jsondata = array('success' => true, 'name'=>$_POST['campo1']);
-	}
-	$cid->close();
-	 //Aunque el content-type no sea un problema en la mayoría de casos, es recomendable especificarlo
-    header('Content-type: application/json; charset=utf-8');
-    echo json_encode($jsondata);
-    exit();
-
-	
-}
-
-function mindividual()
-{
-	$cid = Conectar::conexion('MYSQL');
-	$sql = "UPDATE lista_empresas set Mensaje='".$_POST['campo3']."' WHERE ID_Empresa='".$_POST['campo1']."' AND ID='".$_POST['campo11']."'";
-	//echo $sql;
-	//die();
-	$consulta=$cid->query($sql);// or die($cid->error);
-	//$stmt = sqlsrv_query( $cid, $sql);
-
-	if( $consulta === false)  
-	{  
-		// echo "Error en consulta.\n";  
-		 $jsondata = array('success' => false);
-		 //die( print_r( sqlsrv_errors(), true));  
-	}
-	else
-	{	
-		$_SESSION['INGRESO']['Cambio']=1;
-		$jsondata = array('success' => true, 'name'=>$_POST['campo1']);
-	}
-	$cid->close();
-	 //Aunque el content-type no sea un problema en la mayoría de casos, es recomendable especificarlo
-    header('Content-type: application/json; charset=utf-8');
-    echo json_encode($jsondata);
-    exit();
+// 		$_SESSION['INGRESO']['Cambio']=1;
+// 		$jsondata = array('success' => true, 'name'=>$_POST['campo1']);
+// 	}
+// 	$cid->close();
+// 	 //Aunque el content-type no sea un problema en la mayoría de casos, es recomendable especificarlo
+//     header('Content-type: application/json; charset=utf-8');
+//     echo json_encode($jsondata);
+//     exit();
 
 	
-}
-function mmasivo()
-{
-	// print_r($_POST);die();
-	$cid = Conectar::conexion('MYSQL');
-	$sql = "UPDATE lista_empresas set Mensaje='".$_POST['campo3']."'; ";
-	//echo $sql;
-	//die();
-	$consulta=$cid->query($sql);// or die($cid->error);
-	//$stmt = sqlsrv_query( $cid, $sql);
+// }
 
-	if( $consulta === false)  
-	{  
-		// echo "Error en consulta.\n";  
-		 $jsondata = array('success' => false);
-		 //die( print_r( sqlsrv_errors(), true));  
-	}
-	else
-	{	
-		$_SESSION['INGRESO']['Cambio']=1;
-		$jsondata = array('success' => true, 'name'=>$_POST['campo1']);
-	}
-	$cid->close();
-	 //Aunque el content-type no sea un problema en la mayoría de casos, es recomendable especificarlo
-    header('Content-type: application/json; charset=utf-8');
-    echo json_encode($jsondata);
-    exit();
+// function mindividual()
+// {
+// 	$cid = Conectar::conexion('MYSQL');
+// 	$sql = "UPDATE lista_empresas set Mensaje='".$_POST['campo3']."' WHERE ID_Empresa='".$_POST['campo1']."' AND ID='".$_POST['campo11']."'";
+// 	//echo $sql;
+// 	//die();
+// 	$consulta=$cid->query($sql);// or die($cid->error);
+// 	//$stmt = sqlsrv_query( $cid, $sql);
 
-	
-}
-function modificarEmpresaMa()
-{
-	$cid = Conectar::conexion('MYSQL');
-	$sql = "UPDATE lista_empresas set Fecha='".$_POST['campo11']."' , Fecha_VPN='".$_POST['campo12']."' , Fecha_CE='".$_POST['campo4']."'  
-	WHERE ID_Empresa='".$_POST['campo13']."'";
-	//echo $sql;
-	//die();
-	$consulta=$cid->query($sql);// or die($cid->error);
-	//$stmt = sqlsrv_query( $cid, $sql);
-
-	if( $consulta === false)  
-	{  
-		// echo "Error en consulta.\n";  
-		 $jsondata = array('success' => false);
-		 //die( print_r( sqlsrv_errors(), true));  
-	}
-	else
-	{	
-		$_SESSION['INGRESO']['Cambio']=1;
-		$jsondata = array('success' => true, 'name'=>$_POST['campo1']);
-	}
-	$cid->close();
-	 //Aunque el content-type no sea un problema en la mayoría de casos, es recomendable especificarlo
-    header('Content-type: application/json; charset=utf-8');
-    echo json_encode($jsondata);
-    exit();
+// 	if( $consulta === false)  
+// 	{  
+// 		// echo "Error en consulta.\n";  
+// 		 $jsondata = array('success' => false);
+// 		 //die( print_r( sqlsrv_errors(), true));  
+// 	}
+// 	else
+// 	{	
+// 		$_SESSION['INGRESO']['Cambio']=1;
+// 		$jsondata = array('success' => true, 'name'=>$_POST['campo1']);
+// 	}
+// 	$cid->close();
+// 	 //Aunque el content-type no sea un problema en la mayoría de casos, es recomendable especificarlo
+//     header('Content-type: application/json; charset=utf-8');
+//     echo json_encode($jsondata);
+//     exit();
 
 	
-}
-function modificarEmpresa()
-{
-	$cid = Conectar::conexion('MYSQL');
-	$sql = "SELECT *
-			  FROM lista_empresas
-			  WHERE ID = '".$_POST['campo1']."';";
-	//echo $sql;
-	//die();
-	 if ($resultado = $cid->query($sql)) {
+// }
+// function mmasivo()
+// {
+// 	// print_r($_POST);die();
+// 	$cid = Conectar::conexion('MYSQL');
+// 	$sql = "UPDATE lista_empresas set Mensaje='".$_POST['campo3']."'; ";
+// 	//echo $sql;
+// 	//die();
+// 	$consulta=$cid->query($sql);// or die($cid->error);
+// 	//$stmt = sqlsrv_query( $cid, $sql);
 
-		/* Obtener la información del campo para todas las columnas */
-		$info_campo = $resultado->fetch_fields();
-		$i=0;
-		foreach ($info_campo as $valor) {
-			if($i==15)
-			{
-				$contra=$valor->name;
-			}
-			$i++;
-		}
-		$resultado->free();
-	}
-	$sql = "UPDATE lista_empresas set Estado='".$_POST['campo2']."',Mensaje='".$_POST['campo3']."',
-	Fecha_CE='".$_POST['campo4']."' ,IP_VPN_RUTA='".$_POST['campo5']."',
-	Base_Datos='".$_POST['campo6']."' ,Usuario_DB='".$_POST['campo7']."',
-	`".$contra."`='".$_POST['campo8']."' ,Tipo_Base='".$_POST['campo9']."',
-    Puerto='".$_POST['campo10']."',Fecha='".$_POST['campo11']."',Fecha_VPN='".$_POST['campo12']."',Fecha_DB='".$_POST['campo13']."',Fecha_P12='".$_POST['campo14']."' WHERE ID='".$_POST['campo1']."' ";
-	// echo $sql;
-	// die();
-	$consulta=$cid->query($sql) or die($cid->error);
-	//$stmt = sqlsrv_query( $cid, $sql);
-
-	if( $consulta === false)  
-	{  
-		// echo "Error en consulta.\n";  
-		 $jsondata = array('success' => false);
-		 //die( print_r( sqlsrv_errors(), true));  
-	}
-	else
-	{	
-		$_SESSION['INGRESO']['Cambio']=1;
-		$jsondata = array('success' => true, 'name'=>$_POST['campo1']);
-	}
-	$cid->close();
-	 //Aunque el content-type no sea un problema en la mayoría de casos, es recomendable especificarlo
-    header('Content-type: application/json; charset=utf-8');
-    echo json_encode($jsondata);
-    exit();
+// 	if( $consulta === false)  
+// 	{  
+// 		// echo "Error en consulta.\n";  
+// 		 $jsondata = array('success' => false);
+// 		 //die( print_r( sqlsrv_errors(), true));  
+// 	}
+// 	else
+// 	{	
+// 		$_SESSION['INGRESO']['Cambio']=1;
+// 		$jsondata = array('success' => true, 'name'=>$_POST['campo1']);
+// 	}
+// 	$cid->close();
+// 	 //Aunque el content-type no sea un problema en la mayoría de casos, es recomendable especificarlo
+//     header('Content-type: application/json; charset=utf-8');
+//     echo json_encode($jsondata);
+//     exit();
 
 	
-}
+// }
+// function modificarEmpresaMa()
+// {
+// 	$cid = Conectar::conexion('MYSQL');
+// 	$sql = "UPDATE lista_empresas set Fecha='".$_POST['campo11']."' , Fecha_VPN='".$_POST['campo12']."' , Fecha_CE='".$_POST['campo4']."'  
+// 	WHERE ID_Empresa='".$_POST['campo13']."'";
+// 	//echo $sql;
+// 	//die();
+// 	$consulta=$cid->query($sql);// or die($cid->error);
+// 	//$stmt = sqlsrv_query( $cid, $sql);
+
+// 	if( $consulta === false)  
+// 	{  
+// 		// echo "Error en consulta.\n";  
+// 		 $jsondata = array('success' => false);
+// 		 //die( print_r( sqlsrv_errors(), true));  
+// 	}
+// 	else
+// 	{	
+// 		$_SESSION['INGRESO']['Cambio']=1;
+// 		$jsondata = array('success' => true, 'name'=>$_POST['campo1']);
+// 	}
+// 	$cid->close();
+// 	 //Aunque el content-type no sea un problema en la mayoría de casos, es recomendable especificarlo
+//     header('Content-type: application/json; charset=utf-8');
+//     echo json_encode($jsondata);
+//     exit();
+
+	
+// }
+// function modificarEmpresa()
+// {
+// 	$cid = Conectar::conexion('MYSQL');
+// 	$sql = "SELECT *
+// 			  FROM lista_empresas
+// 			  WHERE ID = '".$_POST['campo1']."';";
+// 	//echo $sql;
+// 	//die();
+// 	 if ($resultado = $cid->query($sql)) {
+
+// 		/* Obtener la información del campo para todas las columnas */
+// 		$info_campo = $resultado->fetch_fields();
+// 		$i=0;
+// 		foreach ($info_campo as $valor) {
+// 			if($i==15)
+// 			{
+// 				$contra=$valor->name;
+// 			}
+// 			$i++;
+// 		}
+// 		$resultado->free();
+// 	}
+// 	$sql = "UPDATE lista_empresas set Estado='".$_POST['campo2']."',Mensaje='".$_POST['campo3']."',
+// 	Fecha_CE='".$_POST['campo4']."' ,IP_VPN_RUTA='".$_POST['campo5']."',
+// 	Base_Datos='".$_POST['campo6']."' ,Usuario_DB='".$_POST['campo7']."',
+// 	`".$contra."`='".$_POST['campo8']."' ,Tipo_Base='".$_POST['campo9']."',
+//     Puerto='".$_POST['campo10']."',Fecha='".$_POST['campo11']."',Fecha_VPN='".$_POST['campo12']."',Fecha_DB='".$_POST['campo13']."',Fecha_P12='".$_POST['campo14']."' WHERE ID='".$_POST['campo1']."' ";
+// 	// echo $sql;
+// 	// die();
+// 	$consulta=$cid->query($sql) or die($cid->error);
+// 	//$stmt = sqlsrv_query( $cid, $sql);
+
+// 	if( $consulta === false)  
+// 	{  
+// 		// echo "Error en consulta.\n";  
+// 		 $jsondata = array('success' => false);
+// 		 //die( print_r( sqlsrv_errors(), true));  
+// 	}
+// 	else
+// 	{	
+// 		$_SESSION['INGRESO']['Cambio']=1;
+// 		$jsondata = array('success' => true, 'name'=>$_POST['campo1']);
+// 	}
+// 	$cid->close();
+// 	 //Aunque el content-type no sea un problema en la mayoría de casos, es recomendable especificarlo
+//     header('Content-type: application/json; charset=utf-8');
+//     echo json_encode($jsondata);
+//     exit();
+
+	
+// }
 //Buscar empresa
-function buscarEntidad(){
+function buscarEntidad(){  //se a cambiado en cambioempresa revisar si se esta utilizando en otro lado o si no borrar
 	 
 		$cid = Conectar::conexion('MYSQL');
 		//$_POST['TP']='CD';
@@ -3566,156 +3566,159 @@ function buscarEntidad(){
 	 $cid->close();
 }
 //Buscar empresa
-function buscarEmpresa(){
-		$cid = Conectar::conexion('MYSQL');
-		//$_POST['TP']='CD';
-		//$_POST['MesNo']=0;
-		$sql = "SELECT *
-				  FROM lista_empresas
-				  WHERE ID = '".$_POST['com']."';";
-		//echo $sql;
-		//die();
-		 if ($resultado = $cid->query($sql)) {
+// function buscarEmpresa(){
+// 	$db = new db();
+// 		// $cid = Conectar::conexion('MYSQL');
+// 		//$_POST['TP']='CD';
+// 		//$_POST['MesNo']=0;
+// 		$sql = "SELECT *
+// 				  FROM lista_empresas
+// 				  WHERE ID = '".$_POST['com']."';";
+// 		//echo $sql;
+// 		//die();
+// 	$datos = $db->datos($sql,'MYSQL');
+// 	if(count($datos)>0)
+// 	{
+// 		$contra = $datos[0]['Contrasena_DB'];		
+// 	}
+// 	// print_r($contra);die();
 
-			/* Obtener la información del campo para todas las columnas */
-			$info_campo = $resultado->fetch_fields();
-			$i=0;
-			foreach ($info_campo as $valor) {
-				if($i==15)
-				{
-					$contra=$valor->name;
-				}
-				$i++;
-			}
-			$resultado->free();
-		}
-		$sql = "SELECT *
-				  FROM lista_empresas
-				  WHERE ID = '".$_POST['com']."';";
-		$consulta=$cid->query($sql) or die($cid->error);
-		//Realizamos un bucle para ir obteniendo los resultados
-		$i=0;
-		/*$info_campo = $consulta->fetch_fields();
 
-				foreach ($info_campo as $valor) {
-					printf("Nombre:           %s\n",   $valor->name);
-					printf("Tabla:            %s\n",   $valor->table);
-					printf("Longitud máx.:    %d\n",   $valor->max_length);
-					printf("Longitud:         %d\n",   $valor->length);
-					printf("Nº conj. caract.: %d\n",   $valor->charsetnr);
-					printf("Banderas:         %d\n",   $valor->flags);
-					printf("Tipo:             %d\n\n", $valor->type);
-				}
+// 		$sql = "SELECT *
+// 				  FROM lista_empresas
+// 				  WHERE ID = '".$_POST['com']."';";
+// 		$datos = $db->datos($sql,'MYSQL');
+
+// 		if(count($datos)>0)
+// 		{
+// 			foreach ($datos as $key => $value) 
+// 			{					
+// 			$op ='<div class="col-md-3">
+// 					<div class="form-group">
+// 					    <label for="Estado">Estado</label>
+// 					    <select class="form-control" name="Estado" id="Estado" >
+// 							<option value='.$value['Estado'].'>'.$value['Estado'].'</option>
+// 						    <option value="0">Seleccione Estado</option>
+// 							'.select_option_mysql_a('lista_estados','Estado','Estado,Descripcion','').'</select>
+// 					</div>
+// 				</div>
+// 				<div class="col-md-3">
+// 					<div class="form-group">
+// 					  <label for="FechaR">Fecha Renovación(dia-mes-año)</label>
+					   
+// 					  <input type="date" class="form-control" id="FechaR" placeholder="FechaR" 
+// 					  value='.$value['Fecha'].' 
+// 					  onKeyPress="return soloNumeros(event)"  maxlength="10" onkeyup="validar_year_mayor(this.id)" onblur="validar_year_menor(this.id)">
+// 					</div>
+// 				</div>
+// 				<div class="col-md-3">
+// 					<div class="form-group">
+// 					  <label for="Fecha">Fecha Comp. Electronico(dia-mes-año)</label>
+					   
+// 					  <input type="date" class="form-control" id="Fecha" placeholder="Fecha" 
+// 					  value="'.$value['Fecha_CE'].'" onKeyPress="return soloNumeros(event)" 
+// 					  maxlength="10" onkeyup="validar_year_mayor(this.id)" onblur="validar_year_menor(this.id)">
+// 					</div>
+// 				</div>
+// 				<div class="col-md-3">
+// 					<div class="form-group">
+// 					  <label for="Fecha">Fecha VPN(dia-mes-año)</label>
+					   
+// 					  <input type="date" class="form-control" id="FechaV" placeholder="FechaV" 
+// 					  value="'.$value['Fecha_VPN'].'"   onKeyPress="return soloNumeros(event)" maxlength="10"onkeyup="validar_year_mayor(this.id)" onblur="validar_year_menor(this.id)">
+// 					</div>
+// 				</div>
+// 				<div class="col-md-3">
+// 					<div class="form-group">
+// 					  <label for="Fecha_DB">Fecha BD</label>
+// 					  <input type="date" class="form-control" id="FechaDB" value="'.$value['Fecha_DB'].'">
+// 					</div>
+// 				</div>
+// 				<div class="col-md-3">
+// 					<div class="form-group">
+// 					  <label for="Fecha_P12">Fecha P12</label>
+// 					  <input type="date" class="form-control" id="FechaP12" value="'.$value['Fecha_P12'].'">
+// 					</div>
+// 				</div>
+// 				<div class="col-md-3">
+// 					<div class="form-group">
+// 					  <label for="Servidor">Servidor</label>
+// 					  <input type="text" class="form-control" id="Servidor" placeholder="Servidor" value="'.$value['IP_VPN_RUTA'].'">
+// 					</div>
+// 				</div>
+// 				<div class="col-md-3">
+// 					<div class="form-group">
+// 					  <label for="Base">Base</label>
+// 					  <input type="text" class="form-control" id="Base" placeholder="Base" value="'.$value['Base_Datos'].'">
+// 					</div>
+// 				</div>
+// 				<div class="col-md-2">
+// 					<div class="form-group">
+// 					  <label for="Usuario">Usuario</label>
+					   
+// 					  <input type="text" class="form-control" id="Usuario" placeholder="Usuario" value="'.$value['Usuario_DB'].'">
+// 					</div>
+// 				</div>
+// 				<div class="col-md-2">
+// 					<div class="form-group">
+// 					  <label for="Clave">Clave</label>
+// 					  <input type="text" class="form-control" id="Clave" placeholder="Clave" value="'.$contra.'">
+// 					</div>
+// 				</div>
 				
-		$consulta=$cid->query($sql) or die($cid->error);*/
-		while($filas=$consulta->fetch_assoc()){
-			//while($filas=$consulta->fetch_array()){
-			?>
-				<div class="col-md-3">
-					<div class="form-group">
-					    <label for="Estado">Estado</label>
-					    <select class="form-control" name="Estado" id='Estado' >
-							<option value='<?php echo $filas['Estado']; ?>'><?php echo $filas['Estado']; ?></option>
-						    <option value='0'>Seleccione Estado</option>
-							<?php select_option_mysql_a('lista_estados','Estado','Estado,Descripcion',''); ?>
-					    </select>
-					</div>
-				</div>
-				<div class="col-md-3">
-					<div class="form-group">
-					  <label for="FechaR">Fecha Renovación(dia-mes-año)</label>
+// 				<div class="col-md-3">
+// 					<div class="form-group">
+// 					  <label for="Motor">Motor BD</label>
+// 					  <input type="text" class="form-control" id="Motor" placeholder="Motor" value="'.$value['Tipo_Base'].'">
+// 					</div>
+// 				</div>
+// 				<div class="col-md-2">
+// 					<div class="form-group">
+// 					  <label for="Puerto">Puerto</label>
 					   
-					  <input type="date" class="form-control" id="FechaR" placeholder="FechaR" 
-					  value='<?php echo date('Y-m-d',strtotime($filas['Fecha'])) ?>' 
-					  onKeyPress="return soloNumeros(event)"  maxlength="10" onkeyup="validar_year_mayor(this.id)" onblur="validar_year_menor(this.id)">
-					</div>
-				</div>
-				<div class="col-md-3">
-					<div class="form-group">
-					  <label for="Fecha">Fecha Comp. Electronico(dia-mes-año)</label>
-					   
-					  <input type="date" class="form-control" id="Fecha" placeholder="Fecha" 
-					  value='<?php echo date('Y-m-d',strtotime($filas['Fecha_CE'])) ?>' onKeyPress="return soloNumeros(event)" 
-					  maxlength="10" onkeyup="validar_year_mayor(this.id)" onblur="validar_year_menor(this.id)">
-					</div>
-				</div>
-				<div class="col-md-3">
-					<div class="form-group">
-					  <label for="Fecha">Fecha VPN(dia-mes-año)</label>
-					   
-					  <input type="date" class="form-control" id="FechaV" placeholder="FechaV" 
-					  value='<?php echo date('Y-m-d',strtotime($filas['Fecha_VPN'])) ?>'   onKeyPress="return soloNumeros(event)" maxlength="10"onkeyup="validar_year_mayor(this.id)" onblur="validar_year_menor(this.id)">
-					</div>
-				</div>
-				<div class="col-md-3">
-					<div class="form-group">
-					  <label for="Fecha_DB">Fecha BD</label>
-					  <input type="date" class="form-control" id="FechaDB" value='<?php echo $filas['Fecha_DB']; ?>'>
-					</div>
-				</div>
-				<div class="col-md-3">
-					<div class="form-group">
-					  <label for="Fecha_P12">Fecha P12</label>
-					  <input type="date" class="form-control" id="FechaP12" value='<?php echo $filas['Fecha_P12']; ?>'>
-					</div>
-				</div>
-				<div class="col-md-3">
-					<div class="form-group">
-					  <label for="Servidor">Servidor</label>
-					  <input type="text" class="form-control" id="Servidor" placeholder="Servidor" value='<?php echo $filas['IP_VPN_RUTA']; ?>'>
-					</div>
-				</div>
-				<div class="col-md-3">
-					<div class="form-group">
-					  <label for="Base">Base</label>
-					  <input type="text" class="form-control" id="Base" placeholder="Base" value='<?php echo $filas['Base_Datos']; ?>'>
-					</div>
-				</div>
-				<div class="col-md-2">
-					<div class="form-group">
-					  <label for="Usuario">Usuario</label>
-					   
-					  <input type="text" class="form-control" id="Usuario" placeholder="Usuario" value='<?php echo $filas['Usuario_DB']; ?>'>
-					</div>
-				</div>
-				<div class="col-md-2">
-					<div class="form-group">
-					  <label for="Clave">Clave</label>
-					  <input type="text" class="form-control" id="Clave" placeholder="Clave" value='<?php echo $filas[$contra]; ?>'>
-					</div>
-				</div>
+// 					  <input type="text" class="form-control" id="Puerto" placeholder="Puerto" value="'.$value['Puerto'].'">
+// 					</div>
+// 				</div>
 				
-				<div class="col-md-3">
-					<div class="form-group">
-					  <label for="Motor">Motor BD</label>
-					  <input type="text" class="form-control" id="Motor" placeholder="Motor" value='<?php echo $filas['Tipo_Base']; ?>'>
-					</div>
-				</div>
-				<div class="col-md-2">
-					<div class="form-group">
-					  <label for="Puerto">Puerto</label>
-					   
-					  <input type="text" class="form-control" id="Puerto" placeholder="Puerto" value='<?php echo $filas['Puerto']; ?>'>
-					</div>
-				</div>
+// 				<div class="col-md-12">
+// 					<div class="form-group">
+// 					  <label for="Mensaje">Mensaje</label>
+// 					  <input type="text" class="form-control" id="Mensaje" placeholder="Mensaje" value="';
+// 					   if(isset($_POST['sms'])){ $op.= $_POST['sms'];}else{ $op.= $value['Mensaje'];} 
+// 					   $op.='">
+// 					</div>
+// 				</div>';
+// 			//echo '<div id="alerta" class="alert alert-success visible">'.$filas['Empresa'].'</div>';
+			
+// 		}
+// 		}else
+// 		{
+// 			$op='<div id="alerta" class="alert alert-warning visible">Empresa no encontrada</div>';
+// 		}
+
+// 		return $op;
+
+// 		// print_r($op);die();
+
+
+// 		// $consulta=$cid->query($sql) or die($cid->error);
+// 		//Realizamos un bucle para ir obteniendo los resultados
+// 		// $i=0;
+// 		/*$info_campo = $consulta->fetch_fields();
+
+// 				foreach ($info_campo as $valor) {
+// 					printf("Nombre:           %s\n",   $valor->name);
+// 					printf("Tabla:            %s\n",   $valor->table);
+// 					printf("Longitud máx.:    %d\n",   $valor->max_length);
+// 					printf("Longitud:         %d\n",   $valor->length);
+// 					printf("Nº conj. caract.: %d\n",   $valor->charsetnr);
+// 					printf("Banderas:         %d\n",   $valor->flags);
+// 					printf("Tipo:             %d\n\n", $valor->type);
+// 				}
 				
-				<div class="col-md-12">
-					<div class="form-group">
-					  <label for="Mensaje">Mensaje</label>
-					  <input type="text" class="form-control" id="Mensaje" placeholder="Mensaje" value='<?php if(isset($_POST['sms'])){ echo $_POST['sms'];}else{echo $filas['Mensaje'];} ?>'>
-					</div>
-				</div>
-			<?php
-			//echo '<div id="alerta" class="alert alert-success visible">'.$filas['Empresa'].'</div>';
-			$i++;
-		}
-		if($i==0)
-		{
-			echo '<div id="alerta" class="alert alert-warning visible">Empresa no encontrada</div>';
-		}
+// 		$consulta=$cid->query($sql) or die($cid->error);*/
 		
-	 $cid->close();
-}
+// }
 
 //funcion para buscar los comprobantes
 function buscar_com()
@@ -4201,7 +4204,7 @@ function contar_reg($stmt,$detalle=null)
 
 //verificar ciudad
 function validarCiu()
-{
+{ //se a cambiado en cambioempresa revisar si se esta utilizando en otro lado o si no borrar
 	$cid = Conectar::conexion('MYSQL');
 	//$_POST['TP']='CD';
 	//$_POST['MesNo']=0;

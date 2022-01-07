@@ -98,77 +98,51 @@ function cone_ajaxSQL()
 	return $cid;
 }
 //crear select option para mysql
-function select_option_mysql_a($tabla,$value,$mostrar,$filtro=null)
-{
-	//require_once("../db/db.php");
-	$cid = Conectar::conexion('MYSQL');;
+// function select_option_mysql_a($tabla,$valor,$mostrar,$filtro=null)
+// {
+
+// 	$cid = new db();	
+// 	$sql = "SELECT ".$valor.",".$mostrar." FROM ".$tabla;
+
+// 	$datos = $cid->datos($sql,'MYSQL');
 	
-	$sql = "SELECT ".$value.",".$mostrar." FROM ".$tabla;
+// 	if($filtro!=null and $filtro!='')
+// 	{
+// 		$sql =  $sql." WHERE ".$filtro." ";
+// 	}
+// 	//echo $sql;
+// 	// $consulta=$cid->query($sql) or die($cid->error);
+// 	//saber si hay mas campos amostrar
+// 	$mostrar1 = explode(",", $mostrar);
+// 	if(count($mostrar1)==1)
+// 	{
+// 		$cam1=0;
+// 	}
+// 	else
+// 	{
+// 		$cam1=1;
+// 	}
+
+// 	if(count($datos)>0)
+// 	{
+// 		foreach ($datos as $key => $value) {
+// 		 	$op='<option value="'.$value[$valor].'">';
+// 					if($cam1==0)
+// 					{
+// 					   $op.=$value[$mostrar];
+// 					}
+// 					else
+// 					{
+// 						$mos1=$mostrar1[0];
+// 						$mos2=$mostrar1[1];
+// 						$op.= $value[$mos1].'-'.$value[$mos2];
+// 					}
+// 			$op.="</option>";
+// 		 } 
+// 	}
 	
-	if($filtro!=null and $filtro!='')
-	{
-		$sql =  $sql." WHERE ".$filtro." ";
-	}
-	//echo $sql;
-	$consulta=$cid->query($sql) or die($cid->error);
-	//saber si hay mas campos amostrar
-	$mostrar1 = explode(",", $mostrar);
-	if(count($mostrar1)==1)
-	{
-		$cam1=0;
-	}
-	else
-	{
-		$cam1=1;
-	}
-	//$stmt = sqlsrv_query( $cid, $sql);
-	/*
-		$camneva = explode(",", $camne['CAMPOE'][$i]);
-		//si solo es un campo
-		if(count($camneva)==1)
-		{
-			$camneva1 = explode("=", $camneva[0]);
-			$campoe[$ind]=$camneva1[0];
-			$campov[$ind]=$camneva1[1];
-			//echo ' pp '.$campoe[$ind].' '.$campov[$ind];
-		}
-		else
-		{
-			//hacer bucle
-		}
-	*/
-	if( $consulta === false)  
-	{  
-		 echo "Error en consulta.\n";  
-		 $return = array('success' => false);
-		 //die( print_r( sqlsrv_errors(), true));  
-	}
-	else
-	{	
-		while($filas=$consulta->fetch_assoc())
-		{
-			?>	
-			<option value='<?php echo $filas[$value]; ?>'>
-				<?php 
-					if($cam1==0)
-					{
-						echo $filas[$mostrar];
-					}
-					else
-					{
-						$mos1=$mostrar1[0];
-						$mos2=$mostrar1[1];
-						echo $filas[$mos1].'-'.$filas[$mos2];
-					}
-				?>
-			</option>
-			<?php
-			
-		}
-		
-	}
-	$cid->close();
-}
+// 	return $op;
+// }
 //agregar ceros a cadena a la izquierda 
 //$numero=numero o texto a convertir
 //$largo_maximo= maximo caracateres a colocar

@@ -11,13 +11,13 @@ class anexos_transM
 	private $conn ;
 	function __construct()
 	{
-	   $this->conn = cone_ajax();
+	   $this->conn = new db();
 	}
 
   function year($ConSucursal=false,$No_ATS=false)
   {
     
-  $cid = $this->conn;
+  // $cid = $this->conn;
      $sql = "SELECT YEAR(Fecha) As Anio FROM Trans_Compras 
            WHERE Periodo = '".$_SESSION['INGRESO']['periodo']."' ";
        if($ConSucursal){
@@ -40,18 +40,19 @@ class anexos_transM
        }
        $sql.="GROUP BY YEAR(Fecha)
        ORDER BY YEAR(Fecha) DESC ";
-         $stmt = sqlsrv_query($cid, $sql);
-        $datos =  array();
-     if( $stmt === false)  
-     {  
-     echo "Error en consulta PA.\n";  
-     return '';
-     die( print_r( sqlsrv_errors(), true));  
-     }
-      while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_ASSOC) ) 
-     {
-    $datos[] = $row;
-     }
+    //      $stmt = sqlsrv_query($cid, $sql);
+    //     $datos =  array();
+    //  if( $stmt === false)  
+    //  {  
+    //  echo "Error en consulta PA.\n";  
+    //  return '';
+    //  die( print_r( sqlsrv_errors(), true));  
+    //  }
+    //   while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_ASSOC) ) 
+    //  {
+    // $datos[] = $row;
+    //  }
+       $datos = $this->conn->datos($sql);
        return $datos;
 
   }
@@ -59,7 +60,7 @@ class anexos_transM
 	function codigo_anexo($FechaMid)
 	{
 
-	$cid = $this->conn;
+	// $cid = $this->conn;
     // 'LISTA DE CODIGO DE ANEXOS
      $sql = "SELECT Codigo, Concepto 
           FROM Tipo_Concepto_Retencion 
@@ -67,18 +68,7 @@ class anexos_transM
           AND Fecha_Inicio <= '".$FechaMid."'
           AND Fecha_Final >= '".$FechaMid ."'
           ORDER BY Codigo ";
-        $stmt = sqlsrv_query($cid, $sql);
-        $datos =  array();
-	   if( $stmt === false)  
-	   {  
-		 echo "Error en consulta PA.\n";  
-		 return '';
-		 die( print_r( sqlsrv_errors(), true));  
-	   }
-	    while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_ASSOC) ) 
-	   {
-		$datos[] = $row;
-	   }
+        $datos = $this->conn->datos($sql);
        return $datos;
 	}
 
@@ -260,14 +250,7 @@ class anexos_transM
     }
     $sql .= "AND T.Periodo = '".$_SESSION['INGRESO']['periodo']."' AND T.IdFiscalProv = C.Codigo ";
 
-     $stmt = sqlsrv_query($cid, $sql);
-     if( $stmt === false)  
-        {
-        	echo "Error en consulta PA.\n";  
-             $respuesta = -1;
-            die( print_r( sqlsrv_errors(), true)); 
-        }
-        return $respuesta;
+    return $this->conn->String_Sql($sql);
 
 	}
 
@@ -275,7 +258,7 @@ class anexos_transM
 	{
 
 		$Contador_AT = 1;
-	$cid = $this->conn;
+	// $cid = $this->conn;
 		if($Tabla <> "")
 		{
 			if($Tabla == "Trans_Anulados")
@@ -295,18 +278,7 @@ class anexos_transM
              }
               $sql .="AND Periodo = '".$_SESSION['INGRESO']['periodo']."'
               ORDER BY FechaAnulacion ";
-               $stmt = sqlsrv_query($cid, $sql);
-               $datos =  array();
-               if( $stmt === false)  
-               	  {
-               	    echo "Error en consulta PA.\n";  
-               	    return '';
-               	    die( print_r( sqlsrv_errors(), true)); 
-               	  }
-               	  while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_ASSOC) ) 
-               	  	  {
-               	  	  	$datos[] = $row;
-               	  	   }
+                $datos = $this->conn->datos($sql);
                	  if(count($datos)>0)
                	    {
                	     foreach ($datos as $key => $value) 
@@ -340,20 +312,8 @@ class anexos_transM
 					case ($TipoTrans=='I') || ($TipoTrans== 'E'):
 						$sql.="ORDER BY IdFiscalProv,Fecha ";
 						break;
-				}
-
-				$stmt = sqlsrv_query($cid, $sql);
-               $datos =  array();
-               if( $stmt === false)  
-               	  {
-               	    echo "Error en consulta PA.\n";  
-               	    return '';
-               	    die( print_r( sqlsrv_errors(), true)); 
-               	  }
-               	  while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_ASSOC) ) 
-               	  	  {
-               	  	  	$datos[] = $row;
-               	  	   }
+				} 
+            $datos = $this->conn->datos($sql);
                	  if(count($datos)>0)
                	    {
                	     foreach ($datos as $key => $value) 
@@ -421,17 +381,7 @@ class anexos_transM
                	        
                	           }
 
-               	            // print_r($sql);die();
-               	            $stmt = sqlsrv_query($cid, $sql);
-               	            $datos =  array();
-               	            if( $stmt === false)  
-               	            {
-               	            	echo "Error en consulta PA.\n";  
-               	            	// return '';
-               	            	die( print_r( sqlsrv_errors(), true)); 
-               	            }
-
-                        // print_r('expression');die(); 
+                              $datos = $this->conn->String_Sql($sql);
 
                	        }  
                	   } 
@@ -445,24 +395,8 @@ class anexos_transM
 
   function traer_datos($sql)
   {
-  	$cid = $this->conn;
-  	   $stmt = sqlsrv_query($cid, $sql);
-	   if( $stmt === false)  
-	   {  
-		 echo "Error en consulta PA.\n";  
-		 // return '';
-		 die( print_r( sqlsrv_errors(), true));  
-	   }
-	  // print_r($sql);
-	   $datos = array();
-	    while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_ASSOC) ) 
-	   {
-		$datos[] = $row;
-		//echo $row[0];
-	   }
-	   
-  // cerrarSQLSERVERFUN($cid);
-	  return $datos;
+       $datos = $this->conn->datos($sql);
+       return $datos;
 
   }
 
@@ -485,7 +419,7 @@ class anexos_transM
 
   function Vista_Compras($Fecha_Inicio,$Fecha_Fin,$ConSucursal=false,$No_ATS=false)
   {
-    $cid = $this->conn;
+    // $cid = $this->conn;
     $sql ="SELECT TC.TipoComprobante,TCC.Descripcion,COUNT(TipoComprobante) As Cant,SUM(BaseImponible) As BI,SUM(BaseImpGrav) As BIG,SUM(MontoIva) As MI 
       FROM Trans_Compras As TC,Clientes As C,Tipo_Comprobante As TCC
       WHERE TC.Fecha Between '".$Fecha_Inicio."' AND '".$Fecha_Fin."' ";
@@ -508,7 +442,7 @@ class anexos_transM
 
   function Vista_Ventas($Fecha_Inicio,$Fecha_Fin,$ConSucursal=false,$No_ATS=false)
   {
-    $cid = $this->conn;
+    // $cid = $this->conn;
     $sql = "SELECT TV.TipoComprobante,TCC.Descripcion,COUNT(TipoComprobante) As Cant,SUM(BaseImponible) As BI,SUM(BaseImpGrav) As BIG,SUM(MontoIva) As MI 
       FROM Trans_Ventas As TV,Clientes As C,Tipo_Comprobante As TCC 
       WHERE TV.Fecha Between '".$Fecha_Inicio."' AND '".$Fecha_Fin."'  ";
@@ -531,7 +465,7 @@ class anexos_transM
 
   function Vista_Anulados($Fecha_Inicio,$Fecha_Fin,$ConSucursal=false,$No_ATS=false)
   {
-    $cid = $this->conn;
+    // $cid = $this->conn;
     $sql = "SELECT COUNT(T) As Cantidad 
         FROM Trans_Anulados 
         WHERE Fecha Between '".$Fecha_Inicio."' AND '".$Fecha_Fin."'  ";
@@ -549,7 +483,7 @@ class anexos_transM
 
    function Vista_Retencion_Impuesto_Renta($Fecha_Inicio,$Fecha_Fin,$Fecha_Mit,$ConSucursal=false,$No_ATS=false)
   {
-    $cid = $this->conn;
+    // $cid = $this->conn;
     $sql="SELECT TA.CodRet,CCR.Concepto,COUNT(Concepto) As Cant,SUM(BaseImp) As BI,SUM(ValRet) As VR 
       FROM Trans_Air As TA,Tipo_Concepto_Retencion As CCR 
       WHERE TA.Fecha Between '".$Fecha_Inicio."' AND '".$Fecha_Fin."'  ";
@@ -573,7 +507,7 @@ class anexos_transM
 
    function Vista_Retencion_Fuente_Iva($Fecha_Inicio,$Fecha_Fin,$ConSucursal=false,$No_ATS=false)
   {
-    $cid = $this->conn;
+    // $cid = $this->conn;
     $Vista_Retencion = array();
     //COMPRAS
     $sql = "SELECT PorRetBienes,PorRetServicios,COUNT(PorRetBienes) As Cant,
