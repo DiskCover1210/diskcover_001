@@ -94,7 +94,27 @@ if(isset($_GET['consultar']))
 	$parametros=$_POST['parametros'];
 	$desde =$parametros['desde'];
     $hasta = $parametros['hasta'];
-	$balance=$modal->ListarEmpresasSQL('Analisis de vencimiento',null,null,null,null,null,null,$desde,$hasta);
+    $reporte = $parametros['repor'];
+	$balance=$modal->ListarEmpresasSQL('Analisis de vencimiento',null,null,null,null,$reporte,null,$desde,$hasta);
+	echo json_encode($balance);
+
+	// print_r($balance);die();
+	// return $balance;
+}
+
+if(isset($_GET['consultar_reporte']))
+{
+	$modal = new contabilidad_model();
+	//$controlador = new libro_bancoC();
+	//echo json_decode($controlador->consultar_banco($_POST['parametros']));
+	$desde =$_GET['desde'];
+    $hasta = $_GET['hasta'];
+    $reporte = $_GET['repor'];
+	$balance=$modal->ListarEmpresasSQL('Analisis de vencimiento',null,null,null,null,$reporte,null,$desde,$hasta);
+	echo json_encode($balance);
+
+	// print_r($balance);die();
+	// return $balance;
 }
 
 //==========================
@@ -141,6 +161,7 @@ function reporte_analitico_mensual($parametros)
 	$modelo = new contabilidad_model();
 	//enviamos los datos al modelo
 	$respuesta = $modelo->sp_Reporte_Analitico_Mensual($parametros['Tipo'],$parametros['desde'],$parametros['hasta']);
+	// print_r($respuesta);die();
 
 	//verificamos si todo salio bien  1 ejecutado -1 fallo al ejecutar (respuestas que personalmente las coloco)
 	if($respuesta['respuesta'] == 1)

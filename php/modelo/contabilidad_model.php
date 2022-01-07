@@ -169,7 +169,7 @@ public $Mensaje        ="";
 	//consulta empresa
 	function ListarEmpresasSQL($ti=null,$Opcb=null,$Opcem=null,$OpcDG=null,$b=null,$opcr=null,$OpcCE=null,$desde=null,$hasta=null){
 		
-		$cid = Conectar::conexion('MYSQL');
+		// $cid = Conectar::conexion('MYSQL');
 		//echo $desde.'  '.$hasta;
 		$f1 = new DateTime($desde);
 		$f2 = new DateTime($hasta);
@@ -383,23 +383,47 @@ public $Mensaje        ="";
 		'.$sql3.' FROM lista_empresas) AS A
 		where (Fecha BETWEEN "'.$desde.'" AND "'.$hasta.'" )
 		ORDER BY A.fecha,A.Id_Empresa ,A.Item';
-		//echo $sql;
-		//die();
-		$consulta=$cid->query($sql) or die($cid->error);
-		//grilla_generica($consulta,null,NULL,'1',null,null,'MYSQL');
-		
-		//grilla_generica($consulta,null,NULL,'1',null,null,'MYSQL');
-		//para saber si es excel o grilla
+
+		$datos = $this->db_->datos($sql,'MYSQL');
 		if($opcr==null or $opcr==1)
-		{
-			//grilla_generica($stmt,$ti,$camne,$b,null,null,null,true);
-			grilla_generica($consulta,null,NULL,'1',null,null,'MYSQL');
+		{	
+			// print_r('datos');die();
+			return $datos;
 		}
 		if($opcr==2)
 		{
-			//die();
-			exportar_excel_generico($consulta,$ti,null,null,'MYSQL');
+			$titulo = 'REPORTE DE VENCIMINETO POR EMPRESA';
+			$tablaHTML = array();
+			$tablaHTML[0]['medidas']= array(17,17,44,30,17);
+		    $tablaHTML[0]['datos']=array('Tipo','Item','Empresa','Fecha','Enero');
+		    $tablaHTML[0]['tipo'] ='SUB';
+		    $pos = 1;
+		    foreach ($datos as $key => $value) {
+		    	$tablaHTML[$pos]['medidas']= $tablaHTML[0]['medidas'];
+		   		$tablaHTML[$pos]['datos']=array($value['tipo'],$value['Item'],$value['Empresa'],$value['Fecha'],$value['enero']);
+		    	$tablaHTML[$pos]['tipo'] ='N';
+		    	$pos+=1;
+		    }
+			excel_generico($titulo,$tablaHTML);
 		}
+
+		// //echo $sql;
+		// //die();
+		// $consulta=$cid->query($sql) or die($cid->error);
+		// //grilla_generica($consulta,null,NULL,'1',null,null,'MYSQL');
+		
+		// //grilla_generica($consulta,null,NULL,'1',null,null,'MYSQL');
+		// //para saber si es excel o grilla
+		// if($opcr==null or $opcr==1)
+		// {
+		// 	//grilla_generica($stmt,$ti,$camne,$b,null,null,null,true);
+		// 	grilla_generica($consulta,null,NULL,'1',null,null,'MYSQL');
+		// }
+		// if($opcr==2)
+		// {
+		// 	//die();
+		// 	exportar_excel_generico($consulta,$ti,null,null,'MYSQL');
+		// }
 		
 	}
 	//consulta listar balance sql server
@@ -3160,28 +3184,48 @@ function sp_Reporte_Analitico_Mensual($tipo,$desde,$hasta)
         return $tbl;
        }else
        {
-    	// print_r($sql);
-        // exportar_excel_generico($stmt,'Resumen Analitico Mensual De Utilidades/Perdidas ',null,'1');  
-        exportar_excel_generico($stmt,'Resumen Analitico Mensual De Utilidades',NULL,'1');
+       	 
+	       	$cabe = str_replace('SELECT','', $query);
+	       	$cabe = str_replace(' ','', $cabe);
+	       	$cabe = explode(',',trim($cabe));
 
-       // cerrarSQLSERVERFUN($cid);   
+       	    $result = $this->db_->datos($sql);
+			// $he = array();
+			$medidas = array();
+			foreach ($cabe as $key => $value) {
+				array_push($medidas,strlen($value)*4);			   
+			}
 
+			// print_r($cabe);
+			// print_r($medidas);die();
+			$tablaHTML =array();
+		   	 $tablaHTML[0]['medidas']=$medidas;
+	         $tablaHTML[0]['datos']=$cabe;
+	         $tablaHTML[0]['tipo'] ='C';
+	         $pos = 1;
+			foreach ($result as $key => $value) {
+				// print_r($he);die();
+				 $tablaHTML[$pos]['medidas']=$medidas;
+				 $va = array();
+				 foreach ($cabe as $key1 => $value1) {
+				 	array_push($va,$value[$value1]);			 	
+				 }
+		         $tablaHTML[$pos]['datos']= $va;
+		         $tablaHTML[$pos]['tipo'] ='N';
+		         $pos+=1;
+			}
+			excel_generico('Resumen Analitico Mensual De Utilidades',$tablaHTML);
        }
 
      }
+
      function pdf_reporte($tipo)
      {
-     	 $cid = Conectar::conexion();
      	$sql = "SELECT Cta, Detalle_Cuenta, Enero, Febrero, Marzo, Abril, Mayo, Junio, Julio, Agosto, Septiembre, Octubre, Noviembre, Diciembre, Total, Presupuesto, Diferencia, DG, TC FROM Reporte_Analitico_Mensual WHERE Item = '".$_SESSION['INGRESO']['item']."' AND Periodo = '".$_SESSION['INGRESO']['periodo']."' AND CodigoU ='".$_SESSION['INGRESO']['CodigoU']."' AND TB = '".$tipo."' ORDER BY Codigo_Aux;";
-
-        $stmt = sqlsrv_query($cid, $sql);
-	    $result = array();	
-	   while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_ASSOC) ) 
-	   {
-		$result[] = $row;
-	   }
+     	$result = $this->db_->datos($sql);
 	   return $result;
      }
+
 
      function  Tabla_Dias_Meses()
      {
