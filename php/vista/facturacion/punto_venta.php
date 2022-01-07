@@ -2,10 +2,11 @@
 $TC = 'FA'; if(isset($_GET['tipo'])){$TC = $_GET['tipo'];}
 ?>
 <script type="text/javascript">
+	eliminar_linea('','');
   $(document).ready(function () {
   	autocomplete_cliente(); 
   	autocomplete_producto();
-  	serie();
+  	serie();  	
   	tipo_documento();
   	DCBodega();
   	DGAsientoF();
@@ -32,6 +33,30 @@ $TC = 'FA'; if(isset($_GET['tipo'])){$TC = $_GET['tipo'];}
 
   });
 
+  function validar_cta()
+  {
+  	var parametros = 
+  	{
+  		'TC':'<?php echo $TC; ?>',
+  		'Serie': $('#LblSerie').text(),
+  	}
+  	$.ajax({
+		type: "POST",
+		url: '../controlador/facturacion/punto_ventaC.php?validar_cta=true',
+		data: {parametros: parametros},
+		dataType:'json',
+		success: function(data)
+		{
+			Swal.fire({
+				  type:'info',
+				  title: data,
+				  text:'',
+				  allowOutsideClick: false,
+				});
+		}
+	});
+
+  }
   function tipo_documento()
   {
   	var TipoFactura = '<?php echo $TC; ?>';
@@ -141,6 +166,7 @@ $TC = 'FA'; if(isset($_GET['tipo'])){$TC = $_GET['tipo'];}
 		{
 			$('#LblSerie').text(data.serie);
 			$('#TextFacturaNo').val(data.NumCom);
+			validar_cta();
 		}
 	});
   }
@@ -165,7 +191,8 @@ $TC = 'FA'; if(isset($_GET['tipo'])){$TC = $_GET['tipo'];}
 		type: "POST",
 		url: '../controlador/facturacion/punto_ventaC.php?DGAsientoF=true',
 		//data: {parametros: parametros},
-		dataType:'json',
+		dataType:'json',		
+		beforeSend: function () {	$('#tbl_DGAsientoF').html('<img src="../../img/gif/loader4.1.gif" width="40%"> ');}, 	
 		success: function(data)
 		{
 			$('#tbl_DGAsientoF').html(data);
@@ -430,6 +457,7 @@ $TC = 'FA'; if(isset($_GET['tipo'])){$TC = $_GET['tipo'];}
   		'TextBanco': $('#TextBanco').val(),
   		'TextCheqNo':$('#TextCheqNo').val(),
   		'CodDoc':$('#CodDoc').val(),
+  		'valorBan':$('#TextCheque').val(),
   	}
   	$.ajax({
 		type: "POST",
@@ -439,17 +467,50 @@ $TC = 'FA'; if(isset($_GET['tipo'])){$TC = $_GET['tipo'];}
 		success: function(data)
 		{
 			$('#myModal_espera').modal('hide');
-			// console.log(data);
+			console.log(data);
+			var url=  '../vista/TEMP/'+data.pdf+'.pdf';
+			console.log(url);
+			window.open(url, '_blank'); 		
 			if(data.respuesta.respuesta==1)
 			{
-				Swal.fire('Autorizado por el SRI','','success');
-				var url=  '../vista/TEMP/'+data.pdf+'.pdf';
-				window.open(url, '_blank'); 		
-				location.reload();		  
+				Swal.fire({
+				  type:'success',
+				  title: 'Factura Autorizada',
+				  confirmButtonText: 'Ok!',
+				  allowOutsideClick: false,
+				}).then((result) => {
+				  /* Read more about isConfirmed, isDenied below */
+				  if (result.value) {
+				  	location.reload();
+				  } 
+				})	
+				
+			}else if(data.respuesta.respuesta==2)
+			{
+				Swal.fire('XML devuelto','','error');	
+			}
+			else if(data.respuesta.respuesta==4)
+			{
+				Swal.fire('SRI intermitente intente mas tarde','','info');	
 			}
 			
 		}
 	});
+
+  }
+
+  function calcular_pago()
+  {
+
+  	var cotizacion = parseInt($('#TextCotiza').val());
+  	var efectivo = parseFloat($('#TxtEfectivo').val());
+  	var Total_Factura = parseFloat($('#LabelTotalME').val());
+  	var Total_Factura2 = parseFloat($('#LabelTotal').val());
+  	if(cotizacion > 0){
+     if(parseFloat(efectivo) > 0) {var ca = efectivo-Total_Factura; $('#LblCambio').val(ca.toFixed(2));}
+     }else{
+     if(efectivo > 0 ){ var ca = efectivo-Total_Factura2; $('#LblCambio').val(ca.toFixed(2)) }
+   }
 
   }
 
@@ -464,11 +525,11 @@ $TC = 'FA'; if(isset($_GET['tipo'])){$TC = $_GET['tipo'];}
               <img src="../../img/png/salire.png">
             </a>
         </div>   
-         <div class="col-xs-2 col-md-2 col-sm-2 col-lg-1">
+       <!--   <div class="col-xs-2 col-md-2 col-sm-2 col-lg-1">
             <a  title="Salir de modulo" class="btn btn-default" onclick="$('#myModal_boletos').modal('show')">
               <img src="../../img/png/salire.png">
             </a>
-        </div>      
+        </div>  -->     
            
  </div>
 </div>
@@ -489,7 +550,7 @@ $TC = 'FA'; if(isset($_GET['tipo'])){$TC = $_GET['tipo'];}
 		</div>
 		<div class="col-sm-2">
 			<b>CI/RUC/PAS</b>
-			<input type="" name="LblRUC" id="LblRUC" class="form-control input-sm">	
+			<input type="" name="LblRUC" id="LblRUC" class="form-control input-sm" readonly>	
 			<input type="hidden" name="Lblemail" id="Lblemail" class="form-control input-sm">	
 			
 		</div>
@@ -500,7 +561,7 @@ $TC = 'FA'; if(isset($_GET['tipo'])){$TC = $_GET['tipo'];}
 					999999
 				</div>
 				<div class="col-sm-9">
-					<input type="" class="form-control input-sm" id="TextFacturaNo" name="TextFacturaNo">					
+					<input type="" class="form-control input-sm" id="TextFacturaNo" name="TextFacturaNo" readonly>					
 				</div>				
 			</div>			
 		</div>
@@ -572,7 +633,7 @@ $TC = 'FA'; if(isset($_GET['tipo'])){$TC = $_GET['tipo'];}
 				</div>
 
 			</div>
-			<div class="row" id="tbl_DGAsientoF">
+			<div class="row text-center" id="tbl_DGAsientoF">
 				
 			</div>
 			
@@ -583,7 +644,7 @@ $TC = 'FA'; if(isset($_GET['tipo'])){$TC = $_GET['tipo'];}
 					<b>Total Tarifa 0%</b>
 				</div>
 				<div class="col-sm-6">
-					<input type="text" name="LabelSubTotal" id="LabelSubTotal" class="form-control input-sm">						
+					<input type="text" name="LabelSubTotal" id="LabelSubTotal" class="form-control input-sm text-right" value="0.00" style="color:red" readonly>						
 				</div>
 			</div>
 			<div class="row">
@@ -591,7 +652,7 @@ $TC = 'FA'; if(isset($_GET['tipo'])){$TC = $_GET['tipo'];}
 					<b>Total Tarifa 12%</b>
 				</div>
 				<div class="col-sm-6">
-					<input type="text" name="LabelConIVA"  id="LabelConIVA" class="form-control input-sm">						
+					<input type="text" name="LabelConIVA"  id="LabelConIVA" class="form-control input-sm text-right" value="0.00" style="color:red" readonly>						
 				</div>
 			</div>
 			<div class="row">
@@ -599,7 +660,7 @@ $TC = 'FA'; if(isset($_GET['tipo'])){$TC = $_GET['tipo'];}
 					<b id="Label3">I.V.A. 12.00</b>
 				</div>
 				<div class="col-sm-6">
-					<input type="text" name="LabelIVA"  id="LabelIVA" class="form-control input-sm">						
+					<input type="text" name="LabelIVA"  id="LabelIVA" class="form-control input-sm text-right" value="0.00" style="color:red" readonly>						
 				</div>
 			</div>
 			<div class="row">
@@ -607,7 +668,7 @@ $TC = 'FA'; if(isset($_GET['tipo'])){$TC = $_GET['tipo'];}
 					<b>Total Factura</b>
 				</div>
 				<div class="col-sm-6">
-					<input type="text" name="LabelTotal"  id="LabelTotal" class="form-control input-sm">						
+					<input type="text" name="LabelTotal"  id="LabelTotal" class="form-control input-sm text-right" value="0.00" style="color:red" readonly>						
 				</div>
 			</div>
 			<div class="row">
@@ -615,7 +676,7 @@ $TC = 'FA'; if(isset($_GET['tipo'])){$TC = $_GET['tipo'];}
 					<b>Total Fact (ME)</b>
 				</div>
 				<div class="col-sm-6">
-					<input type="text" name="LabelTotalME"  id="LabelTotalME" class="form-control input-sm">						
+					<input type="text" name="LabelTotalME"  id="LabelTotalME" class="form-control input-sm text-right" value="0.00" style="color:red" readonly>						
 				</div>
 			</div>
 			<div class="row">
@@ -623,7 +684,7 @@ $TC = 'FA'; if(isset($_GET['tipo'])){$TC = $_GET['tipo'];}
 					<b>EFECTIVO</b>
 				</div>
 				<div class="col-sm-6">
-					<input type="text" name="TxtEfectivo" id="TxtEfectivo"  class="form-control input-sm">						
+					<input type="text" name="TxtEfectivo" id="TxtEfectivo"  class="form-control input-sm text-right" value="0.00" onblur="calcular_pago()" onkeyup="calcular_pago()">						
 				</div>
 			</div>
 			<div class="row">
@@ -653,7 +714,7 @@ $TC = 'FA'; if(isset($_GET['tipo'])){$TC = $_GET['tipo'];}
 					<b>VALOR BANCO</b>
 				</div>
 				<div class="col-sm-6">
-					<input type="text" name="TextCheque" id="TextCheque" class="form-control input-sm">						
+					<input type="text" name="TextCheque" id="TextCheque" class="form-control input-sm text-right" value="0.00">						
 				</div>
 			</div>
 			<div class="row">
@@ -661,7 +722,7 @@ $TC = 'FA'; if(isset($_GET['tipo'])){$TC = $_GET['tipo'];}
 					<b>CAMBIO</b>
 				</div>
 				<div class="col-sm-6">
-					<input type="text" name="LblCambio" id="LblCambio" class="form-control input-sm">						
+					<input type="text" name="LblCambio" id="LblCambio" class="form-control input-sm text-right" style="color: red;" value="0.00">						
 				</div>
 			</div>
 			<div class="row">

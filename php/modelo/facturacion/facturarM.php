@@ -189,7 +189,7 @@ class facturarM
           WHERE TC = 'P' 
           AND Item = '".$_SESSION['INGRESO']['item']."' 
           AND Periodo = '".$_SESSION['INGRESO']['periodo']."' 
-          AND INV <> 0 ";
+          AND T <> 'I' ";
      if($OpcServicio){ $sql.=" AND LEN(Cta_Inventario) <= 1 ";}
      if($PatronDeBusqueda <> ""){ $sql.= " AND Producto LIKE '%".$PatronDeBusqueda."%' ";}
      if($NombreMarca <> ""){ $sql.= " AND Marca LIKE '%".$NombreMarca. "%' ";}

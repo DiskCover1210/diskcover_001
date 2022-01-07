@@ -85,6 +85,12 @@ if(isset($_GET['generar_factura']))
 	echo json_encode($controlador->generar_factura($parametros));
 }
 
+if(isset($_GET['validar_cta']))
+{
+	$parametros = $_POST['parametros'];
+	echo  json_encode($controlador->validar_cta($parametros));
+}
+
 class punto_ventaC
 {
 	private $modelo;
@@ -342,6 +348,7 @@ class punto_ventaC
 	        $FA['DCBancoC'] = $parametros['DCBancoC'];
 	        $FA['T'] = $parametros['T'];
 	        $FA['CodDoc'] = $parametros['CodDoc'];
+	        $FA['valorBan'] = $parametros['valorBan'];
 
 	        $Moneda_US = False;
 	        $TextoFormaPago = G_PAGOCONT;
@@ -441,7 +448,7 @@ function ProcGrabar($FA)
         $TA['Cheque'] = $FA['TextCheqNo']; 
         $TA['Factura'] = $Factura_No; //pendiente
         $Total_Bancos = 0;
-        $TA['Abono'] = $Total_Bancos;
+        $TA['Abono'] = $FA['valorBan'];
         // print_r($TA);die();
         Grabar_Abonos($TA);
 
@@ -490,6 +497,21 @@ function ProcGrabar($FA)
      return 1;    
   }else{
     return  "No se puede grabar la Factura,  falta datos.";
+  }
+}
+
+function validar_cta($parametros)
+{
+	$datos = $this->modelo->catalogo_lineas($parametros['TC'],$parametros['Serie']);
+	$Cta_CxP = $datos[0]['CxC'];
+	// print_r($datos);die();
+	if($Cta_CxP <> G_NINGUNO ){
+     $ExisteCtas = array();
+     $ExisteCtas[0] = $Cta_CxP;
+     $ExisteCtas[1] =  $_SESSION['SETEOS']['Cta_CajaG']; //$Cta_CajaG;
+     $ExisteCtas[2] =  $_SESSION['SETEOS']['Cta_CajaGE']; //$Cta_CajaGE;
+     $ExisteCtas[3] =  $_SESSION['SETEOS']['Cta_CajaBA']; //$Cta_CajaBA;
+     return VerSiExisteCta($ExisteCtas);
   }
 }
 

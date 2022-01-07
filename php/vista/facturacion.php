@@ -64,6 +64,10 @@ if(isset($_SESSION['INGRESO']['IP_VPN_RUTA']) && $_SESSION['INGRESO']['Tipo_Base
 						{
 							require_once("facturacion/facturar.php");
 						}
+						if ($_SESSION['INGRESO']['accion']=='punto_venta') 
+						{
+							require_once("facturacion/punto_venta.php");
+						}
 					}else
 					{
 						echo "<div class='box-body'><img src='../../img/modulo_facturacion.png' width='100%'></div>";
