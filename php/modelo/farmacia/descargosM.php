@@ -16,6 +16,7 @@ class descargosM
 	function __construct()
 	{
 	   $this->conn = cone_ajax();
+	   $this->conn1 = new db();
 	}
 
 	function pedido_paciente($codigo_b=false,$tipo=false,$query=false,$desde=false,$hasta =false,$busfe=false)
@@ -216,7 +217,6 @@ class descargosM
 
 	function area_descargo($query = false,$codigo = false)
 	{
-		$cid = $this->conn;
 		$sql = "SELECT   TC, Codigo, Detalle
 		FROM   Catalogo_SubCtas
 		WHERE  TC='CC' AND Periodo = '".$_SESSION['INGRESO']['periodo']."' AND Item= '".$_SESSION['INGRESO']['item']."'";
@@ -229,19 +229,20 @@ class descargosM
 			$sql.=" AND Codigo ='".$codigo."'";
 		}
 		// print_r($sql);die();
-		$stmt = sqlsrv_query($cid, $sql);
-        $datos =  array();
-	   if( $stmt === false)  
-	   {  
-		 echo "Error en consulta PA.\n";  
-		 return '';
-		 die( print_r( sqlsrv_errors(), true));  
-	   }
-	    while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_ASSOC) ) 
-	   {
-            $datos[]=$row;
-	   }
-       return $datos;
+		return $this->conn1->datos($sql); 
+		// $stmt = sqlsrv_query($cid, $sql);
+  //       $datos =  array();
+	 //   if( $stmt === false)  
+	 //   {  
+		//  echo "Error en consulta PA.\n";  
+		//  return '';
+		//  die( print_r( sqlsrv_errors(), true));  
+	 //   }
+	 //    while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_ASSOC) ) 
+	 //   {
+  //           $datos[]=$row;
+	 //   }
+  //      return $datos;
 	}
 
 	function actualizar_his($dato,$where)

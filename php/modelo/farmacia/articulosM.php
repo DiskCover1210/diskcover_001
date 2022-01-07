@@ -26,7 +26,7 @@ class articulosM
 		}
 
 		$cid = $this->conn;
-		$sql = "SELECT ID,Codigo_Inv,Producto,TC,Minimo,Maximo,Cta_Inventario,Unidad,Ubicacion,IVA,Reg_Sanitario FROM Catalogo_Productos  WHERE Periodo = '".$_SESSION['INGRESO']['periodo']."' AND item='".$_SESSION['INGRESO']['item']."'  AND TC='P' AND INV='1' AND LEN(Cta_Inventario)>3 AND LEN(Cta_Costo_Venta)>3 AND  T ='N' ";
+		$sql = "SELECT ID,Codigo_Inv,Producto,TC,Minimo,Maximo,Cta_Inventario,Unidad,Ubicacion,IVA,Reg_Sanitario FROM Catalogo_Productos  WHERE Periodo = '".$_SESSION['INGRESO']['periodo']."' AND item='".$_SESSION['INGRESO']['item']."'  AND TC='P' AND LEN(Cta_Inventario)>3 AND LEN(Cta_Costo_Venta)>3 ";
 		if($query) 
 		{
 			$sql.=" AND Codigo_Inv+' '+Producto LIKE '%".$query."%'";

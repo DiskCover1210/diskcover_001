@@ -60,6 +60,7 @@ if(isset($_GET['guardar']))
 if(isset($_GET['pedido']))
 {
 	$parametros = $_POST['parametros'];
+		// print_r('ddd');die();
 	echo json_encode($controlador->cargar_pedidos($parametros));
 }
 if(isset($_GET['lin_edi']))
@@ -113,7 +114,7 @@ class ingreso_descargosC
 		$this->modelo = new ingreso_descargosM();
 		$this->paciente = new pacienteM();
 		$this->descargos = new descargosM();
-		mayorizar_inventario_sp();
+		// mayorizar_inventario_sp();
 	}
 	function buscar_paciente($query)
 	{
@@ -134,6 +135,8 @@ class ingreso_descargosC
 		// print_r($tipo);die();
 
 		$producto = array();
+		$exist = 0;
+		$costo = 0;
 		// if($query!='')
 		// {
 			$datos = $this->modelo->buscar_producto($query,$tipo);
@@ -143,20 +146,15 @@ class ingreso_descargosC
 			$costo_venta = $this->modelo->costo_venta($value['Codigo_Inv']);
 			$costotra = $this->modelo->costo_producto($value['Codigo_Inv']);
 			// print_r($costo_venta);die();
-			if(empty($costo_venta))
+			if(!empty($costo_venta))
 			{
-				$exist = 0;
-			}else
-			{
-				      $exist = $costo_venta[0]['Existencia'];
+				$exist = $costo_venta[0]['Existencia'];				
 			}
-			if(empty($costotra))
+			if(!empty($costotra))
 			{
-				$costo = 0;
-			}else
-			{
-				      $costo = $costotra[0]['Costo'];
+				$costo = $costotra[0]['Costo'];				
 			}
+		
 
 			if($tipo=='ref')
 			{
@@ -184,7 +182,9 @@ class ingreso_descargosC
 
     function cargar_pedidos($parametros)
     {
+    	// print_r('ddd');die();
     	$ordenes = $this->modelo->cargar_pedidos_fecha($parametros['num_ped'],$parametros['area']);
+
     	$datos1 = $this->modelo->cargar_pedidos($parametros['num_ped'],$parametros['area']);
     	 $neg = false;
     	 $num = 0;
@@ -228,13 +228,15 @@ class ingreso_descargosC
     	{
     		$datos1[0]['A_No'] = 0;
     	}
-    	if(count($ordenes)==0)
+    	$or = count($ordenes);
+    	if($or==0)
     	{
     		$tabla = array('num_lin'=>0,'tabla'=>'<tr><td colspan="7" class="text-center"><b><i>Sin registros...<i></b></td></tr>','item'=>0,'neg'=>$neg,'detalle'=>$procedimiento);
 			return $tabla;		
     	}
 
     	$tabla = array('num_lin'=>$datos1[0]['A_No'],'tabla'=> $tabs_tabla,'ruc'=>$ruc,'item'=>$datos1[0]['A_No'],'neg'=>$neg,'detalle'=>$procedimiento);
+
 			// print_r($tabla);die();
 		return $tabla;		
     }
@@ -287,15 +289,17 @@ class ingreso_descargosC
 
 			$total+=$value['VALOR_TOTAL'];
 
-			$costo =  $this->modelo->costo_venta($value['CODIGO_INV']);
-			$nega = 0;
+			$costo =  $this->modelo->costo_producto($value['CODIGO_INV']);
+			$existencias =  $this->modelo->costo_venta($value['CODIGO_INV']);
+			if(count($existencias)<=0){$existencias[0]['Existencia'] = 0;}
+			$nega = 0;			
 			if(empty($costo))
 			{
 				$costo[0]['Costo'] = 0;
-				$costo[0]['Existencia'] = 0;
+				// $costo[0]['Existencia'] = 0;
 			}else
 			{
-				$exis = number_format($costo[0]['Existencia']-$value['CANTIDAD'],2);
+				$exis = number_format($existencias[0]['Existencia']-$value['CANTIDAD'],2);
 				if($exis<0)
 				{
 					$nega = $exis;
@@ -573,6 +577,9 @@ class ingreso_descargosC
                 $this->modelo->ingresar_asientos($parametros_haber);
 		}
 
+
+		// print_r('expression');die();
+
 		// print_r($fecha.'-'.$nombre.'-'.$ruc);die();
 		// $parametros = array('tip'=> 'CD','fecha'=>$fecha);
 	 //    $num_comprobante = $this->modelo->numero_comprobante($parametros);
@@ -609,6 +616,7 @@ class ingreso_descargosC
                 		$resp = $this->modelo->eliminar_aiseto_K($orden,$fecha,$negativos);
                 		if($resp==1)
                 		{
+                			mayorizar_inventario_sp();
                 			return array('resp'=>1,'com'=>$num_comprobante);
                 		}else
                 		{

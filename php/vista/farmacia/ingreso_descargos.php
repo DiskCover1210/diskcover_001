@@ -1,18 +1,9 @@
 <?php  require_once("panel.php"); $num_ped = '';$cod=''; $area = ''; $pro=''; if(isset($_GET['num_ped'])){$num_ped =$_GET['num_ped'];} if(isset($_GET['cod'])){$cod =$_GET['cod'];} if(isset($_GET['area'])){$area1 = explode('-', $_GET['area']); $area =$area1[0];$pro=$area1[1]; } $_SESSION['INGRESO']['modulo_']='99'; date_default_timezone_set('America/Guayaquil'); 
       unset($_SESSION['NEGATIVOS']['CODIGO_INV']);?>
 <script type="text/javascript">
-   $( document ).ready(function() {
-    autocoplet_paci();
-    autocoplet_ref();
-    autocoplet_desc();
-    autocoplet_cc();
-    autocoplet_area();
-    num_comprobante();
-    $('#txt_procedimiento').val('<?php echo $pro; ?>');
-     // buscar_cod();
     var c = '<?php echo $cod; ?>';
     var area = '<?php echo $area; ?>';
-    var pro = '<?php echo $pro; ?>';
+    
     if(c!='')
     {
       buscar_codi();
@@ -21,7 +12,20 @@
     {
       buscar_Subcuenta();
     }
+
+   $( document ).ready(function() {
+
     cargar_pedido();
+    autocoplet_paci();
+    autocoplet_ref();
+    autocoplet_desc();
+    autocoplet_cc();
+    autocoplet_area();
+    num_comprobante();
+    $('#txt_procedimiento').val('<?php echo $pro; ?>');
+     // buscar_cod();
+    var pro = '<?php echo $pro; ?>';
+    
 
   });
 
@@ -43,7 +47,7 @@
       dataType: 'json',
       success:  function (response) { 
         // console.log(response);
-        if(response != -1){       
+        if(response.length >0){       
            $('#ddl_areas').append($('<option>',{value: response[0].Codigo, text:response[0].Detalle,selected: true }));
          }
       }
@@ -291,12 +295,21 @@
          type:  'post',
          dataType: 'json',
            success:  function (response) { 
+
+            console.log(response);
            if(response.resp==null)
            {
             $('#txt_pedido').val(response.ped);
-            Swal.fire('','Agregado a pedido.','success');
+              Swal.fire({
+                type:'success',
+                title: 'Agregado a pedido',
+                text :'',
+              }).then( function() {
+                   cargar_pedido();
+                });
+
+            // Swal.fire('','Agregado a pedido.','success');
             limpiar();
-            cargar_pedido();
             // location.reload();
            }else
            {
@@ -315,7 +328,7 @@
 
   function cargar_pedido()
   {
-    var num_ped = $('#txt_pedido').val();
+    var num_ped ='<?php echo $num_ped; ?>';
     var area = '<?php echo $area; ?>';
     var num_his = '<?php echo $cod; ?>';
     var pro = '<?php echo $pro; ?>';
@@ -348,14 +361,15 @@
           }
        }else
        {
+         num_ped = $('#txt_pedido').val();
         var url="../vista/farmacia.php?mod=Farmacia&acc=ingresar_descargos&acc1=Ingresar%20Descargos&b=1&po=subcu&area="+area+"-"+pro+"&num_ped="+num_ped+"&cod="+num_his+"#";
             $(location).attr('href',url);
        }
-       if(response.num_lin==1)
-        {
-           var url="../vista/farmacia.php?mod=Farmacia&acc=ingresar_descargos&acc1=Ingresar%20Descargos&b=1&po=subcu&cod=5&area="+area+"-"+pro+"&num_ped="+num_ped+"&cod="+num_his+"#";
-            $(location).attr('href',url);
-        }
+       // if(response.num_lin==1)
+       //  {
+       //     var url="../vista/farmacia.php?mod=Farmacia&acc=ingresar_descargos&acc1=Ingresar%20Descargos&b=1&po=subcu&cod=5&area="+area+"-"+pro+"&num_ped="+num_ped+"&cod="+num_his+"#";
+       //      $(location).attr('href',url);
+       //  }
               
       }
     });

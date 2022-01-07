@@ -783,7 +783,8 @@ class articulosC
                 		if($resp==1)
                 		{
                 			$this->modelo->eliminar_aiseto();
-                			$this->modelo->eliminar_aiseto_sc($orden);
+                			$this->modelo->eliminar_aiseto_sc($orden);                			
+                			mayorizar_inventario_sp();
                 			return array('resp'=>1,'com'=>$num_comprobante);
                 		}else
                 		{
