@@ -179,6 +179,7 @@ function bamup(tipo)
 					<label for="fechai" class="col-sm-1 control-label">Desde: </label>
 					<div class="col-md-2">
 						<div class="input-group date">
+							<input type="hidden" name="select_query" id="select_query">
 
 							  <div class="input-group-addon">
 								<i class="fa fa-calendar"></i>

@@ -27,7 +27,6 @@ include(dirname(__DIR__,2).'/db/variables_globales.php');//
 
    function cuentas_filtrado($ini,$fin)
   {
-  		$cid = $this->conn;
   		if($ini =='')
   		{
   			$ini = 1;
@@ -52,7 +51,6 @@ include(dirname(__DIR__,2).'/db/variables_globales.php');//
  function consultar_banco_($desde,$hasta,$CheckAgencia,$DCAgencia,$Checkusu,$DCUsuario,$DCCta)
  {
 
- 	$cid = $this->conn;
   $sql = "SELECT Cta,T.Fecha,T.TP,T.Numero,Cheq_Dep,Cliente,C.Concepto,Debe,Haber,Saldo,Parcial_ME,Saldo_ME,T.T,T.Item
        FROM Transacciones As T,Comprobantes As C,Clientes As Cl
        WHERE T.Fecha BETWEEN '".$desde."' and '".$hasta."' 
@@ -102,7 +100,6 @@ include(dirname(__DIR__,2).'/db/variables_globales.php');//
  function consultar_banco_datos($desde,$hasta,$CheckAgencia,$DCAgencia,$Checkusu,$DCUsuario,$DCCta)
  {
 
- 	$cid = $this->conn;
   $sql = "SELECT Cta,T.Fecha,T.TP,T.Numero,Cheq_Dep,Cliente,C.Concepto,Debe,Haber,Saldo,Parcial_ME,Saldo_ME,T.T,T.Item
        FROM Transacciones As T,Comprobantes As C,Clientes As Cl
        WHERE T.Fecha BETWEEN '".$desde."' and '".$hasta."' 
@@ -149,7 +146,6 @@ include(dirname(__DIR__,2).'/db/variables_globales.php');//
 
  function consultatr_submodulos($FechaIni,$FechaFin,$CheckAgencia,$DCAgencia,$CheckUsuario,$DCUsuario)
  {
- 	 $cid = $this->conn;
     $sql = "SELECT T.Fecha,T.TP,T.Numero,C.Cliente,T.Cta,T.TC,T.Factura,T.Debitos,T.Creditos,T.Prima
         FROM Trans_SubCtas As T,Clientes As C 
         WHERE T.Fecha BETWEEN '".$FechaIni."' and '".$FechaFin."' 
@@ -213,7 +209,7 @@ include(dirname(__DIR__,2).'/db/variables_globales.php');//
  }
  function consulta_totales($OpcUno,$PorConceptos,$cuentaini,$cuentafin,$desde,$hasta,$DCCtas,$CheckAgencia,$DCAgencia,$Checkusu,$DCUsuario)
  {
- 	$cid = $this->conn;
+ 	
   $SumaDebe = 0; $SumaHaber = 0; $Suma_ME = 0; $SaldoTotal = 0;
  	$sql = "SELECT T.Cta,SUM(T.Debe) As TDebe, SUM(T.Haber) As THaber, SUM(T.Parcial_ME) As TParcial_ME ";
  	if($PorConceptos=='true')

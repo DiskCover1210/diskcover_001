@@ -539,7 +539,7 @@ function validar_cambiar()
  </div>
 </div>
 <div class="row"><br>
-  <div class="col-sm-5" id="tabla"></div>
+  <div class="col-sm-5" id="tabla" style="overflow-y: scroll; height: 500px;"></div>
   <div class="col-sm-7">      
     <ul class="nav nav-tabs">
       <li class="active"><a data-toggle="tab" href="#home">DATOS PRINCIPALES</a></li>

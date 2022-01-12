@@ -2603,7 +2603,7 @@ function SQL_Tipo_Balance($TipoBalance,$TipoPyGCC)
 			array($item, SQLSRV_PARAM_IN),
 			array($periodo, SQLSRV_PARAM_IN));
 			
-			$stmt3 = sqlsrv_query( $this->dbs, $tsql_callSP, $params);
+			$stmt3 = sqlsrv_query( $this->db_->conexion(), $tsql_callSP, $params);
 			if( $stmt3 === false )
 			{
 				echo "Error en consulta de Mayorizacion.\n";
@@ -2619,7 +2619,7 @@ function SQL_Tipo_Balance($TipoBalance,$TipoPyGCC)
 				array($_SESSION['INGRESO']['Id'], SQLSRV_PARAM_IN),
 				array($_SESSION['INGRESO']['modulo_'], SQLSRV_PARAM_IN),
 				array(&$sal, SQLSRV_PARAM_INOUT));
-				$stmt3 = sqlsrv_query( $this->dbs, $tsql_callSP, $params);
+				$stmt3 = sqlsrv_query( $this->db_->conexion(), $tsql_callSP, $params);
 				if( $stmt3 === false )
 				{
 					echo "Error en consulta de Errores.\n";
@@ -2642,7 +2642,7 @@ function SQL_Tipo_Balance($TipoBalance,$TipoPyGCC)
 			
 			//echo $sql;
 			//die();
-			$stmt = sqlsrv_query( $this->dbs, $sql);
+			$stmt = sqlsrv_query( $this->db_->conexion(), $sql);
 			if( $stmt === false)  
 			{  
 				 echo "Error en consulta PA.\n";  
@@ -2660,7 +2660,7 @@ function SQL_Tipo_Balance($TipoBalance,$TipoPyGCC)
 				array($periodo, SQLSRV_PARAM_IN),
 				array($codigo, SQLSRV_PARAM_IN));
 				
-				$stmt3 = sqlsrv_query( $this->dbs, $tsql_callSP, $params);
+				$stmt3 = sqlsrv_query( $this->db_->conexion(), $tsql_callSP, $params);
 				if( $stmt3 === false )
 				{
 					echo "Error en consulta de Mayorizacion.\n";
@@ -2676,7 +2676,7 @@ function SQL_Tipo_Balance($TipoBalance,$TipoPyGCC)
 					array($_SESSION['INGRESO']['Id'], SQLSRV_PARAM_IN),
 					array($_SESSION['INGRESO']['modulo_'], SQLSRV_PARAM_IN),
 					array(&$sal, SQLSRV_PARAM_INOUT));
-					$stmt3 = sqlsrv_query( $this->dbs, $tsql_callSP, $params);
+					$stmt3 = sqlsrv_query( $this->db_->conexion(), $tsql_callSP, $params);
 					if( $stmt3 === false )
 					{
 						echo "Error en consulta de Errores.\n";

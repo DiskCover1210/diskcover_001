@@ -14,14 +14,12 @@ class diario_generalM
 	private $conn;
 	
 	function __construct()
-	{
-		$this->conn = cone_ajax();        
+	{     
         $this->db = new db();
 	}
 
   function llenar_agencia()
   {
-  	$cid = $this->conn;
   	$sql= "SELECT (Sucursal +'  ' + Empresa) As NomEmpresa,Sucursal as 'Item'
 FROM Acceso_Sucursales
 INNER JOIN Empresas ON Acceso_Sucursales.Sucursal = Empresas.Item
@@ -34,7 +32,6 @@ ORDER BY Acceso_Sucursales.Item,Empresa";
   }
   function llenar_usuario()
   {
-  	$cid = $this->conn;
   	$sql = "SELECT (Nombre_Completo +'  '+ Codigo) As CodUsuario,Codigo
             FROM Comprobantes, Accesos
             where Item ='001'
@@ -59,9 +56,6 @@ ORDER BY Acceso_Sucursales.Item,Empresa";
 
   function cargar_consulta_libro_tabla($FechaIni,$FechaFin,$DCAgencia,$DCUsuario,$TextNumNo,$TextNumNo1,$OpcCI,$OpcCE,$OpcCD,$OpcND,$OpcNC,$OpcA,$CheckAgencia,$CheckUsuario,$CheckNum)
 	{
-		$cid = $this->conn;
-
-
 		$sql = "SELECT T.Fecha,T.TP,T.Numero,CL.Cliente As Beneficiario,Co.Concepto,T.Cta,C.Cuenta,
        T.Parcial_ME,T.Debe,T.Haber,T.Detalle,Ac.Nombre_Completo,Co.CodigoU,Co.Autorizado,T.Item,T.ID 
        FROM Transacciones As T,Catalogo_Cuentas As C,Comprobantes As Co,Clientes As CL,Accesos As Ac 
@@ -147,9 +141,6 @@ ORDER BY Acceso_Sucursales.Item,Empresa";
 
     function cargar_consulta_libro($FechaIni,$FechaFin,$DCAgencia,$DCUsuario,$TextNumNo,$TextNumNo1,$OpcCI,$OpcCE,$OpcCD,$OpcND,$OpcNC,$OpcA,$CheckAgencia,$CheckUsuario,$CheckNum)
   {
-    $cid = $this->conn;
-
-
     $sql = "SELECT T.Fecha,T.TP,T.Numero,CL.Cliente As Beneficiario,Co.Concepto,T.Cta,C.Cuenta,
        T.Parcial_ME,T.Debe,T.Haber,T.Detalle,Ac.Nombre_Completo,Co.CodigoU,Co.Autorizado,T.Item,T.ID 
        FROM Transacciones As T,Catalogo_Cuentas As C,Comprobantes As Co,Clientes As CL,Accesos As Ac 
@@ -236,7 +227,7 @@ ORDER BY Acceso_Sucursales.Item,Empresa";
   function cargar_consulta_submodulo($FechaIni,$FechaFin,$DCAgencia,$DCUsuario,$TextNumNo,$TextNumNo1,$OpcCI,$OpcCE,$OpcCD,$OpcND,$OpcNC,$OpcA,$CheckAgencia,$CheckUsuario,$CheckNum)
   {
     
-    $cid = $this->conn;
+    
     $sql = "SELECT T.Fecha,T.TP,T.Numero,C.Cliente,T.Cta,T.TC,T.Factura,T.Debitos,T.Creditos,T.Prima
         FROM Trans_SubCtas As T,Clientes As C 
         WHERE T.Fecha BETWEEN '".$FechaIni."' and '".$FechaFin."' 
@@ -370,7 +361,7 @@ return $tbl;
   function cargar_consulta_submodulo_datos($FechaIni,$FechaFin,$DCAgencia,$DCUsuario,$TextNumNo,$TextNumNo1,$OpcCI,$OpcCE,$OpcCD,$OpcND,$OpcNC,$OpcA,$CheckAgencia,$CheckUsuario,$CheckNum)
   {
     
-    $cid = $this->conn;
+    
     $sql = "SELECT T.Fecha,T.TP,T.Numero,C.Cliente,T.Cta,T.TC,T.Factura,T.Debitos,T.Creditos,T.Prima
         FROM Trans_SubCtas As T,Clientes As C 
         WHERE T.Fecha BETWEEN '".$FechaIni."' and '".$FechaFin."' 
