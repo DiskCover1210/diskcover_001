@@ -86,7 +86,7 @@ class cambioeC
 		if(count($datos)>0)
 		{
 				foreach ($datos as $key => $value) {
-				$resp[] = array('id'=>$value['ID'],'text'=>$value['Empresa'],'CI'=>$value['RUC_CI_NIC']);
+				$resp[] = array('id'=>$value['ID'],'text'=>$value['Empresa'],'CI'=>$value['RUC_CI_NIC'],'data'=>$value);
 			}
 	    }else
 	    {

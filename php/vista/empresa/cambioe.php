@@ -2,7 +2,24 @@
 <script type="text/javascript">
   $(document).ready(function () {
   	 $('#ciudad').select2();
-  	autocmpletar_entidad();  	
+  	autocmpletar_entidad(); 
+
+  	 $('#entidad').on('select2:select', function (e) {
+  	 	console.log(e);
+      var data = e.params.data.data;
+      $('#lbl_ruc').html(data.RUC_CI_NIC);
+      if(data.ID_Empresa.length<3 && data.ID_Empresa.length>2)
+      {
+      	var item = '0'+data.ID_Empresa;
+      }else if(data.ID_Empresa.length<2)
+      {
+      	var item = '00'+data.ID_Empresa
+      }
+      $('#lbl_enti').html(item);
+     
+      console.log(data);
+    });
+
 
   });
 
@@ -327,7 +344,7 @@ function reporte()
 	<div class="row">
 		<div class="col-sm-4">
 			<div class="form-group">
-				<label for="Entidad">Entidad</label>
+				<b>Entidad: </b><i id="lbl_ruc"></i>-<i id="lbl_enti"></i>
 				<select class="form-control" name="entidad" id='entidad' onChange="buscar_ciudad();">
 					<option value=''>Seleccione Entidad</option>
 				</select>

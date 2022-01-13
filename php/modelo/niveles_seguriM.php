@@ -43,7 +43,7 @@ class niveles_seguriM
 		// print_r($enti);die();
 		$datos[] = array();
 		foreach ($enti as $key => $value) {
-			$datos[]=['id'=>$value['ID_Empresa'],'text'=>$value['Nombre_Entidad'],'RUC'=>$value['RUC_CI_NIC']];				
+			$datos[]=['id'=>$value['ID_Empresa'],'text'=>$value['Nombre_Entidad'],'RUC'=>$value['RUC_CI_NIC'],'data'=>$value];				
 		}		
 	    return $datos;
 	}
