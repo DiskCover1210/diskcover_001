@@ -92,13 +92,13 @@ if(isset($_GET['ex']))
 				}
 				else
 				{
-					if($_GET['acc']=='mosEm')
-					{
-						ListarEmpresasSQL('Analisis de vencimiento',null,null,null,null,2,null,$_GET['desde'],$_GET['hasta']);
-						//die();
-					}
-					else
-					{
+					// if($_GET['acc']=='mosEm')
+					// {
+					// 	ListarEmpresasSQL('Analisis de vencimiento',null,null,null,null,2,null,$_GET['desde'],$_GET['hasta']);
+					// 	//die();
+					// }
+					// else
+					// {
 						if(isset($_GET['Opcb'])) 
 						{
 							ListarDocEletronico($_GET['ti'],$_GET['Opcb'],$_GET['Opcen'],$OpcDG,$b,'2');
@@ -107,7 +107,7 @@ if(isset($_GET['ex']))
 						{
 							ListarDocEletronico($_SESSION['INGRESO']['ti'],null,null,$OpcDG,$b,'2');
 						}
-					}
+					// }
 				}
 			}
 		}

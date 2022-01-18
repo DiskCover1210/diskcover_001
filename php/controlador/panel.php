@@ -334,9 +334,9 @@ function variables_sistema($EmpresaEntidad,$NombreEmp,$ItemEmp)
 	{
 		    $empresa[0]['Servicio'] = 0;
 		    //datos base de mysql
-		    $_SESSION['INGRESO']['RUCEnt'] =  $empresa[0]['RUC_CI_NIC']; //ruc de la entidad
-		    $_SESSION['INGRESO']['Entidad'] = $empresa[0]['Nombre_Entidad'];
-	      $_SESSION['INGRESO']['IP_VPN_RUTA']=$empresa[0]['IP_VPN_RUTA'];
+	  $_SESSION['INGRESO']['RUCEnt'] =  $empresa[0]['RUC_CI_NIC']; //ruc de la entidad
+	  $_SESSION['INGRESO']['Entidad'] = $empresa[0]['Nombre_Entidad'];
+        $_SESSION['INGRESO']['IP_VPN_RUTA']=$empresa[0]['IP_VPN_RUTA'];
         $_SESSION['INGRESO']['Base_Datos']=$empresa[0]['Base_Datos'];
         $_SESSION['INGRESO']['Usuario_DB']=$empresa[0]['Usuario_DB'];
         $_SESSION['INGRESO']['Contraseña_DB']=$empresa[0]['Contrasena_DB'];
@@ -397,21 +397,35 @@ function variables_sistema($EmpresaEntidad,$NombreEmp,$ItemEmp)
         $_SESSION['INGRESO']['Ciudad'] = $empresa[0]['Ciudad'];;       
         $_SESSION['INGRESO']['accesoe']='0';
         $_SESSION['INGRESO']['Email_Conexion']=$empresa[0]['Email_Conexion'];
-				$_SESSION['INGRESO']['Email_Contrasena']=$empresa[0]['Email_Contraseña'];
-				$_SESSION['INGRESO']['smtp_SSL']=$empresa[0]['smtp_SSL'];
-				$_SESSION['INGRESO']['smtp_UseAuntentificacion']=$empresa[0]['smtp_UseAuntentificacion'];
-				$_SESSION['INGRESO']['smtp_Puerto']=$empresa[0]['smtp_Puerto'];
-				$_SESSION['INGRESO']['smtp_Servidor']=$empresa[0]['smtp_Servidor'];
-				if(isset($empresa[0]['smtp_Secure']))
-				{
-				$_SESSION['INGRESO']['smtp_Secure']=$empresa[0]['smtp_Secure'];
-		   	}
-				$_SESSION['INGRESO']['Serie_FA'] = $empresa[0]['Serie_FA'];
-				$_SESSION['INGRESO']['modulo']=modulos_habiliatados();
-				//datos del periodo periodo
-				$periodo = getPeriodoActualSQL();
-				$_SESSION['INGRESO']['Fechai']=$periodo[0]['Fecha_Inicial']->format('Y-m-d');
-				$_SESSION['INGRESO']['Fechaf']=$periodo[0]['Fecha_Final']->format('Y-m-d');
+
+	  $_SESSION['INGRESO']['Email_Contrasena']=$empresa[0]['Email_Contraseña'];
+	  $_SESSION['INGRESO']['smtp_SSL']=$empresa[0]['smtp_SSL'];
+	  $_SESSION['INGRESO']['smtp_UseAuntentificacion']=$empresa[0]['smtp_UseAuntentificacion'];
+	  $_SESSION['INGRESO']['smtp_Puerto']=$empresa[0]['smtp_Puerto'];
+	  $_SESSION['INGRESO']['smtp_Servidor']=$empresa[0]['smtp_Servidor'];
+
+	  if(isset($empresa[0]['smtp_Secure']))
+	    {
+	       $_SESSION['INGRESO']['smtp_Secure']=$empresa[0]['smtp_Secure'];
+	    }
+	
+      $_SESSION['INGRESO']['Serie_FA'] = $empresa[0]['Serie_FA'];
+	$_SESSION['INGRESO']['modulo']=modulos_habiliatados();
+	//datos del periodo periodo
+
+      //esto se debe sacar de la entidad ----------------------
+
+	$periodo = getPeriodoActualSQL();
+      if(count($periodo)>0)
+      {
+	   $_SESSION['INGRESO']['Fechai']=$periodo[0]['Fecha_Inicial']->format('Y-m-d');
+	   $_SESSION['INGRESO']['Fechaf']=$periodo[0]['Fecha_Final']->format('Y-m-d');
+      }else
+      {
+         $_SESSION['INGRESO']['Fechai']=date('Y-m-d');
+         $_SESSION['INGRESO']['Fechaf']=date('Y-m-d');
+      }
+      // ---------------------------------------
         $permiso=getAccesoEmpresas();
         
 				//get usuario

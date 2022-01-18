@@ -94,7 +94,12 @@ if(isset($_GET['consultar']))
 	$parametros=$_POST['parametros'];
 	$desde =$parametros['desde'];
     $hasta = $parametros['hasta'];
-    $reporte = $parametros['repor'];
+    $reporte = null;
+    if(isset($parametros['repor']))
+    {
+      $reporte = $parametros['repor'];
+    }
+
 	$balance=$modal->ListarEmpresasSQL('Analisis de vencimiento',null,null,null,null,$reporte,null,$desde,$hasta);
 	echo json_encode($balance);
 

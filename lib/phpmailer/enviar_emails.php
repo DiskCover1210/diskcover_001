@@ -228,7 +228,7 @@ function enviar_email($archivos=false,$to_correo,$cuerpo_correo,$titulo_correo,$
         return 1;
         
     } catch (Exception $e) {
-      // print_r($e);die();
+      // print_r($mail);die();
         return -1;
     }
   }

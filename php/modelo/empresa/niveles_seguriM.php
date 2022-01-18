@@ -1,8 +1,8 @@
 <?php 
-include(dirname(__DIR__).'/db/variables_globales.php');//
-include(dirname(__DIR__).'/funciones/funciones.php');
+include(dirname(__DIR__,2).'/db/variables_globales.php');//
+include(dirname(__DIR__,2).'/funciones/funciones.php');
 // require_once(dirname(__DIR__)."/db/db.php");
-require_once(dirname(__DIR__)."/db/db1.php");
+require_once(dirname(__DIR__,2)."/db/db1.php");
 /**
  * 
  */

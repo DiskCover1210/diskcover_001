@@ -15,7 +15,7 @@ require_once("panel.php");
       $('#ddl_entidad').select2({
         placeholder: 'Seleccione una Entidad',
         ajax: {
-          url: '../controlador/niveles_seguriC.php?entidades=true',
+          url: '../controlador/empresa/niveles_seguriC.php?entidades=true',
           dataType: 'json',
           delay: 250,
           processResults: function (data) {
@@ -33,7 +33,7 @@ require_once("panel.php");
       $('#ddl_usuarios').select2({
         placeholder: 'Seleccione un Usuario',
         ajax: {
-          url: '../controlador/niveles_seguriC.php?usuarios=true&entidad='+entidad,
+          url: '../controlador/empresa/niveles_seguriC.php?usuarios=true&entidad='+entidad,
           dataType: 'json',
           delay: 250,
           processResults: function (data) {
@@ -56,7 +56,7 @@ require_once("panel.php");
   //     console.log(parametros);
   //   	$.ajax({
   //   		data:  {parametros:parametros},
-  //   		url:   '../controlador/niveles_seguriC.php?modulos=true',
+  //   		url:   '../controlador/empresa/niveles_seguriC.php?modulos=true',
   //   		type:  'post',
   //   		dataType: 'json',
   //   		beforeSend: function () { 
@@ -87,7 +87,7 @@ require_once("panel.php");
   //   	}
   //   	$.ajax({
   //   		 data:  {parametros:parametros},
-  //   		url:   '../controlador/niveles_seguriC.php?mod_activos=true',
+  //   		url:   '../controlador/empresa/niveles_seguriC.php?mod_activos=true',
   //   		type:  'post',
   //   		dataType: 'json',
   //   		// beforeSend: function () { 
@@ -131,7 +131,7 @@ require_once("panel.php");
       }
       $.ajax({
          data:  {parametros:parametros},
-        url:   '../controlador/niveles_seguriC.php?usuario_empresa=true',
+        url:   '../controlador/empresa/niveles_seguriC.php?usuario_empresa=true',
         type:  'post',
         dataType: 'json',
         // beforeSend: function () { 
@@ -163,7 +163,7 @@ require_once("panel.php");
     	}
     	$.ajax({
     		 data:  {parametros:parametros},
-    		url:   '../controlador/niveles_seguriC.php?usuario_data=true',
+    		url:   '../controlador/empresa/niveles_seguriC.php?usuario_data=true',
     		type:  'post',
     		dataType: 'json',
     		// beforeSend: function () { 
@@ -312,6 +312,9 @@ require_once("panel.php");
 
   function cargar_empresas()
   {
+     style="display: flex; width: 85%;"
+     $('#ddl').css('display','flex');     
+     $('#ddl').css('width','85%');
 
   	$('#ddl_usuarios').val('');   
     $('#tbl_modulos').html('');
@@ -323,7 +326,7 @@ require_once("panel.php");
     $('#myModal_espera').modal('show');
   	$.ajax({
     		 data:  {entidad:entidad},
-    		url:   '../controlador/niveles_seguriC.php?empresas=true',
+    		url:   '../controlador/empresa/niveles_seguriC.php?empresas=true',
     		type:  'post',
     		dataType: 'json',
     		// beforeSend: function () { 
@@ -391,7 +394,7 @@ function guardar()
   // return false;
  	$.ajax({
     		 data:  {parametros:parametros},
-    		url:   '../controlador/niveles_seguriC.php?guardar_datos=true',
+    		url:   '../controlador/empresa/niveles_seguriC.php?guardar_datos=true',
     		type:  'post',
     		dataType: 'json',
     		beforeSend: function () { 
@@ -429,7 +432,7 @@ function guardar()
  	}
  	$.ajax({
     		data:  {parametros:parametros},
-    		url:   '../controlador/niveles_seguriC.php?bloqueado=true',
+    		url:   '../controlador/empresa/niveles_seguriC.php?bloqueado=true',
     		type:  'post',
     		dataType: 'json',
     		beforeSend: function () { 
@@ -479,7 +482,7 @@ function guardar()
    {
       $.ajax({
         data:  {parametros:parametros},
-        url:   '../controlador/niveles_seguriC.php?nuevo_usuario=true',
+        url:   '../controlador/empresa/niveles_seguriC.php?nuevo_usuario=true',
         type:  'post',
         dataType: 'json',
         beforeSend: function () { 
@@ -545,7 +548,7 @@ function guardar()
   var ruc = $('#ruc_empresa').val();
       $.ajax({
         data:  {ruc:ruc},
-        url:   '../controlador/niveles_seguriC.php?buscar_ruc=true',
+        url:   '../controlador/empresa/niveles_seguriC.php?buscar_ruc=true',
         type:  'post',
         dataType: 'json',
         beforeSend: function () { 
@@ -603,7 +606,7 @@ function marcar_all(item)
   }
     $.ajax({
         data:  {parametros:parametros},
-        url:   '../controlador/niveles_seguriC.php?acceso_todos=true',
+        url:   '../controlador/empresa/niveles_seguriC.php?acceso_todos=true',
         type:  'post',
         dataType: 'json',
         beforeSend: function () { 
@@ -641,7 +644,7 @@ function marcar_acceso(item,modulo)
   }
     $.ajax({
         data:  {parametros:parametros},
-        url:   '../controlador/niveles_seguriC.php?acceso_todos=true',
+        url:   '../controlador/empresa/niveles_seguriC.php?acceso_todos=true',
         type:  'post',
         dataType: 'json',
         beforeSend: function () { 
@@ -688,7 +691,7 @@ function enviar_email()
   }
     $.ajax({
         data:  {parametros:parametros},
-        url:   '../controlador/niveles_seguriC.php?enviar_email=true',
+        url:   '../controlador/empresa/niveles_seguriC.php?enviar_email=true',
         type:  'post',
         dataType: 'json',
         beforeSend: function () { 
@@ -726,7 +729,7 @@ function enviar_email_masivo()
   }
     $.ajax({
         data:  {parametros:parametros},
-        url:   '../controlador/niveles_seguriC.php?enviar_email_masivo=true',
+        url:   '../controlador/empresaniveles_seguriC.php?enviar_email_masivo=true',
         type:  'post',
         dataType: 'json',
         beforeSend: function () { 
@@ -837,24 +840,28 @@ function enviar_email_masivo()
  </div>
 </div>
  <div class="row">
-	<div class="col-sm-4">
+	<div class="col-sm-5">
    	<b>Entidad</b> <br>
-      <div class="input-group" style="display: flex; width: 90%;">
+      <div class="input-group input-group-sm" id="ddl">
          <select class="form-control" id="ddl_entidad" name="ddl_entidad" onchange="cargar_empresas();" style="display: none;"><option value="">Seleccione entidad</option></select>
-       <div class="input-group-btn">
+       <!-- <div class="input-group-btn"> -->
+        <span class="input-group-btn">
         <button type="button" class="btn btn-warning btn-sm" data-toggle="modal" data-target="#mymodal_user"><span class="fa fa-user"></span></button>
           <button type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#myModal_ruc"><span class="fa fa-search"></span> RUC</button>
-       </div>
+        </span>
 
       </div>
 	</div>
-	<div class="col-sm-4">    
+	<div class="col-sm-3">    
    <b>Usuario</b> <br>
     <div class="input-group">
         <select class="form-control input" id="ddl_usuarios"  name="ddl_usuarios" onchange="buscar_permisos();"  style="width:50%"></select>
-        <div class="input-group-btn">
+        <!-- <div class="input-group-btn"> -->
+          <span class="input-group-btn">
+        
           <button type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target="#myModal"><span class="fa fa-plus"></span> Nuevo</button>
-        </div>
+        </span>
+        <!-- </div> -->
       </div>
 	</div>
 	<div class="col-sm-4">
