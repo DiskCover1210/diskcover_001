@@ -61,19 +61,20 @@ if(isset($_GET['mos2']))
 <script src="../../lib/dist/js/sweetalert2.min.js"></script>
 <link rel="stylesheet" href="../../lib/dist/css/sweetalert2.min.css">
   <link rel="shortcut icon" href="../../img/jpg/logo.jpg" />
- <!--  <style>
+  <style>
        .ui-autocomplete {
             max-height: 200px;
             overflow-y: auto;
             /* prevent horizontal scrollbar */
             overflow-x: hidden;
+             z-index:2147483647;
             /* add padding to account for vertical scrollbar */
             padding-right: 20px;
         } 
-</style> -->
+</style>
 <script type="text/javascript">
 
-	function validador_correo(imput)
+function validador_correo(imput)
 {
     var campo = $('#'+imput).val();   
     var emailRegex = /^[-\w.%+]{1,64}@(?:[A-Z0-9-]{1,63}\.){1,125}[A-Z]{2,63}$/i;

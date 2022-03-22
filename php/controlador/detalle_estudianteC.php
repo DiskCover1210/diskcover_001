@@ -7,7 +7,7 @@ require(dirname(__DIR__,2).'/lib/fpdf/cabecera_pdf.php');
 // require(dirname(__DIR__,2).'/lib/phpmailer/class.phpmailer.php');
 // require(dirname(__DIR__,2).'/lib/phpmailer/class.smtp.php');
 require(dirname(__DIR__,2).'/lib/phpmailer/enviar_emails.php');
-require_once("../../lib/excel/plantilla.php");
+// require_once("../../lib/excel/plantilla.php");
 /**
  * 
  */

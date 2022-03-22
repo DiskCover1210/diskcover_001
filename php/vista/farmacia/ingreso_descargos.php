@@ -654,9 +654,14 @@
                 if(reg==0)
                 {
                 var url="../vista/farmacia.php?mod=Farmacia&acc=ingresar_descargos&acc1=Ingresar%20Descargos&b=1&po=subcu&area="+area+"-"+pro+"&num_ped="+orden+"&cod="+his+"#";
+                  console.log('111');
+                  return false;
                 }else
                 {
                   var url="../vista/farmacia.php?mod=Farmacia&acc=ingresar_descargos&acc1=Ingresar%20Descargos&b=1&po=subcu&area="+area+"-"+pro+"&num_ped="+orden+"&cod="+his+"#";
+
+                  console.log('ddd');
+                  return false;
                 }
                 $(location).attr('href',url);             
                   } else

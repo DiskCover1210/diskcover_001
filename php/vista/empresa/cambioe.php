@@ -8,7 +8,7 @@
   	 	console.log(e);
       var data = e.params.data.data;
       $('#lbl_ruc').html(data.RUC_CI_NIC);
-      if(data.ID_Empresa.length<3 && data.ID_Empresa.length>2)
+      if(data.ID_Empresa.length<3 && data.ID_Empresa.length>=2)
       {
       	var item = '0'+data.ID_Empresa;
       }else if(data.ID_Empresa.length<2)
@@ -28,7 +28,7 @@
 	$('#entidad').select2({
 	  placeholder: 'Seleccione una Entidad',
 	  ajax: {
-	    url: '../controlador/niveles_seguriC.php?entidades=true',
+	    url: '../controlador/empresa/niveles_seguriC.php?entidades=true',
 	    dataType: 'json',
 	    delay: 250,
 	    processResults: function (data) {

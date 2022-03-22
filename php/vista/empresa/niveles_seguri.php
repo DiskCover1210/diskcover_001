@@ -336,6 +336,7 @@ require_once("panel.php");
     			 	$('#myModal_espera').modal('hide');				
     				$('#tbl_modulos').html(response.tbl);
             $('#usuarios_tbl').html(response.usuarios);  
+            DoubleScroll(document.getElementById('tbl_modulos'));
     		}
     	});
 
@@ -748,9 +749,43 @@ function enviar_email_masivo()
         }
     }); 
 }
+
+
+function DoubleScroll(element) {
+    var scrollbar = document.createElement('div');
+    scrollbar.appendChild(document.createElement('div'));
+    scrollbar.style.overflow = 'auto';
+    scrollbar.style.overflowY = 'hidden';
+    scrollbar.firstChild.style.width = element.scrollWidth+'px';
+    scrollbar.firstChild.style.paddingTop = '1px';
+    scrollbar.firstChild.appendChild(document.createTextNode('\xA0'));
+    scrollbar.onscroll = function() {
+        element.scrollLeft = scrollbar.scrollLeft;
+    };
+    element.onscroll = function() {
+        scrollbar.scrollLeft = element.scrollLeft;
+    };
+    element.parentNode.insertBefore(scrollbar, element);
+}
+
+
+
 </script>
 
 <style>
+
+  #tbl_modulos
+{
+  overflow: auto; overflow-y: hidden; 
+}
+#doublescroll p
+{
+  margin: 0; 
+  padding: 1em; 
+  white-space: nowrap; 
+}
+
+
   table ,tr, td{ 
     /*border:1px solid */
   } 

@@ -2396,78 +2396,6 @@ function contar_option($tabla,$value,$mostrar,$filtro=null)  ///----------------
 	sqlsrv_close( $cid );
 	return $cont;
 }
-//crear list option
-function list_option($tabla,$value,$mostrar,$filtro=null)  //---------------------------para revicion
-{
-	//realizamos conexion
-	if(isset($_SESSION['INGRESO']['IP_VPN_RUTA'])) 
-	{
-		$database=$_SESSION['INGRESO']['Base_Datos'];
-		//$server=$_SESSION['INGRESO']['IP_VPN_RUTA'];
-		$server=''.$_SESSION['INGRESO']['IP_VPN_RUTA'].', '.$_SESSION['INGRESO']['Puerto'];
-		$user=$_SESSION['INGRESO']['Usuario_DB'];
-		$password=$_SESSION['INGRESO']['Contraseña_DB'];
-	}
-	else
-	{
-		$database="DiskCover_Prismanet";
-		$server="tcp:mysql.diskcoversystem.com, 11433";
-		$user="sa";
-		$password="disk2017Cover";
-	}
-	/*$database="DiskCover_Prismanet";
-	$server="mysql.diskcoversystem.com";
-	$user="sa";
-	$password="disk2017Cover";*/
-	if(isset($_SESSION['INGRESO']['IP_VPN_RUTA']) and $_SESSION['INGRESO']['Tipo_Base']=='SQL SERVER') 
-	{
-		$connectionInfo = array("Database"=>$database, "UID" => $user, "PWD" => $password);
-
-		$cid = sqlsrv_connect($server, $connectionInfo); //returns false
-		if( $cid === false )
-		{
-			echo "fallo conecion sql server";
-		}
-		$sql = "SELECT ".$value." FROM ".$tabla;
-		if($filtro!=null and $filtro!='')
-		{
-			$sql =  $sql." WHERE ".$filtro." ";
-		}
-	}
-	//echo $sql;
-	//die();
-	$stmt = sqlsrv_query( $cid, $sql);
-	if( $stmt === false)  
-	{  
-		 echo "Error en consulta.\n";  
-		 die( print_r( sqlsrv_errors(), true));  
-	}  
-	$i=0;
-	//div inicial	
-	
-	while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_NUMERIC) ) 
-	{
-		?>
-			<a class="list-group-item list-group-item-action " id="list-<?php echo $i; ?>" 
-			  data-toggle="list" href="#list-<?php echo $i; ?>" role="tab" aria-controls="<?php echo $i; ?>">
-				<?php echo $row[0]; ?>
-			</a>
-			<script>
-				$('#list-<?php echo $i; ?>').on('click', function (e) {
-					  var select = document.getElementById('opcion'); //El <select>
-					  //alert($("#list-home-list").text());
-					  select.value = $.trim($("#list-<?php echo $i; ?>").text());
-				});
-			</script>
-		<?php
-		$i++;
-	}
-	?>
-		<input id="opcion" name="opcion" type="hidden" value="">
-		
-	<?php
-	sqlsrv_close( $cid );
-}
 
 //crear select option
 function cone_ajax() //optimizado
@@ -6096,7 +6024,9 @@ function generar_comprobantes($parametros) //revision parece repetida
     // ini_set("memory_limit", "-1");
     // $desde = '2019/10/28';
     // $hasta = '2019/11/29';
-    $_SESSION['INGRESO']['modulo_']='01';
+      $TipoKardex = G_NINGUNO;
+      $fecha = date('Y-m-d');
+      $_SESSION['INGRESO']['modulo_']='01';
       $conn = new db();
       $parametros = array(
       array(&$_SESSION['INGRESO']['item'], SQLSRV_PARAM_IN),
@@ -6104,9 +6034,11 @@ function generar_comprobantes($parametros) //revision parece repetida
       array(&$_SESSION['INGRESO']['CodigoU'], SQLSRV_PARAM_IN),
       array(&$_SESSION['INGRESO']['modulo_'], SQLSRV_PARAM_IN),
       array(&$_SESSION['INGRESO']['Dec_PVP'], SQLSRV_PARAM_IN),
-      array(&$_SESSION['INGRESO']['Dec_Costo'], SQLSRV_PARAM_IN)
+      array(&$_SESSION['INGRESO']['Dec_Costo'], SQLSRV_PARAM_IN),
+      array(&$fecha, SQLSRV_PARAM_IN),
+      array(&$TipoKardex, SQLSRV_PARAM_INOUT),
       );     
-     $sql="EXEC sp_Mayorizar_Inventario @Item=?, @Periodo=?, @Usuario=?, @NumModulo=?, @DecPVP=?, @DecCosto=?";
+     $sql="EXEC sp_Mayorizar_Inventario @Item=?,@Periodo=?, @Usuario=?, @NumModulo=?, @DecPVP=?, @DecCosto=?,@FechaCorte=?,@TipoKardex=?";
      // print_r($_SESSION['INGRESO']);die();}
       $respuesta = $conn->ejecutar_procesos_almacenados($sql,$parametros);
       return $respuesta;   

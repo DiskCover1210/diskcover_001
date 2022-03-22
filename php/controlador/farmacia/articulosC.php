@@ -172,7 +172,7 @@ class articulosC
     	$cabecera_tabla = '
     	<div class="table-responsive">
 
-  		<table class="table table-hover">
+  		<table class="table table-hover" id="tbl_style">
   			<thead>
   				<th>ITEM</th>
   				<th>FECHA</th>

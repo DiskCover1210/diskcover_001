@@ -387,7 +387,7 @@
      var datos =  $("#form_nuevo_producto").serialize();
      if($('#ddl_cta_inv').val()==0 || $('#ddl_cta_CV').val()==0 || $('#ddl_cta_CV').val()==null || $('#ddl_cta_inv').val()==null)
      {
-       Swal.fire('','Asegurese que la cuenta de inventario y la cuenta de costo de venta esten seleccionados.','info');   
+       Swal.fire('Asegurese que la cuenta de inventario y la cuenta de costo de venta esten seleccionados.','','info');   
       return false;
      }
 
@@ -995,7 +995,7 @@
   </div>
 </div>
 
-<div id="Nuevo_proveedor" class="modal fade" role="dialog">
+<div id="Nuevo_proveedor" class="modal fade" role="dialog" data-keyboard="false" data-backdrop="static">
   <div class="modal-dialog">
 
     <!-- Modal content-->

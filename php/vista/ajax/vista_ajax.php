@@ -48,10 +48,10 @@ if(isset($_POST['ajax_page']) )
 	}
 	
 	//cambiar periodo
-	if($_REQUEST['ajax_page']=='cambiarPeriodo')
-	{
-		cambiarPeriodo();
-	}
+	// if($_REQUEST['ajax_page']=='cambiarPeriodo')
+	// {
+	// 	cambiarPeriodo();
+	// }
 	//datos entidad-empresas
 	if($_REQUEST['ajax_page']=='entidad')
 	{
@@ -4247,35 +4247,35 @@ function validarCiu()
 
 
 //cambiar periodo
-function cambiarPeriodo()
-{
-	$_SESSION['INGRESO']['periodo']=$_POST['campo'];
-	$cid=cone_ajaxSQL();
-	//$_POST['TP']='CD';
-	//$_POST['MesNo']=0;
-	//Listar el Comprobante
-	/*$sql="SELECT  Periodo, T, TP, Numero, Fecha, Codigo_B, Presupuesto, Concepto, Cotizacion, Efectivo, Monto_Total,".
-    " CodigoU, Autorizado, Item, Si_Existe, Hora, CEj, X, ID ". 
-       "FROM Comprobantes ".
-       "WHERE Item = '".$_SESSION['INGRESO']['item']."' ".
-       "AND Periodo = '".$_SESSION['INGRESO']['periodo']."' ".
-       "AND Numero = '".$_POST['com']."' ";
-    $sql=$sql." ORDER BY Numero ";
-	//echo $sql;
-	//die();
-	$stmt = sqlsrv_query( $cid, $sql);
-	if( $stmt === false)  
-	{  
-		 echo "Error en consulta Listar.\n";  
-		 die( print_r( sqlsrv_errors(), true));  
-	}
-	$i=0;
-	while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_NUMERIC) ) 
-	{
+// function cambiarPeriodo()
+// {
+// 	$_SESSION['INGRESO']['periodo']=$_POST['campo'];
+// 	$cid=cone_ajaxSQL();
+// 	//$_POST['TP']='CD';
+// 	//$_POST['MesNo']=0;
+// 	//Listar el Comprobante
+// 	$sql="SELECT  Periodo, T, TP, Numero, Fecha, Codigo_B, Presupuesto, Concepto, Cotizacion, Efectivo, Monto_Total,".
+//     " CodigoU, Autorizado, Item, Si_Existe, Hora, CEj, X, ID ". 
+//        "FROM Comprobantes ".
+//        "WHERE Item = '".$_SESSION['INGRESO']['item']."' ".
+//        "AND Periodo = '".$_SESSION['INGRESO']['periodo']."' ".
+//        "AND Numero = '".$_POST['com']."' ";
+//     $sql=$sql." ORDER BY Numero ";
+// 	//echo $sql;
+// 	//die();
+// 	$stmt = sqlsrv_query( $cid, $sql);
+// 	if( $stmt === false)  
+// 	{  
+// 		 echo "Error en consulta Listar.\n";  
+// 		 die( print_r( sqlsrv_errors(), true));  
+// 	}
+// 	$i=0;
+// 	while( $row = sqlsrv_fetch_array( $stmt, SQLSRV_FETCH_NUMERIC) ) 
+// 	{
 		
-	}*/
-	$cid->close();
-}
+// 	}
+// 	$cid->close();
+// }
 //listar totales temporales sql
 //$Opcb = tipo de asiento si es asiento o asiento_b por ejemplo
 function ListarTotalesTemSQL_AJAX($ti,$Opcb,$b,$ch)
